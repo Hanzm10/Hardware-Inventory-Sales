@@ -15,12 +15,15 @@ public class Murico extends JFrame {
         this.finalConfig();
     }
 
+
     private void initClasses() {
         this.mainWindow = new MainWindow(this);
     }
 
     private void initBehavior() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.setFont(AppSettings.getInstance().getMainFont());
     }
 
     private void addComponents() {

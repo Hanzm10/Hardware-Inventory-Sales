@@ -6,9 +6,10 @@ import java.util.Properties;
 
 public class AppSettings {
 
-    private Properties properties;
+    private final Properties properties;
 
     private String appTitle;
+    private String appFontFamily;
 
     private int appMainScreenWidth;
     private int appMainScreenHeight;
@@ -18,6 +19,9 @@ public class AppSettings {
 
     private Color secondaryColor;
     private Color secondaryForegroundColor;
+
+    private Font mainFont;
+    private Font buttonsFont;
 
     private static AppSettings instance;
 
@@ -56,6 +60,18 @@ public class AppSettings {
         return this.secondaryForegroundColor;
     }
 
+    public String getAppFontFamily() {
+        return this.appFontFamily;
+    }
+
+    public Font getMainFont() {
+        return this.mainFont;
+    }
+
+    public Font getButtonsFont() {
+        return this.buttonsFont;
+    }
+
     public String getProperty(String key) {
         return this.properties.getProperty(key);
     }
@@ -69,16 +85,25 @@ public class AppSettings {
 
         this.appMainScreenWidth = this.getIntProperty("app.screen.width");
         this.appMainScreenHeight = this.getIntProperty("app.screen.height");
+        this.appFontFamily = this.getProperty("app.font.family");
 
-        this.primaryColor = Color.decode(this.getProperty("color.primary.default"));
+        this.primaryColor = Color.decode(this.getProperty("color.primary" +
+                                                                  ".default"));
         this.primaryForegroundColor = Color.decode(this.getProperty("color.primary.foreground"));
 
-        this.secondaryColor = Color.decode(this.getProperty("color.secondary.default"));
+        this.secondaryColor = Color.decode(this.getProperty("color.secondary" +
+                                                                    ".default"
+        ));
         this.secondaryForegroundColor = Color.decode(this.getProperty("color.secondary.foreground"));
+
+        this.mainFont = new Font(this.appFontFamily, Font.PLAIN, 16);
+        this.buttonsFont = new Font(this.appFontFamily, Font.BOLD, 14);
     }
 
     private void loadConfiguration() {
-        InputStream configuration = AppSettings.class.getClassLoader().getResourceAsStream("config.properties");
+        InputStream configuration =
+                AppSettings.class.getClassLoader().getResourceAsStream(
+                        "config.properties");
 
         assert configuration != null;
 
