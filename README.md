@@ -48,7 +48,7 @@ software solution.
 /HardwareInventorySystem
 ├── src/
 │   ├── com/
-│   │   ├── murico/java           # Java source files
+│   │   ├── murico                # Root package
 │   │   │   ├── config/           # Application configuration helper classes
 │   │   │   ├── controller/       # Controllers handling UI events
 │   │   │   ├── dal/              # Database access layer
@@ -79,7 +79,7 @@ cd HardwareInventorySystem
 ### 2. Configure the Database
 - Install MySQL and create a new database
 - Import the database schema to your MySQL database. Refer to [this file](/external_resources/db/README.md) for instructions.
-- Update the database connection settings in the [src/com/murico/java/resources/application.properties](/src/com/murico/java/resources/application.properties) file.
+- Update the database connection settings in the [src/com/murico/java/resources/application.properties](/com/murico/resources/application.properties) file.
 - Refer to [our database schema](https://dbdocs.io/workemailaaronragudos/murico?table=low_stock_alerts&schema=public&view=table_structure&fbclid=IwY2xjawJPnkJleHRuA2FlbQIxMAABHXk9UHiYvKQmC8NfQNbt8FaTdjT6Q_h-LgpNDXAgp_2SBhyLJrQNFO2YdA_aem_xaf-g4VewS3l02DSjrTvIw) for more details of the schema.
 
 ### 3. Run the Application
