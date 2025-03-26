@@ -96,6 +96,7 @@ You can visit the [UI Design](https://www.figma.com/design/yxYlvE85nY8IwhmsykmZX
 
 ## Code Quality and Refactoring
 
+The project maintainers will try to make use of their knowledge for good quality code.
 For information of the techniques used, refer to [Refactoring Guru](https://refactoring.guru/)
 
 - The codebase is well-structured and follows the Model-View-Controller (MVC) architecture for scalability and maintainability.
