@@ -2,124 +2,133 @@ package com.murico.app.view.components.buttons;
 
 import com.murico.app.config.AppSettings;
 import com.murico.app.controller.ui.buttons.MButtonMouseListener;
-
-import javax.swing.*;
+import com.murico.app.view.components.base.RoundedComponent;
+import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
+import com.murico.app.view.components.buttons.variations.MButtonSizeVariations;
+import com.murico.app.view.components.helper.ComponentHelper;
 import java.awt.*;
+import javax.swing.*;
 
 public class MButton extends JButton implements MButtonInterface {
 
-    private final int borderRadius;
+  protected final MButtonMouseListener mouseListener;
 
-    private final MButtonMouseListener mouseListener;
+  protected final ComponentHelper<MButton> componentHelper;
 
-    private Color bg;
-    private Color backgroundWhenHovered;
-    private boolean isHovered;
+  protected final RoundedComponent roundedComponent;
 
-    public MButton(String text) {
-        super(text);
+  protected MButtonColorVariations colorVariation;
+  protected MButtonSizeVariations sizeVariation;
 
-        this.borderRadius = 16;
+  public MButton(String text) {
+    super(text);
 
-        this.disableDefaultButtonStyle();
-        this.setDefaults();
+    this.disableDefaultButtonStyle();
+    this.setDefaults();
 
-        this.mouseListener = new MButtonMouseListener(this);
+    this.mouseListener = new MButtonMouseListener(this);
+    this.componentHelper = new ComponentHelper<>(this);
+    this.roundedComponent = new RoundedComponent();
 
-        this.addMouseListener(this.mouseListener);
-    }
+    this.addMouseListener(this.mouseListener);
+  }
 
-    public boolean getIsHovered() {
-        return this.isHovered;
-    }
+  private void disableDefaultButtonStyle() {
+    setBorderPainted(false);
+    setContentAreaFilled(false);
+    setFocusPainted(false);
+  }
 
-    private void disableDefaultButtonStyle() {
-        setBorderPainted(false);
-        setContentAreaFilled(false);
-        setFocusPainted(false);
-        setOpaque(false);
-    }
+  private void setDefaults() {
+    this.setFont(AppSettings.getInstance().getButtonsFont());
 
-    private void setDefaults() {
-        this.setFont(AppSettings.getInstance().getButtonsFont());
+    Dimension size = new Dimension(80, 40);
 
-        Dimension size = new Dimension(80, 40);
+    this.setPreferredSize(size);
+  }
 
-        this.setPreferredSize(size);
-    }
+  @Override
+  public void mouseClicked() {}
 
-    private void enableSmoothness(Graphics2D g2) {
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                            RenderingHints.VALUE_ANTIALIAS_ON);
-    }
+  @Override
+  public void mousePressed() {}
 
-    @Override
-    public void mouseClicked() {
+  @Override
+  public void mouseReleased() {}
 
-    }
+  @Override
+  public void mouseEntered() {
+    this.componentHelper.setCursorToHand();
+  }
 
-    @Override
-    public void mousePressed() {
+  @Override
+  public void mouseExited() {
+    this.componentHelper.setCursorToDefault();
+  }
 
-    }
+  @Override
+  public void setBorderRadius(int radius) {
+    this.roundedComponent.setBorderRadius(radius);
+  }
 
-    @Override
-    public void mouseReleased() {
+  @Override
+  public void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight) {
+    this.roundedComponent.setBorderRadius(topLeft, topRight, bottomLeft, bottomRight);
+  }
 
-    }
+  @Override
+  public int getBorderTopLeftRadius() {
+    return this.roundedComponent.getBorderTopLeftRadius();
+  }
 
-    @Override
-    public void mouseEntered() {
-        this.isHovered = true;
-        this.setBackground(this.backgroundWhenHovered);
-    }
+  @Override
+  public void setBorderTopLeftRadius(int radius) {
+    this.roundedComponent.setBorderTopLeftRadius(radius);
+  }
 
-    @Override
-    public void mouseExited() {
-        this.isHovered = false;
-        this.setBackground(this.bg);
-    }
+  @Override
+  public int getBorderTopRightRadius() {
+    return this.roundedComponent.getBorderTopRightRadius();
+  }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
+  @Override
+  public void setBorderTopRightRadius(int radius) {
+    this.roundedComponent.setBorderTopRightRadius(radius);
+  }
 
-        this.enableSmoothness(g2);
+  @Override
+  public int getBorderBottomLeftRadius() {
+    return this.roundedComponent.getBorderBottomLeftRadius();
+  }
 
-        g2.setColor(this.getBackground());
-        g2.fillRoundRect(0, 0, this.getWidth(), this.getHeight(),
-                         this.borderRadius, this.borderRadius);
+  @Override
+  public void setBorderBottomLeftRadius(int radius) {
+    this.roundedComponent.setBorderBottomLeftRadius(radius);
+  }
 
-        g2.dispose();
-        super.paintComponent(g);
-    }
+  @Override
+  public int getBorderBottomRightRadius() {
+    return this.roundedComponent.getBorderBottomRightRadius();
+  }
 
-    @Override
-    protected void paintBorder(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
+  @Override
+  public void setBorderBottomRightRadius(int radius) {
+    this.roundedComponent.setBorderBottomRightRadius(radius);
+  }
 
-        this.enableSmoothness(g2);
+  @Override
+  public MButtonSizeVariations getSizeVariation() {
+    return this.sizeVariation;
+  }
 
-        g2.setColor(this.getForeground());
-        g2.drawRoundRect(0, 0, this.getWidth() - 1, this.getHeight() - 1,
-                         this.borderRadius, this.borderRadius);
+  @Override
+  public MButtonColorVariations getColorVariation() {
+    return this.colorVariation;
+  }
 
-        g2.dispose();
-    }
-
-    // fix this so that we don't create a new Color
-    // every time when mouseExited() calls this method
-    @Override
-    public void setBackground(Color bg) {
-        if (isHovered) {
-            this.bg = this.getBackground();
-        } else {
-            this.backgroundWhenHovered = new Color(bg.getRed(),
-                                                   bg.getGreen(),
-                                                   bg.getBlue(),
-                                                   180);
-        }
-
-        super.setBackground(bg);
-    }
+  @Override
+  protected void paintComponent(Graphics g) {
+    this.roundedComponent.paintComponent(g, this);
+    super.paintComponent(g);
+  }
 }
