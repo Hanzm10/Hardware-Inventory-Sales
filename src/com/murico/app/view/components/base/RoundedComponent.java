@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import javax.swing.*;
 
 /**
  * This class is responsible for creating rounded components. <br>
@@ -63,11 +62,30 @@ public class RoundedComponent {
     this.borderBottomRightRadius = radius;
   }
 
+  public void paintComponent(Graphics g, Dimension size, Color background) {
+    Graphics2D g2 = (Graphics2D) g.create();
+
+    enableSmoothness(g2);
+
+    Area componentArea = createBorderTopLeftRadius(size);
+
+    componentArea.intersect(createBorderTopRightRadius(size));
+    componentArea.intersect(createBorderBottomRightRadius(size));
+    componentArea.intersect(createBorderBottomLeftRadius(size));
+
+    g2.setColor(background);
+    g2.fill(componentArea);
+    g2.dispose();
+  }
+
   private void enableSmoothness(Graphics2D g2) {
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
   }
 
-  private Area createBorderTopLeftRadius(int width, int height) {
+  private Area createBorderTopLeftRadius(Dimension size) {
+    int width = size.width;
+    int height = size.height;
+
     double borderRadiusInline = Math.min(width, borderTopLeftRadius);
     double borderRadiusBlock = Math.min(height, borderTopLeftRadius);
     double halfInline = borderRadiusInline / 2;
@@ -83,7 +101,10 @@ public class RoundedComponent {
     return componentArea;
   }
 
-  private Area createBorderTopRightRadius(int width, int height) {
+  private Area createBorderTopRightRadius(Dimension size) {
+    int width = size.width;
+    int height = size.height;
+
     double borderRadiusInline = Math.min(width, borderTopRightRadius);
     double borderRadiusBlock = Math.min(height, borderTopRightRadius);
     double halfInline = borderRadiusInline / 2;
@@ -98,7 +119,10 @@ public class RoundedComponent {
     return componentArea;
   }
 
-  private Area createBorderBottomRightRadius(int width, int height) {
+  private Area createBorderBottomRightRadius(Dimension size) {
+    int width = size.width;
+    int height = size.height;
+
     double borderRadiusInline = Math.min(width, borderBottomRightRadius);
     double borderRadiusBlock = Math.min(height, borderBottomRightRadius);
     double halfBlock = borderRadiusBlock / 2;
@@ -114,7 +138,10 @@ public class RoundedComponent {
     return componentArea;
   }
 
-  private Area createBorderBottomLeftRadius(int width, int height) {
+  private Area createBorderBottomLeftRadius(Dimension size) {
+    int width = size.width;
+    int height = size.height;
+
     double borderRadiusInline = Math.min(width, borderBottomLeftRadius);
     double borderRadiusBlock = Math.min(height, borderBottomLeftRadius);
     double halfBlock = borderRadiusBlock / 2;
@@ -128,24 +155,5 @@ public class RoundedComponent {
     componentArea.add(new Area(new Rectangle2D.Double(0, 0, width, height - halfBlock)));
 
     return componentArea;
-  }
-
-  public void paintComponent(Graphics g, JComponent jComponent) {
-    Graphics2D g2 = (Graphics2D) g.create();
-
-    enableSmoothness(g2);
-
-    int width = jComponent.getWidth();
-    int height = jComponent.getHeight();
-
-    Area componentArea = createBorderTopLeftRadius(width, height);
-
-    componentArea.intersect(createBorderTopRightRadius(width, height));
-    componentArea.intersect(createBorderBottomRightRadius(width, height));
-    componentArea.intersect(createBorderBottomLeftRadius(width, height));
-
-    g2.setColor(jComponent.getBackground());
-    g2.fill(componentArea);
-    g2.dispose();
   }
 }
