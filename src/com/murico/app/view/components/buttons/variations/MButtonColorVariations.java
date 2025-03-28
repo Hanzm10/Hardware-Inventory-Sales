@@ -5,6 +5,5 @@ public enum MButtonColorVariations {
   SECONDARY,
   WARNING,
   DANGER,
-  INFO,
   TRANSPARENT;
 }

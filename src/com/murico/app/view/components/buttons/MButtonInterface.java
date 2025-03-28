@@ -1,7 +1,6 @@
 package com.murico.app.view.components.buttons;
 
 import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
-import com.murico.app.view.components.buttons.variations.MButtonSizeVariations;
 
 public interface MButtonInterface {
   void mouseClicked();
@@ -33,8 +32,6 @@ public interface MButtonInterface {
   int getBorderBottomRightRadius();
 
   void setBorderBottomRightRadius(int radius);
-
-  MButtonSizeVariations getSizeVariation();
 
   MButtonColorVariations getColorVariation();
 }
