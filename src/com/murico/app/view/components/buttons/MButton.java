@@ -49,15 +49,7 @@ public class MButton extends JButton implements MButtonInterface {
   }
 
   @Override
-  public void mouseClicked() {
-    this.previousBackground = this.getBackground();
-    this.setBackground(
-        new Color(
-            this.previousBackground.getRed(),
-            this.previousBackground.getGreen(),
-            this.previousBackground.getBlue(),
-            200));
-  }
+  public void mouseClicked() {}
 
   @Override
   public void mousePressed() {
@@ -69,7 +61,7 @@ public class MButton extends JButton implements MButtonInterface {
             this.previousBackground.getRed(),
             this.previousBackground.getGreen(),
             this.previousBackground.getBlue(),
-            175));
+            200));
   }
 
   @Override
@@ -78,7 +70,6 @@ public class MButton extends JButton implements MButtonInterface {
 
     if (!this.hovered) {
       this.componentHelper.setCursorToDefault();
-
       this.previousBackground = this.getBackground();
       this.setBackground(
           new Color(
@@ -86,6 +77,14 @@ public class MButton extends JButton implements MButtonInterface {
               this.previousBackground.getGreen(),
               this.previousBackground.getBlue(),
               255));
+    } else {
+      this.previousBackground = this.getBackground();
+      this.setBackground(
+          new Color(
+              this.previousBackground.getRed(),
+              this.previousBackground.getGreen(),
+              this.previousBackground.getBlue(),
+              225));
     }
   }
 

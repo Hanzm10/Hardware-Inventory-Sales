@@ -101,7 +101,7 @@ public class AppSettings {
     this.secondaryForegroundColor = Color.decode(this.getProperty("color.secondary.foreground"));
 
     this.mainFont = new Font(this.appFontFamily, Font.PLAIN, 16);
-    this.buttonsFont = new Font(this.appFontFamily, Font.BOLD, 14);
+    this.buttonsFont = new Font(this.appFontFamily, Font.BOLD, 18);
 
     this.baseBorderRadius = this.getIntProperty("base.border.radius");
   }
