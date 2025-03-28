@@ -11,5 +11,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="mysql-connector-j-9.2.0" level="project" />
+    <orderEntry type="library" name="google-java-format-1.26.0-all-deps" level="project" />
   </component>
 </module>
