@@ -96,14 +96,8 @@ You can visit the [UI Design](https://www.figma.com/design/yxYlvE85nY8IwhmsykmZX
 
 ## Code Quality and Refactoring
 
-The project maintainers will try to make use of their knowledge for good quality code.
-For information of the techniques used, refer to [Refactoring Guru](https://refactoring.guru/)
-
-- The codebase is well-structured and follows the Model-View-Controller (MVC) architecture for scalability and maintainability.
-- The code is modular and reusable, making it easy to add new features and functionalities.
-- The code follows the Java naming conventions and best practices for readability and consistency.
-- The code is well-documented with comments and Javadoc for better understanding and maintainability.
-- The code is tested with unit and integration tests to ensure reliability and robustness.
+Please refer to [this document](CODING_STANDARD.md) for more information on code
+quality and refactoring.
 
 ## Contributors
 
