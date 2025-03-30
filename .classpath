@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src/com/murico/app/resources"/>
+	<classpathentry excluding="com/murico/app/resources/|test/app/test_resources/|test/" kind="src" path="src"/>
+	<classpathentry excluding="app/test_resources/" kind="src" path="src/test"/>
+	<classpathentry kind="src" path="src/test/app/test_resources"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/mysql-connector-j-9.2.0"/>
+	<classpathentry kind="output" path="out/production/Hardware-Inventory-Sales"/>
+</classpath>
