@@ -4,6 +4,11 @@ import com.murico.app.config.AppSettings;
 import com.murico.app.view.components.buttons.MButton;
 
 public class SecondaryButton extends MButton {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3303654769638476114L;
+
   public SecondaryButton(String text) {
     super(text);
 

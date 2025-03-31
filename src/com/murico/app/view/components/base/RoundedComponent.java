@@ -1,14 +1,20 @@
 package com.murico.app.view.components.base;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * This class is responsible for creating rounded components. <br>
- * <br>
- * <strong>Still up for optimizations</strong>
+ * RoundedComponent is a class that provides methods to create a rounded component with customizable
+ * border radius for each corner.
+ * 
+ * @author Aaron Ragudos
+ * @version 1.0
  */
 public class RoundedComponent {
   private int borderTopLeftRadius;
@@ -63,11 +69,11 @@ public class RoundedComponent {
   }
 
   public void paintComponent(Graphics g, Dimension size, Color background) {
-    Graphics2D g2 = (Graphics2D) g.create();
+    var g2 = (Graphics2D) g.create();
 
     enableSmoothness(g2);
 
-    Area componentArea = createBorderTopLeftRadius(size);
+    var componentArea = createBorderTopLeftRadius(size);
 
     componentArea.intersect(createBorderTopRightRadius(size));
     componentArea.intersect(createBorderBottomRightRadius(size));
@@ -83,14 +89,14 @@ public class RoundedComponent {
   }
 
   private Area createBorderTopLeftRadius(Dimension size) {
-    int width = size.width;
-    int height = size.height;
+    var width = size.width;
+    var height = size.height;
 
     double borderRadiusInline = Math.min(width, borderTopLeftRadius);
     double borderRadiusBlock = Math.min(height, borderTopLeftRadius);
-    double halfInline = borderRadiusInline / 2;
+    var halfInline = borderRadiusInline / 2;
 
-    Area componentArea =
+    var componentArea =
         new Area(
             new RoundRectangle2D.Double(
                 0, 0, width, height, borderRadiusInline, borderRadiusBlock));
@@ -102,14 +108,14 @@ public class RoundedComponent {
   }
 
   private Area createBorderTopRightRadius(Dimension size) {
-    int width = size.width;
-    int height = size.height;
+    var width = size.width;
+    var height = size.height;
 
     double borderRadiusInline = Math.min(width, borderTopRightRadius);
     double borderRadiusBlock = Math.min(height, borderTopRightRadius);
-    double halfInline = borderRadiusInline / 2;
+    var halfInline = borderRadiusInline / 2;
 
-    Area componentArea =
+    var componentArea =
         new Area(
             new RoundRectangle2D.Double(
                 0, 0, width, height, borderRadiusInline, borderRadiusBlock));
@@ -120,14 +126,14 @@ public class RoundedComponent {
   }
 
   private Area createBorderBottomRightRadius(Dimension size) {
-    int width = size.width;
-    int height = size.height;
+    var width = size.width;
+    var height = size.height;
 
     double borderRadiusInline = Math.min(width, borderBottomRightRadius);
     double borderRadiusBlock = Math.min(height, borderBottomRightRadius);
-    double halfBlock = borderRadiusBlock / 2;
+    var halfBlock = borderRadiusBlock / 2;
 
-    Area componentArea =
+    var componentArea =
         new Area(
             new RoundRectangle2D.Double(
                 0, 0, width, height, borderRadiusInline, borderRadiusBlock));
@@ -139,14 +145,14 @@ public class RoundedComponent {
   }
 
   private Area createBorderBottomLeftRadius(Dimension size) {
-    int width = size.width;
-    int height = size.height;
+    var width = size.width;
+    var height = size.height;
 
     double borderRadiusInline = Math.min(width, borderBottomLeftRadius);
     double borderRadiusBlock = Math.min(height, borderBottomLeftRadius);
-    double halfBlock = borderRadiusBlock / 2;
+    var halfBlock = borderRadiusBlock / 2;
 
-    Area componentArea =
+    var componentArea =
         new Area(
             new RoundRectangle2D.Double(
                 0, 0, width, height, borderRadiusInline, borderRadiusBlock));

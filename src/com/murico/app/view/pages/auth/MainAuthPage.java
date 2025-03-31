@@ -1,19 +1,23 @@
 package com.murico.app.view.pages.auth;
 
+import com.murico.app.view.MainWindow;
 import com.murico.app.view.components.buttons.variations.PrimaryButton;
 import com.murico.app.view.components.images.ResizableImageIcon;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MainAuthPage extends JPanel {
+public class MainAuthPage {
+  private MainWindow mainWindow;
   private JLabel logoContainer;
 
   private JPanel buttonsContainer;
   private PrimaryButton loginButton;
   private PrimaryButton registerButton;
 
-  public MainAuthPage() {
+  public MainAuthPage(MainWindow mainWindow) {
+    this.mainWindow = mainWindow;
+
     this.initComponents();
     this.initLayout();
   }
@@ -32,13 +36,26 @@ public class MainAuthPage extends JPanel {
   }
 
   private void initLayout() {
-    this.setLayout(new GridLayout(0, 1, 0, 48));
+    this.mainWindow.setLayout(new GridBagLayout());
 
-    this.add(this.logoContainer);
+    GridBagConstraints constraints = new GridBagConstraints();
+
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.weightx = 1.0;
+    constraints.weighty = 0.25;
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.anchor = GridBagConstraints.CENTER;
+
+    this.mainWindow.add(this.logoContainer, constraints);
 
     this.buttonsContainer.add(this.loginButton);
     this.buttonsContainer.add(this.registerButton);
 
-    this.add(this.buttonsContainer);
+    constraints.gridy = 1;
+    constraints.anchor = GridBagConstraints.CENTER;
+    constraints.fill = GridBagConstraints.NONE;
+
+    this.mainWindow.add(this.buttonsContainer, constraints);
   }
 }

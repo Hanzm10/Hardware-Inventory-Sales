@@ -10,7 +10,7 @@ and is easy to read and maintain.
 ## Rules
 
 1. **Rule**: Restrict all code to very simple control flow constructs -- do not
-   use direct or indirect recursion, circular references.
+   use direct or indirect recursion.
    <br>
    <br>
     - **Rationale**: Simpler control flow translates into stronger capabilities
@@ -20,9 +20,7 @@ and is easy to read and maintain.
       to have an acyclic function call graph, which, if used, can be exploited
       by code analyzers, and can directly
       help to prove that all executions that should be bounded are in fact
-      bounded. The same can be said for
-      circular references, which are difficult to manage and can lead to bugs
-      and other issues when complexity scales.
+      bounded.
       <br>
       <br>
     - **Benefits**:

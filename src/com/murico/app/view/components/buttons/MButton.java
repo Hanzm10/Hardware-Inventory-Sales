@@ -1,16 +1,29 @@
 package com.murico.app.view.components.buttons;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 import com.murico.app.config.AppSettings;
-import com.murico.app.controller.ui.buttons.MButtonMouseListener;
 import com.murico.app.view.components.base.RoundedComponent;
 import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
 import com.murico.app.view.components.helper.ComponentHelper;
-import java.awt.*;
-import javax.swing.*;
 
-public class MButton extends JButton implements MButtonInterface {
+/**
+ * MButton is a custom button class that extends JButton and implements MButtonInterface and
+ * MouseListener. It provides a rounded button with color variations and hover/press effects.
+ * 
+ * @author Aaron Ragudos
+ * @version 1.0
+ */
+public class MButton extends JButton implements MButtonInterface, MouseListener {
 
-  protected final MButtonMouseListener mouseListener;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5038858231143921204L;
 
   protected final ComponentHelper<MButton> componentHelper;
 
@@ -29,13 +42,12 @@ public class MButton extends JButton implements MButtonInterface {
     this.disableDefaultButtonStyle();
     this.setDefaults();
 
-    this.mouseListener = new MButtonMouseListener(this);
     this.componentHelper = new ComponentHelper<>(this);
     this.roundedComponent = new RoundedComponent();
 
     this.roundedComponent.setBorderRadius(AppSettings.getInstance().getBaseBorderRadius());
 
-    this.addMouseListener(this.mouseListener);
+    this.addMouseListener(this);
   }
 
   private void disableDefaultButtonStyle() {
@@ -45,80 +57,73 @@ public class MButton extends JButton implements MButtonInterface {
   }
 
   private void setDefaults() {
-    this.setFont(AppSettings.getInstance().getButtonsFont());
+    this.setFont(AppSettings.getInstance().getMainFontButton());
   }
 
   @Override
-  public void mouseClicked() {}
+  public void mouseClicked(MouseEvent e) {}
 
   @Override
-  public void mousePressed() {
-    this.pressed = true;
+  public void mousePressed(MouseEvent e) {
+    SwingUtilities.invokeLater(() -> {
+      this.pressed = true;
+      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 150 : 200;
 
-    this.previousBackground = this.getBackground();
-    this.setBackground(
-        new Color(
-            this.previousBackground.getRed(),
-            this.previousBackground.getGreen(),
-            this.previousBackground.getBlue(),
-            200));
+      this.previousBackground = this.getBackground();
+      this.setBackground(new Color(this.previousBackground.getRed(),
+          this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
+    });
   }
 
   @Override
-  public void mouseReleased() {
-    this.pressed = false;
+  public void mouseReleased(MouseEvent e) {
+    SwingUtilities.invokeLater(() -> {
+      this.pressed = false;
 
-    if (!this.hovered) {
-      this.componentHelper.setCursorToDefault();
-      this.previousBackground = this.getBackground();
-      this.setBackground(
-          new Color(
-              this.previousBackground.getRed(),
-              this.previousBackground.getGreen(),
-              this.previousBackground.getBlue(),
-              255));
-    } else {
-      this.previousBackground = this.getBackground();
-      this.setBackground(
-          new Color(
-              this.previousBackground.getRed(),
-              this.previousBackground.getGreen(),
-              this.previousBackground.getBlue(),
-              225));
-    }
+      if (!this.hovered) {
+        var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 0 : 255;
+        this.componentHelper.setCursorToDefault();
+        this.previousBackground = this.getBackground();
+        this.setBackground(new Color(this.previousBackground.getRed(),
+            this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
+      } else {
+        var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 200 : 255;
+        this.previousBackground = this.getBackground();
+        this.setBackground(new Color(this.previousBackground.getRed(),
+            this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
+      }
+    });
   }
 
   @Override
-  public void mouseEntered() {
-    this.hovered = true;
+  public void mouseEntered(MouseEvent e) {
+    SwingUtilities.invokeLater(() -> {
+      this.hovered = true;
+      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 200 : 225;
 
-    if (!this.pressed) {
-      this.componentHelper.setCursorToHand();
-      this.previousBackground = this.getBackground();
-      this.setBackground(
-          new Color(
-              this.previousBackground.getRed(),
-              this.previousBackground.getGreen(),
-              this.previousBackground.getBlue(),
-              225));
-    }
+      if (!this.pressed) {
+        this.componentHelper.setCursorToHand();
+        this.previousBackground = this.getBackground();
+        this.setBackground(new Color(this.previousBackground.getRed(),
+            this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
+      }
+    });
   }
 
   @Override
-  public void mouseExited() {
-    this.hovered = false;
+  public void mouseExited(MouseEvent e) {
+    SwingUtilities.invokeLater(() -> {
+      this.hovered = false;
+      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 0 : 255;
 
-    if (!this.pressed) {
-      this.componentHelper.setCursorToDefault();
+      if (!this.pressed) {
+        this.componentHelper.setCursorToDefault();
 
-      this.previousBackground = this.getBackground();
-      this.setBackground(
-          new Color(
-              this.previousBackground.getRed(),
-              this.previousBackground.getGreen(),
-              this.previousBackground.getBlue(),
-              255));
-    }
+        this.previousBackground = this.getBackground();
+        this.setBackground(new Color(this.previousBackground.getRed(),
+            this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
+      }
+    });
   }
 
   @Override

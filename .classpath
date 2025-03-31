@@ -10,5 +10,7 @@
 	<classpathentry excluding="app/test_resources/" kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/test/app/test_resources"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/mysql-connector-j-9.2.0"/>
+	<classpathentry kind="lib" path="com.jgoodies.forms_1.9.0.v20240327-0800.jar"/>
+	<classpathentry kind="lib" path="com.jgoodies.common_1.8.1.v20240327-0800.jar"/>
 	<classpathentry kind="output" path="out/production/Hardware-Inventory-Sales"/>
 </classpath>

@@ -1,10 +1,16 @@
 package com.murico.app;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import com.murico.app.config.AppSettings;
 import com.murico.app.view.MainWindow;
-import javax.swing.*;
 
 public class Murico extends JFrame {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5584823642462847023L;
 
   public Murico() {
     this.initBehavior();
@@ -15,7 +21,7 @@ public class Murico extends JFrame {
   public static void main(String[] args) {
     SwingUtilities.invokeLater(
         () -> {
-          Murico murico = new Murico();
+          new Murico();
         });
   }
 
@@ -26,7 +32,7 @@ public class Murico extends JFrame {
   }
 
   private void addComponents() {
-    MainWindow mainWindow = new MainWindow(this);
+    var mainWindow = new MainWindow(this);
 
     this.add(mainWindow);
   }

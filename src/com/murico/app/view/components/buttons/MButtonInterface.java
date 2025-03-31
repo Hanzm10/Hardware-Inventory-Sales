@@ -3,16 +3,6 @@ package com.murico.app.view.components.buttons;
 import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
 
 public interface MButtonInterface {
-  void mouseClicked();
-
-  void mousePressed();
-
-  void mouseReleased();
-
-  void mouseEntered();
-
-  void mouseExited();
-
   void setBorderRadius(int radius);
 
   void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight);
