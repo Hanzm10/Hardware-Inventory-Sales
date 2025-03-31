@@ -18,6 +18,7 @@ public class AppSettings {
   private Color secondaryForegroundColor;
   private Color transparentColor;
   private Color borderColor;
+  private Color placeholderColor;
   private Font mainFont;
   private Font mainFontTitle;
   private Font mainFontSubtitle;
@@ -79,6 +80,10 @@ public class AppSettings {
 
   public Color getBorderColor() {
     return this.borderColor;
+  }
+
+  public Color getPlaceholderColor() {
+    return this.placeholderColor;
   }
 
   public String getAppFontFamily() {
@@ -156,6 +161,7 @@ public class AppSettings {
         transparentColor.getBlue(), 0);
 
     this.borderColor = Color.decode(this.getProperty("color.border.default"));
+    this.placeholderColor = Color.decode(this.getProperty("color.placeholder.default"));
 
     var defaultFontSize = this.getIntProperty("app.font.size.default");
     var defaultFontSizeTitle = this.getIntProperty("app.font.size.title");

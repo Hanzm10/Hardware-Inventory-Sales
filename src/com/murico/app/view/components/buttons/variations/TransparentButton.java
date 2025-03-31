@@ -9,6 +9,10 @@ public class TransparentButton extends MButton {
    */
   private static final long serialVersionUID = 4614211604691921688L;
 
+  public TransparentButton() {
+    this("Transparent Button");
+  }
+
   public TransparentButton(String text) {
     super(text);
 

@@ -9,6 +9,10 @@ public class SecondaryButton extends MButton {
    */
   private static final long serialVersionUID = -3303654769638476114L;
 
+  public SecondaryButton() {
+    this("Secondary Button");
+  }
+
   public SecondaryButton(String text) {
     super(text);
 
