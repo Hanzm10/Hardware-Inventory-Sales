@@ -17,15 +17,18 @@ public class AppSettings {
   private Color secondaryColor;
   private Color secondaryForegroundColor;
   private Color transparentColor;
+  private Color borderColor;
   private Font mainFont;
   private Font mainFontTitle;
   private Font mainFontSubtitle;
+  private Font mainFontHeader;
   private Font mainFontBody;
   private Font mainFontCaption;
   private Font mainFontFootnote;
   private Font mainFontButton;
   private Font mainFontLink;
   private int baseBorderRadius;
+  private int baseBorderWidth;
 
   private AppSettings() {
     this.properties = new Properties();
@@ -74,6 +77,10 @@ public class AppSettings {
     return this.transparentColor;
   }
 
+  public Color getBorderColor() {
+    return this.borderColor;
+  }
+
   public String getAppFontFamily() {
     return this.appFontFamily;
   }
@@ -88,6 +95,10 @@ public class AppSettings {
 
   public Font getMainFontSubtitle() {
     return this.mainFontSubtitle;
+  }
+
+  public Font getMainFontHeader() {
+    return this.mainFontHeader;
   }
 
   public Font getMainFontBody() {
@@ -112,6 +123,10 @@ public class AppSettings {
 
   public int getBaseBorderRadius() {
     return baseBorderRadius;
+  }
+
+  public int getBaseBorderWidth() {
+    return baseBorderWidth;
   }
 
   public String getProperty(String key) {
@@ -140,16 +155,30 @@ public class AppSettings {
     this.transparentColor = new Color(transparentColor.getRed(), transparentColor.getGreen(),
         transparentColor.getBlue(), 0);
 
-    this.mainFont = new Font(this.appFontFamily, Font.PLAIN, 16);
-    this.mainFontTitle = new Font(this.appFontFamily, Font.BOLD, 48);
-    this.mainFontSubtitle = new Font(this.appFontFamily, Font.BOLD, 32);
-    this.mainFontBody = new Font(this.appFontFamily, Font.PLAIN, 16);
-    this.mainFontCaption = new Font(this.appFontFamily, Font.PLAIN, 14);
-    this.mainFontFootnote = new Font(this.appFontFamily, Font.PLAIN, 12);
-    this.mainFontLink = new Font(this.appFontFamily, Font.ITALIC, 16);
-    this.mainFontButton = new Font(this.appFontFamily, Font.BOLD, 18);
+    this.borderColor = Color.decode(this.getProperty("color.border.default"));
 
-    this.baseBorderRadius = this.getIntProperty("base.border.radius");
+    var defaultFontSize = this.getIntProperty("app.font.size.default");
+    var defaultFontSizeTitle = this.getIntProperty("app.font.size.title");
+    var defaultFontSizeSubtitle = this.getIntProperty("app.font.size.subtitle");
+    var defaultFontSizeHeader = this.getIntProperty("app.font.size.header");
+    var defaultFontSizeBody = this.getIntProperty("app.font.size.body");
+    var defaultFontSizeCaption = this.getIntProperty("app.font.size.caption");
+    var defaultFontSizeFootnote = this.getIntProperty("app.font.size.footnote");
+    var defaultFontSizeLink = this.getIntProperty("app.font.size.link");
+    var defaultFontSizeButton = this.getIntProperty("app.font.size.button");
+
+    this.mainFont = new Font(this.appFontFamily, Font.PLAIN, defaultFontSize);
+    this.mainFontTitle = new Font(this.appFontFamily, Font.BOLD, defaultFontSizeTitle);
+    this.mainFontSubtitle = new Font(this.appFontFamily, Font.BOLD, defaultFontSizeSubtitle);
+    this.mainFontHeader = new Font(this.appFontFamily, Font.BOLD, defaultFontSizeHeader);
+    this.mainFontBody = new Font(this.appFontFamily, Font.PLAIN, defaultFontSizeBody);
+    this.mainFontCaption = new Font(this.appFontFamily, Font.PLAIN, defaultFontSizeCaption);
+    this.mainFontFootnote = new Font(this.appFontFamily, Font.PLAIN, defaultFontSizeFootnote);
+    this.mainFontLink = new Font(this.appFontFamily, Font.ITALIC, defaultFontSizeLink);
+    this.mainFontButton = new Font(this.appFontFamily, Font.BOLD, defaultFontSizeButton);
+
+    this.baseBorderRadius = this.getIntProperty("app.border.radius");
+    this.baseBorderWidth = this.getIntProperty("app.border.width");
   }
 
   private void loadConfiguration() {

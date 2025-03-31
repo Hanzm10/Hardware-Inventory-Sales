@@ -10,11 +10,12 @@ public class MLabel extends JLabel {
    * 
    */
   private static final long serialVersionUID = 4222724410623595274L;
-  
+
   public MLabel(String text) {
     super(text);
 
     this.setFont(AppSettings.getInstance().getMainFont());
+    this.labelType = MLabelTypes.DEFAULT;
   }
 
   public MLabelTypes getLabelType() {

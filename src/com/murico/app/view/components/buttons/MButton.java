@@ -2,12 +2,14 @@ package com.murico.app.view.components.buttons;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import com.murico.app.config.AppSettings;
-import com.murico.app.view.components.base.RoundedComponent;
+import com.murico.app.view.borders.RoundedCornerBorder;
 import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
 import com.murico.app.view.components.helper.ComponentHelper;
 
@@ -18,16 +20,14 @@ import com.murico.app.view.components.helper.ComponentHelper;
  * @author Aaron Ragudos
  * @version 1.0
  */
-public class MButton extends JButton implements MButtonInterface, MouseListener {
+public class MButton extends JButton implements MButtonInterface, MouseListener, FocusListener {
 
   /**
    * 
    */
   private static final long serialVersionUID = -5038858231143921204L;
 
-  protected final ComponentHelper<MButton> componentHelper;
-
-  protected final RoundedComponent roundedComponent;
+  protected final ComponentHelper<MButton> componentHelper = new ComponentHelper<>(this);
 
   protected MButtonColorVariations colorVariation;
 
@@ -42,22 +42,26 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
     this.disableDefaultButtonStyle();
     this.setDefaults();
 
-    this.componentHelper = new ComponentHelper<>(this);
-    this.roundedComponent = new RoundedComponent();
-
-    this.roundedComponent.setBorderRadius(AppSettings.getInstance().getBaseBorderRadius());
-
     this.addMouseListener(this);
   }
 
   private void disableDefaultButtonStyle() {
-    setBorderPainted(false);
-    setContentAreaFilled(false);
-    setFocusPainted(false);
+    this.setFocusPainted(false);
+    this.setContentAreaFilled(false);
   }
 
   private void setDefaults() {
     this.setFont(AppSettings.getInstance().getMainFontButton());
+
+    this.setBorder(new RoundedCornerBorder());
+  }
+
+  private RoundedCornerBorder assertBorderIsRoundedCornerBorder() {
+    var border = this.getBorder();
+
+    assert border instanceof RoundedCornerBorder : "Border is not an instance of RoundedCornerBorder";
+
+    return (RoundedCornerBorder) border;
   }
 
   @Override
@@ -67,7 +71,7 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
   public void mousePressed(MouseEvent e) {
     SwingUtilities.invokeLater(() -> {
       this.pressed = true;
-      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 150 : 200;
+      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 50 : 200;
 
       this.previousBackground = this.getBackground();
       this.setBackground(new Color(this.previousBackground.getRed(),
@@ -87,7 +91,7 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
         this.setBackground(new Color(this.previousBackground.getRed(),
             this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
       } else {
-        var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 200 : 255;
+        var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 75 : 255;
         this.previousBackground = this.getBackground();
         this.setBackground(new Color(this.previousBackground.getRed(),
             this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
@@ -99,7 +103,7 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
   public void mouseEntered(MouseEvent e) {
     SwingUtilities.invokeLater(() -> {
       this.hovered = true;
-      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 200 : 225;
+      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 75 : 225;
 
       if (!this.pressed) {
         this.componentHelper.setCursorToHand();
@@ -128,7 +132,7 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
 
   @Override
   public void setBorderRadius(int radius) {
-    this.roundedComponent.setBorderRadius(radius);
+    this.assertBorderIsRoundedCornerBorder().setBorderRadius(radius);
 
     this.revalidate();
     this.repaint();
@@ -136,7 +140,8 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
 
   @Override
   public void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight) {
-    this.roundedComponent.setBorderRadius(topLeft, topRight, bottomLeft, bottomRight);
+    this.assertBorderIsRoundedCornerBorder().setBorderRadius(topLeft, topRight, bottomLeft,
+        bottomRight);
 
     this.revalidate();
     this.repaint();
@@ -144,12 +149,12 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
 
   @Override
   public int getBorderTopLeftRadius() {
-    return this.roundedComponent.getBorderTopLeftRadius();
+    return this.assertBorderIsRoundedCornerBorder().getBorderTopLeftRadius();
   }
 
   @Override
   public void setBorderTopLeftRadius(int radius) {
-    this.roundedComponent.setBorderTopLeftRadius(radius);
+    this.assertBorderIsRoundedCornerBorder().setBorderTopLeftRadius(radius);
 
     this.revalidate();
     this.repaint();
@@ -157,12 +162,12 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
 
   @Override
   public int getBorderTopRightRadius() {
-    return this.roundedComponent.getBorderTopRightRadius();
+    return this.assertBorderIsRoundedCornerBorder().getBorderTopRightRadius();
   }
 
   @Override
   public void setBorderTopRightRadius(int radius) {
-    this.roundedComponent.setBorderTopRightRadius(radius);
+    this.assertBorderIsRoundedCornerBorder().setBorderTopRightRadius(radius);
 
     this.revalidate();
     this.repaint();
@@ -170,12 +175,12 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
 
   @Override
   public int getBorderBottomLeftRadius() {
-    return this.roundedComponent.getBorderBottomLeftRadius();
+    return this.assertBorderIsRoundedCornerBorder().getBorderBottomLeftRadius();
   }
 
   @Override
   public void setBorderBottomLeftRadius(int radius) {
-    this.roundedComponent.setBorderBottomLeftRadius(radius);
+    this.assertBorderIsRoundedCornerBorder().setBorderBottomLeftRadius(radius);
 
     this.revalidate();
     this.repaint();
@@ -183,12 +188,25 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
 
   @Override
   public int getBorderBottomRightRadius() {
-    return this.roundedComponent.getBorderBottomRightRadius();
+    return this.assertBorderIsRoundedCornerBorder().getBorderBottomRightRadius();
   }
 
   @Override
   public void setBorderBottomRightRadius(int radius) {
-    this.roundedComponent.setBorderBottomRightRadius(radius);
+    this.assertBorderIsRoundedCornerBorder().setBorderBottomRightRadius(radius);
+
+    this.revalidate();
+    this.repaint();
+  }
+
+  @Override
+  public int getBorderWidth() {
+    return this.assertBorderIsRoundedCornerBorder().getBorderWidth();
+  }
+
+  @Override
+  public void setBorderWidth(int borderWidth) {
+    this.assertBorderIsRoundedCornerBorder().setBorderWidth(borderWidth);
 
     this.revalidate();
     this.repaint();
@@ -200,8 +218,25 @@ public class MButton extends JButton implements MButtonInterface, MouseListener 
   }
 
   @Override
+  public void focusGained(FocusEvent e) {
+    this.revalidate();
+    this.repaint();
+  }
+
+  @Override
+  public void focusLost(FocusEvent e) {
+    this.revalidate();
+    this.repaint();
+  }
+
+  @Override
   protected void paintComponent(Graphics g) {
-    this.roundedComponent.paintComponent(g, this.getSize(), this.getBackground());
     super.paintComponent(g);
+
+    if (this.isFocusOwner()) {
+      this.assertBorderIsRoundedCornerBorder().setDrawBorder(true);
+    } else {
+      this.assertBorderIsRoundedCornerBorder().setDrawBorder(false);
+    }
   }
 }

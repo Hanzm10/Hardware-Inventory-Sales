@@ -1,8 +1,7 @@
-package com.murico.app.view.components.buttons;
+package com.murico.app.view.components.inputs;
 
-import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
+public interface MTextFieldInterface {
 
-public interface MButtonInterface {
   void setBorderRadius(int radius);
 
   void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight);
@@ -22,11 +21,4 @@ public interface MButtonInterface {
   int getBorderBottomRightRadius();
 
   void setBorderBottomRightRadius(int radius);
-
-
-  int getBorderWidth();
-
-  void setBorderWidth(int borderWidth);
-
-  MButtonColorVariations getColorVariation();
 }
