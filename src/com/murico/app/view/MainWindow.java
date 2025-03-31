@@ -4,7 +4,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import com.murico.app.Murico;
 import com.murico.app.config.AppSettings;
-import com.murico.app.view.pages.auth.MainAuthPage;
+import com.murico.app.view.pages.auth.LoginPage;
 
 public class MainWindow extends JPanel {
   /**
@@ -28,7 +28,12 @@ public class MainWindow extends JPanel {
     switch (CurrentPage.getCurrentPage()) {
       case MAIN:
         this.removeAll();
-        new MainAuthPage(this);
+        var loginPage = new LoginPage();
+
+        this.setLayout(null);
+        loginPage.setBounds(0, 0, AppSettings.getInstance().getAppMainScreenWidth(),
+            AppSettings.getInstance().getAppMainScreenHeight());
+        this.add(loginPage);
         break;
       case LOGIN:
         break;

@@ -7,7 +7,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.JButton;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import com.murico.app.config.AppSettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorder;
@@ -16,31 +16,25 @@ import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
 import com.murico.app.view.components.helper.ComponentHelper;
 import com.murico.app.view.utilities.RenderingUtilities;
 
-/**
- * MButton is a custom button class that extends JButton and implements MButtonInterface and
- * MouseListener. It provides a rounded button with color variations and hover/press effects.
- * 
- * @author Aaron Ragudos
- * @version 1.0
- */
-public class MButton extends JButton implements MButtonInterface,
+public class MToggleButton extends JToggleButton implements MButtonInterface,
     RoundedCornerBorderComponentInterface, MouseListener, FocusListener {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -5038858231143921204L;
+  private static final long serialVersionUID = 3411237617423863266L;
 
-  protected final ComponentHelper<MButton> componentHelper = new ComponentHelper<>(this);
+  protected final ComponentHelper<MToggleButton> componentHelper = new ComponentHelper<>(this);
 
-  protected MButtonColorVariations colorVariation;
+  protected MButtonColorVariations colorVariation = MButtonColorVariations.TRANSPARENT;
 
   protected boolean hovered;
   protected boolean pressed;
 
   private Color previousBackground;
 
-  public MButton(String text) {
+  public MToggleButton() {
+    this("T");
+  }
+
+  public MToggleButton(String text) {
     super(text);
 
     this.disableDefaultButtonStyle();
@@ -58,6 +52,9 @@ public class MButton extends JButton implements MButtonInterface,
     this.setFont(AppSettings.getInstance().getMainFontButton());
 
     this.setBorder(new RoundedCornerBorder());
+
+    this.setBackground(AppSettings.getInstance().getTransparentColor());
+    this.setRolloverEnabled(true);
   }
 
   /** === MButtonInterface === */
@@ -84,17 +81,17 @@ public class MButton extends JButton implements MButtonInterface,
     return (RoundedCornerBorder) border;
   }
 
-  /** === MouseListener === */
-
   @Override
   public void mouseClicked(MouseEvent e) {
+    System.out.println(this.isSelected());
   }
 
   @Override
   public void mousePressed(MouseEvent e) {
     SwingUtilities.invokeLater(() -> {
       this.pressed = true;
-      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 50 : 200;
+      var val = this.hovered ? 175 : 125;
+      var alpha = this.isSelected() ? val : 75;
 
       this.previousBackground = this.getBackground();
       this.setBackground(new Color(this.previousBackground.getRed(),
@@ -108,13 +105,13 @@ public class MButton extends JButton implements MButtonInterface,
       this.pressed = false;
 
       if (!this.hovered) {
-        var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 0 : 255;
+        var alpha = this.isSelected() ? 100 : 0;
         this.componentHelper.setCursorToDefault();
         this.previousBackground = this.getBackground();
         this.setBackground(new Color(this.previousBackground.getRed(),
             this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
       } else {
-        var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 75 : 255;
+        var alpha = this.isSelected() ? 175 : 100;
         this.previousBackground = this.getBackground();
         this.setBackground(new Color(this.previousBackground.getRed(),
             this.previousBackground.getGreen(), this.previousBackground.getBlue(), alpha));
@@ -126,7 +123,7 @@ public class MButton extends JButton implements MButtonInterface,
   public void mouseEntered(MouseEvent e) {
     SwingUtilities.invokeLater(() -> {
       this.hovered = true;
-      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 75 : 225;
+      var alpha = this.isSelected() ? 225 : 100;
 
       if (!this.pressed) {
         this.componentHelper.setCursorToHand();
@@ -141,7 +138,7 @@ public class MButton extends JButton implements MButtonInterface,
   public void mouseExited(MouseEvent e) {
     SwingUtilities.invokeLater(() -> {
       this.hovered = false;
-      var alpha = this.colorVariation == MButtonColorVariations.TRANSPARENT ? 0 : 255;
+      var alpha = this.isSelected() ? 100 : 0;
 
       if (!this.pressed) {
         this.componentHelper.setCursorToDefault();

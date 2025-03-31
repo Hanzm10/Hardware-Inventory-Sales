@@ -5,11 +5,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,6 +17,7 @@ import com.murico.app.view.common.labels.MLabelCaption;
 import com.murico.app.view.common.labels.MLabelTitle;
 import com.murico.app.view.components.buttons.variations.SecondaryButton;
 import com.murico.app.view.components.buttons.variations.TransparentButton;
+import com.murico.app.view.components.inputs.MPasswordFieldToggleable;
 import com.murico.app.view.components.inputs.MTextField;
 
 public class LoginPage extends JPanel {
@@ -53,13 +53,13 @@ public class LoginPage extends JPanel {
 
     var form = new JPanel();
     form.setBackground(new Color(255, 255, 255));
-    form.setBounds(10, 105, 355, 440);
+    form.setBounds(10, 105, 355, 470);
     left_view.add(form);
     var gbl_form = new GridBagLayout();
     gbl_form.columnWidths = new int[] {361, 0};
-    gbl_form.rowHeights = new int[] {90, 130, 0, 55, 60, 60, 0};
+    gbl_form.rowHeights = new int[] {90, 50, 57, 79, 35, 0};
     gbl_form.columnWeights = new double[] {1.0, Double.MIN_VALUE};
-    gbl_form.rowWeights = new double[] {0.0, 0.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
+    gbl_form.rowWeights = new double[] {0.0, 0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
     form.setLayout(gbl_form);
 
     var lbltlSignIn = new MLabelTitle((String) null);
@@ -79,39 +79,24 @@ public class LoginPage extends JPanel {
     gbc_inputContainer.gridx = 0;
     gbc_inputContainer.gridy = 1;
     form.add(inputContainer, gbc_inputContainer);
-    inputContainer.setLayout(new BoxLayout(inputContainer, BoxLayout.Y_AXIS));
+    inputContainer.setLayout(new GridLayout(0, 1, 0, 16));
 
     var txtfldTextField = new MTextField();
     txtfldTextField.setPlaceholderText("Username");
     inputContainer.add(txtfldTextField);
 
-    var verticalStrut = Box.createVerticalStrut(20);
-    verticalStrut.setPreferredSize(new Dimension(0, 16));
-    verticalStrut.setMaximumSize(new Dimension(32766, 16));
-    verticalStrut.setMinimumSize(new Dimension(0, 16));
-    inputContainer.add(verticalStrut);
-
-    var txtfldTextField_1 = new MTextField();
-    txtfldTextField_1.setPlaceholderText("Password");
-    inputContainer.add(txtfldTextField_1);
-
-    var verticalStrut_1 = Box.createVerticalStrut(20);
-    verticalStrut_1.setPreferredSize(new Dimension(0, 16));
-    verticalStrut_1.setMinimumSize(new Dimension(0, 16));
-    verticalStrut_1.setMaximumSize(new Dimension(32767, 16));
-    var gbc_verticalStrut_1 = new GridBagConstraints();
-    gbc_verticalStrut_1.insets = new Insets(0, 0, 5, 0);
-    gbc_verticalStrut_1.gridx = 0;
-    gbc_verticalStrut_1.gridy = 2;
-    form.add(verticalStrut_1, gbc_verticalStrut_1);
+    var passwordFieldToggleable = new MPasswordFieldToggleable();
+    var gridBagLayout = (GridBagLayout) passwordFieldToggleable.getLayout();
+    gridBagLayout.rowHeights = new int[] {53};
+    inputContainer.add(passwordFieldToggleable);
 
     var scndrbtnSecondaryButton = new SecondaryButton();
     scndrbtnSecondaryButton.setText("Log in");
     var gbc_scndrbtnSecondaryButton = new GridBagConstraints();
-    gbc_scndrbtnSecondaryButton.insets = new Insets(0, 0, 5, 0);
+    gbc_scndrbtnSecondaryButton.insets = new Insets(24, 0, 5, 0);
     gbc_scndrbtnSecondaryButton.fill = GridBagConstraints.BOTH;
     gbc_scndrbtnSecondaryButton.gridx = 0;
-    gbc_scndrbtnSecondaryButton.gridy = 3;
+    gbc_scndrbtnSecondaryButton.gridy = 2;
     form.add(scndrbtnSecondaryButton, gbc_scndrbtnSecondaryButton);
 
     var panel = new JPanel();
@@ -121,7 +106,7 @@ public class LoginPage extends JPanel {
     gbc_panel.insets = new Insets(0, 0, 5, 0);
     gbc_panel.fill = GridBagConstraints.BOTH;
     gbc_panel.gridx = 0;
-    gbc_panel.gridy = 4;
+    gbc_panel.gridy = 3;
     form.add(panel, gbc_panel);
 
     var separator = new JSeparator();
@@ -153,7 +138,7 @@ public class LoginPage extends JPanel {
     var gbc_scndrbtnSecondaryButton_1 = new GridBagConstraints();
     gbc_scndrbtnSecondaryButton_1.fill = GridBagConstraints.BOTH;
     gbc_scndrbtnSecondaryButton_1.gridx = 0;
-    gbc_scndrbtnSecondaryButton_1.gridy = 5;
+    gbc_scndrbtnSecondaryButton_1.gridy = 4;
     form.add(scndrbtnSecondaryButton_1, gbc_scndrbtnSecondaryButton_1);
 
     var lblNewLabel_1 = new JLabel("");

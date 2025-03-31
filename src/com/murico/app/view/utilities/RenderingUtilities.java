@@ -67,7 +67,7 @@ public class RenderingUtilities {
       Font font, int h) {
     g.setColor(textField.getPlaceholderColor());
     g.drawString(textField.getPlaceholderText(), insets.left,
-        h / 2 + font.getSize() / 2 - insets.top);
+        h / 2 + font.getSize() / 2 - insets.top / 2);
   }
 
   public static void setBorderColorOfComponentWithRoundedCornerBorderOnFocus(
@@ -77,5 +77,7 @@ public class RenderingUtilities {
     } else {
       r.getRoundedCornerBorder().setBorderColor(AppSettings.getInstance().getBorderColor());
     }
+
+    r.repaintBorder();
   }
 }
