@@ -9,7 +9,8 @@ import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import com.murico.app.config.AppSettings;
-import com.murico.app.view.borders.RoundedCornerBorder;
+import com.murico.app.view.borders.rounded.RoundedCornerBorder;
+import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
 import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
 import com.murico.app.view.components.helper.ComponentHelper;
 
@@ -20,7 +21,8 @@ import com.murico.app.view.components.helper.ComponentHelper;
  * @author Aaron Ragudos
  * @version 1.0
  */
-public class MButton extends JButton implements MButtonInterface, MouseListener, FocusListener {
+public class MButton extends JButton implements MButtonInterface,
+    RoundedCornerBorderComponentInterface, MouseListener, FocusListener {
 
   /**
    * 
@@ -56,13 +58,31 @@ public class MButton extends JButton implements MButtonInterface, MouseListener,
     this.setBorder(new RoundedCornerBorder());
   }
 
-  private RoundedCornerBorder assertBorderIsRoundedCornerBorder() {
+  /** === MButtonInterface === */
+
+  @Override
+  public MButtonColorVariations getColorVariation() {
+    return this.colorVariation;
+  }
+
+  /** === RoundedCornerBorderComponentInterface === */
+
+  @Override
+  public void repaintBorder() {
+    this.revalidate();
+    this.repaint();
+  }
+
+  @Override
+  public RoundedCornerBorder getRoundedCornerBorder() {
     var border = this.getBorder();
 
     assert border instanceof RoundedCornerBorder : "Border is not an instance of RoundedCornerBorder";
 
     return (RoundedCornerBorder) border;
   }
+
+  /** === MouseListener === */
 
   @Override
   public void mouseClicked(MouseEvent e) {}
@@ -130,92 +150,7 @@ public class MButton extends JButton implements MButtonInterface, MouseListener,
     });
   }
 
-  @Override
-  public void setBorderRadius(int radius) {
-    this.assertBorderIsRoundedCornerBorder().setBorderRadius(radius);
-
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight) {
-    this.assertBorderIsRoundedCornerBorder().setBorderRadius(topLeft, topRight, bottomLeft,
-        bottomRight);
-
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public int getBorderTopLeftRadius() {
-    return this.assertBorderIsRoundedCornerBorder().getBorderTopLeftRadius();
-  }
-
-  @Override
-  public void setBorderTopLeftRadius(int radius) {
-    this.assertBorderIsRoundedCornerBorder().setBorderTopLeftRadius(radius);
-
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public int getBorderTopRightRadius() {
-    return this.assertBorderIsRoundedCornerBorder().getBorderTopRightRadius();
-  }
-
-  @Override
-  public void setBorderTopRightRadius(int radius) {
-    this.assertBorderIsRoundedCornerBorder().setBorderTopRightRadius(radius);
-
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public int getBorderBottomLeftRadius() {
-    return this.assertBorderIsRoundedCornerBorder().getBorderBottomLeftRadius();
-  }
-
-  @Override
-  public void setBorderBottomLeftRadius(int radius) {
-    this.assertBorderIsRoundedCornerBorder().setBorderBottomLeftRadius(radius);
-
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public int getBorderBottomRightRadius() {
-    return this.assertBorderIsRoundedCornerBorder().getBorderBottomRightRadius();
-  }
-
-  @Override
-  public void setBorderBottomRightRadius(int radius) {
-    this.assertBorderIsRoundedCornerBorder().setBorderBottomRightRadius(radius);
-
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public int getBorderWidth() {
-    return this.assertBorderIsRoundedCornerBorder().getBorderWidth();
-  }
-
-  @Override
-  public void setBorderWidth(int borderWidth) {
-    this.assertBorderIsRoundedCornerBorder().setBorderWidth(borderWidth);
-
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public MButtonColorVariations getColorVariation() {
-    return this.colorVariation;
-  }
+  /** === FocusListener === */
 
   @Override
   public void focusGained(FocusEvent e) {
@@ -229,14 +164,34 @@ public class MButton extends JButton implements MButtonInterface, MouseListener,
     this.repaint();
   }
 
+  /** === PaintComponent === */
+
   @Override
   protected void paintComponent(Graphics g) {
-    super.paintComponent(g);
+    if (!this.isOpaque() && this.getBorder() instanceof RoundedCornerBorder) {
+      var g2d = (java.awt.Graphics2D) g.create();
+
+      var border = (RoundedCornerBorder) this.getBorder();
+      var borderWidth = border.getBorderWidth();
+      var borderX = borderWidth / 2;
+      var borderY = borderWidth / 2;
+      var borderW = this.getWidth() - borderWidth;
+      var borderH = this.getHeight() - borderWidth;
+
+      g2d.setColor(this.getBackground());
+      g2d.fill(border.createBorder(borderX, borderY, borderW, borderH));
+      g2d.dispose();
+    }
 
     if (this.isFocusOwner()) {
-      this.assertBorderIsRoundedCornerBorder().setDrawBorder(true);
+      this.getRoundedCornerBorder().setDrawBorder(true);
     } else {
-      this.assertBorderIsRoundedCornerBorder().setDrawBorder(false);
+      this.getRoundedCornerBorder().setDrawBorder(false);
     }
+
+    super.paintComponent(g);
   }
+
+  /** === JButton === */
+
 }

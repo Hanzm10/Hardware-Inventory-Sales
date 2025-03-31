@@ -1,24 +1,13 @@
 package com.murico.app.view.components.inputs;
 
+import java.awt.Color;
+
 public interface MTextFieldInterface {
+  String getPlaceholderText();
 
-  void setBorderRadius(int radius);
+  void setPlaceholderText(String placeholderText);
 
-  void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight);
+  Color getPlaceholderColor();
 
-  int getBorderTopLeftRadius();
-
-  void setBorderTopLeftRadius(int radius);
-
-  int getBorderTopRightRadius();
-
-  void setBorderTopRightRadius(int radius);
-
-  int getBorderBottomLeftRadius();
-
-  void setBorderBottomLeftRadius(int radius);
-
-  int getBorderBottomRightRadius();
-
-  void setBorderBottomRightRadius(int radius);
+  void setPlaceholderColor(Color placeholderTextColor);
 }
