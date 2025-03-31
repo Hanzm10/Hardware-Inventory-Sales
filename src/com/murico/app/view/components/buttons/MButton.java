@@ -2,6 +2,7 @@ package com.murico.app.view.components.buttons;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -13,6 +14,7 @@ import com.murico.app.view.borders.rounded.RoundedCornerBorder;
 import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
 import com.murico.app.view.components.buttons.variations.MButtonColorVariations;
 import com.murico.app.view.components.helper.ComponentHelper;
+import com.murico.app.view.utilities.RenderingUtilities;
 
 /**
  * MButton is a custom button class that extends JButton and implements MButtonInterface and
@@ -168,19 +170,11 @@ public class MButton extends JButton implements MButtonInterface,
 
   @Override
   protected void paintComponent(Graphics g) {
-    if (!this.isOpaque() && this.getBorder() instanceof RoundedCornerBorder) {
-      var g2d = (java.awt.Graphics2D) g.create();
+    var b = this.getBorder();
 
-      var border = (RoundedCornerBorder) this.getBorder();
-      var borderWidth = border.getBorderWidth();
-      var borderX = borderWidth / 2;
-      var borderY = borderWidth / 2;
-      var borderW = this.getWidth() - borderWidth;
-      var borderH = this.getHeight() - borderWidth;
-
-      g2d.setColor(this.getBackground());
-      g2d.fill(border.createBorder(borderX, borderY, borderW, borderH));
-      g2d.dispose();
+    if (!this.isOpaque() && b instanceof RoundedCornerBorder) {
+      RenderingUtilities.paintBackgroundWithRoundedCornerBorder((Graphics2D) g.create(), this,
+          (RoundedCornerBorder) b);
     }
 
     if (this.isFocusOwner()) {
@@ -191,7 +185,5 @@ public class MButton extends JButton implements MButtonInterface,
 
     super.paintComponent(g);
   }
-
-  /** === JButton === */
 
 }

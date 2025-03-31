@@ -2,6 +2,7 @@ package com.murico.app.view.components.inputs;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -9,6 +10,7 @@ import javax.swing.JTextField;
 import javax.swing.text.Document;
 import com.murico.app.config.AppSettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorder;
+import com.murico.app.view.utilities.RenderingUtilities;
 
 /**
  * MTextField is a custom text field class that extends JTextField and implements
@@ -169,17 +171,8 @@ public class MTextField extends JTextField
 
     if (b instanceof RoundedCornerBorder border) {
       if (!this.isOpaque()) {
-        var g2d = (java.awt.Graphics2D) g.create();
-
-        var borderWidth = border.getBorderWidth();
-        var borderX = borderWidth / 2;
-        var borderY = borderWidth / 2;
-        var borderW = this.getWidth() - borderWidth;
-        var borderH = this.getHeight() - borderWidth;
-
-        g2d.setColor(this.getBackground());
-        g2d.fill(border.createBorder(borderX, borderY, borderW, borderH));
-        g2d.dispose();
+        RenderingUtilities.paintBackgroundWithRoundedCornerBorder((Graphics2D) g.create(), this,
+            border);
       }
 
       insets = border.getBorderInsets(this);
@@ -187,17 +180,11 @@ public class MTextField extends JTextField
       insets = this.getInsets();
     }
 
-    if (this.isFocusOwner()) {
-      this.setBorderColor(AppSettings.getInstance().getPrimaryColor());
-    } else {
-      this.setBorderColor(AppSettings.getInstance().getBorderColor());
-    }
+    RenderingUtilities.setBorderColorOfComponentWithRoundedCornerBorderOnFocus(this,
+        isFocusOwner());
 
     if (this.getText().isEmpty()) {
-      g.setColor(this.placeholderColor);
-
-      g.drawString(this.placeholderText, insets.left,
-          getHeight() / 2 + getFont().getSize() / 2 - insets.top / 2);
+      RenderingUtilities.paintPlaceholderText(g, this, insets, getFont(), getHeight());
     }
 
     super.paintComponent(g);
