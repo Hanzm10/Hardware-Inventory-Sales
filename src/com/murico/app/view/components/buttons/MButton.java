@@ -79,23 +79,6 @@ public class MButton extends JButton implements MButtonInterface,
     this.pressed = pressed;
   }
 
-  /** === RoundedCornerBorderComponentInterface === */
-
-  @Override
-  public void repaintBorder() {
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public RoundedCornerBorder getRoundedCornerBorder() {
-    var border = this.getBorder();
-
-    assert border instanceof RoundedCornerBorder : "Border is not an instance of RoundedCornerBorder";
-
-    return (RoundedCornerBorder) border;
-  }
-
   /** === PaintComponent === */
 
   @Override

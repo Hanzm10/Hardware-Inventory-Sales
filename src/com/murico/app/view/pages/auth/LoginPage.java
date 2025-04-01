@@ -14,7 +14,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-
 import com.murico.app.view.common.labels.MLabelCaption;
 import com.murico.app.view.common.labels.MLabelTitle;
 import com.murico.app.view.components.buttons.variations.SecondaryButton;

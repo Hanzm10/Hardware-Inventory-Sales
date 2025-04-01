@@ -4,12 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import javax.swing.JTextField;
 import javax.swing.text.Document;
 import com.murico.app.config.AppSettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorder;
+import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
+import com.murico.app.view.components.inputs.listeners.MTextFieldFocusListener;
 import com.murico.app.view.utilities.RenderingUtilities;
 
 /**
@@ -21,8 +21,7 @@ import com.murico.app.view.utilities.RenderingUtilities;
  * @version 1.0
  */
 public class MTextField extends JTextField
-    implements MTextFieldInterface,
-    com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface, FocusListener {
+    implements MTextFieldInterface, RoundedCornerBorderComponentInterface {
 
   /**
    * 
@@ -35,19 +34,19 @@ public class MTextField extends JTextField
   public MTextField() {
     super("");
 
-    this.setDefaults();
+    setDefaults();
   }
 
   public MTextField(String text) {
     super(text);
 
-    this.setDefaults();
+    setDefaults();
   }
 
   public MTextField(String text, String placeholderText) {
     super(text);
 
-    this.setDefaults();
+    setDefaults();
 
     this.placeholderText = placeholderText;
   }
@@ -55,19 +54,19 @@ public class MTextField extends JTextField
   public MTextField(int columns) {
     super(columns);
 
-    this.setDefaults();
+    setDefaults();
   }
 
   public MTextField(String text, int columns) {
     super(text, columns);
 
-    this.setDefaults();
+    setDefaults();
   }
 
   public MTextField(String text, String placeholderText, int columns) {
     super(text, columns);
 
-    this.setDefaults();
+    setDefaults();
 
     this.placeholderText = placeholderText;
   }
@@ -75,27 +74,27 @@ public class MTextField extends JTextField
   public MTextField(Document doc, String text, int columns) {
     super(doc, text, columns);
 
-    this.setDefaults();
+    setDefaults();
   }
 
   public MTextField(Document doc, String text, String placeholderText, int columns) {
     super(doc, text, columns);
 
-    this.setDefaults();
+    setDefaults();
 
     this.placeholderText = placeholderText;
   }
 
   private void setDefaults() {
-    this.setOpaque(false);
-    this.setFont(AppSettings.getInstance().getMainFontBody());
+    setOpaque(false);
+    setFont(AppSettings.getInstance().getMainFontBody());
 
-    this.setBorder(new RoundedCornerBorder(true));
+    setBorder(new RoundedCornerBorder(true));
 
-    this.placeholderText = this.getText().isEmpty() ? "Enter a text here..." : this.getText();
-    this.placeholderColor = AppSettings.getInstance().getPlaceholderColor();
+    placeholderText = this.getText().isEmpty() ? "Enter a text here..." : this.getText();
+    placeholderColor = AppSettings.getInstance().getPlaceholderColor();
 
-    this.addFocusListener(this);
+    addFocusListener(new MTextFieldFocusListener());
   }
 
   /**
@@ -104,60 +103,26 @@ public class MTextField extends JTextField
 
   @Override
   public String getPlaceholderText() {
-    return this.placeholderText;
+    return placeholderText;
   }
 
   @Override
   public void setPlaceholderText(String placeholderText) {
     this.placeholderText = placeholderText;
 
-    this.revalidate();
-    this.repaint();
+    repaint();
   }
 
   @Override
   public Color getPlaceholderColor() {
-    return this.placeholderColor;
+    return placeholderColor;
   }
 
   @Override
   public void setPlaceholderColor(Color placeholderColor) {
     this.placeholderColor = placeholderColor;
 
-    this.repaint();
-  }
-
-  /**
-   * === RoundedCornerBorderComponentInterface ===
-   */
-
-  @Override
-  public void repaintBorder() {
-    this.revalidate();
-    this.repaint();
-  }
-
-  @Override
-  public RoundedCornerBorder getRoundedCornerBorder() throws AssertionError {
-    var border = this.getBorder();
-
-    assert border instanceof RoundedCornerBorder : "Border is not an instance of RoundedCornerBorder";
-
-    return (RoundedCornerBorder) border;
-  }
-
-  /**
-   * === FocusListener ===
-   */
-
-  @Override
-  public void focusGained(FocusEvent e) {
-    this.setBorderColor(AppSettings.getInstance().getPrimaryColor());
-  }
-
-  @Override
-  public void focusLost(FocusEvent e) {
-    this.setBorderColor(AppSettings.getInstance().getBorderColor());
+    repaint();
   }
 
   /**
@@ -166,22 +131,21 @@ public class MTextField extends JTextField
 
   @Override
   protected void paintComponent(Graphics g) {
-    System.out.println("MTextField.paintComponent()");
-    var b = this.getBorder();
+    var b = getBorder();
     Insets insets;
 
     if (b instanceof RoundedCornerBorder border) {
-      if (!this.isOpaque()) {
+      if (!isOpaque()) {
         RenderingUtilities.paintBackgroundWithRoundedCornerBorder((Graphics2D) g.create(), this,
             border);
       }
 
       insets = border.getBorderInsets(this);
     } else {
-      insets = this.getInsets();
+      insets = getInsets();
     }
 
-    if (this.getText().isEmpty()) {
+    if (getText().isEmpty()) {
       RenderingUtilities.paintPlaceholderText(g, this, insets, getFont(), getHeight());
     }
 

@@ -1,6 +1,7 @@
 package com.murico.app.view.borders.rounded;
 
 import java.awt.Color;
+import javax.swing.JComponent;
 
 /**
  * RoundedCornerBorderComponentInterface is an interface that defines methods for setting border
@@ -11,16 +12,38 @@ import java.awt.Color;
  * @version 1.0
  */
 public interface RoundedCornerBorderComponentInterface {
-  void repaintBorder();
+  /**
+   * Sets the default properties for the component.
+   * 
+   * @throws AssertionError if the component is not a {@link JComponent}
+   */
+  default void repaintBorder() {
+    if (this instanceof JComponent component) {
+      component.repaint();
+    } else {
+      throw new AssertionError("Component is not a JComponent");
+    }
+  }
 
   /**
    * Returns the border of the component.
    * 
    * @return the border of the component
    * 
-   * @throws AssertionError if the border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if the component is not a {@link JComponent} or if the border is not a
+   *         {@link RoundedCornerBorder}
    */
-  RoundedCornerBorder getRoundedCornerBorder() throws AssertionError;
+  default RoundedCornerBorder getRoundedCornerBorder() throws AssertionError {
+    if (this instanceof JComponent component) {
+      if (component.getBorder() instanceof RoundedCornerBorder border) {
+        return border;
+      } else {
+        throw new AssertionError("Border is not a RoundedCornerBorder");
+      }
+    } else {
+      throw new AssertionError("Component is not a JComponent");
+    }
+  };
 
   default BorderRadius getBorderRadius() throws AssertionError {
     return this.getRoundedCornerBorder().getBorderRadius();
