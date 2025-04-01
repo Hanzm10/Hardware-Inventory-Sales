@@ -1,61 +1,68 @@
 package com.murico.app.view.pages.auth;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.Sizes;
+import com.murico.app.view.CurrentPage;
 import com.murico.app.view.MainWindow;
 import com.murico.app.view.components.buttons.variations.PrimaryButton;
-import com.murico.app.view.components.images.ResizableImageIcon;
 
-import javax.swing.*;
-import java.awt.*;
+public class MainAuthPage extends JPanel {
 
-public class MainAuthPage {
-  private MainWindow mainWindow;
-  private JLabel logoContainer;
+  private static final long serialVersionUID = 1L;
 
-  private JPanel buttonsContainer;
-  private PrimaryButton loginButton;
-  private PrimaryButton registerButton;
+  private final MainWindow mainWindow;
 
+  /**
+   * Create the panel.
+   */
   public MainAuthPage(MainWindow mainWindow) {
+    setBackground(new Color(255, 255, 255));
     this.mainWindow = mainWindow;
 
-    this.initComponents();
-    this.initLayout();
+    setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("1024px:grow"),},
+        new RowSpec[] {RowSpec.decode("max(118dlu;pref)"), RowSpec.decode("32px"),
+            RowSpec.decode("max(171dlu;default):grow"),}));
+
+    var lblNewLabel = new JLabel("");
+    lblNewLabel.setIcon(new ImageIcon(MainAuthPage.class.getResource("/assets/logo_freeform.png")));
+    add(lblNewLabel, "1, 1, center, center");
+
+    var panel = new JPanel();
+    panel.setBackground(new Color(255, 255, 255));
+    add(panel, "1, 3, center, top");
+    panel.setLayout(new FormLayout(
+        new ColumnSpec[] {ColumnSpec.decode("max(280px;default)"),
+            new ColumnSpec(ColumnSpec.FILL,
+                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("64px", true),
+                    Sizes.constant("128px", true)),
+                1),
+            ColumnSpec.decode("max(280px;default)"),},
+        new RowSpec[] {RowSpec.decode("max(48px;default)"),}));
+
+    var prmrbtnLogin = new PrimaryButton();
+    prmrbtnLogin.setText("Login");
+    prmrbtnLogin.addActionListener(new PrimaryButtonAction());
+    panel.add(prmrbtnLogin, "1, 1, fill, fill");
+
+    var prmrbtnPrimaryButton = new PrimaryButton();
+    prmrbtnPrimaryButton.setText("Create an account");
+    panel.add(prmrbtnPrimaryButton, "3, 1, fill, fill");
+
   }
 
-  private void initComponents() {
-    ResizableImageIcon logoResizer = new ResizableImageIcon("/assets/logo_freeform.png");
-
-    this.logoContainer = new JLabel(logoResizer.getImageIcon());
-
-    this.buttonsContainer = new JPanel(new FlowLayout(FlowLayout.CENTER, 32, 0));
-    this.loginButton = new PrimaryButton("Login");
-    this.registerButton = new PrimaryButton("Create an account");
-
-    this.loginButton.setPreferredSize(new Dimension(250, 50));
-    this.registerButton.setPreferredSize(new Dimension(250, 50));
-  }
-
-  private void initLayout() {
-    this.mainWindow.setLayout(new GridBagLayout());
-
-    GridBagConstraints constraints = new GridBagConstraints();
-
-    constraints.fill = GridBagConstraints.BOTH;
-    constraints.weightx = 1.0;
-    constraints.weighty = 0.25;
-    constraints.gridx = 0;
-    constraints.gridy = 0;
-    constraints.anchor = GridBagConstraints.CENTER;
-
-    this.mainWindow.add(this.logoContainer, constraints);
-
-    this.buttonsContainer.add(this.loginButton);
-    this.buttonsContainer.add(this.registerButton);
-
-    constraints.gridy = 1;
-    constraints.anchor = GridBagConstraints.CENTER;
-    constraints.fill = GridBagConstraints.NONE;
-
-    this.mainWindow.add(this.buttonsContainer, constraints);
+  private class PrimaryButtonAction implements ActionListener {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      CurrentPage.setCurrentPage(CurrentPage.LOGIN);
+      mainWindow.render();
+    }
   }
 }

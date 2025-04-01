@@ -10,7 +10,25 @@
 	<classpathentry excluding="app/test_resources/" kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/test/app/test_resources"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/mysql-connector-j-9.2.0"/>
-	<classpathentry kind="lib" path="com.jgoodies.forms_1.9.0.v20240327-0800.jar"/>
-	<classpathentry kind="lib" path="com.jgoodies.common_1.8.1.v20240327-0800.jar"/>
+	<classpathentry kind="lib" path="lib/com.jgoodies.common_1.8.1.v20240327-0800.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="A:/coding-projects/java/school/Hardware-Inventory-Sales/lib/com.jgoodies.forms_1.9.0.v20240327-0800.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="A:/coding-projects/java/school/Hardware-Inventory-Sales/lib/com.miglayout.core_11.4.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="A:/coding-projects/java/school/Hardware-Inventory-Sales/lib/com.miglayout.swing_11.4.2.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="out/production/Hardware-Inventory-Sales"/>
 </classpath>

@@ -13,35 +13,33 @@ public class Murico extends JFrame {
   private static final long serialVersionUID = 5584823642462847023L;
 
   public Murico() {
-    this.initBehavior();
-    this.addComponents();
-    this.finalConfig();
+    initBehavior();
+    addComponents();
+    finalConfig();
   }
 
   public static void main(String[] args) {
-    SwingUtilities.invokeLater(
-        () -> {
-          new Murico();
-        });
+    SwingUtilities.invokeLater(() -> {
+      new Murico();
+    });
   }
 
   private void initBehavior() {
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    this.setFont(AppSettings.getInstance().getMainFont());
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setFont(AppSettings.getInstance().getMainFont());
   }
 
   private void addComponents() {
     var mainWindow = new MainWindow(this);
 
-    this.add(mainWindow);
+    add(mainWindow);
   }
 
   private void finalConfig() {
-    this.setTitle(AppSettings.getInstance().getAppTitle());
+    setTitle(AppSettings.getInstance().getAppTitle());
 
-    this.pack();
-    this.setLocationRelativeTo(null);
-    this.setVisible(true);
+    pack();
+    setLocationRelativeTo(null);
+    setVisible(true);
   }
 }

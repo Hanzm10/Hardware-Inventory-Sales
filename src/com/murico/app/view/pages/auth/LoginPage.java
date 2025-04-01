@@ -3,17 +3,21 @@ package com.murico.app.view.pages.auth;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Objects;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.Sizes;
+import com.murico.app.view.CurrentPage;
+import com.murico.app.view.MainWindow;
 import com.murico.app.view.common.labels.MLabelCaption;
 import com.murico.app.view.common.labels.MLabelTitle;
 import com.murico.app.view.components.buttons.variations.SecondaryButton;
@@ -24,63 +28,77 @@ import com.murico.app.view.components.inputs.MTextField;
 public class LoginPage extends JPanel {
 
   private static final long serialVersionUID = 1L;
-  //private var lblNewLabel;
+  private final MainWindow mainWindow;
+  // private var lblNewLabel;
 
   /**
    * Create the panel.
    */
-  public LoginPage() {
+  public LoginPage(MainWindow mainWindow) {
+    this.mainWindow = mainWindow;
+
     setBackground(new Color(255, 255, 255));
-    setLayout(null);
+    setLayout(
+        new FormLayout(
+            new ColumnSpec[] {new ColumnSpec(ColumnSpec.FILL,
+                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("480px", true),
+                    Sizes.constant("2139px", true)),
+                1),},
+            new RowSpec[] {RowSpec.decode("690px"),}));
+
+    var panel_1 = new JPanel();
+    panel_1.setBackground(new Color(255, 255, 255));
+    add(panel_1, "1, 1, center, center");
+    panel_1.setLayout(
+        new FormLayout(
+            new ColumnSpec[] {ColumnSpec.decode("left:24px"),
+                new ColumnSpec(ColumnSpec.FILL,
+                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("480px", true),
+                        Sizes.constant("960px", true)),
+                    2),
+                new ColumnSpec(ColumnSpec.FILL,
+                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("240px", true),
+                        Sizes.constant("640px", true)),
+                    1),},
+            new RowSpec[] {RowSpec.decode("650px"),}));
 
     var left_view = new JPanel();
-    left_view.setBackground(new Color(255, 255, 255));
-    left_view.setBounds(39, 37, 381, 616);
-    add(left_view);
-    left_view.setLayout(null);
-
-    var lblNewLabel_2 = new JLabel("");
-    lblNewLabel_2.setIcon(new ImageIcon(
-        Objects.requireNonNull(LoginPage.class.getResource("/assets/logo_icon.png"))));
-    lblNewLabel_2.setBounds(10, 11, 75, 58);
-    left_view.add(lblNewLabel_2);
+    left_view.setPreferredSize(new Dimension(400, 200));
+    left_view.setMinimumSize(new Dimension(200, 200));
+    left_view.setBackground(Color.WHITE);
+    panel_1.add(left_view, "2, 1, left, fill");
+    left_view.setLayout(new FormLayout(
+        new ColumnSpec[] {ColumnSpec.decode("75px"), ColumnSpec.decode("161px"),
+            ColumnSpec.decode("119px"),},
+        new RowSpec[] {RowSpec.decode("58px"), RowSpec.decode("470px"),}));
 
     var trnsprntbtnHello = new TransparentButton((String) null);
     trnsprntbtnHello.addActionListener(new TrnsprntbtnHelloAction());
-    trnsprntbtnHello.setIcon(new ImageIcon(
-        Objects.requireNonNull(LoginPage.class.getResource("/assets/icons/move-left.png"))));
+
+    var lblNewLabel_2 = new JLabel("");
+    lblNewLabel_2.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_icon.png")));
+    left_view.add(lblNewLabel_2, "1, 1, fill, fill");
+    trnsprntbtnHello
+        .setIcon(new ImageIcon(LoginPage.class.getResource("/assets/icons/move-left.png")));
     trnsprntbtnHello.setText("  Back");
-    trnsprntbtnHello.setBounds(246, 12, 119, 40);
-    left_view.add(trnsprntbtnHello);
+    left_view.add(trnsprntbtnHello, "3, 1, fill, top");
 
     var form = new JPanel();
-    form.setBackground(new Color(255, 255, 255));
-    form.setBounds(10, 105, 355, 470);
-    left_view.add(form);
-    var gbl_form = new GridBagLayout();
-    gbl_form.columnWidths = new int[] {361, 0};
-    gbl_form.rowHeights = new int[] {90, 50, 57, 79, 35, 0};
-    gbl_form.columnWeights = new double[] {1.0, Double.MIN_VALUE};
-    gbl_form.rowWeights = new double[] {0.0, 0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
-    form.setLayout(gbl_form);
+    form.setBackground(Color.WHITE);
+    left_view.add(form, "1, 2, 3, 1, center, center");
+    form.setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("center:355px"),},
+        new RowSpec[] {FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, RowSpec.decode("85px"),
+            FormSpecs.LINE_GAP_ROWSPEC, RowSpec.decode("122px"), RowSpec.decode("29px"),
+            RowSpec.decode("58px"), FormSpecs.LINE_GAP_ROWSPEC, RowSpec.decode("67px"),
+            FormSpecs.LINE_GAP_ROWSPEC, RowSpec.decode("60px"),}));
 
     var lbltlSignIn = new MLabelTitle((String) null);
-    var gbc_lbltlSignIn = new GridBagConstraints();
-    gbc_lbltlSignIn.fill = GridBagConstraints.BOTH;
-    gbc_lbltlSignIn.insets = new Insets(0, 0, 5, 0);
-    gbc_lbltlSignIn.gridx = 0;
-    gbc_lbltlSignIn.gridy = 0;
-    form.add(lbltlSignIn, gbc_lbltlSignIn);
     lbltlSignIn.setText("Sign in");
+    form.add(lbltlSignIn, "1, 2, fill, fill");
 
     var inputContainer = new JPanel();
-    inputContainer.setBackground(new Color(255, 255, 255));
-    var gbc_inputContainer = new GridBagConstraints();
-    gbc_inputContainer.insets = new Insets(0, 0, 5, 0);
-    gbc_inputContainer.fill = GridBagConstraints.BOTH;
-    gbc_inputContainer.gridx = 0;
-    gbc_inputContainer.gridy = 1;
-    form.add(inputContainer, gbc_inputContainer);
+    inputContainer.setBackground(Color.WHITE);
+    form.add(inputContainer, "1, 4, fill, fill");
     inputContainer.setLayout(new GridLayout(0, 1, 0, 16));
 
     var txtfldTextField = new MTextField();
@@ -89,33 +107,26 @@ public class LoginPage extends JPanel {
 
     var passwordFieldToggleable = new MPasswordFieldToggleable();
     var gridBagLayout = (GridBagLayout) passwordFieldToggleable.getLayout();
+    gridBagLayout.rowWeights = new double[] {1.0};
     gridBagLayout.rowHeights = new int[] {53};
+    gridBagLayout.columnWeights = new double[] {0.0, 0.0};
+    gridBagLayout.columnWidths = new int[] {300, 53};
     inputContainer.add(passwordFieldToggleable);
 
     var scndrbtnSecondaryButton = new SecondaryButton();
     scndrbtnSecondaryButton.setText("Log in");
-    var gbc_scndrbtnSecondaryButton = new GridBagConstraints();
-    gbc_scndrbtnSecondaryButton.insets = new Insets(24, 0, 5, 0);
-    gbc_scndrbtnSecondaryButton.fill = GridBagConstraints.BOTH;
-    gbc_scndrbtnSecondaryButton.gridx = 0;
-    gbc_scndrbtnSecondaryButton.gridy = 2;
-    form.add(scndrbtnSecondaryButton, gbc_scndrbtnSecondaryButton);
+    form.add(scndrbtnSecondaryButton, "1, 6, fill, fill");
 
     var panel = new JPanel();
-    panel.setBackground(new Color(255, 255, 255));
     panel.setLayout(null);
-    var gbc_panel = new GridBagConstraints();
-    gbc_panel.insets = new Insets(0, 0, 5, 0);
-    gbc_panel.fill = GridBagConstraints.BOTH;
-    gbc_panel.gridx = 0;
-    gbc_panel.gridy = 3;
-    form.add(panel, gbc_panel);
+    panel.setBackground(Color.WHITE);
+    form.add(panel, "1, 8, fill, fill");
 
     var separator = new JSeparator();
     separator.setSize(new Dimension(5, 0));
-    separator.setMinimumSize(new Dimension(5, 0));
     separator.setPreferredSize(new Dimension(5, 2));
-    separator.setBackground(new Color(192, 192, 192));
+    separator.setMinimumSize(new Dimension(5, 0));
+    separator.setBackground(Color.LIGHT_GRAY);
     separator.setBounds(0, 35, 160, 4);
     panel.add(separator);
 
@@ -123,36 +134,33 @@ public class LoginPage extends JPanel {
     separator_1.setSize(new Dimension(5, 0));
     separator_1.setPreferredSize(new Dimension(5, 2));
     separator_1.setMinimumSize(new Dimension(5, 0));
-    separator_1.setBackground(new Color(192, 192, 192));
+    separator_1.setBackground(Color.LIGHT_GRAY);
     separator_1.setBounds(195, 35, 160, 4);
     panel.add(separator_1);
 
     var lblcptnOr = new MLabelCaption((String) null);
-    lblcptnOr.setBackground(new Color(192, 192, 192));
-    lblcptnOr.setForeground(new Color(192, 192, 192));
-    lblcptnOr.setFont(new Font("Montserrat", Font.PLAIN, 24));
     lblcptnOr.setText("or");
+    lblcptnOr.setForeground(Color.LIGHT_GRAY);
+    lblcptnOr.setFont(new Font("Montserrat", Font.PLAIN, 24));
+    lblcptnOr.setBackground(Color.LIGHT_GRAY);
     lblcptnOr.setBounds(165, 20, 26, 29);
     panel.add(lblcptnOr);
 
     var scndrbtnSecondaryButton_1 = new SecondaryButton();
     scndrbtnSecondaryButton_1.setText("Create an account");
-    var gbc_scndrbtnSecondaryButton_1 = new GridBagConstraints();
-    gbc_scndrbtnSecondaryButton_1.fill = GridBagConstraints.BOTH;
-    gbc_scndrbtnSecondaryButton_1.gridx = 0;
-    gbc_scndrbtnSecondaryButton_1.gridy = 4;
-    form.add(scndrbtnSecondaryButton_1, gbc_scndrbtnSecondaryButton_1);
+    form.add(scndrbtnSecondaryButton_1, "1, 10, fill, fill");
 
-    var lblNewLabel_1 = new JLabel("");
-    lblNewLabel_1.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_login.png")));
-    lblNewLabel_1.setBounds(430, 35, 484, 616);
-    add(lblNewLabel_1);
+      var lblNewLabel_1 = new JLabel("");
+      lblNewLabel_1.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_login.png")));
+      panel_1.add(lblNewLabel_1, "3, 1, right, fill");
 
   }
 
   private class TrnsprntbtnHelloAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
+      CurrentPage.setCurrentPage(CurrentPage.MAIN);
+      mainWindow.render();
     }
   }
 }

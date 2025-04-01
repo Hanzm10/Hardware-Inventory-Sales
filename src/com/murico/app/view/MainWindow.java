@@ -1,23 +1,39 @@
 package com.murico.app.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import com.jgoodies.forms.layout.FormLayout;
 import com.murico.app.Murico;
 import com.murico.app.config.AppSettings;
 import com.murico.app.view.pages.auth.LoginPage;
+import com.murico.app.view.pages.auth.MainAuthPage;
 
-public class MainWindow extends JPanel {
+public class MainWindow extends JPanel implements ComponentListener {
   /**
    * 
    */
   private static final long serialVersionUID = -2591977387415502564L;
   private final Murico murico;
 
+  private boolean isFirstRender = true;
+  private boolean isFirstLoad = true;
+
+  private CurrentPage previouslyRenderedPage;
+
   public MainWindow(Murico murico) {
     this.murico = murico;
 
-    this.setPanelSize();
-    this.render();
+    setLayout(new FormLayout("default:grow", "default:grow"));
+    setBackground(new Color(255, 255, 255));
+
+    addComponentListener(this);
+
+    setPanelSize();
+    render();
   }
 
   public Murico getMurico() {
@@ -25,21 +41,45 @@ public class MainWindow extends JPanel {
   }
 
   public void render() {
-    switch (CurrentPage.getCurrentPage()) {
-      case MAIN:
-        this.removeAll();
-        var loginPage = new LoginPage();
+    var currentPage = CurrentPage.getCurrentPage();
 
-        this.setLayout(null);
-        loginPage.setBounds(0, 0, AppSettings.getInstance().getAppMainScreenWidth(),
-            AppSettings.getInstance().getAppMainScreenHeight());
-        this.add(loginPage);
+    if (isFirstLoad) {
+      isFirstLoad = false;
+      return;
+    } else {
+      if (!isFirstRender && previouslyRenderedPage != null
+          && previouslyRenderedPage != currentPage) {
+        removeAll();
+      } else {
+        isFirstRender = false;
+      }
+    } 
+
+    switch (currentPage) {
+      case MAIN:
+        if (previouslyRenderedPage == currentPage) {
+
+        } else {
+          var mainAuthPage = new MainAuthPage(this);
+          add(mainAuthPage, "1, 1, center, center");
+        }
         break;
       case LOGIN:
+        if (previouslyRenderedPage == currentPage) {
+
+        } else {
+          var loginPage = new LoginPage(this);
+          add(loginPage, "1, 1, fill, center");
+        }
         break;
       case REGISTER:
         break;
     }
+    
+    previouslyRenderedPage = currentPage;
+
+    revalidate();
+    repaint();
   }
 
   private void setPanelSize() {
@@ -47,5 +87,30 @@ public class MainWindow extends JPanel {
         AppSettings.getInstance().getAppMainScreenHeight());
 
     this.setPreferredSize(size);
+  }
+
+  @Override
+  public void componentResized(ComponentEvent e) {
+    SwingUtilities.invokeLater(() -> {
+      render();
+    });
+  }
+
+  @Override
+  public void componentMoved(ComponentEvent e) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void componentShown(ComponentEvent e) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void componentHidden(ComponentEvent e) {
+    // TODO Auto-generated method stub
+
   }
 }

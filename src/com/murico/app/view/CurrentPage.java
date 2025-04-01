@@ -5,7 +5,7 @@ public enum CurrentPage {
   LOGIN,
   REGISTER;
 
-  private static CurrentPage currentPage = MAIN;
+  private static CurrentPage currentPage = LOGIN;
 
   public static CurrentPage getCurrentPage() {
     return currentPage;
