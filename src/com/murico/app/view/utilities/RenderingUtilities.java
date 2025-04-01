@@ -1,13 +1,13 @@
 package com.murico.app.view.utilities;
 
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import javax.swing.JComponent;
-import com.murico.app.config.AppSettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorder;
-import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
 import com.murico.app.view.components.inputs.MTextFieldInterface;
 
 /**
@@ -50,13 +50,39 @@ public class RenderingUtilities {
         java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
   }
 
+  public static Color RgbColorToColorWithAlpha(Color color, int alpha) {
+    return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+  }
+
+  public static void setCursorToHandCursor(JComponent component) {
+    component.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+  }
+
+  public static void setCursorToDefaultCursor(JComponent component) {
+    component.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+  }
+
   public static void paintBackgroundWithRoundedCornerBorder(Graphics2D g2d, JComponent component,
       RoundedCornerBorder roundedBorder) {
+    RenderingUtilities.enableSmoothness(g2d);
+
+    var borderSpace = 1;
+    var backgroundSpace = 1;
+    var backgroundOffsetPosition = roundedBorder.getBorderOffset() + borderSpace + backgroundSpace;
+
     var borderWidth = roundedBorder.getBorderWidth();
-    var borderX = borderWidth / 2;
-    var borderY = borderWidth / 2;
-    var borderW = component.getWidth() - borderWidth;
-    var borderH = component.getHeight() - borderWidth;
+    var borderX = roundedBorder.getDrawBorder() ? borderWidth / 2 + backgroundOffsetPosition / 2
+        : borderWidth / 2;
+    var borderY = roundedBorder.getDrawBorder() ? borderWidth / 2 + backgroundOffsetPosition / 2
+        : borderWidth / 2;
+    var borderW = roundedBorder.getDrawBorder()
+        ? component.getWidth() - borderSpace - backgroundSpace - roundedBorder.getBorderOffset()
+            - borderWidth
+        : component.getWidth() - borderWidth;
+    var borderH = roundedBorder.getDrawBorder()
+        ? component.getHeight() - borderSpace - backgroundSpace - roundedBorder.getBorderOffset()
+            - borderWidth
+        : component.getHeight() - borderWidth;
 
     g2d.setColor(component.getBackground());
     g2d.fill(roundedBorder.createBorder(borderX, borderY, borderW, borderH));
@@ -68,16 +94,5 @@ public class RenderingUtilities {
     g.setColor(textField.getPlaceholderColor());
     g.drawString(textField.getPlaceholderText(), insets.left,
         h / 2 + font.getSize() / 2 - insets.top / 2);
-  }
-
-  public static void setBorderColorOfComponentWithRoundedCornerBorderOnFocus(
-      RoundedCornerBorderComponentInterface r, boolean isFocused) {
-    if (isFocused) {
-      r.getRoundedCornerBorder().setBorderColor(AppSettings.getInstance().getPrimaryColor());
-    } else {
-      r.getRoundedCornerBorder().setBorderColor(AppSettings.getInstance().getBorderColor());
-    }
-
-    r.repaintBorder();
   }
 }

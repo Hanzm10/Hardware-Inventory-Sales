@@ -9,7 +9,8 @@ and is easy to read and maintain.
 
 ## Rules
 
-1. **Rule**: Restrict all code to very simple control flow constructs -- do not
+1. **Rule**: If possible, write code to very simple control flow constructs --
+   do not
    use direct or indirect recursion.
    <br>
    <br>

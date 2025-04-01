@@ -9,10 +9,12 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+
 import com.murico.app.view.common.labels.MLabelCaption;
 import com.murico.app.view.common.labels.MLabelTitle;
 import com.murico.app.view.components.buttons.variations.SecondaryButton;
@@ -39,14 +41,15 @@ public class LoginPage extends JPanel {
     left_view.setLayout(null);
 
     var lblNewLabel_2 = new JLabel("");
-    lblNewLabel_2.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_icon.png")));
+    lblNewLabel_2.setIcon(new ImageIcon(
+        Objects.requireNonNull(LoginPage.class.getResource("/assets/logo_icon.png"))));
     lblNewLabel_2.setBounds(10, 11, 75, 58);
     left_view.add(lblNewLabel_2);
 
     var trnsprntbtnHello = new TransparentButton((String) null);
     trnsprntbtnHello.addActionListener(new TrnsprntbtnHelloAction());
-    trnsprntbtnHello
-        .setIcon(new ImageIcon(LoginPage.class.getResource("/assets/icons/move-left.png")));
+    trnsprntbtnHello.setIcon(new ImageIcon(
+        Objects.requireNonNull(LoginPage.class.getResource("/assets/icons/move-left.png"))));
     trnsprntbtnHello.setText("  Back");
     trnsprntbtnHello.setBounds(246, 12, 119, 40);
     left_view.add(trnsprntbtnHello);
@@ -150,6 +153,7 @@ public class LoginPage extends JPanel {
 
   private class TrnsprntbtnHelloAction implements ActionListener {
     @Override
-    public void actionPerformed(ActionEvent e) {}
+    public void actionPerformed(ActionEvent e) {
+    }
   }
 }

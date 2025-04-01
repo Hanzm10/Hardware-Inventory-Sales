@@ -28,6 +28,7 @@ public class RoundedCornerBorder extends AbstractBorder implements Serializable 
   protected Color borderColor;
 
   protected int borderWidth;
+  protected int borderOffset;
 
   protected boolean drawBorder;
   protected boolean drawBackground;
@@ -38,68 +39,10 @@ public class RoundedCornerBorder extends AbstractBorder implements Serializable 
     this.setDefaults();
   }
 
-  public RoundedCornerBorder(Color borderColor) {
-    this.setDefaults();
-
-    this.borderColor = borderColor;
-  }
-
-  public RoundedCornerBorder(int borderWidth) {
-    this.setDefaults();
-
-    this.borderWidth = borderWidth;
-  }
-
   public RoundedCornerBorder(boolean drawBorder) {
     this.setDefaults();
 
     this.drawBorder = drawBorder;
-  }
-
-  public RoundedCornerBorder(boolean drawBorder, boolean drawBackground) {
-    this.setDefaults();
-
-    this.drawBorder = drawBorder;
-    this.drawBackground = drawBackground;
-  }
-
-  public RoundedCornerBorder(Color borderColor, int borderWidth) {
-    this.setDefaults();
-
-    this.borderColor = borderColor;
-    this.borderWidth = borderWidth;
-  }
-
-  public RoundedCornerBorder(Color borderColor, boolean drawBorder) {
-    this.setDefaults();
-
-    this.borderColor = borderColor;
-    this.drawBorder = drawBorder;
-  }
-
-  public RoundedCornerBorder(int borderWidth, boolean drawBorder) {
-    this.setDefaults();
-
-    this.borderWidth = borderWidth;
-    this.drawBorder = drawBorder;
-  }
-
-  public RoundedCornerBorder(Color borderColor, int borderWidth, boolean drawBorder) {
-    this.setDefaults();
-
-    this.borderColor = borderColor;
-    this.borderWidth = borderWidth;
-    this.drawBorder = drawBorder;
-  }
-
-  public RoundedCornerBorder(Color borderColor, int borderWidth, boolean drawBorder,
-      boolean drawBackground) {
-    this.setDefaults();
-
-    this.borderColor = borderColor;
-    this.borderWidth = borderWidth;
-    this.drawBorder = drawBorder;
-    this.drawBackground = drawBackground;
   }
 
   public boolean getDrawBorder() {
@@ -114,7 +57,16 @@ public class RoundedCornerBorder extends AbstractBorder implements Serializable 
     return borderWidth;
   }
 
-  public void setBorderWidth(int borderWidth) {
+  /**
+   * Sets the border width. The border width is the thickness of the border around the component.
+   * 
+   * @param borderWidth
+   * 
+   * @throws AssertionError if the border width is less than 0
+   */
+  public void setBorderWidth(int borderWidth) throws AssertionError {
+    assert borderWidth >= 0 : "Border width must be greater than or equal to 0";
+
     this.borderWidth = borderWidth;
   }
 
@@ -130,14 +82,44 @@ public class RoundedCornerBorder extends AbstractBorder implements Serializable 
     return borderRadius;
   }
 
-  public void setBorderRadius(BorderRadius borderRadius) {
+  /**
+   * Sets the border radius. The border radius is the radius of the rounded corners of the border.
+   * 
+   * @param borderRadius
+   * 
+   * @throws AssertionError if the border radius is null or contains negative values
+   * 
+   * @see BorderRadius
+   */
+  public void setBorderRadius(BorderRadius borderRadius) throws AssertionError {
+    assert borderRadius != null : "Border radius cannot be null";
+    assert borderRadius.isValid() : "Border radius cannot contain negative values";
+
     this.borderRadius = borderRadius;
+  }
+
+  public int getBorderOffset() {
+    return borderOffset;
+  }
+
+  /**
+   * Sets the border offset. The border offset is the distance between the border and the background
+   * 
+   * @param borderOffset
+   * 
+   * @throws AssertionError if the border offset is less than 0
+   */
+  public void setBorderOffset(int borderOffset) throws AssertionError {
+    assert borderOffset >= 0 : "Border offset must be greater than or equal to 0";
+
+    this.borderOffset = borderOffset;
   }
 
   private void setDefaults() {
     this.borderRadius = BorderRadius.all(AppSettings.getInstance().getBaseBorderRadius());
     this.borderColor = AppSettings.getInstance().getBorderColor();
     this.borderWidth = AppSettings.getInstance().getBaseBorderWidth();
+    this.borderOffset = AppSettings.getInstance().getBaseBorderOffset();
     this.drawBorder = false;
   }
 

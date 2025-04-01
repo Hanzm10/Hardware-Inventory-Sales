@@ -30,7 +30,8 @@ public interface RoundedCornerBorderComponentInterface {
    * Sets border radius for all corners of the component.
    * 
    * @param radius the radius for all corners
-   * @throws AssertionError if the radius is negative or border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if Border is not a {@link RoundedCornerBorder} and from
+   *         {@link RoundedCornerBorder#setBorderRadius(BorderRadius)}
    */
   default void setBorderRadius(int radius) throws AssertionError {
     this.getRoundedCornerBorder().setBorderRadius(BorderRadius.all(radius));
@@ -41,13 +42,11 @@ public interface RoundedCornerBorderComponentInterface {
    * Sets border radius for all corners of the component.
    * 
    * @param radius the radius for all corners
-   * @throws AssertionError if the radius is negative or border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if Border is not a {@link RoundedCornerBorder} and from
+   *         {@link RoundedCornerBorder#setBorderRadius(BorderRadius)}
    */
 
   default void setBorderRadius(BorderRadius radius) throws AssertionError {
-    assert radius != null : "Border radius cannot be null";
-    assert radius.isValid() : "Border radius cannot contain negative values";
-
     this.getRoundedCornerBorder().setBorderRadius(radius);
     this.repaintBorder();
   }
@@ -60,7 +59,8 @@ public interface RoundedCornerBorderComponentInterface {
    * @param bottomLeft the radius for the bottom left corner
    * @param bottomRight the radius for the bottom right corner
    * 
-   * @throws AssertionError if the radius is negative or border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if Border is not a {@link RoundedCornerBorder} and from
+   *         {@link RoundedCornerBorder#setBorderRadius(BorderRadius)}
    */
   default void setBorderRadius(int topLeft, int topRight, int bottomLeft, int bottomRight)
       throws AssertionError {
@@ -77,7 +77,8 @@ public interface RoundedCornerBorderComponentInterface {
    * Sets the border radius for the top left corner of the component.
    * 
    * @param radius the radius for the top left corner
-   * @throws AssertionError if the radius is negative or border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if Border is not a {@link RoundedCornerBorder} and from
+   *         {@link RoundedCornerBorder#setBorderRadius(BorderRadius)}
    */
   default void setBorderTopLeftRadius(int radius) throws AssertionError {
     this.getRoundedCornerBorder()
@@ -95,7 +96,8 @@ public interface RoundedCornerBorderComponentInterface {
    * Sets the border radius for the top right corner of the component.
    * 
    * @param radius the radius for the top right corner
-   * @throws AssertionError if the radius is negative or border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if Border is not a {@link RoundedCornerBorder} and from
+   *         {@link RoundedCornerBorder#setBorderRadius(BorderRadius)}
    */
   default void setBorderTopRightRadius(int radius) throws AssertionError {
     this.getRoundedCornerBorder().setBorderRadius(new BorderRadius(this.getBorderTopLeftRadius(),
@@ -112,7 +114,8 @@ public interface RoundedCornerBorderComponentInterface {
    * Sets the border radius for the bottom left corner of the component.
    * 
    * @param radius the radius for the bottom left corner
-   * @throws AssertionError if the radius is negative or border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if Border is not a {@link RoundedCornerBorder} and from
+   *         {@link RoundedCornerBorder#setBorderRadius(BorderRadius)}
    */
   default void setBorderBottomLeftRadius(int radius) throws AssertionError {
     this.getRoundedCornerBorder().setBorderRadius(new BorderRadius(this.getBorderTopLeftRadius(),
@@ -129,7 +132,8 @@ public interface RoundedCornerBorderComponentInterface {
    * Sets the border radius for the bottom right corner of the component.
    * 
    * @param radius the radius for the bottom right corner
-   * @throws AssertionError if the radius is negative or border is not {@link RoundedCornerBorder}
+   * @throws AssertionError if Border is not a {@link RoundedCornerBorder} and from
+   *         {@link RoundedCornerBorder#setBorderRadius(BorderRadius)}
    */
   default void setBorderBottomRightRadius(int radius) throws AssertionError {
     this.getRoundedCornerBorder().setBorderRadius(new BorderRadius(this.getBorderTopLeftRadius(),

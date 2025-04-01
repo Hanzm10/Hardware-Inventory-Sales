@@ -30,6 +30,7 @@ public class AppSettings {
   private Font mainFontLink;
   private int baseBorderRadius;
   private int baseBorderWidth;
+  private int baseBorderOffset;
 
   private AppSettings() {
     this.properties = new Properties();
@@ -134,6 +135,10 @@ public class AppSettings {
     return baseBorderWidth;
   }
 
+  public int getBaseBorderOffset() {
+    return baseBorderOffset;
+  }
+
   public String getProperty(String key) {
     return this.properties.getProperty(key);
   }
@@ -185,6 +190,7 @@ public class AppSettings {
 
     this.baseBorderRadius = this.getIntProperty("app.border.radius");
     this.baseBorderWidth = this.getIntProperty("app.border.width");
+    this.baseBorderOffset = this.getIntProperty("app.border.offset");
   }
 
   private void loadConfiguration() {

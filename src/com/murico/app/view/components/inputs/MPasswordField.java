@@ -123,14 +123,12 @@ public class MPasswordField extends JPasswordField
 
   @Override
   public void focusGained(FocusEvent e) {
-    this.revalidate();
-    this.repaint();
+    this.setBorderColor(AppSettings.getInstance().getPrimaryColor());
   }
 
   @Override
   public void focusLost(FocusEvent e) {
-    this.revalidate();
-    this.repaint();
+    this.setBorderColor(AppSettings.getInstance().getBorderColor());
   }
 
   // === MouseListener ===
@@ -150,9 +148,6 @@ public class MPasswordField extends JPasswordField
     } else {
       insets = this.getInsets();
     }
-
-    RenderingUtilities.setBorderColorOfComponentWithRoundedCornerBorderOnFocus(this,
-        isFocusOwner());
 
     if (this.getPassword().length == 0) {
       RenderingUtilities.paintPlaceholderText(g, this, insets, getFont(), getHeight());

@@ -94,6 +94,8 @@ public class MTextField extends JTextField
 
     this.placeholderText = this.getText().isEmpty() ? "Enter a text here..." : this.getText();
     this.placeholderColor = AppSettings.getInstance().getPlaceholderColor();
+
+    this.addFocusListener(this);
   }
 
   /**
@@ -150,14 +152,12 @@ public class MTextField extends JTextField
 
   @Override
   public void focusGained(FocusEvent e) {
-    this.revalidate();
-    this.repaint();
+    this.setBorderColor(AppSettings.getInstance().getPrimaryColor());
   }
 
   @Override
   public void focusLost(FocusEvent e) {
-    this.revalidate();
-    this.repaint();
+    this.setBorderColor(AppSettings.getInstance().getBorderColor());
   }
 
   /**
@@ -166,6 +166,7 @@ public class MTextField extends JTextField
 
   @Override
   protected void paintComponent(Graphics g) {
+    System.out.println("MTextField.paintComponent()");
     var b = this.getBorder();
     Insets insets;
 
@@ -179,9 +180,6 @@ public class MTextField extends JTextField
     } else {
       insets = this.getInsets();
     }
-
-    RenderingUtilities.setBorderColorOfComponentWithRoundedCornerBorderOnFocus(this,
-        isFocusOwner());
 
     if (this.getText().isEmpty()) {
       RenderingUtilities.paintPlaceholderText(g, this, insets, getFont(), getHeight());
