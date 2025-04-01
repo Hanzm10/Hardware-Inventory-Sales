@@ -9,7 +9,6 @@
 	<classpathentry excluding="com/murico/app/resources/|test/app/test_resources/|test/" kind="src" path="src"/>
 	<classpathentry excluding="app/test_resources/" kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/test/app/test_resources"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/mysql-connector-j-9.2.0"/>
 	<classpathentry kind="lib" path="lib/com.jgoodies.common_1.8.1.v20240327-0800.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -30,5 +29,11 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="A:/coding-projects/java/school/Hardware-Inventory-Sales/lib/mysql-connector-j-9.2.0.jar"/>
 	<classpathentry kind="output" path="out/production/Hardware-Inventory-Sales"/>
 </classpath>

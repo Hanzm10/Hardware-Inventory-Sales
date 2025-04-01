@@ -2,7 +2,9 @@ package com.murico.app.config;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.IOException;
 import java.util.Properties;
+import com.murico.app.utils.io.FileLoader;
 
 public class AppSettings {
 
@@ -35,7 +37,13 @@ public class AppSettings {
   private AppSettings() {
     this.properties = new Properties();
 
-    this.loadConfiguration();
+    try {
+      FileLoader.loadIntoProperties("config.properties", this.properties);
+    } catch (IllegalArgumentException | NullPointerException | IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
     this.setConfigDefaults();
   }
 
@@ -191,19 +199,30 @@ public class AppSettings {
     this.baseBorderRadius = this.getIntProperty("app.border.radius");
     this.baseBorderWidth = this.getIntProperty("app.border.width");
     this.baseBorderOffset = this.getIntProperty("app.border.offset");
+
+    assert this.appTitle != null : "App title not found";
+    assert this.appMainScreenWidth > 0 : "App main screen width not found";
+    assert this.appMainScreenHeight > 0 : "App main screen height not found";
+    assert this.appFontFamily != null : "App font family not found";
+    assert this.primaryColor != null : "Primary color not found";
+    assert this.primaryForegroundColor != null : "Primary foreground color not found";
+    assert this.secondaryColor != null : "Secondary color not found";
+    assert this.secondaryForegroundColor != null : "Secondary foreground color not found";
+    assert this.transparentColor != null : "Transparent color not found";
+    assert this.borderColor != null : "Border color not found";
+    assert this.placeholderColor != null : "Placeholder color not found";
+    assert this.mainFont != null : "Main font not found";
+    assert this.mainFontTitle != null : "Main font title not found";
+    assert this.mainFontSubtitle != null : "Main font subtitle not found";
+    assert this.mainFontHeader != null : "Main font header not found";
+    assert this.mainFontBody != null : "Main font body not found";
+    assert this.mainFontCaption != null : "Main font caption not found";
+    assert this.mainFontFootnote != null : "Main font footnote not found";
+    assert this.mainFontLink != null : "Main font link not found";
+    assert this.mainFontButton != null : "Main font button not found";
+    assert this.baseBorderRadius > 0 : "Base border radius not found";
+    assert this.baseBorderWidth > 0 : "Base border width not found";
+    assert this.baseBorderOffset > 0 : "Base border offset not found";
   }
 
-  private void loadConfiguration() {
-    var configuration =
-        AppSettings.class.getClassLoader().getResourceAsStream("config.properties");
-
-    assert configuration != null : "Configuration file not found";
-
-    try {
-      this.properties.load(configuration);
-    } catch (Exception e) {
-      System.err.println("Error loading configuration file: " + e.getMessage());
-      System.exit(1);
-    }
-  }
 }

@@ -82,6 +82,8 @@ cd HardwareInventorySystem
 - Update the database connection settings in the [src/com/murico/java/resources/application.properties](/com/murico/resources/application.properties) file.
 - Refer to [our database schema](https://dbdocs.io/workemailaaronragudos/murico?table=low_stock_alerts&schema=public&view=table_structure&fbclid=IwY2xjawJPnkJleHRuA2FlbQIxMAABHXk9UHiYvKQmC8NfQNbt8FaTdjT6Q_h-LgpNDXAgp_2SBhyLJrQNFO2YdA_aem_xaf-g4VewS3l02DSjrTvIw) for more details of the schema.
 
+If you run into the error `communications link failure`, please make sure that the `PORT` on `db.url` in `database.properties` is properly configured to be the port where your local database is running on.
+
 ### 3. Run the Application
 
 **To be made**

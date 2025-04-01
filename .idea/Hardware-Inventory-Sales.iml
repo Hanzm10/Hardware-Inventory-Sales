@@ -11,5 +11,10 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="mysql-connector-j-9.2.0" level="project" />
+    <orderEntry type="library" exported="" name="com.jgoodies.common_1.8.1.v20240327-0800" level="project" />
+    <orderEntry type="library" exported="" name="com.jgoodies.forms_1.9.0.v20240327-0800" level="project" />
+    <orderEntry type="library" exported="" name="com.miglayout.core_11.4.2" level="project" />
+    <orderEntry type="library" exported="" name="com.miglayout.swing_11.4.2" level="project" />
+    <orderEntry type="library" name="junit.jupiter" level="project" />
   </component>
 </module>

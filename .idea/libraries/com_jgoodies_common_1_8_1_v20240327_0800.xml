@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.jgoodies.common_1.8.1.v20240327-0800">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/com.jgoodies.common_1.8.1.v20240327-0800.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/com.jgoodies.forms_1.9.0.v20240327-0800.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/com.miglayout.core_11.4.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/com.miglayout.swing_11.4.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
