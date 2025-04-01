@@ -29,7 +29,7 @@ public class MainAuthPage extends JPanel {
 
     setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("1024px:grow"),},
         new RowSpec[] {RowSpec.decode("max(118dlu;pref)"), RowSpec.decode("32px"),
-            RowSpec.decode("max(171dlu;default):grow"),}));
+            RowSpec.decode("max(47px;default):grow"),}));
 
     var lblNewLabel = new JLabel("");
     lblNewLabel.setIcon(new ImageIcon(MainAuthPage.class.getResource("/assets/logo_freeform.png")));

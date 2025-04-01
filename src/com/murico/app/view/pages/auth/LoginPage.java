@@ -51,15 +51,16 @@ public class LoginPage extends JPanel {
     add(panel_1, "1, 1, center, center");
     panel_1.setLayout(
         new FormLayout(
-            new ColumnSpec[] {ColumnSpec.decode("left:24px"),
+            new ColumnSpec[] {ColumnSpec.decode("24px"),
                 new ColumnSpec(ColumnSpec.FILL,
-                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("480px", true),
+                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("320px", true),
                         Sizes.constant("960px", true)),
                     2),
                 new ColumnSpec(ColumnSpec.FILL,
-                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("240px", true),
+                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("484px", true),
                         Sizes.constant("640px", true)),
-                    1),},
+                    1),
+                ColumnSpec.decode("24px"),},
             new RowSpec[] {RowSpec.decode("650px"),}));
 
     var left_view = new JPanel();
