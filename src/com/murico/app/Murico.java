@@ -1,45 +1,109 @@
 package com.murico.app;
 
-import javax.swing.JFrame;
+import java.io.File;
+import java.util.List;
 import javax.swing.SwingUtilities;
-import com.murico.app.config.AppSettings;
-import com.murico.app.view.MainWindow;
+import javax.swing.SwingWorker;
+import com.murico.app.config.ExternalSettings;
+import com.murico.app.dal.User.UserSessionDAL;
+import com.murico.app.exceptions.handlers.GlobalUncaughtExceptionHandler;
+import com.murico.app.managers.UserSessionManager;
+import com.murico.app.utils.io.FileLoader;
+import com.murico.app.view.loading_indicators.splash_screen.AppInitializationSplashScreen;
 
-public class Murico extends JFrame {
-
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 5584823642462847023L;
-
-  public Murico() {
-    initBehavior();
-    addComponents();
-    finalConfig();
-  }
-
+public class Murico {
   public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> {
-      new Murico();
-    });
+    Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
+    SwingUtilities.invokeLater(Murico::initialize);
   }
 
-  private void initBehavior() {
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setFont(AppSettings.getInstance().getMainFont());
+  private static void initialize() {
+    new InitializationWorker(new AppInitializationSplashScreen()).execute();
   }
 
-  private void addComponents() {
-    var mainWindow = new MainWindow(this);
+  private static void initializeApp() {}
 
-    add(mainWindow);
-  }
+  private static class InitializationWorker extends SwingWorker<Void, String> {
+    private AppInitializationSplashScreen splashScreen;
 
-  private void finalConfig() {
-    setTitle(AppSettings.getInstance().getAppTitle());
+    public InitializationWorker(AppInitializationSplashScreen splashScreen) {
+      this.splashScreen = splashScreen;
+    }
 
-    pack();
-    setLocationRelativeTo(null);
-    setVisible(true);
+    private static void initializeFileSystem() {
+      var configDir = new File(FileLoader.getConfigurationDirectory());
+
+      if (!configDir.exists()) {
+        configDir.mkdirs();
+        System.out.println("Configuration directory created: " + configDir.getAbsolutePath());
+      }
+
+      var configFile = new File(configDir, "config.properties");
+
+      if (!configFile.exists()) {
+        try {
+          configFile.createNewFile();
+          System.out.println("Configuration file created: " + configFile.getAbsolutePath());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+
+      var logDir = new File(FileLoader.getLogsDirectory());
+
+      if (!logDir.exists()) {
+        logDir.mkdirs();
+        System.out.println("Log directory created: " + logDir.getAbsolutePath());
+      }
+
+      var logFile = new File(logDir, "app.log");
+
+      if (!logFile.exists()) {
+        try {
+          logFile.createNewFile();
+          System.out.println("Log file created: " + logFile.getAbsolutePath());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    private static void initializeUserSession() {
+      var sessionUid =
+          ExternalSettings.getInstance().getProperty(ExternalSettings.SESSION_ID_KEY);
+      var userSession = UserSessionDAL.selectSessionById(sessionUid);
+
+      if (userSession.isExpired()) {
+        ExternalSettings.getInstance().removeProperty(ExternalSettings.SESSION_ID_KEY);
+        ExternalSettings.getInstance().save();
+      } else if (userSession != null) {
+        UserSessionManager.getInstance().setUserSession(userSession);
+      }
+    }
+
+    @Override
+    protected Void doInBackground() throws Exception {
+      publish("Initializing file system...");
+      initializeFileSystem();
+      publish("Initializing session...");
+      initializeUserSession();
+
+      return null;
+    }
+
+    @Override
+    protected void process(List<String> progressMessages) {
+      var latestMessage = progressMessages.get(progressMessages.size() - 1);
+
+      splashScreen.setProgressLabel(latestMessage);
+    }
+
+    @Override
+    protected void done() {
+      // TODO Auto-generated method stub
+      super.done();
+      splashScreen.dispose();
+      initializeApp();
+    }
   }
 }
