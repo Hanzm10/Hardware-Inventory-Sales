@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.JWindow;
-import com.murico.app.config.AppSettings;
 
 public class AppInitializationSplashScreen extends JWindow {
 
@@ -28,13 +27,10 @@ public class AppInitializationSplashScreen extends JWindow {
     add(splashScreenLabel, BorderLayout.CENTER);
     add(splashScreenProgressBar = new JProgressBar(), BorderLayout.SOUTH);
 
-    var appSettings = AppSettings.getInstance().getAppDisplaySettings();
-
     pack();
     setSize(
-        new Dimension(appSettings.getAppMainScreenWidth(), appSettings.getAppMainScreenHeight()));
-    setPreferredSize(
-        new Dimension(appSettings.getAppMainScreenWidth(), appSettings.getAppMainScreenHeight()));
+        new Dimension(1280, 720));
+    setPreferredSize(new Dimension(1280, 720));
     setLocationRelativeTo(null);
     setVisible(true);
   }

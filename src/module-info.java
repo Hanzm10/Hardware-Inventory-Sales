@@ -5,6 +5,8 @@ module Hardware.Inventory.Sales {
   requires com.miglayout.swing;
   requires org.junit.jupiter.api;
   requires java.sql;
+  requires java.management;
+  requires java.base;
 
   exports com.murico.app;
 }
