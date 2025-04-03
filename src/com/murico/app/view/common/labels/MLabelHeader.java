@@ -11,7 +11,7 @@ public class MLabelHeader extends MLabel {
   public MLabelHeader(String text) {
     super(text);
 
-    this.setFont(AppSettings.getInstance().getMainFontHeader());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontHeader());
     this.labelType = MLabelTypes.HEADER;
   }
 }

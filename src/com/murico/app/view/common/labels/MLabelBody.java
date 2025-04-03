@@ -13,6 +13,6 @@ public class MLabelBody extends MLabel {
     super(text);
 
     this.labelType = MLabelTypes.BODY;
-    this.setFont(AppSettings.getInstance().getMainFontBody());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontBody());
   }
 }

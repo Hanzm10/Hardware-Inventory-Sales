@@ -13,7 +13,7 @@ public class MTextFieldFocusListener implements FocusListener {
       var focusedComponent = e.getSource();
       
       if (focusedComponent instanceof RoundedCornerBorderComponentInterface component) {
-        component.setBorderColor(AppSettings.getInstance().getPrimaryColor());
+        component.setBorderColor(AppSettings.getInstance().getAppColorSettings().getPrimaryColor());
       }
     });
   }
@@ -24,7 +24,7 @@ public class MTextFieldFocusListener implements FocusListener {
       var focusedComponent = e.getSource();
 
       if (focusedComponent instanceof RoundedCornerBorderComponentInterface component) {
-        component.setBorderColor(AppSettings.getInstance().getBorderColor());
+        component.setBorderColor(AppSettings.getInstance().getAppColorSettings().getBorderColor());
       }
     });
   }

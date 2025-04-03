@@ -18,7 +18,7 @@ public class PrimaryButton extends MButton {
 
     this.colorVariation = MButtonColorVariations.PRIMARY;
 
-    this.setBackground(AppSettings.getInstance().getPrimaryColor());
-    this.setForeground(AppSettings.getInstance().getPrimaryForegroundColor());
+    this.setBackground(AppSettings.getInstance().getAppColorSettings().getPrimaryColor());
+    this.setForeground(AppSettings.getInstance().getAppColorSettings().getPrimaryForegroundColor());
   }
 }

@@ -49,19 +49,18 @@ public class LoginPage extends JPanel {
     var panel_1 = new JPanel();
     panel_1.setBackground(new Color(255, 255, 255));
     add(panel_1, "1, 1, center, center");
-    panel_1.setLayout(
-        new FormLayout(
-            new ColumnSpec[] {ColumnSpec.decode("24px"),
-                new ColumnSpec(ColumnSpec.FILL,
-                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("320px", true),
-                        Sizes.constant("960px", true)),
-                    2),
-                new ColumnSpec(ColumnSpec.FILL,
-                    Sizes.bounded(Sizes.PREFERRED, Sizes.constant("484px", true),
-                        Sizes.constant("640px", true)),
-                    1),
-                ColumnSpec.decode("24px"),},
-            new RowSpec[] {RowSpec.decode("650px"),}));
+    panel_1.setLayout(new FormLayout(
+        new ColumnSpec[] {ColumnSpec.decode("24px"),
+            new ColumnSpec(ColumnSpec.FILL,
+                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("320px", true),
+                    Sizes.constant("960px", true)),
+                2),
+            new ColumnSpec(ColumnSpec.FILL,
+                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("484px", true),
+                    Sizes.constant("640px", true)),
+                1),
+            ColumnSpec.decode("24px"),},
+        new RowSpec[] {RowSpec.decode("650px"),}));
 
     var left_view = new JPanel();
     left_view.setPreferredSize(new Dimension(400, 200));
@@ -151,9 +150,9 @@ public class LoginPage extends JPanel {
     scndrbtnSecondaryButton_1.setText("Create an account");
     form.add(scndrbtnSecondaryButton_1, "1, 10, fill, fill");
 
-      var lblNewLabel_1 = new JLabel("");
-      lblNewLabel_1.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_login.png")));
-      panel_1.add(lblNewLabel_1, "3, 1, right, fill");
+    var lblNewLabel_1 = new JLabel("");
+    lblNewLabel_1.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_login.png")));
+    panel_1.add(lblNewLabel_1, "3, 1, right, fill");
 
   }
 

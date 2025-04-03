@@ -2,13 +2,15 @@ package com.murico.app.view.components.inputs;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.Sizes;
 import com.murico.app.view.components.buttons.MToggleButton;
 
 public class MPasswordFieldToggleable extends JPanel {
@@ -22,20 +24,21 @@ public class MPasswordFieldToggleable extends JPanel {
    */
   public MPasswordFieldToggleable() {
     setBackground(new Color(255, 255, 255));
-    var gridBagLayout = new GridBagLayout();
-    gridBagLayout.columnWidths = new int[] {300, 53, 0};
-    gridBagLayout.rowHeights = new int[] {83, 0};
-    gridBagLayout.columnWeights = new double[] {0.0, 0.0, Double.MIN_VALUE};
-    gridBagLayout.rowWeights = new double[] {1.0, Double.MIN_VALUE};
-    setLayout(gridBagLayout);
+    setLayout(new FormLayout(
+        new ColumnSpec[] {
+            new ColumnSpec(ColumnSpec.FILL,
+                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("225px", true),
+                    Sizes.constant("300px", true)),
+                1),
+            new ColumnSpec(ColumnSpec.FILL,
+                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("50px", true),
+                    Sizes.constant("75px", true)),
+                0),},
+        new RowSpec[] {new RowSpec(RowSpec.CENTER, Sizes.bounded(Sizes.PREFERRED,
+            Sizes.constant("35px", false), Sizes.constant("75px", false)), 1),}));
 
     passwordField = new MPasswordField();
-    var gbc_passwordField = new GridBagConstraints();
-    gbc_passwordField.ipadx = 1;
-    gbc_passwordField.fill = GridBagConstraints.BOTH;
-    gbc_passwordField.gridx = 0;
-    gbc_passwordField.gridy = 0;
-    add(passwordField, gbc_passwordField);
+    add(passwordField, "1, 1, default, fill");
 
     tglbtnT = new MToggleButton();
     tglbtnT.setSelectedIcon(
@@ -51,12 +54,7 @@ public class MPasswordFieldToggleable extends JPanel {
     tglbtnT.setIcon(
         new ImageIcon(MPasswordFieldToggleable.class.getResource("/assets/icons/eye.png")));
     tglbtnT.setText("");
-    var gbc_tglbtnT = new GridBagConstraints();
-    gbc_tglbtnT.fill = GridBagConstraints.BOTH;
-    gbc_tglbtnT.gridx = 1;
-    gbc_tglbtnT.gridy = 0;
-    add(tglbtnT, gbc_tglbtnT);
-    
+    add(tglbtnT, "2, 1, fill, fill");
   }
 
   private class TglbtnTItem implements ItemListener {

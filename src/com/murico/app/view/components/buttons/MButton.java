@@ -47,7 +47,7 @@ public class MButton extends JButton implements MButtonInterface,
   }
 
   private void setDefaults() {
-    setFont(AppSettings.getInstance().getMainFontButton());
+    setFont(AppSettings.getInstance().getAppFontSettings().getMainFontButton());
 
     setBorder(new RoundedCornerBorder());
   }

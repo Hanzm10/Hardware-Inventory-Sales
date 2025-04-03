@@ -11,6 +11,7 @@ import com.murico.app.Murico;
 import com.murico.app.config.AppSettings;
 import com.murico.app.view.pages.auth.LoginPage;
 import com.murico.app.view.pages.auth.MainAuthPage;
+import com.murico.app.view.pages.auth.RegisterPage;
 
 public class MainWindow extends JPanel implements ComponentListener {
   /**
@@ -26,6 +27,7 @@ public class MainWindow extends JPanel implements ComponentListener {
 
   public MainWindow(Murico murico) {
     this.murico = murico;
+
 
     setLayout(new FormLayout("default:grow", "default:grow"));
     setBackground(new Color(255, 255, 255));
@@ -73,6 +75,12 @@ public class MainWindow extends JPanel implements ComponentListener {
         }
         break;
       case REGISTER:
+        if (previouslyRenderedPage == currentPage) {
+
+        } else {
+          var registerPage = new RegisterPage(this);
+          add(registerPage, "1, 1, fill, center");
+        }
         break;
     }
     
@@ -83,8 +91,9 @@ public class MainWindow extends JPanel implements ComponentListener {
   }
 
   private void setPanelSize() {
-    var size = new Dimension(AppSettings.getInstance().getAppMainScreenWidth(),
-        AppSettings.getInstance().getAppMainScreenHeight());
+    var size =
+        new Dimension(AppSettings.getInstance().getAppDisplaySettings().getAppMainScreenWidth(),
+        AppSettings.getInstance().getAppDisplaySettings().getAppMainScreenHeight());
 
     this.setPreferredSize(size);
   }

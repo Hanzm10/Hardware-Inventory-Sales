@@ -18,7 +18,8 @@ public class SecondaryButton extends MButton {
 
     this.colorVariation = MButtonColorVariations.SECONDARY;
 
-    this.setBackground(AppSettings.getInstance().getSecondaryColor());
-    this.setForeground(AppSettings.getInstance().getSecondaryForegroundColor());
+    this.setBackground(AppSettings.getInstance().getAppColorSettings().getSecondaryColor());
+    this.setForeground(
+        AppSettings.getInstance().getAppColorSettings().getSecondaryForegroundColor());
   }
 }

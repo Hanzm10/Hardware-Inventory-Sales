@@ -12,7 +12,7 @@ public class MLabelLink extends MLabel{
   public MLabelLink(String text) {
     super(text);
     
-    this.setFont(AppSettings.getInstance().getMainFontLink());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontLink());
     this.labelType = MLabelTypes.LINK;
   }
 

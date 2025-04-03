@@ -116,10 +116,11 @@ public class RoundedCornerBorder extends AbstractBorder implements Serializable 
   }
 
   private void setDefaults() {
-    this.borderRadius = BorderRadius.all(AppSettings.getInstance().getBaseBorderRadius());
-    this.borderColor = AppSettings.getInstance().getBorderColor();
-    this.borderWidth = AppSettings.getInstance().getBaseBorderWidth();
-    this.borderOffset = AppSettings.getInstance().getBaseBorderOffset();
+    this.borderRadius =
+        BorderRadius.all(AppSettings.getInstance().getAppDisplaySettings().getBaseBorderRadius());
+    this.borderColor = AppSettings.getInstance().getAppColorSettings().getBorderColor();
+    this.borderWidth = AppSettings.getInstance().getAppDisplaySettings().getBaseBorderWidth();
+    this.borderOffset = AppSettings.getInstance().getAppDisplaySettings().getBaseBorderOffset();
     this.drawBorder = false;
   }
 

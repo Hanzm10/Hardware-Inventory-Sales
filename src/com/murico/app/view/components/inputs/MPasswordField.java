@@ -64,13 +64,13 @@ public class MPasswordField extends JPasswordField
 
   private void setDefaults() {
     setOpaque(false);
-    setFont(AppSettings.getInstance().getMainFontBody());
+    setFont(AppSettings.getInstance().getAppFontSettings().getMainFontBody());
 
     setBorder(new RoundedCornerBorder(true));
     setEchoChar('*');
 
     placeholderText = "Password";
-    placeholderColor = AppSettings.getInstance().getPlaceholderColor();
+    placeholderColor = AppSettings.getInstance().getAppColorSettings().getPlaceholderColor();
 
     addFocusListener(new MTextFieldFocusListener());
   }

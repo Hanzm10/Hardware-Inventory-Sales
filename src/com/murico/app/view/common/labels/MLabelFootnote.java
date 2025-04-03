@@ -12,7 +12,7 @@ public class MLabelFootnote extends MLabel {
   public MLabelFootnote(String text) {
     super(text);
     
-    this.setFont(AppSettings.getInstance().getMainFontFootnote());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontFootnote());
     this.labelType = MLabelTypes.FOOTNOTE;
   }
 

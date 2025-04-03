@@ -41,11 +41,11 @@ public class MToggleButton extends JToggleButton implements MButtonInterface,
   }
 
   private void setDefaults() {
-    setFont(AppSettings.getInstance().getMainFontButton());
+    setFont(AppSettings.getInstance().getAppFontSettings().getMainFontButton());
 
     setBorder(new RoundedCornerBorder());
 
-    setBackground(AppSettings.getInstance().getTransparentColor());
+    setBackground(AppSettings.getInstance().getAppColorSettings().getTransparentColor());
     setRolloverEnabled(false);
   }
 

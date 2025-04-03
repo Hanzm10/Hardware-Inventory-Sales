@@ -14,7 +14,7 @@ public class MLabel extends JLabel {
   public MLabel(String text) {
     super(text);
 
-    this.setFont(AppSettings.getInstance().getMainFont());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFont());
     this.labelType = MLabelTypes.DEFAULT;
   }
 

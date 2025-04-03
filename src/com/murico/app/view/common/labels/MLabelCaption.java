@@ -12,7 +12,7 @@ public class MLabelCaption extends MLabel {
   public MLabelCaption(String text) {
     super(text);
 
-    this.setFont(AppSettings.getInstance().getMainFontCaption());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontCaption());
     this.labelType = MLabelTypes.CAPTION;
   }
 

@@ -87,12 +87,12 @@ public class MTextField extends JTextField
 
   private void setDefaults() {
     setOpaque(false);
-    setFont(AppSettings.getInstance().getMainFontBody());
+    setFont(AppSettings.getInstance().getAppFontSettings().getMainFontBody());
 
     setBorder(new RoundedCornerBorder(true));
 
     placeholderText = this.getText().isEmpty() ? "Enter a text here..." : this.getText();
-    placeholderColor = AppSettings.getInstance().getPlaceholderColor();
+    placeholderColor = AppSettings.getInstance().getAppColorSettings().getPlaceholderColor();
 
     addFocusListener(new MTextFieldFocusListener());
   }

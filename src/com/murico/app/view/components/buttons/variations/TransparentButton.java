@@ -17,6 +17,6 @@ public class TransparentButton extends MButton {
     super(text);
 
     this.colorVariation = MButtonColorVariations.TRANSPARENT;
-    this.setBackground(AppSettings.getInstance().getTransparentColor());
+    this.setBackground(AppSettings.getInstance().getAppColorSettings().getTransparentColor());
   }
 }

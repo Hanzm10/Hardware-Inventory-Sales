@@ -24,21 +24,22 @@ public class MainAuthPage extends JPanel {
    * Create the panel.
    */
   public MainAuthPage(MainWindow mainWindow) {
-    setBackground(new Color(255, 255, 255));
     this.mainWindow = mainWindow;
+
+    setBackground(mainWindow.getBackground());
 
     setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("1024px:grow"),},
         new RowSpec[] {RowSpec.decode("max(118dlu;pref)"), RowSpec.decode("32px"),
             RowSpec.decode("max(47px;default):grow"),}));
 
-    var lblNewLabel = new JLabel("");
-    lblNewLabel.setIcon(new ImageIcon(MainAuthPage.class.getResource("/assets/logo_freeform.png")));
-    add(lblNewLabel, "1, 1, center, center");
+    var heroImage = new JLabel("");
+    heroImage.setIcon(new ImageIcon(MainAuthPage.class.getResource("/assets/logo_freeform.png")));
+    add(heroImage, "1, 1, center, center");
 
-    var panel = new JPanel();
-    panel.setBackground(new Color(255, 255, 255));
-    add(panel, "1, 3, center, top");
-    panel.setLayout(new FormLayout(
+    var btnsContainer = new JPanel();
+    btnsContainer.setBackground(new Color(255, 255, 255));
+    add(btnsContainer, "1, 3, center, top");
+    btnsContainer.setLayout(new FormLayout(
         new ColumnSpec[] {ColumnSpec.decode("max(280px;default)"),
             new ColumnSpec(ColumnSpec.FILL,
                 Sizes.bounded(Sizes.PREFERRED, Sizes.constant("64px", true),
@@ -47,21 +48,25 @@ public class MainAuthPage extends JPanel {
             ColumnSpec.decode("max(280px;default)"),},
         new RowSpec[] {RowSpec.decode("max(48px;default)"),}));
 
-    var prmrbtnLogin = new PrimaryButton();
-    prmrbtnLogin.setText("Login");
-    prmrbtnLogin.addActionListener(new PrimaryButtonAction());
-    panel.add(prmrbtnLogin, "1, 1, fill, fill");
+    var loginBtn = new PrimaryButton();
+    loginBtn.setText("Login");
+    loginBtn.setActionCommand("Login");
+    loginBtn.addActionListener(new PrimaryButtonAction());
+    btnsContainer.add(loginBtn, "1, 1, fill, fill");
 
-    var prmrbtnPrimaryButton = new PrimaryButton();
-    prmrbtnPrimaryButton.setText("Create an account");
-    panel.add(prmrbtnPrimaryButton, "3, 1, fill, fill");
+    var registerBtn = new PrimaryButton();
+    registerBtn.setText("Create an account");
+    registerBtn.setActionCommand("Register");
+    registerBtn.addActionListener(new PrimaryButtonAction());
+    btnsContainer.add(registerBtn, "3, 1, fill, fill");
 
   }
 
   private class PrimaryButtonAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-      CurrentPage.setCurrentPage(CurrentPage.LOGIN);
+      System.out.println("Action performed: " + e.getActionCommand());
+      CurrentPage.setCurrentPage(CurrentPage.fromString(e.getActionCommand()));
       mainWindow.render();
     }
   }

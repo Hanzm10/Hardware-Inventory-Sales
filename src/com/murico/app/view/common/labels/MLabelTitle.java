@@ -14,6 +14,6 @@ public class MLabelTitle extends MLabel {
     super(text);
 
     this.labelType = MLabelTypes.TITLE;
-    this.setFont(AppSettings.getInstance().getMainFontTitle());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontTitle());
   }
 }

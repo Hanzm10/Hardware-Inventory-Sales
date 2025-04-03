@@ -13,7 +13,7 @@ public class MLabelSubtitle extends MLabel {
     super(text);
 
     this.labelType = MLabelTypes.SUBTITLE;
-    this.setFont(AppSettings.getInstance().getMainFontSubtitle());
+    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontSubtitle());
   }
 
 }
