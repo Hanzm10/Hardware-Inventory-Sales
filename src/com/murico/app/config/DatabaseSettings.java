@@ -16,7 +16,7 @@ public class DatabaseSettings {
     this.properties = new Properties();
 
     try {
-      FileLoader.loadIntoProperties("database.properties", properties);
+      FileLoader.loadFileFromResourcesToProperties("database.properties", properties);
     } catch (IllegalArgumentException | NullPointerException | IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
