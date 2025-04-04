@@ -10,11 +10,53 @@ import com.murico.app.utils.io.FileLoader;
 // TODO: Update values in cache when properties are changed
 public class UISettings extends AbstractSettings {
   private static UISettings instance;
+  private static final String CONFIG_FILE = "ui.properties";
+  private static final String KEY_BORDER_RADIUS = "border.radius";
+  private static final String KEY_BORDER_WIDTH = "border.width";
+  private static final String KEY_BORDER_OFFSET = "border.offset";
+  private static final String KEY_FONT_FAMILY = "font.family";
+  private static final String KEY_FONT_SIZE_H1 = "font.size.h1";
+  private static final String KEY_FONT_SIZE_H2 = "font.size.h2";
+  private static final String KEY_FONT_SIZE_H3 = "font.size.h3";
+  private static final String KEY_FONT_SIZE_H4 = "font.size.h4";
+  private static final String KEY_FONT_SIZE_H5 = "font.size.h5";
+  private static final String KEY_FONT_SIZE_H6 = "font.size.h6";
+  private static final String KEY_FONT_SIZE_BODY = "font.size.body";
+  private static final String KEY_FONT_SIZE_BUTTON = "font.size.button";
+  private static final String KEY_FONT_SIZE_CAPTION = "font.size.caption";
+  private static final String KEY_SPACE_XXS = "app.space.scale.xxs";
+  private static final String KEY_SPACE_XS = "app.space.scale.xs";
+  private static final String KEY_SPACE_S = "app.space.scale.s";
+  private static final String KEY_SPACE_M = "app.space.scale.m";
+  private static final String KEY_SPACE_L = "app.space.scale.l";
+  private static final String KEY_SPACE_XL = "app.space.scale.xl";
+  private static final String KEY_SPACE_XXL = "app.space.scale.xxl";
+  private static final String KEY_SPACE_XXXL = "app.space.scale.xxxl";
+
+  private static final String KEY_SPACE_XXXXL = "app.space.scale.xxxxl";
+  private static final String KEY_SPACE_XXXXXL = "app.space.scale.xxxxxl";
+  private static final String KEY_COLOR_BACKGROUND = "color.background";
+  private static final String KEY_COLOR_DARK_BACKGROUND = "color.dark.background";
+  private static final String KEY_COLOR_PRIMARY_DEFAULT = "color.primary.default";
+  private static final String KEY_COLOR_PRIMARY_FOREGROUND = "color.primary.foreground";
+  private static final String KEY_COLOR_DARK_PRIMARY_DEFAULT = "color.dark.primary.default";
+  private static final String KEY_COLOR_DARK_PRIMARY_FOREGROUND = "color.dark.primary.foreground";
+  private static final String KEY_COLOR_SECONDARY_DEFAULT = "color.secondary.default";
+  private static final String KEY_COLOR_SECONDARY_FOREGROUND = "color.secondary.foreground";
+  private static final String KEY_COLOR_DARK_SECONDARY_DEFAULT = "color.dark.secondary.default";
+
+  private static final String KEY_COLOR_DARK_SECONDARY_FOREGROUND =
+      "color.dark.secondary.foreground";
+  private static final String KEY_COLOR_TRANSPARENT_DEFAULT = "color.transparent.default";
+  private static final String KEY_COLOR_DARK_TRANSPARENT_DEFAULT = "color.dark.transparent.default";
+  private static final String KEY_COLOR_BORDER_DEFAULT = "color.border.default";
+  private static final String KEY_COLOR_DARK_BORDER_DEFAULT = "color.dark.border.default";
+  private static final String KEY_COLOR_PLACEHOLDER_DEFAULT = "color.placeholder.default";
+  private static final String KEY_COLOR_DARK_PLACEHOLDER_DEFAULT = "color.dark.placeholder.default";
 
   private final Properties defaultProperties;
-
   private final String propertiesFilePath =
-      FileLoader.getConfigurationDirectory() + File.separator + "ui.properties";
+      FileLoader.getConfigurationDirectory() + File.separator + CONFIG_FILE;
 
   private final UIFont uiFont;
   private final UIColors uiColor;
@@ -28,8 +70,8 @@ public class UISettings extends AbstractSettings {
 
     try {
       // Load default properties from the configuration directory
-      FileLoader.loadFileFromResourcesToProperties("ui.properties", defaultProperties);
-      FileLoader.loadFileFromConfigurationDirectoryToProperties("ui.properties", properties);
+      FileLoader.loadFileFromResourcesToProperties(CONFIG_FILE, defaultProperties);
+      FileLoader.loadFileFromConfigurationDirectoryToProperties(CONFIG_FILE, properties);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -40,15 +82,26 @@ public class UISettings extends AbstractSettings {
     uiBorder = new UIBorder();
   }
 
+  /**
+   * Used by inline classes to set properties. This method is not intended to be used outside of
+   * this class.
+   * 
+   * @param key
+   * @param value
+   */
+  private void parentSetProperty(String key, String value) {
+    super.setProperty(key, value);
+  }
+
   private class UIBorder {
     private int borderRadius;
     private int borderWidth;
     private int borderOffset;
 
     private UIBorder() {
-      this.borderRadius = getIntProperty("border.radius");
-      this.borderWidth = getIntProperty("border.width");
-      this.borderOffset = getIntProperty("border.offset");
+      this.borderRadius = getIntProperty(KEY_BORDER_RADIUS);
+      this.borderWidth = getIntProperty(KEY_BORDER_WIDTH);
+      this.borderOffset = getIntProperty(KEY_BORDER_OFFSET);
     }
 
     public int getBorderRadius() {
@@ -73,6 +126,8 @@ public class UISettings extends AbstractSettings {
       assert borderRadius > 0 : "Border radius must be greater than 0";
 
       this.borderRadius = borderRadius;
+      
+      parentSetProperty(KEY_BORDER_RADIUS, String.valueOf(borderRadius));
     }
     
     /**
@@ -85,6 +140,8 @@ public class UISettings extends AbstractSettings {
       assert borderWidth > 0 : "Border width must be greater than 0";
 
       this.borderWidth = borderWidth;
+      
+      parentSetProperty(KEY_BORDER_WIDTH, String.valueOf(borderWidth));
     }
     
     /**
@@ -97,6 +154,8 @@ public class UISettings extends AbstractSettings {
       assert borderOffset >= 0 : "Border offset must be greater than or equal to 0";
 
       this.borderOffset = borderOffset;
+
+      parentSetProperty(KEY_BORDER_OFFSET, String.valueOf(borderOffset));
     }
   }
 
@@ -113,16 +172,16 @@ public class UISettings extends AbstractSettings {
     private String spaceXXXXXL;
 
     public UISpace() {
-      this.spaceXXS = getProperty("app.space.scale.xxs");
-      this.spaceXS = getProperty("app.space.scale.xs");
-      this.spaceS = getProperty("app.space.scale.s");
-      this.spaceM = getProperty("app.space.scale.m");
-      this.spaceL = getProperty("app.space.scale.l");
-      this.spaceXL = getProperty("app.space.scale.xl");
-      this.spaceXXL = getProperty("app.space.scale.xxl");
-      this.spaceXXXL = getProperty("app.space.scale.xxxl");
-      this.spaceXXXXL = getProperty("app.space.scale.xxxxl");
-      this.spaceXXXXXL = getProperty("app.space.scale.xxxxxl");
+      this.spaceXXS = getProperty(KEY_SPACE_XXS);
+      this.spaceXS = getProperty(KEY_SPACE_XS);
+      this.spaceS = getProperty(KEY_SPACE_S);
+      this.spaceM = getProperty(KEY_SPACE_M);
+      this.spaceL = getProperty(KEY_SPACE_L);
+      this.spaceXL = getProperty(KEY_SPACE_XL);
+      this.spaceXXL = getProperty(KEY_SPACE_XXL);
+      this.spaceXXXL = getProperty(KEY_SPACE_XXXL);
+      this.spaceXXXXL = getProperty(KEY_SPACE_XXXXL);
+      this.spaceXXXXXL = getProperty(KEY_SPACE_XXXXXL);
 
     }
 
@@ -180,16 +239,16 @@ public class UISettings extends AbstractSettings {
     private Font captionFont;
 
     private UIFont() {
-      this.fontFamily = getProperty("font.family");
-      this.h1Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h1"));
-      this.h2Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h2"));
-      this.h3Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h3"));
-      this.h4Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h4"));
-      this.h5Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h5"));
-      this.h6Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h6"));
-      this.bodyFont = new Font(fontFamily, Font.PLAIN, getIntProperty("font.size.body"));
-      this.buttonFont = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.button"));
-      this.captionFont = new Font(fontFamily, Font.ITALIC, getIntProperty("font.size.caption"));
+      this.fontFamily = getProperty(KEY_FONT_FAMILY);
+      this.h1Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H1));
+      this.h2Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H2));
+      this.h3Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H3));
+      this.h4Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H4));
+      this.h5Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H5));
+      this.h6Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H6));
+      this.bodyFont = new Font(fontFamily, Font.PLAIN, getIntProperty(KEY_FONT_SIZE_BODY));
+      this.buttonFont = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_BUTTON));
+      this.captionFont = new Font(fontFamily, Font.ITALIC, getIntProperty(KEY_FONT_SIZE_CAPTION));
     }
 
     public Font getH1Font() {
@@ -234,87 +293,125 @@ public class UISettings extends AbstractSettings {
 
     public void setFontFamily(String fontFamily) {
       this.fontFamily = fontFamily;
-      h1Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h1"));
-      h2Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h2"));
-      h3Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h3"));
-      h4Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h4"));
-      h5Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h5"));
-      h6Font = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.h6"));
-      bodyFont = new Font(fontFamily, Font.PLAIN, getIntProperty("font.size.body"));
-      buttonFont = new Font(fontFamily, Font.BOLD, getIntProperty("font.size.button"));
-      captionFont = new Font(fontFamily, Font.ITALIC, getIntProperty("font.size.caption"));
+      h1Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H1));
+      h2Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H2));
+      h3Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H3));
+      h4Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H4));
+      h5Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H5));
+      h6Font = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_H6));
+      bodyFont = new Font(fontFamily, Font.PLAIN, getIntProperty(KEY_FONT_SIZE_BODY));
+      buttonFont = new Font(fontFamily, Font.BOLD, getIntProperty(KEY_FONT_SIZE_BUTTON));
+      captionFont = new Font(fontFamily, Font.ITALIC, getIntProperty(KEY_FONT_SIZE_CAPTION));
+
+      parentSetProperty(KEY_FONT_FAMILY, fontFamily);
     }
 
     public void setH1Font(Font h1Font) {
       this.h1Font = h1Font;
+
+      parentSetProperty(KEY_FONT_SIZE_H1, String.valueOf(h1Font.getSize()));
     }
 
     public void setH2Font(Font h2Font) {
       this.h2Font = h2Font;
+
+      parentSetProperty(KEY_FONT_SIZE_H2, String.valueOf(h2Font.getSize()));
     }
 
     public void setH3Font(Font h3Font) {
       this.h3Font = h3Font;
+
+      parentSetProperty(KEY_FONT_SIZE_H3, String.valueOf(h3Font.getSize()));
     }
 
     public void setH4Font(Font h4Font) {
       this.h4Font = h4Font;
+
+      parentSetProperty(KEY_FONT_SIZE_H4, String.valueOf(h4Font.getSize()));
     }
 
     public void setH5Font(Font h5Font) {
       this.h5Font = h5Font;
+
+      parentSetProperty(KEY_FONT_SIZE_H5, String.valueOf(h5Font.getSize()));
     }
 
     public void setH6Font(Font h6Font) {
       this.h6Font = h6Font;
+
+      parentSetProperty(KEY_FONT_SIZE_H6, String.valueOf(h6Font.getSize()));
     }
 
     public void setBodyFont(Font bodyFont) {
       this.bodyFont = bodyFont;
+
+      parentSetProperty(KEY_FONT_SIZE_BODY, String.valueOf(bodyFont.getSize()));
     }
 
     public void setButtonFont(Font buttonFont) {
       this.buttonFont = buttonFont;
+
+      parentSetProperty(KEY_FONT_SIZE_BUTTON, String.valueOf(buttonFont.getSize()));
     }
 
     public void setCaptionFont(Font captionFont) {
       this.captionFont = captionFont;
+
+      parentSetProperty(KEY_FONT_SIZE_CAPTION, String.valueOf(captionFont.getSize()));
     }
 
     public void setFontSizeH1(int size) {
       this.h1Font = new Font(fontFamily, Font.BOLD, size);
+
+      parentSetProperty(KEY_FONT_SIZE_H1, String.valueOf(size));
     }
 
     public void setFontSizeH2(int size) {
       this.h2Font = new Font(fontFamily, Font.BOLD, size);
+
+      parentSetProperty(KEY_FONT_SIZE_H2, String.valueOf(size));
     }
 
     public void setFontSizeH3(int size) {
       this.h3Font = new Font(fontFamily, Font.BOLD, size);
+
+      parentSetProperty(KEY_FONT_SIZE_H3, String.valueOf(size));
     }
 
     public void setFontSizeH4(int size) {
       this.h4Font = new Font(fontFamily, Font.BOLD, size);
+
+      parentSetProperty(KEY_FONT_SIZE_H4, String.valueOf(size));
     }
 
     public void setFontSizeH5(int size) {
       this.h5Font = new Font(fontFamily, Font.BOLD, size);
+
+      parentSetProperty(KEY_FONT_SIZE_H5, String.valueOf(size));
     }
 
     public void setFontSizeH6(int size) {
       this.h6Font = new Font(fontFamily, Font.BOLD, size);
+
+      parentSetProperty(KEY_FONT_SIZE_H6, String.valueOf(size));
     }
 
     public void setFontSizeBody(int size) {
       this.bodyFont = new Font(fontFamily, Font.PLAIN, size);
+
+      parentSetProperty(KEY_FONT_SIZE_BODY, String.valueOf(size));
     }
 
     public void setFontSizeButton(int size) {
       this.buttonFont = new Font(fontFamily, Font.BOLD, size);
+
+      parentSetProperty(KEY_FONT_SIZE_BUTTON, String.valueOf(size));
     }
 
     public void setFontSizeCaption(int size) {
       this.captionFont = new Font(fontFamily, Font.ITALIC, size);
+
+      parentSetProperty(KEY_FONT_SIZE_CAPTION, String.valueOf(size));
     }
   }
 
@@ -337,22 +434,24 @@ public class UISettings extends AbstractSettings {
     private Color placeholderColorDark;
 
     public UIColors() {
-      this.backgroundColor = Color.decode(getProperty("color.background"));
-      this.backgroundColorDark = Color.decode(getProperty("color.dark.background"));
-      this.primaryColor = Color.decode(getProperty("color.primary.default"));
-      this.primaryForegroundColor = Color.decode(getProperty("color.primary.foreground"));
-      this.primaryColorDark = Color.decode(getProperty("color.dark.primary.default"));
-      this.primaryForegroundColorDark = Color.decode(getProperty("color.dark.primary.foreground"));
-      this.secondaryColor = Color.decode(getProperty("color.secondary.default"));
-      this.secondaryForegroundColor = Color.decode(getProperty("color.secondary.foreground"));
-      this.secondaryColorDark = Color.decode(getProperty("color.dark.secondary.default"));
-      this.secondaryForegroundColorDark = Color.decode(getProperty("color.dark.secondary.foreground"));
-      this.transparentColor = Color.decode(getProperty("color.transparent.default"));
-      this.transparentColorDark = Color.decode(getProperty("color.dark.transparent.default"));
-      this.borderColor = Color.decode(getProperty("color.border.default"));
-      this.borderColorDark = Color.decode(getProperty("color.dark.border.default"));
-      this.placeholderColor = Color.decode(getProperty("color.placeholder.default"));
-      this.placeholderColorDark = Color.decode(getProperty("color.dark.placeholder.default"));
+      this.backgroundColor = Color.decode(getProperty(KEY_COLOR_BACKGROUND));
+      this.backgroundColorDark = Color.decode(getProperty(KEY_COLOR_DARK_BACKGROUND));
+      this.primaryColor = Color.decode(getProperty(KEY_COLOR_PRIMARY_DEFAULT));
+      this.primaryForegroundColor = Color.decode(getProperty(KEY_COLOR_PRIMARY_FOREGROUND));
+      this.primaryColorDark = Color.decode(getProperty(KEY_COLOR_DARK_PRIMARY_DEFAULT));
+      this.primaryForegroundColorDark =
+          Color.decode(getProperty(KEY_COLOR_DARK_PRIMARY_FOREGROUND));
+      this.secondaryColor = Color.decode(getProperty(KEY_COLOR_SECONDARY_DEFAULT));
+      this.secondaryForegroundColor = Color.decode(getProperty(KEY_COLOR_SECONDARY_FOREGROUND));
+      this.secondaryColorDark = Color.decode(getProperty(KEY_COLOR_DARK_SECONDARY_DEFAULT));
+      this.secondaryForegroundColorDark =
+          Color.decode(getProperty(KEY_COLOR_DARK_SECONDARY_FOREGROUND));
+      this.transparentColor = Color.decode(getProperty(KEY_COLOR_TRANSPARENT_DEFAULT));
+      this.transparentColorDark = Color.decode(getProperty(KEY_COLOR_DARK_TRANSPARENT_DEFAULT));
+      this.borderColor = Color.decode(getProperty(KEY_COLOR_BORDER_DEFAULT));
+      this.borderColorDark = Color.decode(getProperty(KEY_COLOR_DARK_BORDER_DEFAULT));
+      this.placeholderColor = Color.decode(getProperty(KEY_COLOR_PLACEHOLDER_DEFAULT));
+      this.placeholderColorDark = Color.decode(getProperty(KEY_COLOR_DARK_PLACEHOLDER_DEFAULT));
     }
 
     public Color getBackgroundColor() {
@@ -433,6 +532,8 @@ public class UISettings extends AbstractSettings {
       assert backgroundC != null : "Invalid background color format";
 
       this.backgroundColor = backgroundC;
+
+      parentSetProperty(KEY_COLOR_BACKGROUND, backgroundColor);
     }
 
     /**
@@ -449,6 +550,8 @@ public class UISettings extends AbstractSettings {
       assert backgroundColorD != null : "Invalid background color dark format";
 
       this.backgroundColorDark = backgroundColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_BACKGROUND, backgroundColorDark);
     }
 
     /**
@@ -465,6 +568,8 @@ public class UISettings extends AbstractSettings {
       assert primaryC != null : "Invalid primary color format";
 
       this.primaryColor = primaryC;
+
+      parentSetProperty(KEY_COLOR_PRIMARY_DEFAULT, primaryColor);
     }
 
     /**
@@ -481,6 +586,8 @@ public class UISettings extends AbstractSettings {
       assert primaryForegroundC != null : "Invalid primary foreground color format";
 
       this.primaryForegroundColor = primaryForegroundC;
+
+      parentSetProperty(KEY_COLOR_PRIMARY_FOREGROUND, primaryForegroundColor);
     }
 
     /**
@@ -497,6 +604,8 @@ public class UISettings extends AbstractSettings {
       assert primaryColorD != null : "Invalid primary color dark format";
 
       this.primaryColorDark = primaryColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_PRIMARY_DEFAULT, primaryColorDark);
     }
 
     /**
@@ -515,6 +624,8 @@ public class UISettings extends AbstractSettings {
       assert primaryForegroundColorD != null : "Invalid primary foreground color dark format";
 
       this.primaryForegroundColorDark = primaryForegroundColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_PRIMARY_FOREGROUND, primaryForegroundColorDark);
     }
 
     /**
@@ -531,6 +642,8 @@ public class UISettings extends AbstractSettings {
       assert secondaryC != null : "Invalid secondary color format";
 
       this.secondaryColor = secondaryC;
+
+      parentSetProperty(KEY_COLOR_SECONDARY_DEFAULT, secondaryColor);
     }
 
     /**
@@ -547,6 +660,8 @@ public class UISettings extends AbstractSettings {
       assert secondaryForegroundC != null : "Invalid secondary foreground color format";
 
       this.secondaryForegroundColor = secondaryForegroundC;
+
+      parentSetProperty(KEY_COLOR_SECONDARY_FOREGROUND, secondaryForegroundColor);
     }
 
     /**
@@ -563,6 +678,8 @@ public class UISettings extends AbstractSettings {
       assert secondaryColorD != null : "Invalid secondary color dark format";
 
       this.secondaryColorDark = secondaryColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_SECONDARY_DEFAULT, secondaryColorDark);
     }
 
     /**
@@ -581,6 +698,8 @@ public class UISettings extends AbstractSettings {
       assert secondaryForegroundColorD != null : "Invalid secondary foreground color dark format";
 
       this.secondaryForegroundColorDark = secondaryForegroundColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_SECONDARY_FOREGROUND, secondaryForegroundColorDark);
     }
 
     /**
@@ -597,6 +716,8 @@ public class UISettings extends AbstractSettings {
       assert transparentC != null : "Invalid transparent color format";
 
       this.transparentColor = transparentC;
+
+      parentSetProperty(KEY_COLOR_TRANSPARENT_DEFAULT, transparentColor);
     }
 
     /**
@@ -613,6 +734,8 @@ public class UISettings extends AbstractSettings {
       assert transparentColorD != null : "Invalid transparent color dark format";
 
       this.transparentColorDark = transparentColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_TRANSPARENT_DEFAULT, transparentColorDark);
     }
 
     /**
@@ -629,6 +752,8 @@ public class UISettings extends AbstractSettings {
       assert borderC != null : "Invalid border color format";
 
       this.borderColor = borderC;
+
+      parentSetProperty(KEY_COLOR_BORDER_DEFAULT, borderColor);
     }
 
     /**
@@ -645,6 +770,8 @@ public class UISettings extends AbstractSettings {
       assert borderColorD != null : "Invalid border color dark format";
 
       this.borderColorDark = borderColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_BORDER_DEFAULT, borderColorDark);
     }
 
     /**
@@ -662,6 +789,8 @@ public class UISettings extends AbstractSettings {
 
       this.placeholderColor = placeholderC;
 
+      parentSetProperty(KEY_COLOR_PLACEHOLDER_DEFAULT, placeholderColor);
+
     }
 
     /**
@@ -678,6 +807,8 @@ public class UISettings extends AbstractSettings {
       assert placeholderColorD != null : "Invalid placeholder color dark format";
 
       this.placeholderColorDark = placeholderColorD;
+
+      parentSetProperty(KEY_COLOR_DARK_PLACEHOLDER_DEFAULT, placeholderColorDark);
     }
 
   }
