@@ -34,14 +34,19 @@ public class FileLoader {
    * 
    * @throws IOException if an error occurred when reading from the input stream, or an I/O error
    *         occured.
-   * @throws IllegalArgumentException if the input stream contains a malformed Unicode escape
-   *         sequence.
+   * @throws AssertionError if filePath or properties is null.
+   * @throws IllegalArgumentException if the contents of the file are not valid properties.
    */
   public static void loadFileFromResourcesToProperties(String filePath, Properties properties)
-      throws IOException, IllegalArgumentException, NullPointerException {
+      throws AssertionError, IOException, IllegalArgumentException {
+    assert filePath != null : "File path cannot be null.";
+    assert properties != null : "Properties object cannot be null.";
+
     var fileStream = FileLoader.class.getClassLoader().getResourceAsStream(filePath);
 
-    assert fileStream != null : "File not found: " + filePath;
+    if (fileStream == null) {
+      throw new FileNotFoundException("File not found: " + filePath);
+    }
 
     properties.load(fileStream);
     fileStream.close();
@@ -53,28 +58,26 @@ public class FileLoader {
    * @param filePath The path to the properties file, relative to the configuration directory.
    * @param properties The Properties object to load the file into.
    * 
-   * @throws NullPointerException - If child is null or if the file does not exist.
-   * @throws AssertionError - If the file does not exist.
-   * @throws IOException - If an I/O error occurs. FileNotFoundException - if the file does not
-   *         exist, is a directory rather than a regular file, or for some other reason cannot be
-   *         opened for reading.
+   * @throws AssertionError - If filePath or properties is null.
+   * @throws FileNotFoundException - if the file does not exist, is a directory rather than a
+   *         regular file, or for some other reason cannot be opened for reading.
+   * @throws IOException - If an I/O error occurs.
    * @throws SecurityException - If a security manager exists and its checkRead method denies read
    *         access to the file.
    */
   public static void loadFileFromConfigurationDirectoryToProperties(String filePath,
-      Properties properties) throws NullPointerException, AssertionError, IOException,
-      FileNotFoundException, SecurityException {
+      Properties properties)
+      throws AssertionError, FileNotFoundException, IOException, SecurityException {
+    assert filePath != null : "File path cannot be null.";
+    assert properties != null : "Properties object cannot be null.";
+
     var file = new File(getConfigurationDirectory(), filePath);
 
-    assert file != null : "File not found: " + filePath;
-
     if (!file.exists()) {
-      throw new IOException("File not found: " + file.getAbsolutePath());
+      throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
     }
 
     InputStream fileStream = new FileInputStream(file);
-
-    assert fileStream != null : "File not found: " + filePath;
 
     properties.load(fileStream);
     fileStream.close();

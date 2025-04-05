@@ -1,5 +1,6 @@
 package com.murico.app.config;
 
+import java.io.File;
 import com.murico.app.utils.io.FileLoader;
 
 /**
@@ -7,18 +8,13 @@ import com.murico.app.utils.io.FileLoader;
  */
 public class AppSettings extends AbstractSettings {
   private static AppSettings instance = null;
-  private static final String CONFIG_FILE = "config.properties";
+
+  private static final String KEY_APP_TITLE = "app.metadata.title";
 
   private String appTitle;
 
   private AppSettings() {
     super();
-
-    try {
-      FileLoader.loadFileFromResourcesToProperties(CONFIG_FILE, properties);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load configuration file: " + CONFIG_FILE, e);
-    }
   }
 
   /**
@@ -41,14 +37,30 @@ public class AppSettings extends AbstractSettings {
    */
   public String getAppTitle() {
     if (appTitle == null) {
-      appTitle = properties.getProperty("app.title");
+      appTitle = getProperty(KEY_APP_TITLE);
     }
+
     return appTitle;
   }
 
   @Override
-  void save() {
-    // do nothing
+  protected String getFileName() {
+    return "config.properties";
+  }
+
+  @Override
+  protected String getFilePath() {
+    return FileLoader.getConfigurationDirectory() + File.separator + getFileName();
+  }
+
+  @Override
+  protected boolean isFileReadOnly() {
+    return true;
+  }
+
+  @Override
+  protected boolean editableByUser() {
+    return false;
   }
 
 }

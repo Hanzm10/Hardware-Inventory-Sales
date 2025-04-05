@@ -38,33 +38,11 @@ public class Murico {
         System.out.println("Configuration directory created: " + configDir.getAbsolutePath());
       }
 
-      var configFile = new File(configDir, "config.properties");
-
-      if (!configFile.exists()) {
-        try {
-          configFile.createNewFile();
-          System.out.println("Configuration file created: " + configFile.getAbsolutePath());
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-
       var logDir = new File(FileLoader.getLogsDirectory());
 
       if (!logDir.exists()) {
         logDir.mkdirs();
         System.out.println("Log directory created: " + logDir.getAbsolutePath());
-      }
-
-      var logFile = new File(logDir, "app.log");
-
-      if (!logFile.exists()) {
-        try {
-          logFile.createNewFile();
-          System.out.println("Log file created: " + logFile.getAbsolutePath());
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
       }
     }
 
