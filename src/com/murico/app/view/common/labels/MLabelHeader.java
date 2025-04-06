@@ -1,6 +1,6 @@
 package com.murico.app.view.common.labels;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 
 public class MLabelHeader extends MLabel {
   /**
@@ -11,7 +11,7 @@ public class MLabelHeader extends MLabel {
   public MLabelHeader(String text) {
     super(text);
 
-    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontHeader());
+    this.setFont(UISettings.getInstance().getUIFont().getH1Font());
     this.labelType = MLabelTypes.HEADER;
   }
 }

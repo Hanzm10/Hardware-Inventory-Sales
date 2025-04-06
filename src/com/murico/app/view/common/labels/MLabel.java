@@ -1,7 +1,7 @@
 package com.murico.app.view.common.labels;
 
 import javax.swing.JLabel;
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 
 public class MLabel extends JLabel {
   protected MLabelTypes labelType;
@@ -14,7 +14,7 @@ public class MLabel extends JLabel {
   public MLabel(String text) {
     super(text);
 
-    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFont());
+    this.setFont(UISettings.getInstance().getUIFont().getBodyFont());
     this.labelType = MLabelTypes.DEFAULT;
   }
 

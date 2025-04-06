@@ -1,6 +1,6 @@
 package com.murico.app.view.components.buttons.variations;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.components.buttons.MButton;
 
 public class PrimaryButton extends MButton {
@@ -18,7 +18,7 @@ public class PrimaryButton extends MButton {
 
     this.colorVariation = MButtonColorVariations.PRIMARY;
 
-    this.setBackground(AppSettings.getInstance().getAppColorSettings().getPrimaryColor());
-    this.setForeground(AppSettings.getInstance().getAppColorSettings().getPrimaryForegroundColor());
+    this.setBackground(UISettings.getInstance().getUIColor().getPrimaryColor());
+    this.setForeground(UISettings.getInstance().getUIColor().getPrimaryForegroundColor());
   }
 }

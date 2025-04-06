@@ -1,6 +1,6 @@
 package com.murico.app.view.common.labels;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 
 public class MLabelLink extends MLabel{
 
@@ -12,7 +12,7 @@ public class MLabelLink extends MLabel{
   public MLabelLink(String text) {
     super(text);
     
-    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontLink());
+    this.setFont(UISettings.getInstance().getUIFont().getH6Font());
     this.labelType = MLabelTypes.LINK;
   }
 

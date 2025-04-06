@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import javax.swing.JPasswordField;
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorder;
 import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
 import com.murico.app.view.components.inputs.listeners.MTextFieldFocusListener;
@@ -64,13 +64,14 @@ public class MPasswordField extends JPasswordField
 
   private void setDefaults() {
     setOpaque(false);
-    setFont(AppSettings.getInstance().getAppFontSettings().getMainFontBody());
+    setBackground(new Color(0x0, true));
+    setFont(UISettings.getInstance().getUIFont().getBodyFont());
 
     setBorder(new RoundedCornerBorder(true));
     setEchoChar('*');
 
     placeholderText = "Password";
-    placeholderColor = AppSettings.getInstance().getAppColorSettings().getPlaceholderColor();
+    placeholderColor = UISettings.getInstance().getUIColor().getPlaceholderColor();
 
     addFocusListener(new MTextFieldFocusListener());
   }

@@ -1,6 +1,6 @@
 package com.murico.app.view.common.labels;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 
 public class MLabelSubtitle extends MLabel {
 
@@ -13,7 +13,7 @@ public class MLabelSubtitle extends MLabel {
     super(text);
 
     this.labelType = MLabelTypes.SUBTITLE;
-    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontSubtitle());
+    this.setFont(UISettings.getInstance().getUIFont().getH2Font());
   }
 
 }

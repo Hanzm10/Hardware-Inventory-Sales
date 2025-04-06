@@ -3,7 +3,7 @@ package com.murico.app.view.components.buttons;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JButton;
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorder;
 import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
 import com.murico.app.view.components.buttons.listeners.ButtonFocusListenerVisualFeedback;
@@ -47,7 +47,7 @@ public class MButton extends JButton implements MButtonInterface,
   }
 
   private void setDefaults() {
-    setFont(AppSettings.getInstance().getAppFontSettings().getMainFontButton());
+    setFont(UISettings.getInstance().getUIFont().getButtonFont());
 
     setBorder(new RoundedCornerBorder());
   }

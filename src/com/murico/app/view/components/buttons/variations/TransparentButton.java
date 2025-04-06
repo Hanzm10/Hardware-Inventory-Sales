@@ -1,6 +1,6 @@
 package com.murico.app.view.components.buttons.variations;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.components.buttons.MButton;
 
 public class TransparentButton extends MButton {
@@ -17,6 +17,6 @@ public class TransparentButton extends MButton {
     super(text);
 
     this.colorVariation = MButtonColorVariations.TRANSPARENT;
-    this.setBackground(AppSettings.getInstance().getAppColorSettings().getTransparentColor());
+    this.setBackground(UISettings.getInstance().getUIColor().getTransparentColor());
   }
 }

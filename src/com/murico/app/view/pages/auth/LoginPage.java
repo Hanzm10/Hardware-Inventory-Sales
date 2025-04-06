@@ -3,13 +3,11 @@ package com.murico.app.view.pages.auth;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -17,7 +15,7 @@ import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.murico.app.view.CurrentPage;
-import com.murico.app.view.MainWindow;
+import com.murico.app.view.common.containers.ContainerPanel;
 import com.murico.app.view.common.labels.MLabelCaption;
 import com.murico.app.view.common.labels.MLabelTitle;
 import com.murico.app.view.components.buttons.variations.SecondaryButton;
@@ -25,19 +23,17 @@ import com.murico.app.view.components.buttons.variations.TransparentButton;
 import com.murico.app.view.components.inputs.MPasswordFieldToggleable;
 import com.murico.app.view.components.inputs.MTextField;
 
-public class LoginPage extends JPanel {
+public class LoginPage extends ContainerPanel {
 
   private static final long serialVersionUID = 1L;
-  private final MainWindow mainWindow;
   // private var lblNewLabel;
 
   /**
    * Create the panel.
    */
-  public LoginPage(MainWindow mainWindow) {
-    this.mainWindow = mainWindow;
+  public LoginPage() {
+    super();
 
-    setBackground(new Color(255, 255, 255));
     setLayout(
         new FormLayout(
             new ColumnSpec[] {new ColumnSpec(ColumnSpec.FILL,
@@ -46,8 +42,7 @@ public class LoginPage extends JPanel {
                 1),},
             new RowSpec[] {RowSpec.decode("690px"),}));
 
-    var panel_1 = new JPanel();
-    panel_1.setBackground(new Color(255, 255, 255));
+    var panel_1 = new ContainerPanel();
     add(panel_1, "1, 1, center, center");
     panel_1.setLayout(new FormLayout(
         new ColumnSpec[] {ColumnSpec.decode("24px"),
@@ -62,10 +57,9 @@ public class LoginPage extends JPanel {
             ColumnSpec.decode("24px"),},
         new RowSpec[] {RowSpec.decode("650px"),}));
 
-    var left_view = new JPanel();
+    var left_view = new ContainerPanel();
     left_view.setPreferredSize(new Dimension(400, 200));
     left_view.setMinimumSize(new Dimension(200, 200));
-    left_view.setBackground(Color.WHITE);
     panel_1.add(left_view, "2, 1, left, fill");
     left_view.setLayout(new FormLayout(
         new ColumnSpec[] {ColumnSpec.decode("75px"), ColumnSpec.decode("161px"),
@@ -83,8 +77,7 @@ public class LoginPage extends JPanel {
     trnsprntbtnHello.setText("  Back");
     left_view.add(trnsprntbtnHello, "3, 1, fill, top");
 
-    var form = new JPanel();
-    form.setBackground(Color.WHITE);
+    var form = new ContainerPanel();
     left_view.add(form, "1, 2, 3, 1, center, center");
     form.setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("center:355px"),},
         new RowSpec[] {FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, RowSpec.decode("85px"),
@@ -96,8 +89,7 @@ public class LoginPage extends JPanel {
     lbltlSignIn.setText("Sign in");
     form.add(lbltlSignIn, "1, 2, fill, fill");
 
-    var inputContainer = new JPanel();
-    inputContainer.setBackground(Color.WHITE);
+    var inputContainer = new ContainerPanel();
     form.add(inputContainer, "1, 4, fill, fill");
     inputContainer.setLayout(new GridLayout(0, 1, 0, 16));
 
@@ -106,20 +98,14 @@ public class LoginPage extends JPanel {
     inputContainer.add(txtfldTextField);
 
     var passwordFieldToggleable = new MPasswordFieldToggleable();
-    var gridBagLayout = (GridBagLayout) passwordFieldToggleable.getLayout();
-    gridBagLayout.rowWeights = new double[] {1.0};
-    gridBagLayout.rowHeights = new int[] {53};
-    gridBagLayout.columnWeights = new double[] {0.0, 0.0};
-    gridBagLayout.columnWidths = new int[] {300, 53};
     inputContainer.add(passwordFieldToggleable);
 
     var scndrbtnSecondaryButton = new SecondaryButton();
     scndrbtnSecondaryButton.setText("Log in");
     form.add(scndrbtnSecondaryButton, "1, 6, fill, fill");
 
-    var panel = new JPanel();
+    var panel = new ContainerPanel();
     panel.setLayout(null);
-    panel.setBackground(Color.WHITE);
     form.add(panel, "1, 8, fill, fill");
 
     var separator = new JSeparator();
@@ -160,7 +146,6 @@ public class LoginPage extends JPanel {
     @Override
     public void actionPerformed(ActionEvent e) {
       CurrentPage.setCurrentPage(CurrentPage.MAIN);
-      mainWindow.render();
     }
   }
 }

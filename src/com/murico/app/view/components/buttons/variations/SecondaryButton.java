@@ -1,6 +1,6 @@
 package com.murico.app.view.components.buttons.variations;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.components.buttons.MButton;
 
 public class SecondaryButton extends MButton {
@@ -18,8 +18,7 @@ public class SecondaryButton extends MButton {
 
     this.colorVariation = MButtonColorVariations.SECONDARY;
 
-    this.setBackground(AppSettings.getInstance().getAppColorSettings().getSecondaryColor());
-    this.setForeground(
-        AppSettings.getInstance().getAppColorSettings().getSecondaryForegroundColor());
+    this.setBackground(UISettings.getInstance().getUIColor().getSecondaryColor());
+    this.setForeground(UISettings.getInstance().getUIColor().getSecondaryForegroundColor());
   }
 }

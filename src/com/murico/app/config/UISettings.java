@@ -4,13 +4,19 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import com.murico.app.utils.io.FileLoader;
+import com.murico.app.view.utilities.RenderingUtilities;
 
 // TODO: Update values in cache when properties are changed
 public class UISettings extends AbstractSettings {
   private static UISettings instance;
+
+  private static final String KEY_DISPLAY_PREFERRED_WIDTH = "screen.preferredWidth";
+  private static final String KEY_DISPLAY_PREFERRED_HEIGHT = "screen.preferredHeight";
+
   private static final String KEY_BORDER_RADIUS = "border.radius";
   private static final String KEY_BORDER_WIDTH = "border.width";
   private static final String KEY_BORDER_OFFSET = "border.offset";
+
   private static final String KEY_FONT_FAMILY = "font.family";
   private static final String KEY_FONT_SIZE_H1 = "font.size.h1";
   private static final String KEY_FONT_SIZE_H2 = "font.size.h2";
@@ -21,6 +27,7 @@ public class UISettings extends AbstractSettings {
   private static final String KEY_FONT_SIZE_BODY = "font.size.body";
   private static final String KEY_FONT_SIZE_BUTTON = "font.size.button";
   private static final String KEY_FONT_SIZE_CAPTION = "font.size.caption";
+
   private static final String KEY_SPACE_XXS = "app.space.scale.xxs";
   private static final String KEY_SPACE_XS = "app.space.scale.xs";
   private static final String KEY_SPACE_S = "app.space.scale.s";
@@ -29,11 +36,13 @@ public class UISettings extends AbstractSettings {
   private static final String KEY_SPACE_XL = "app.space.scale.xl";
   private static final String KEY_SPACE_XXL = "app.space.scale.xxl";
   private static final String KEY_SPACE_XXXL = "app.space.scale.xxxl";
-
   private static final String KEY_SPACE_XXXXL = "app.space.scale.xxxxl";
   private static final String KEY_SPACE_XXXXXL = "app.space.scale.xxxxxl";
+
   private static final String KEY_COLOR_BACKGROUND = "color.background";
   private static final String KEY_COLOR_DARK_BACKGROUND = "color.dark.background";
+  private static final String KEY_COLOR_FOREGROUND = "color.foreground";
+  private static final String KEY_COLOR_DARK_FOREGROUND = "color.dark.foreground";
   private static final String KEY_COLOR_PRIMARY_DEFAULT = "color.primary.default";
   private static final String KEY_COLOR_PRIMARY_FOREGROUND = "color.primary.foreground";
   private static final String KEY_COLOR_DARK_PRIMARY_DEFAULT = "color.dark.primary.default";
@@ -52,6 +61,7 @@ public class UISettings extends AbstractSettings {
   private static final String KEY_COLOR_DARK_PLACEHOLDER_DEFAULT = "color.dark.placeholder.default";
 
   private final UIFont uiFont;
+  private final UIDisplay uiDisplay;
   private final UIColors uiColor;
   private final UISpace uiSpace;
   private final UIBorder uiBorder;
@@ -60,6 +70,7 @@ public class UISettings extends AbstractSettings {
     super();
 
     uiFont = new UIFont();
+    uiDisplay = new UIDisplay();
     uiColor = new UIColors();
     uiSpace = new UISpace();
     uiBorder = new UIBorder();
@@ -67,6 +78,10 @@ public class UISettings extends AbstractSettings {
 
   public UIFont getUIFont() {
     return uiFont;
+  }
+
+  public UIDisplay getUIDisplay() {
+    return uiDisplay;
   }
 
   public UIColors getUIColor() {
@@ -119,7 +134,25 @@ public class UISettings extends AbstractSettings {
     properties.setProperty(key, value);
   }
 
-  private class UIBorder {
+  public class UIDisplay {
+    private int preferredWidth;
+    private int preferredHeight;
+
+    private UIDisplay() {
+      this.preferredWidth = getIntProperty(KEY_DISPLAY_PREFERRED_WIDTH);
+      this.preferredHeight = getIntProperty(KEY_DISPLAY_PREFERRED_HEIGHT);
+    }
+
+    public int getPreferredWidth() {
+      return preferredWidth;
+    }
+
+    public int getPreferredHeight() {
+      return preferredHeight;
+    }
+  }
+
+  public class UIBorder {
     private int borderRadius;
     private int borderWidth;
     private int borderOffset;
@@ -185,7 +218,7 @@ public class UISettings extends AbstractSettings {
     }
   }
 
-  private class UISpace {
+  public class UISpace {
     private String spaceXXS;
     private String spaceXS;
     private String spaceS;
@@ -197,7 +230,7 @@ public class UISettings extends AbstractSettings {
     private String spaceXXXXL;
     private String spaceXXXXXL;
 
-    public UISpace() {
+    private UISpace() {
       this.spaceXXS = getProperty(KEY_SPACE_XXS);
       this.spaceXS = getProperty(KEY_SPACE_XS);
       this.spaceS = getProperty(KEY_SPACE_S);
@@ -444,6 +477,8 @@ public class UISettings extends AbstractSettings {
   public class UIColors {
     private Color backgroundColor;
     private Color backgroundColorDark;
+    private Color foregroundColor;
+    private Color foregroundColorDark;
     private Color primaryColor;
     private Color primaryForegroundColor;
     private Color primaryColorDark;
@@ -459,9 +494,11 @@ public class UISettings extends AbstractSettings {
     private Color placeholderColor;
     private Color placeholderColorDark;
 
-    public UIColors() {
+    private UIColors() {
       this.backgroundColor = Color.decode(getProperty(KEY_COLOR_BACKGROUND));
       this.backgroundColorDark = Color.decode(getProperty(KEY_COLOR_DARK_BACKGROUND));
+      this.foregroundColor = Color.decode(getProperty(KEY_COLOR_FOREGROUND));
+      this.foregroundColorDark = Color.decode(getProperty(KEY_COLOR_DARK_FOREGROUND));
       this.primaryColor = Color.decode(getProperty(KEY_COLOR_PRIMARY_DEFAULT));
       this.primaryForegroundColor = Color.decode(getProperty(KEY_COLOR_PRIMARY_FOREGROUND));
       this.primaryColorDark = Color.decode(getProperty(KEY_COLOR_DARK_PRIMARY_DEFAULT));
@@ -472,8 +509,10 @@ public class UISettings extends AbstractSettings {
       this.secondaryColorDark = Color.decode(getProperty(KEY_COLOR_DARK_SECONDARY_DEFAULT));
       this.secondaryForegroundColorDark =
           Color.decode(getProperty(KEY_COLOR_DARK_SECONDARY_FOREGROUND));
-      this.transparentColor = Color.decode(getProperty(KEY_COLOR_TRANSPARENT_DEFAULT));
-      this.transparentColorDark = Color.decode(getProperty(KEY_COLOR_DARK_TRANSPARENT_DEFAULT));
+      this.transparentColor = RenderingUtilities
+          .RgbColorToColorWithAlpha(Color.decode(getProperty(KEY_COLOR_TRANSPARENT_DEFAULT)), 0);
+      this.transparentColorDark = RenderingUtilities.RgbColorToColorWithAlpha(
+          Color.decode(getProperty(KEY_COLOR_DARK_TRANSPARENT_DEFAULT)), 0);
       this.borderColor = Color.decode(getProperty(KEY_COLOR_BORDER_DEFAULT));
       this.borderColorDark = Color.decode(getProperty(KEY_COLOR_DARK_BORDER_DEFAULT));
       this.placeholderColor = Color.decode(getProperty(KEY_COLOR_PLACEHOLDER_DEFAULT));
@@ -486,6 +525,14 @@ public class UISettings extends AbstractSettings {
 
     public Color getBackgroundColorDark() {
       return backgroundColorDark;
+    }
+
+    public Color getForegroundColor() {
+      return foregroundColor;
+    }
+
+    public Color getForegroundColorDark() {
+      return foregroundColorDark;
     }
 
     public Color getPrimaryColor() {
@@ -578,6 +625,42 @@ public class UISettings extends AbstractSettings {
       this.backgroundColorDark = backgroundColorD;
 
       privateSetProperty(KEY_COLOR_DARK_BACKGROUND, backgroundColorDark);
+    }
+
+    /**
+     * Set the foreground color. The color should be in hex format (e.g., #FFFFFF).
+     *
+     * @param foregroundColor the foreground color in hex format
+     * @throws AssertionError if the color is null or invalid
+     */
+    public void setForegroundColor(String foregroundColor) throws AssertionError {
+      assert foregroundColor != null : "Foreground color cannot be null";
+
+      var foregroundC = Color.decode(foregroundColor);
+
+      assert foregroundC != null : "Invalid foreground color format";
+
+      this.foregroundColor = foregroundC;
+
+      privateSetProperty(KEY_COLOR_FOREGROUND, foregroundColor);
+    }
+
+    /**
+     * Set the foreground color for dark theme. The color should be in hex format (e.g., #FFFFFF).
+     *
+     * @param foregroundColorDark the foreground color in hex format
+     * @throws AssertionError if the color is null or invalid
+     */
+    public void setForegroundColorDark(String foregroundColorDark) throws AssertionError {
+      assert foregroundColorDark != null : "Foreground color dark cannot be null";
+
+      var foregroundColorD = Color.decode(foregroundColorDark);
+
+      assert foregroundColorD != null : "Invalid foreground color dark format";
+
+      this.foregroundColorDark = foregroundColorD;
+
+      privateSetProperty(KEY_COLOR_DARK_FOREGROUND, foregroundColorDark);
     }
 
     /**

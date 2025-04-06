@@ -3,7 +3,7 @@ package com.murico.app.view.components.inputs.listeners;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javax.swing.SwingUtilities;
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
 
 public class MTextFieldFocusListener implements FocusListener {
@@ -13,7 +13,7 @@ public class MTextFieldFocusListener implements FocusListener {
       var focusedComponent = e.getSource();
       
       if (focusedComponent instanceof RoundedCornerBorderComponentInterface component) {
-        component.setBorderColor(AppSettings.getInstance().getAppColorSettings().getPrimaryColor());
+        component.setBorderColor(UISettings.getInstance().getUIColor().getPrimaryColor());
       }
     });
   }
@@ -24,7 +24,7 @@ public class MTextFieldFocusListener implements FocusListener {
       var focusedComponent = e.getSource();
 
       if (focusedComponent instanceof RoundedCornerBorderComponentInterface component) {
-        component.setBorderColor(AppSettings.getInstance().getAppColorSettings().getBorderColor());
+        component.setBorderColor(UISettings.getInstance().getUIColor().getBorderColor());
       }
     });
   }

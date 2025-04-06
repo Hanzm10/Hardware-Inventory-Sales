@@ -11,23 +11,17 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.murico.app.view.CurrentPage;
-import com.murico.app.view.MainWindow;
+import com.murico.app.view.common.containers.ContainerPanel;
 import com.murico.app.view.components.buttons.variations.PrimaryButton;
 
-public class MainAuthPage extends JPanel {
+public class MainAuthPage extends ContainerPanel {
 
   private static final long serialVersionUID = 1L;
-
-  private final MainWindow mainWindow;
 
   /**
    * Create the panel.
    */
-  public MainAuthPage(MainWindow mainWindow) {
-    this.mainWindow = mainWindow;
-
-    setBackground(mainWindow.getBackground());
-
+  public MainAuthPage() {
     setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("1024px:grow"),},
         new RowSpec[] {RowSpec.decode("max(118dlu;pref)"), RowSpec.decode("32px"),
             RowSpec.decode("max(47px;default):grow"),}));
@@ -65,9 +59,7 @@ public class MainAuthPage extends JPanel {
   private class PrimaryButtonAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-      System.out.println("Action performed: " + e.getActionCommand());
       CurrentPage.setCurrentPage(CurrentPage.fromString(e.getActionCommand()));
-      mainWindow.render();
     }
   }
 }

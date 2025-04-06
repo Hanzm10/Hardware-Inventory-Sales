@@ -13,7 +13,6 @@ public class AppInitializationSplashScreen extends JWindow {
    */
   private static final long serialVersionUID = -1712636901239751518L;
 
-  private double initialiationProgress;
   private JLabel splashScreenLabel;
   private JProgressBar splashScreenProgressBar;
 

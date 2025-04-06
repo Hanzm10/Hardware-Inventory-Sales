@@ -1,20 +1,15 @@
 package com.murico.app.view.pages.auth;
 
-import javax.swing.JPanel;
-import com.murico.app.view.MainWindow;
+import com.murico.app.view.common.containers.ContainerPanel;
 
-public class RegisterPage extends JPanel {
+public class RegisterPage extends ContainerPanel {
 
   private static final long serialVersionUID = 1L;
-
-  private final MainWindow mainWindow;
 
   /**
    * Create the panel.
    */
-  public RegisterPage(MainWindow mainWindow) {
-    this.mainWindow = mainWindow;
-    setBackground(mainWindow.getBackground());
+  public RegisterPage() {
 
   }
 

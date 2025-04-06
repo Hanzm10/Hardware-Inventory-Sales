@@ -11,7 +11,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.io.Serializable;
 import javax.swing.border.AbstractBorder;
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.utilities.RenderingUtilities;
 
 /**
@@ -117,10 +117,10 @@ public class RoundedCornerBorder extends AbstractBorder implements Serializable 
 
   private void setDefaults() {
     this.borderRadius =
-        BorderRadius.all(AppSettings.getInstance().getAppDisplaySettings().getBaseBorderRadius());
-    this.borderColor = AppSettings.getInstance().getAppColorSettings().getBorderColor();
-    this.borderWidth = AppSettings.getInstance().getAppDisplaySettings().getBaseBorderWidth();
-    this.borderOffset = AppSettings.getInstance().getAppDisplaySettings().getBaseBorderOffset();
+        BorderRadius.all(UISettings.getInstance().getUIBorder().getBorderRadius());
+    this.borderColor = UISettings.getInstance().getUIColor().getBorderColor();
+    this.borderWidth = UISettings.getInstance().getUIBorder().getBorderWidth();
+    this.borderOffset = UISettings.getInstance().getUIBorder().getBorderOffset();
     this.drawBorder = false;
   }
 

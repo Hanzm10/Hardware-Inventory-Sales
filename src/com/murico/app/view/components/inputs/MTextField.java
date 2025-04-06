@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import javax.swing.JTextField;
 import javax.swing.text.Document;
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 import com.murico.app.view.borders.rounded.RoundedCornerBorder;
 import com.murico.app.view.borders.rounded.RoundedCornerBorderComponentInterface;
 import com.murico.app.view.components.inputs.listeners.MTextFieldFocusListener;
@@ -87,12 +87,13 @@ public class MTextField extends JTextField
 
   private void setDefaults() {
     setOpaque(false);
-    setFont(AppSettings.getInstance().getAppFontSettings().getMainFontBody());
+    setBackground(new Color(0x0, true));
+    setFont(UISettings.getInstance().getUIFont().getBodyFont());
 
     setBorder(new RoundedCornerBorder(true));
 
     placeholderText = this.getText().isEmpty() ? "Enter a text here..." : this.getText();
-    placeholderColor = AppSettings.getInstance().getAppColorSettings().getPlaceholderColor();
+    placeholderColor = UISettings.getInstance().getUIColor().getPlaceholderColor();
 
     addFocusListener(new MTextFieldFocusListener());
   }

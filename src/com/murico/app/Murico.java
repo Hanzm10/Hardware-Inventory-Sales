@@ -9,6 +9,7 @@ import com.murico.app.dal.User.UserSessionDAL;
 import com.murico.app.exceptions.handlers.GlobalUncaughtExceptionHandler;
 import com.murico.app.managers.UserSessionManager;
 import com.murico.app.utils.io.FileLoader;
+import com.murico.app.view.AppWindow;
 import com.murico.app.view.loading_indicators.splash_screen.AppInitializationSplashScreen;
 
 public class Murico {
@@ -21,7 +22,9 @@ public class Murico {
     new InitializationWorker(new AppInitializationSplashScreen()).execute();
   }
 
-  private static void initializeApp() {}
+  private static void initializeApp() {
+    new AppWindow();
+  }
 
   private static class InitializationWorker extends SwingWorker<Void, String> {
     private AppInitializationSplashScreen splashScreen;

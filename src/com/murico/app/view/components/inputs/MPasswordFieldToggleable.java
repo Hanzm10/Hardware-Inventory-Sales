@@ -1,19 +1,18 @@
 package com.murico.app.view.components.inputs;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
+import com.murico.app.view.common.containers.ContainerPanel;
 import com.murico.app.view.components.buttons.MToggleButton;
 
-public class MPasswordFieldToggleable extends JPanel {
+public class MPasswordFieldToggleable extends ContainerPanel {
 
   private static final long serialVersionUID = 1L;
   private MPasswordField passwordField;
@@ -23,7 +22,8 @@ public class MPasswordFieldToggleable extends JPanel {
    * Create the panel.
    */
   public MPasswordFieldToggleable() {
-    setBackground(new Color(255, 255, 255));
+    super();
+
     setLayout(new FormLayout(
         new ColumnSpec[] {
             new ColumnSpec(ColumnSpec.FILL,

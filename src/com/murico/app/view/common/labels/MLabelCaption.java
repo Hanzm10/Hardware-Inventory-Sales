@@ -1,6 +1,6 @@
 package com.murico.app.view.common.labels;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 
 public class MLabelCaption extends MLabel {
 
@@ -12,7 +12,7 @@ public class MLabelCaption extends MLabel {
   public MLabelCaption(String text) {
     super(text);
 
-    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontCaption());
+    this.setFont(UISettings.getInstance().getUIFont().getCaptionFont());
     this.labelType = MLabelTypes.CAPTION;
   }
 

@@ -1,6 +1,6 @@
 package com.murico.app.view.common.labels;
 
-import com.murico.app.config.AppSettings;
+import com.murico.app.config.UISettings;
 
 public class MLabelBody extends MLabel {
 
@@ -13,6 +13,6 @@ public class MLabelBody extends MLabel {
     super(text);
 
     this.labelType = MLabelTypes.BODY;
-    this.setFont(AppSettings.getInstance().getAppFontSettings().getMainFontBody());
+    this.setFont(UISettings.getInstance().getUIFont().getBodyFont());
   }
 }
