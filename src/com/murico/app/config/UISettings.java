@@ -28,16 +28,16 @@ public class UISettings extends AbstractSettings {
   private static final String KEY_FONT_SIZE_BUTTON = "font.size.button";
   private static final String KEY_FONT_SIZE_CAPTION = "font.size.caption";
 
-  private static final String KEY_SPACE_XXS = "app.space.scale.xxs";
-  private static final String KEY_SPACE_XS = "app.space.scale.xs";
-  private static final String KEY_SPACE_S = "app.space.scale.s";
-  private static final String KEY_SPACE_M = "app.space.scale.m";
-  private static final String KEY_SPACE_L = "app.space.scale.l";
-  private static final String KEY_SPACE_XL = "app.space.scale.xl";
-  private static final String KEY_SPACE_XXL = "app.space.scale.xxl";
-  private static final String KEY_SPACE_XXXL = "app.space.scale.xxxl";
-  private static final String KEY_SPACE_XXXXL = "app.space.scale.xxxxl";
-  private static final String KEY_SPACE_XXXXXL = "app.space.scale.xxxxxl";
+  private static final String KEY_SPACE_XXS = "space.scale.xxs";
+  private static final String KEY_SPACE_XS = "space.scale.xs";
+  private static final String KEY_SPACE_S = "space.scale.s";
+  private static final String KEY_SPACE_M = "space.scale.m";
+  private static final String KEY_SPACE_L = "space.scale.l";
+  private static final String KEY_SPACE_XL = "space.scale.xl";
+  private static final String KEY_SPACE_XXL = "space.scale.xxl";
+  private static final String KEY_SPACE_XXXL = "space.scale.xxxl";
+  private static final String KEY_SPACE_XXXXL = "space.scale.xxxxl";
+  private static final String KEY_SPACE_XXXXXL = "space.scale.xxxxxl";
 
   private static final String KEY_COLOR_BACKGROUND = "color.background";
   private static final String KEY_COLOR_DARK_BACKGROUND = "color.dark.background";
@@ -282,6 +282,22 @@ public class UISettings extends AbstractSettings {
 
     public String getSpaceXXXXXL() {
       return spaceXXXXXL;
+    }
+
+    /**
+     * Convert a value to pixels. If the value is already in pixels, it will be returned as is.
+     * 
+     * @param spaceXXS
+     * @throws AssertionError if the value is null
+     */
+    public String toPx(String value) {
+      assert value != null : "Value cannot be null";
+
+      if (value.endsWith("px")) {
+        return value;
+      } else {
+        return value + "px";
+      }
     }
   }
 

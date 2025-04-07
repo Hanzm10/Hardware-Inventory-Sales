@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 public record User(
     int _userId,
     Timestamp _userCreatedAt,
+    String userDisplayName,
     String userDisplayImage,
     UserGenders userGender,
     UserRoles userRole
@@ -12,6 +13,7 @@ public record User(
       public static class UserBuilder {
         private int _userId;
         private Timestamp _userCreatedAt;
+        private String userDisplayName;
         private String userDisplayImage;
         private UserGenders userGender;
         private UserRoles userRole;
@@ -27,6 +29,11 @@ public record User(
           assert _userCreatedAt != null : "User created at timestamp cannot be null";
 
           this._userCreatedAt = _userCreatedAt;
+          return this;
+        }
+
+        public UserBuilder setUserDisplayName(String userDisplayName) {
+          this.userDisplayName = userDisplayName;
           return this;
         }
 
@@ -49,7 +56,8 @@ public record User(
           assert _userId > 0 : "User ID must be greater than 0";
           assert _userCreatedAt != null : "User created at timestamp cannot be null";
 
-          return new User(_userId, _userCreatedAt, userDisplayImage, userGender, userRole);
+          return new User(_userId, _userCreatedAt, userDisplayName, userDisplayImage, userGender,
+              userRole);
         }
       }
 }

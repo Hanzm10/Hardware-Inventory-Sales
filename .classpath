@@ -35,5 +35,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="A:/coding-projects/java/school/Hardware-Inventory-Sales/lib/mysql-connector-j-9.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/muricolaf.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="muricolaf.jar"/>
 	<classpathentry kind="output" path="out/production/Hardware-Inventory-Sales"/>
 </classpath>

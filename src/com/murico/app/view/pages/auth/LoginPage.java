@@ -1,151 +1,165 @@
 package com.murico.app.view.pages.auth;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.Sizes;
-import com.murico.app.view.CurrentPage;
-import com.murico.app.view.common.containers.ContainerPanel;
+import com.murico.app.config.UISettings;
+import com.murico.app.view.builder.ColumnSpecBuilder;
+import com.murico.app.view.builder.RowSpecBuilder;
 import com.murico.app.view.common.labels.MLabelCaption;
-import com.murico.app.view.common.labels.MLabelTitle;
+import com.murico.app.view.common.labels.MLabelSubtitle;
 import com.murico.app.view.components.buttons.variations.SecondaryButton;
 import com.murico.app.view.components.buttons.variations.TransparentButton;
 import com.murico.app.view.components.inputs.MPasswordFieldToggleable;
 import com.murico.app.view.components.inputs.MTextField;
+import com.murico.app.view.pages.Page;
 
-public class LoginPage extends ContainerPanel {
-
-  private static final long serialVersionUID = 1L;
-  // private var lblNewLabel;
+public class LoginPage extends Page implements Page.PageInterface {
 
   /**
-   * Create the panel.
+   * 
    */
-  public LoginPage() {
+  private static final long serialVersionUID = 3158373793534651652L;
+
+  private JPanel wrapperPanel;
+
+  private JPanel leftPanel;
+  private JLabel rightComponent;
+
+  private JLabel logoIcon;
+  private TransparentButton backButton;
+  private JPanel formPanel;
+
+  private JLabel signInLabel;
+  private JPanel inputContainer;
+  private MTextField usernameField;
+  private MPasswordFieldToggleable passwordField;
+
+  private SecondaryButton loginButton;
+  private JPanel separatorPanel;
+
+  private JSeparator separatorLeft;
+  private MLabelCaption separatorText;
+  private JSeparator separatorRight;
+
+  private SecondaryButton registerButton;
+
+  ActionListener navigationListener;
+
+  public LoginPage(ActionListener navigationListener) {
     super();
 
-    setLayout(
-        new FormLayout(
-            new ColumnSpec[] {new ColumnSpec(ColumnSpec.FILL,
-                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("480px", true),
-                    Sizes.constant("2139px", true)),
-                1),},
-            new RowSpec[] {RowSpec.decode("690px"),}));
+    assert navigationListener != null : "Navigation listener cannot be null";
 
-    var panel_1 = new ContainerPanel();
-    add(panel_1, "1, 1, center, center");
-    panel_1.setLayout(new FormLayout(
-        new ColumnSpec[] {ColumnSpec.decode("24px"),
-            new ColumnSpec(ColumnSpec.FILL,
-                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("320px", true),
-                    Sizes.constant("960px", true)),
-                2),
-            new ColumnSpec(ColumnSpec.FILL,
-                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("484px", true),
-                    Sizes.constant("640px", true)),
-                1),
-            ColumnSpec.decode("24px"),},
-        new RowSpec[] {RowSpec.decode("650px"),}));
+    this.navigationListener = navigationListener;
 
-    var left_view = new ContainerPanel();
-    left_view.setPreferredSize(new Dimension(400, 200));
-    left_view.setMinimumSize(new Dimension(200, 200));
-    panel_1.add(left_view, "2, 1, left, fill");
-    left_view.setLayout(new FormLayout(
-        new ColumnSpec[] {ColumnSpec.decode("75px"), ColumnSpec.decode("161px"),
-            ColumnSpec.decode("119px"),},
-        new RowSpec[] {RowSpec.decode("58px"), RowSpec.decode("470px"),}));
+    initializeComponents();
+    initializeLayout();
+    attachComponents();
+  }
 
-    var trnsprntbtnHello = new TransparentButton((String) null);
-    trnsprntbtnHello.addActionListener(new TrnsprntbtnHelloAction());
+  @Override
+  public void initializeComponents() {
+    wrapperPanel = new JPanel();
 
-    var lblNewLabel_2 = new JLabel("");
-    lblNewLabel_2.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_icon.png")));
-    left_view.add(lblNewLabel_2, "1, 1, fill, fill");
-    trnsprntbtnHello
-        .setIcon(new ImageIcon(LoginPage.class.getResource("/assets/icons/move-left.png")));
-    trnsprntbtnHello.setText("  Back");
-    left_view.add(trnsprntbtnHello, "3, 1, fill, top");
+    leftPanel = new JPanel();
+    rightComponent =
+        new JLabel(new ImageIcon(LoginPage.class.getResource("/assets/logo_login.png")));
 
-    var form = new ContainerPanel();
-    left_view.add(form, "1, 2, 3, 1, center, center");
-    form.setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("center:355px"),},
-        new RowSpec[] {FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, RowSpec.decode("85px"),
-            FormSpecs.LINE_GAP_ROWSPEC, RowSpec.decode("122px"), RowSpec.decode("29px"),
-            RowSpec.decode("58px"), FormSpecs.LINE_GAP_ROWSPEC, RowSpec.decode("67px"),
-            FormSpecs.LINE_GAP_ROWSPEC, RowSpec.decode("60px"),}));
+    formPanel = new JPanel();
+    logoIcon = new JLabel(new ImageIcon(LoginPage.class.getResource("/assets/logo_icon.png")));
+    backButton = new TransparentButton("   Back");
+    backButton.setFocusable(false);
+    backButton.setActionCommand("main");
+    backButton.addActionListener(navigationListener);
+    backButton.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/icons/move-left.png")));
 
-    var lbltlSignIn = new MLabelTitle((String) null);
-    lbltlSignIn.setText("Sign in");
-    form.add(lbltlSignIn, "1, 2, fill, fill");
+    signInLabel = new MLabelSubtitle("Sign in");
+    inputContainer = new JPanel();
 
-    var inputContainer = new ContainerPanel();
-    form.add(inputContainer, "1, 4, fill, fill");
+    usernameField = new MTextField("", "Username");
+    passwordField = new MPasswordFieldToggleable();
+
+    loginButton = new SecondaryButton("Log in");
+    loginButton.setActionCommand("login");
+
+    separatorPanel = new JPanel();
+    separatorLeft = new JSeparator();
+    separatorText = new MLabelCaption("or");
+    separatorRight = new JSeparator();
+
+    registerButton = new SecondaryButton("Create an account");
+    registerButton.setActionCommand("register");
+    registerButton.addActionListener(navigationListener);
+  }
+
+  @Override
+  public void initializeLayout() {
+    setLayout(new FormLayout("center:default:grow", "center:default:grow"));
+    
+    var spaceL = UISettings.getInstance().getUISpace().getSpaceL();
+    var spaceM = UISettings.getInstance().getUISpace().getSpaceM();
+    var spaceXL = UISettings.getInstance().getUISpace().getSpaceXL();
+
+    var wrapperPanelColumnSpec =
+        new ColumnSpecBuilder().addColumn(spaceM).addColumn("default:grow").addColumn(spaceM)
+            .addColumn("default:grow").addColumn(spaceM).build();
+    var wrapperPanelRowSpec =
+        new RowSpecBuilder().addRow(spaceM).addRow("default:grow").addRow(spaceM).build();
+
+    wrapperPanel.setLayout(new FormLayout(wrapperPanelColumnSpec, wrapperPanelRowSpec));
+
+    var leftPanelColumnSpec = new ColumnSpecBuilder().addColumn("max(75px;default)")
+        .addColumn("default:grow").addColumn("max(119px;default)").build();
+    var leftPanelRowSpec = new RowSpecBuilder().addRow("58px").addRow("default:grow").build();
+
+    leftPanel.setLayout(new FormLayout(leftPanelColumnSpec, leftPanelRowSpec));
+
+    var formPanelColumnSpec = new ColumnSpecBuilder().addColumn("center:355px").build();
+    var formPanelRowSpec =
+        new RowSpecBuilder().addRow("48px").addRow(spaceXL).addRow("122px").addRow(spaceL)
+            .addRow("58px").addRow(spaceL).addRow("32px").addRow(spaceM)
+        .addRow("60px").build();
+
+    formPanel.setLayout(new FormLayout(formPanelColumnSpec, formPanelRowSpec));
+
     inputContainer.setLayout(new GridLayout(0, 1, 0, 16));
 
-    var txtfldTextField = new MTextField();
-    txtfldTextField.setPlaceholderText("Username");
-    inputContainer.add(txtfldTextField);
+    var separatorPanelColumnSpec = new ColumnSpecBuilder().addColumn("fill:default:grow(1.0)")
+        .addColumn("center:max(48px;default)")
+        .addColumn("fill:default:grow(1.0)").build();
+    var separatorPanelRowSpec = new RowSpecBuilder().addRow("fill:default:grow(1.0)").build();
 
-    var passwordFieldToggleable = new MPasswordFieldToggleable();
-    inputContainer.add(passwordFieldToggleable);
-
-    var scndrbtnSecondaryButton = new SecondaryButton();
-    scndrbtnSecondaryButton.setText("Log in");
-    form.add(scndrbtnSecondaryButton, "1, 6, fill, fill");
-
-    var panel = new ContainerPanel();
-    panel.setLayout(null);
-    form.add(panel, "1, 8, fill, fill");
-
-    var separator = new JSeparator();
-    separator.setSize(new Dimension(5, 0));
-    separator.setPreferredSize(new Dimension(5, 2));
-    separator.setMinimumSize(new Dimension(5, 0));
-    separator.setBackground(Color.LIGHT_GRAY);
-    separator.setBounds(0, 35, 160, 4);
-    panel.add(separator);
-
-    var separator_1 = new JSeparator();
-    separator_1.setSize(new Dimension(5, 0));
-    separator_1.setPreferredSize(new Dimension(5, 2));
-    separator_1.setMinimumSize(new Dimension(5, 0));
-    separator_1.setBackground(Color.LIGHT_GRAY);
-    separator_1.setBounds(195, 35, 160, 4);
-    panel.add(separator_1);
-
-    var lblcptnOr = new MLabelCaption((String) null);
-    lblcptnOr.setText("or");
-    lblcptnOr.setForeground(Color.LIGHT_GRAY);
-    lblcptnOr.setFont(new Font("Montserrat", Font.PLAIN, 24));
-    lblcptnOr.setBackground(Color.LIGHT_GRAY);
-    lblcptnOr.setBounds(165, 20, 26, 29);
-    panel.add(lblcptnOr);
-
-    var scndrbtnSecondaryButton_1 = new SecondaryButton();
-    scndrbtnSecondaryButton_1.setText("Create an account");
-    form.add(scndrbtnSecondaryButton_1, "1, 10, fill, fill");
-
-    var lblNewLabel_1 = new JLabel("");
-    lblNewLabel_1.setIcon(new ImageIcon(LoginPage.class.getResource("/assets/logo_login.png")));
-    panel_1.add(lblNewLabel_1, "3, 1, right, fill");
-
+    separatorPanel.setLayout(new FormLayout(separatorPanelColumnSpec, separatorPanelRowSpec));
   }
 
-  private class TrnsprntbtnHelloAction implements ActionListener {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      CurrentPage.setCurrentPage(CurrentPage.MAIN);
-    }
+  @Override
+  public void attachComponents() {
+    inputContainer.add(usernameField);
+    inputContainer.add(passwordField);
+
+    separatorPanel.add(separatorLeft, "1, 1, fill, center");
+    separatorPanel.add(separatorText, "2, 1, center, center");
+    separatorPanel.add(separatorRight, "3, 1, fill, center");
+
+    formPanel.add(signInLabel, "1, 1, fill, top");
+    formPanel.add(inputContainer, "1, 3, fill, fill");
+    formPanel.add(loginButton, "1, 5, fill, fill");
+    formPanel.add(separatorPanel, "1, 7, fill, fill");
+    formPanel.add(registerButton, "1, 9, fill, fill");
+
+    leftPanel.add(logoIcon, "1, 1, fill, center");
+    leftPanel.add(backButton, "3, 1, fill, center");
+    leftPanel.add(formPanel, "1, 2, 3, 1, center, center");
+
+    wrapperPanel.add(leftPanel, "2, 2, left, fill");
+    wrapperPanel.add(rightComponent, "4, 2, fill, fill");
+
+    add(wrapperPanel, "1, 1, center, center");
   }
+
 }

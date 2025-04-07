@@ -77,4 +77,7 @@ public class UserSessionManager {
     // TODO: Delete session in database
   }
 
+  public boolean isLoggedIn() {
+    return userSession != null && !userSession.isExpired();
+  }
 }

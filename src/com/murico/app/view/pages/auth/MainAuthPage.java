@@ -1,65 +1,88 @@
 package com.murico.app.view.pages.auth;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.Sizes;
-import com.murico.app.view.CurrentPage;
-import com.murico.app.view.common.containers.ContainerPanel;
+import com.murico.app.config.UISettings;
+import com.murico.app.view.builder.ColumnSpecBuilder;
+import com.murico.app.view.builder.RowSpecBuilder;
 import com.murico.app.view.components.buttons.variations.PrimaryButton;
+import com.murico.app.view.pages.Page;
 
-public class MainAuthPage extends ContainerPanel {
-
-  private static final long serialVersionUID = 1L;
+public class MainAuthPage extends Page implements Page.PageInterface {
 
   /**
-   * Create the panel.
+   * 
    */
-  public MainAuthPage() {
-    setLayout(new FormLayout(new ColumnSpec[] {ColumnSpec.decode("1024px:grow"),},
-        new RowSpec[] {RowSpec.decode("max(118dlu;pref)"), RowSpec.decode("32px"),
-            RowSpec.decode("max(47px;default):grow"),}));
+  private static final long serialVersionUID = 7930421087820543267L;
 
-    var heroImage = new JLabel("");
-    heroImage.setIcon(new ImageIcon(MainAuthPage.class.getResource("/assets/logo_freeform.png")));
-    add(heroImage, "1, 1, center, center");
+  private JPanel wrapperPanel;
 
-    var btnsContainer = new JPanel();
-    btnsContainer.setBackground(new Color(255, 255, 255));
-    add(btnsContainer, "1, 3, center, top");
-    btnsContainer.setLayout(new FormLayout(
-        new ColumnSpec[] {ColumnSpec.decode("max(280px;default)"),
-            new ColumnSpec(ColumnSpec.FILL,
-                Sizes.bounded(Sizes.PREFERRED, Sizes.constant("64px", true),
-                    Sizes.constant("128px", true)),
-                1),
-            ColumnSpec.decode("max(280px;default)"),},
-        new RowSpec[] {RowSpec.decode("max(48px;default)"),}));
+  private JLabel heroImage;
 
-    var loginBtn = new PrimaryButton();
-    loginBtn.setText("Login");
-    loginBtn.setActionCommand("Login");
-    loginBtn.addActionListener(new PrimaryButtonAction());
-    btnsContainer.add(loginBtn, "1, 1, fill, fill");
+  private JPanel btnsContainer;
 
-    var registerBtn = new PrimaryButton();
-    registerBtn.setText("Create an account");
-    registerBtn.setActionCommand("Register");
-    registerBtn.addActionListener(new PrimaryButtonAction());
-    btnsContainer.add(registerBtn, "3, 1, fill, fill");
+  private PrimaryButton loginBtn;
+  private PrimaryButton registerBtn;
 
+  ActionListener navigationListener;
+
+  public MainAuthPage(ActionListener navigationListener) {
+    super();
+
+    assert navigationListener != null : "Navigation listener cannot be null";
+
+    this.navigationListener = navigationListener;
+
+    initializeComponents();
+    initializeLayout();
+    attachComponents();
   }
 
-  private class PrimaryButtonAction implements ActionListener {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      CurrentPage.setCurrentPage(CurrentPage.fromString(e.getActionCommand()));
-    }
+  @Override
+  public void initializeComponents() {
+    wrapperPanel = new JPanel();
+    heroImage =
+        new JLabel(new ImageIcon(MainAuthPage.class.getResource("/assets/logo_freeform.png")));
+    btnsContainer = new JPanel();
+    loginBtn = new PrimaryButton("Login");
+    loginBtn.setActionCommand("login");
+    loginBtn.addActionListener(navigationListener);
+    registerBtn = new PrimaryButton("Create an account");
+    registerBtn.setActionCommand("register");
+    registerBtn.addActionListener(navigationListener);
+  }
+
+  @Override
+  public void initializeLayout() {
+    setLayout(new FormLayout("center:default:grow", "center:default:grow"));
+
+    var spaceM = UISettings.getInstance().getUISpace().getSpaceM();
+
+    var columnSpec = new ColumnSpecBuilder().addColumn("max(280px;default):grow").build();
+    var rowSpec = new RowSpecBuilder().addRow("max(48px;default)")
+        .addRow(spaceM).addRow("max(48px;default)")
+        .build();
+
+    wrapperPanel.setLayout(new FormLayout(columnSpec, rowSpec));
+
+    var btnsContainerColumnSpec = new ColumnSpecBuilder().addColumn("max(280px;default)")
+        .addColumn(spaceM).addColumn("max(280px;default)").build();
+    var btnsContainerRowSpec = new RowSpecBuilder().addRow("max(48px;default)").build();
+    
+    btnsContainer.setLayout(new FormLayout(btnsContainerColumnSpec, btnsContainerRowSpec));
+  }
+
+  @Override
+  public void attachComponents() {
+    btnsContainer.add(loginBtn, "1, 1, fill, fill");
+    btnsContainer.add(registerBtn, "3, 1, fill, fill");
+
+    wrapperPanel.add(heroImage, "1, 1, center, center");
+    wrapperPanel.add(btnsContainer, "1, 3, center, top");
+
+    add(wrapperPanel, "1, 1, center, center");
   }
 }

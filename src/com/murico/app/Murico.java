@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 import com.murico.app.config.ExternalSettings;
 import com.murico.app.dal.User.UserSessionDAL;
 import com.murico.app.exceptions.handlers.GlobalUncaughtExceptionHandler;
@@ -11,9 +12,16 @@ import com.murico.app.managers.UserSessionManager;
 import com.murico.app.utils.io.FileLoader;
 import com.murico.app.view.AppWindow;
 import com.murico.app.view.loading_indicators.splash_screen.AppInitializationSplashScreen;
+import muricolaf.MuricoLaf;
 
 public class Murico {
   public static void main(String[] args) {
+    try {
+      UIManager.setLookAndFeel(new MuricoLaf());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
     SwingUtilities.invokeLater(Murico::initialize);
   }

@@ -14,10 +14,8 @@ import com.murico.app.model.user.UserSession;
  * @version 1.0
  */
 public class UserSessionDAL {
-  private static final String TABLE_NAME = "sessions";
-
   public static String getTableName() {
-    return TABLE_NAME;
+    return "sessions";
   }
 
   /**
@@ -35,7 +33,7 @@ public class UserSessionDAL {
       UserSession userSession = null;
       var conn = DatabaseManagerMySQL.getInstance().connect();
 
-      var sql = String.format("SELECT * FROM %s WHERE _session_uid = ?", TABLE_NAME);
+      var sql = String.format("SELECT * FROM %s WHERE _session_uid = ?;", getTableName());
       var preparedStatement = conn.prepareStatement(sql);
 
       preparedStatement.setString(1, sessionUid);
