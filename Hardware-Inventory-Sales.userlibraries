@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<eclipse-userlibraries>
-  <library name="mysql-connector-j-9.2.0">
-    <archive path="A:/coding-projects/java/school/Hardware-Inventory-Sales/lib/mysql-connector-j-9.2.0.jar" />
-  </library>
-</eclipse-userlibraries>
-

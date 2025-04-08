@@ -1,0 +1,15 @@
+[*]
+indent_style = space
+indent_size = 4
+trim_end_whitespace = true
+insert_final_newline = true
+
+[*.java]
+indent_style = space
+indent_size = 4
+trim_end_whitespace = true
+insert_final_newline = true
+
+[*.xml]
+indent_style = space
+indent_size = 4

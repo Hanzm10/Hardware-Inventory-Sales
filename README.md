@@ -44,28 +44,7 @@ software solution.
 
 ## Project Structure
 
-```
-/HardwareInventorySystem
-├── src/
-│   ├── com/
-│   │   ├── murico                # Root package
-│   │   │   ├── config/           # Application configuration helper classes
-│   │   │   ├── controller/       # Controllers handling UI events
-│   │   │   ├── dal/              # Database access layer
-│   │   │   ├── model/            # Data models and entities
-│   │   │   ├── resources/        # Application resources
-│   │   │   ├── service/          # Business logic and services
-│   │   │   ├── utils/            # Utility classes
-│   │   │   └── view/             # Java Swing UI components
-│   └── test/                     # Unit and integration tests
-├── lib/                          # External JAR dependencies
-├── config/                       # External configuration files (settings, properties, .env)
-├── external_resources/           # Application storage (logs, reports, images, etc.)
-├── external_config/              # External configuration files (settings, properties, .env)
-├── README.md                     # Project documentation
-├── LICENSE                       # Project license
-└── .gitignore                    # Git ignore file
-```
+currently being edited
 
 ## Setup Instructions
 
