@@ -58,8 +58,8 @@
     
     <licenses>
         <license>
-            <name>CC BY-NC 4.0</name>
-            <url>https://creativecommons.org/licenses/by-nc/4.0/legalcode</url>
+            <name>MIT</name>
+            <url>https://opensource.org/license/mit</url>
         </license>
     </licenses>
 
@@ -71,11 +71,13 @@
 
     <modules>
         <module>annotations</module>
+        <module>property-loader</module>
         <module>core</module>
         <module>utils</module>
         <module>platform</module>
         <module>database</module>
         <module>lookandfeel</module>
+        <module>app</module>
     </modules>
 
     <build>
@@ -176,7 +178,12 @@
             </plugin>
         </plugins>
     </build>
-
+    
+    <scm>
+        <url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
+        <connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
+    </scm>
+    
     <dependencies>
         <dependency>
             <groupId>org.jetbrains</groupId>
