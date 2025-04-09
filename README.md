@@ -85,11 +85,11 @@ quality and refactoring.
 ## Contributors
 
 ### Project Maintainers
-- [Ragudos, Aaron](#)
-- [Mapua, Hanz](#)
-- [Dela Cruz, Peter](#)
-- [Remo, Jerick](#)
-- [Raneses, Kurt](#)
+- [Ragudos, Aaron](https://github.com/Ragudos)
+- [Mapua, Hanz](https://github.com/Hanzm10)
+- [Dela Cruz, Peter](https://github.com/alyastanga)
+- [Remo, Jerick]()
+- [Raneses, Kurt]()
 
 ## License
 
