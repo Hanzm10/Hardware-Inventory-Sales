@@ -11,4 +11,5 @@
     </parent>
 
     <artifactId>utils</artifactId>
+    <packaging>jar</packaging>
 </project>

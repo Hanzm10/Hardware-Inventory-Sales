@@ -11,4 +11,5 @@
     </parent>
 
     <artifactId>annotations</artifactId>
+    <packaging>jar</packaging>
 </project>

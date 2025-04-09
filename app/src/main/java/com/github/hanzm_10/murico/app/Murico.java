@@ -25,7 +25,10 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico;
+package com.github.hanzm_10.murico.app;
 
 public class Murico {
+	public static void main(String[] args) {
+		System.out.println("Hello, Murico!");
+	}
 }

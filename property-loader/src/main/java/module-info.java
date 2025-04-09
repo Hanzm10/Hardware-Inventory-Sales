@@ -1,6 +1,7 @@
 module murico.properties {
+	requires transitive java.logging;
+	requires static org.jetbrains.annotations;
+	requires murico.utils;
 
-    requires static org.jetbrains.annotations;
-
-    exports com.github.hanzm_10.murico.properties;
+	exports com.github.hanzm_10.murico.properties;
 }
