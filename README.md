@@ -8,6 +8,9 @@ for a rel hardware store. This project is developed as
 part of a school assignment to create a practical and scalable
 software solution.
 
+This project is under construction and is subject to a lot of refactors and changes.
+The setup instructions for this project might change as well.
+
 ## Features
 
 - **Inventory Management**
@@ -41,6 +44,7 @@ software solution.
 - **Database**: MySQL
 - **User Interface**: Java Swing
 - **Software Architecture**: Model-View-Controller (MVC)
+- **Build tool**: Maven, For a universal build tool that IDEs can detect and make use of.
 
 ## Project Structure
 
@@ -57,11 +61,11 @@ cd HardwareInventorySystem
 
 ### 2. Configure the Database
 - Install MySQL and create a new database
-- Import the database schema to your MySQL database. Refer to [this file](/external_resources/db/README.md) for instructions.
-- Update the database connection settings in the [src/com/murico/java/resources/application.properties](/com/murico/resources/application.properties) file.
+- Create a database in your MySQL server.
+- Apply the server details in [the database module resources.](database/src/main/resources), preferable the `.properties` file;
 - Refer to [our database schema](https://dbdocs.io/workemailaaronragudos/murico?table=low_stock_alerts&schema=public&view=table_structure&fbclid=IwY2xjawJPnkJleHRuA2FlbQIxMAABHXk9UHiYvKQmC8NfQNbt8FaTdjT6Q_h-LgpNDXAgp_2SBhyLJrQNFO2YdA_aem_xaf-g4VewS3l02DSjrTvIw) for more details of the schema.
 
-If you run into the error `communications link failure`, please make sure that the `PORT` on `db.url` in `database.properties` is properly configured to be the port where your local database is running on.
+If you run into the error `communications link failure`, please make sure that the application is connecting to the database you want it to connect to with proper `PORT`, `PASSWORD`, `DATABASE NAME` and `USERNAME`.
 
 ### 3. Run the Application
 
@@ -70,8 +74,6 @@ If you run into the error `communications link failure`, please make sure that t
 ## UI Design
 
 The graphical user interface (GUI) of the application is designed using Java Swing.
-The UI components are organized into different panels and frames to provide a user-friendly experience.
-The design is responsive and customizable to suit the needs of the user.
 
 You can visit the [UI Design](https://www.figma.com/design/yxYlvE85nY8IwhmsykmZXe/Hardware-UI?node-id=0-1&t=8Fw66rAWLIh6rxAr-1) folder to view the mockups and wireframes of the application.
 
@@ -82,15 +84,12 @@ quality and refactoring.
 
 ## Contributors
 
-
 ### Project Maintainers
-- [Ragudos, A.](#)
-- [Mapua, H.](#)
-- [Dela Cruz, P.](#)
-- [Remo, J.](#)
-- [Raneses, K.](#)
-
-If you would like to contribute to this project, please contact the project maintainers.
+- [Ragudos, Aaron](#)
+- [Mapua, Hanz](#)
+- [Dela Cruz, Peter](#)
+- [Remo, Jerick](#)
+- [Raneses, Kurt](#)
 
 ## License
 
