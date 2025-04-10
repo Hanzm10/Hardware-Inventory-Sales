@@ -25,33 +25,12 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.utils;
+package com.github.hanzm_10.murico.lookandfeel;
 
-import java.util.regex.Pattern;
+import javax.swing.UIManager.LookAndFeelInfo;
 
-public class StringUtils {
-    public static boolean containsIgnoreCase(final String str, final String pattern) {
-        return Pattern.compile(pattern, Pattern.LITERAL | Pattern.CASE_INSENSITIVE)
-                .matcher(str)
-                .find();
-    }
-
-    public static String repeat(final String s, final int count) {
-        if (count < 0) {
-            return "";
-        }
-
-        if (count == 1) {
-            return s;
-        }
-
-        var stringBuilder = new StringBuilder(s.length() * count);
-        stringBuilder.append(s.repeat(count));
-
-        return stringBuilder.toString();
-    }
-
-    private StringUtils() {
-        throw new UnsupportedOperationException("Utility class");
-    }
+public class MuricoLookAndFeelInfo extends LookAndFeelInfo {
+	public MuricoLookAndFeelInfo() {
+		super("Murico Look and Feel", MuricoLookAndFeel.class.getCanonicalName());
+	}
 }

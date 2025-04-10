@@ -27,5 +27,38 @@
  */
 package com.github.hanzm_10.murico.lookandfeel;
 
-public class MuricoLookAndFeel {
+import javax.swing.plaf.basic.BasicLookAndFeel;
+
+@SuppressWarnings("serial")
+public class MuricoLookAndFeel extends BasicLookAndFeel {
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return "Murico Look and Feel";
+	}
+
+	@Override
+	public String getID() {
+		// TODO Auto-generated method stub
+		return "muricolookandfeel";
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return "MuricoLookAndFeel";
+	}
+
+	@Override
+	public boolean isNativeLookAndFeel() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isSupportedLookAndFeel() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 }

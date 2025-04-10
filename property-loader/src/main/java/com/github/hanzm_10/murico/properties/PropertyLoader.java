@@ -32,7 +32,6 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.github.hanzm_10.murico.utils.LogUtils;
 
 /** Loads .properties files */
