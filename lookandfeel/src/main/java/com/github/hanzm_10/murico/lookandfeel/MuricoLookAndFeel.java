@@ -27,10 +27,18 @@
  */
 package com.github.hanzm_10.murico.lookandfeel;
 
+import javax.swing.UIDefaults;
 import javax.swing.plaf.basic.BasicLookAndFeel;
 
-@SuppressWarnings("serial")
 public class MuricoLookAndFeel extends BasicLookAndFeel {
+
+	/** */
+	private static final long serialVersionUID = 9057846770190092129L;
+
+	@Override
+	public UIDefaults getDefaults() {
+		return super.getDefaults();
+	}
 
 	@Override
 	public String getDescription() {

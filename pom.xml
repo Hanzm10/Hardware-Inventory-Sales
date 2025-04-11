@@ -78,6 +78,7 @@
         <module>database</module>
         <module>lookandfeel</module>
         <module>app</module>
+        <module>io</module>
     </modules>
 
     <build>

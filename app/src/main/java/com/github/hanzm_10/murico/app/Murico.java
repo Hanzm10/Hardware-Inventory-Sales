@@ -27,8 +27,64 @@
  */
 package com.github.hanzm_10.murico.app;
 
+import java.io.File;
+import java.util.logging.Logger;
+import javax.swing.UIManager;
+import com.github.hanzm_10.murico.core.GlobalUncaughtExceptionHandler;
+import com.github.hanzm_10.murico.io.MuricoConfiguration;
+import com.github.hanzm_10.murico.lookandfeel.MuricoLookAndFeel;
+import com.github.hanzm_10.murico.utils.LogUtils;
+
 public class Murico {
-	public static void main(String[] args) {
-		System.out.println("Hello, Murico!");
-	}
+    private static final Logger LOGGER = LogUtils.getLogger(Murico.class);
+
+    private static void checkSession() {
+        LOGGER.info("Checking user session...");
+    }
+
+    private static void initialize() {
+        LOGGER.info("Initializing Murico application...");
+        initializeFileSystem();
+        checkSession();
+        LOGGER.info("Murico application initialized successfully.");
+    }
+
+    private static void initializeFileSystem() {
+        LOGGER.info("Initializing file system...");
+
+        var configDir = new File(MuricoConfiguration.CONFIG_DIRECTORY);
+
+        if (!configDir.exists()) {
+            configDir.mkdirs();
+            LOGGER.info("Configuration directory created: " + configDir.getAbsolutePath());
+        } else {
+            LOGGER.info("Configuration directory already exists: " + configDir.getAbsolutePath());
+        }
+
+        var logDir = new File(MuricoConfiguration.LOGS_DIRECTORY);
+
+        if (!logDir.exists()) {
+            logDir.mkdirs();
+            LOGGER.info("Log directory created: " + logDir.getAbsolutePath());
+        } else {
+            LOGGER.info("Log directory already exists: " + logDir.getAbsolutePath());
+        }
+
+        LOGGER.info("File system initialized successfully.");
+    }
+
+    public static void main(String[] args) {
+        LOGGER.info("Starting Murico...");
+
+        try {
+            LOGGER.info("Setting Look and Feel...");
+            UIManager.setLookAndFeel(new MuricoLookAndFeel());
+            LOGGER.info("Look and Feel set to Murico Look and Feel.");
+        } catch (Exception e) {
+            LOGGER.severe("Failed to set Look and Feel: " + e.getMessage());
+        }
+
+        Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
+        initialize();
+    }
 }
