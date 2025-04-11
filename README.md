@@ -91,6 +91,10 @@ quality and refactoring.
 - [Remo, Jerick]()
 - [Raneses, Kurt]()
 
+## Educational References
+ - [Database Design Pattern](https://www.oracle.com/java/technologies/dataaccessobject.html)
+ - [Refactoring Guru](https://refactoring.guru)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

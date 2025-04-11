@@ -25,7 +25,49 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.database;
+package com.github.hanzm_10.murico.database.mysql.dao;
 
-public interface Database {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
+
+import com.github.hanzm_10.murico.core.model.User;
+import com.github.hanzm_10.murico.database.dao.UserDAO;
+
+public class MySQLUserDAO implements UserDAO {
+
+	@Override
+	public boolean deleteUser() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public User getUserByDisplayName(@NotNull String _userDisplayName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUserByEmail(@NotNull String _userEmail) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUserById(@Range(from = 0, to = 2147483647) int _userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int insertUser() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean userExists(@Range(from = 0, to = 2147483647) int _userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

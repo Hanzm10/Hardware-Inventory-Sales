@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.github.hanzm_10.murico.utils.LogUtils;
 
 /** Loads .properties files */
@@ -69,32 +70,31 @@ public class PropertyLoader {
 
 	public static Properties loadProperties(final Class<?> clazz, final String name, final String path,
 			final LoadMode mode, final LoadType type) {
+		System.out.println(clazz.getName());
 		final var properties = new Properties();
 		var p = path + name + ".properties";
 
-		try {
-			switch (type) {
-				case CLASS_PATH : {
-					var inputStream = clazz.getResourceAsStream(p);
-
+		switch (type) {
+			case CLASS_PATH : {
+				try (var inputStream = clazz.getResourceAsStream(p)) {
 					properties.load(inputStream);
-					inputStream.close();
+				} catch (final Exception e) {
+					if (mode == LoadMode.STRICT) {
+						LOGGER.log(Level.SEVERE, "Could not load properties file: " + p + " " + e.getMessage(), e);
+					}
 				}
-					break;
-				case FILE_SYSTEM : {
-					var file = new File(p);
-					var fileStream = new FileInputStream(file);
-
+			}
+				break;
+			case FILE_SYSTEM : {
+				try (var fileStream = new FileInputStream(new File(p))) {
 					properties.load(fileStream);
-					fileStream.close();
+				} catch (final Exception e) {
+					if (mode == LoadMode.STRICT) {
+						LOGGER.log(Level.SEVERE, "Could not load properties file: " + p + " " + e.getMessage(), e);
+					}
 				}
-					break;
 			}
-
-		} catch (final Exception e) {
-			if (mode == LoadMode.STRICT) {
-				LOGGER.log(Level.SEVERE, "Could not load properties file: " + p + " " + e.getMessage(), e);
-			}
+				break;
 		}
 
 		return properties;

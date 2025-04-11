@@ -3,19 +3,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 >
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>com.github.hanzm_10.murico</groupId>
     <artifactId>murico</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    
+
     <name>Murico - Hardware Inventory and Sales System</name>
-    <description>Murico is a hardware inventory and sales system designed to help users manage their hardware assets efficiently made by students of Technological Institute of the Philippines - Quezon City.</description>   
+    <description>Murico is a hardware inventory and sales system designed to help users manage their hardware assets efficiently made by students of Technological Institute of the Philippines - Quezon City.</description>
     <organization>
         <name>Technological Institute of the Philippines - Quezon City</name>
         <url>https://www.tip.edu.ph/</url>
     </organization>
-    
+
     <developers>
         <developer>
             <name>Aaron Ragudos</name>
@@ -38,24 +38,24 @@
             </roles>
         </developer>
     </developers>
-    
+
     <contributors>
         <contributor>
             <name>Jerick Remo</name>
             <roles>
-                <role>Frontend Developer</role> 
+                <role>Frontend Developer</role>
                 <role>UI/UX Designer</role>
             </roles>
         </contributor>
         <contributor>
             <name>Kurt Raneses</name>
             <roles>
-                <role>Frontend Developer</role> 
+                <role>Frontend Developer</role>
                 <role>UI/UX Designer</role>
             </roles>
         </contributor>
     </contributors>
-    
+
     <licenses>
         <license>
             <name>MIT</name>
@@ -112,7 +112,7 @@
                     <!-- define a language-specific format -->
                     <java>
                         <!-- no need to specify files, inferred automatically, but you can if you want -->
-                        
+
                         <cleanthat />
 
                         <!-- apply a specific flavor of google-java-format and reflow long strings -->
@@ -136,9 +136,9 @@
                             <order>java,javax,com.sun,com.oracle,org.w3c,org.xml,org.apache,org.jetbrains,com.intellij,com.github.hanzm_10.murico</order>
                             <semanticSort>true</semanticSort>
                         </importOrder>
-                        
+
                         <removeUnusedImports />
-                        
+
                         <formatAnnotations />
 
                         <!-- make sure every file has the following copyright header.
@@ -178,17 +178,24 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <scm>
         <url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
         <connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
     </scm>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>24.0.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.13.0-M2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
