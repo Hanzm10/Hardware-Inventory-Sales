@@ -70,7 +70,6 @@ public class PropertyLoader {
 
 	public static Properties loadProperties(final Class<?> clazz, final String name, final String path,
 			final LoadMode mode, final LoadType type) {
-		System.out.println(clazz.getName());
 		final var properties = new Properties();
 		var p = path + name + ".properties";
 
@@ -98,5 +97,33 @@ public class PropertyLoader {
 		}
 
 		return properties;
+	}
+
+	public static Properties loadPropertiesExternally(final String name) {
+		var properties = new Properties();
+
+		loadPropertiesExternally(name, properties, LoadMode.ALLOW_MISSING);
+
+		return properties;
+	}
+
+	/**
+	 * Loads properties from an external file.
+	 *
+	 * @param path
+	 *            The path to the properties file.
+	 * @param properties
+	 *            The Properties object to load the file into.
+	 * @param mode
+	 *            The load mode, either strict or allow missing.
+	 */
+	public static void loadPropertiesExternally(final String path, final Properties properties, LoadMode mode) {
+		try (var fileStream = new FileInputStream(new File(path))) {
+			properties.load(fileStream);
+		} catch (final Exception e) {
+			if (mode == LoadMode.STRICT) {
+				LOGGER.log(Level.SEVERE, "Could not load properties file: " + path + " " + e.getMessage(), e);
+			}
+		}
 	}
 }

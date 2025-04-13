@@ -25,7 +25,11 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.core;
+package com.github.hanzm_10.murico.app.managers.scenes;
 
-public class MuricoCore {
+import javax.swing.JPanel;
+
+public class RootSceneManager extends JPanel {
+	public RootSceneManager() {
+	}
 }

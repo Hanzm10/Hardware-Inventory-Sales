@@ -27,64 +27,129 @@
  */
 package com.github.hanzm_10.murico.app;
 
-import java.io.File;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+
+import com.github.hanzm_10.murico.app.constants.GlobalConfig;
+import com.github.hanzm_10.murico.app.loading.InitialLoadingPage;
+import com.github.hanzm_10.murico.app.managers.SessionManager;
 import com.github.hanzm_10.murico.core.GlobalUncaughtExceptionHandler;
+import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
 import com.github.hanzm_10.murico.io.MuricoConfiguration;
 import com.github.hanzm_10.murico.lookandfeel.MuricoLookAndFeel;
 import com.github.hanzm_10.murico.utils.LogUtils;
 
 public class Murico {
-    private static final Logger LOGGER = LogUtils.getLogger(Murico.class);
+	private static class CheckSessionWorker extends SwingWorker<Void, String> {
+		InitialLoadingPage splashScreen;
 
-    private static void checkSession() {
-        LOGGER.info("Checking user session...");
-    }
+		public CheckSessionWorker(InitialLoadingPage splashScreen) {
+			// Constructor
+			LOGGER.info("Checking user session...");
 
-    private static void initialize() {
-        LOGGER.info("Initializing Murico application...");
-        initializeFileSystem();
-        checkSession();
-        LOGGER.info("Murico application initialized successfully.");
-    }
+			this.splashScreen = splashScreen;
+		}
 
-    private static void initializeFileSystem() {
-        LOGGER.info("Initializing file system...");
+		@Override
+		protected Void doInBackground() throws Exception {
+			LOGGER.info("Initializing file system...");
+			publish("Initializing file system...");
+			Thread.sleep(1000); // Simulate delay for file system initialization
+			initializeFileSystem();
 
-        var configDir = new File(MuricoConfiguration.CONFIG_DIRECTORY);
+			LOGGER.info("Checking user session...");
+			publish("Checking user session...");
+			Thread.sleep(1000); // Simulate delay for user session check
+			var sessionUid = GlobalConfig.getInstance().getProperty(GlobalConfig.KEY_SESSION_UID);
 
-        if (!configDir.exists()) {
-            configDir.mkdirs();
-            LOGGER.info("Configuration directory created: " + configDir.getAbsolutePath());
-        } else {
-            LOGGER.info("Configuration directory already exists: " + configDir.getAbsolutePath());
-        }
+			if (sessionUid == null) {
+				LOGGER.warning("Session uid does not exist. Proceeding to login...");
+				publish("Session uid does not exist. Proceeding to login...");
+				Thread.sleep(1000); // Simulate delay for session removal
 
-        var logDir = new File(MuricoConfiguration.LOGS_DIRECTORY);
+				return null;
+			}
 
-        if (!logDir.exists()) {
-            logDir.mkdirs();
-            LOGGER.info("Log directory created: " + logDir.getAbsolutePath());
-        } else {
-            LOGGER.info("Log directory already exists: " + logDir.getAbsolutePath());
-        }
+			var factory = AbstractSQLFactoryDAO.getSQLFactoryDAO(AbstractSQLFactoryDAO.MYSQL);
+			var sessionDAO = factory.getSessionDAO();
 
-        LOGGER.info("File system initialized successfully.");
-    }
+			LOGGER.info("Verifying session uid...");
+			publish("Verifying session uid...");
+			Thread.sleep(1000); // Simulate delay for session verification
+			var sessionExists = sessionDAO.sessionExists(sessionUid);
 
-    public static void main(String[] args) {
-        LOGGER.info("Starting Murico...");
+			if (!sessionExists) {
+				LOGGER.warning("Session does not exist. Removing session uid...");
+				publish("Session does not exist. Removing session uid...");
+				Thread.sleep(1000); // Simulate delay for session removal
+				GlobalConfig.getInstance().remove(GlobalConfig.KEY_SESSION_UID);
 
-        try {
-            LOGGER.info("Setting Look and Feel...");
-            UIManager.setLookAndFeel(new MuricoLookAndFeel());
-            LOGGER.info("Look and Feel set to Murico Look and Feel.");
-        } catch (Exception e) {
-            LOGGER.severe("Failed to set Look and Feel: " + e.getMessage());
-        }
+				return null;
+			}
 
-        Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
-        initialize();
-    }
+			LOGGER.info("Session uid is valid. Verifying session...");
+			publish("Session uid is valid. Verifying session...");
+			Thread.sleep(1000); // Simulate delay for session verification
+			var session = sessionDAO.getSessionByUid(sessionUid);
+
+			if (session == null) {
+				LOGGER.log(Level.SEVERE, "Session should have existed but was not found.");
+			} else if (session.isExpired()) {
+				LOGGER.warning("Session has expired. Removing session uid...");
+				publish("Session has expired. Removing session uid...");
+				Thread.sleep(1000); // Simulate delay for session expiration
+				GlobalConfig.getInstance().remove(GlobalConfig.KEY_SESSION_UID);
+			} else {
+				LOGGER.info("Session is valid. Updating application state...");
+				publish("Session is valid. Updating application state...");
+				Thread.sleep(1000); // Simulate delay for application state update
+				SessionManager.getInstance().setSession(session);
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void done() {
+			splashScreen.dispose();
+
+			LOGGER.info("Murico application initialized successfully.");
+		}
+
+		@Override
+		protected void process(java.util.List<String> chunks) {
+			for (String message : chunks) {
+				splashScreen.setProgressLabel(message);
+			}
+		}
+	}
+
+	private static final Logger LOGGER = LogUtils.getLogger(Murico.class);
+
+	private static void initializeFileSystem() {
+		MuricoConfiguration.createConfigDirectory();
+		MuricoConfiguration.createLogsDirectory();
+	}
+
+	public static void main(String[] args) {
+		LOGGER.info("Initializing Murico application...");
+
+		try {
+			LOGGER.info("Setting Look and Feel...");
+			UIManager.setLookAndFeel(new MuricoLookAndFeel());
+			LOGGER.info("Look and Feel set to Murico Look and Feel.");
+		} catch (Exception e) {
+			LOGGER.severe("Failed to set Look and Feel: " + e.getMessage());
+		}
+
+		Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
+
+		SwingUtilities.invokeLater(() -> {
+			new CheckSessionWorker(new InitialLoadingPage()).execute();
+		});
+	}
 }

@@ -8,6 +8,5 @@ module murico.database {
 
 	exports com.github.hanzm_10.murico.database;
 	exports com.github.hanzm_10.murico.database.dao;
-
-	opens com.github.hanzm_10.murico.database.mysql;
+	exports com.github.hanzm_10.murico.database.mysql;
 }
