@@ -7,4 +7,5 @@ module murico.core {
 
     exports com.github.hanzm_10.murico.core;
     exports com.github.hanzm_10.murico.core.model;
+    exports com.github.hanzm_10.murico.core.constants;
 }

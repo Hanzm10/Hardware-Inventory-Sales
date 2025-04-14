@@ -32,98 +32,99 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import org.jetbrains.annotations.NotNull;
 import com.github.hanzm_10.murico.utils.LogUtils;
 
 /** Loads .properties files */
 public class PropertyLoader {
-	public enum LoadMode {
-		STRICT, ALLOW_MISSING;
-	}
+    public enum LoadMode {
+        STRICT, ALLOW_MISSING;
+    }
 
-	public enum LoadType {
-		/** Loads the properties file from the classpath */
-		CLASS_PATH,
-		/** Loads the properties file from the file system */
-		FILE_SYSTEM;
-	}
+    public enum LoadType {
+        /** Loads the properties file from the classpath */
+        CLASS_PATH,
+        /** Loads the properties file from the file system */
+        FILE_SYSTEM;
+    }
 
-	private static final String REFERENCE_PREFIX = "%";
+    private static final String REFERENCE_PREFIX = "%";
 
-	private static final Logger LOGGER = LogUtils.getLogger(PropertyLoader.class);
+    private static final Logger LOGGER = LogUtils.getLogger(PropertyLoader.class);
 
-	public static String getReferencePrefix() {
-		return String.valueOf(REFERENCE_PREFIX);
-	}
+    public static String getReferencePrefix() {
+        return String.valueOf(REFERENCE_PREFIX);
+    }
 
-	public static Properties loadProperties(final Class<?> clazz, final String name) {
-		return loadProperties(clazz, name, "", LoadMode.STRICT, LoadType.CLASS_PATH);
-	}
+    public static Properties loadProperties(final Class<?> clazz, final String name) {
+        return loadProperties(clazz, name, "", LoadMode.STRICT, LoadType.CLASS_PATH);
+    }
 
-	public static Properties loadProperties(final Class<?> clazz, final String name, final LoadMode mode) {
-		return loadProperties(clazz, name, "", mode, LoadType.CLASS_PATH);
-	}
+    public static Properties loadProperties(final Class<?> clazz, final String name, final LoadMode mode) {
+        return loadProperties(clazz, name, "", mode, LoadType.CLASS_PATH);
+    }
 
-	public static Properties loadProperties(final Class<?> clazz, final String name, final String path) {
-		return loadProperties(clazz, name, path, LoadMode.STRICT, LoadType.CLASS_PATH);
-	}
+    public static Properties loadProperties(final Class<?> clazz, final String name, final String path) {
+        return loadProperties(clazz, name, path, LoadMode.STRICT, LoadType.CLASS_PATH);
+    }
 
-	public static Properties loadProperties(final Class<?> clazz, final String name, final String path,
-			final LoadMode mode, final LoadType type) {
-		final var properties = new Properties();
-		var p = path + name + ".properties";
+    public static Properties loadProperties(final Class<?> clazz, final String name, final String path,
+            final LoadMode mode, final LoadType type) {
+        final var properties = new Properties();
+        var p = path + name + ".properties";
 
-		switch (type) {
-			case CLASS_PATH : {
-				try (var inputStream = clazz.getResourceAsStream(p)) {
-					properties.load(inputStream);
-				} catch (final Exception e) {
-					if (mode == LoadMode.STRICT) {
-						LOGGER.log(Level.SEVERE, "Could not load properties file: " + p + " " + e.getMessage(), e);
-					}
-				}
-			}
-				break;
-			case FILE_SYSTEM : {
-				try (var fileStream = new FileInputStream(new File(p))) {
-					properties.load(fileStream);
-				} catch (final Exception e) {
-					if (mode == LoadMode.STRICT) {
-						LOGGER.log(Level.SEVERE, "Could not load properties file: " + p + " " + e.getMessage(), e);
-					}
-				}
-			}
-				break;
-		}
+        switch (type) {
+            case CLASS_PATH : {
+                try (var inputStream = clazz.getResourceAsStream(p)) {
+                    properties.load(inputStream);
+                } catch (final Exception e) {
+                    if (mode == LoadMode.STRICT) {
+                        LOGGER.log(Level.SEVERE, "Could not load properties file: " + p + " " + e.getMessage(), e);
+                    }
+                }
+            }
+            break;
+            case FILE_SYSTEM : {
+                try (var fileStream = new FileInputStream(new File(p))) {
+                    properties.load(fileStream);
+                } catch (final Exception e) {
+                    if (mode == LoadMode.STRICT) {
+                        LOGGER.log(Level.SEVERE, "Could not load properties file: " + p + " " + e.getMessage(), e);
+                    }
+                }
+            }
+            break;
+        }
 
-		return properties;
-	}
+        return properties;
+    }
 
-	public static Properties loadPropertiesExternally(final String name) {
-		var properties = new Properties();
+    public static @NotNull Properties loadPropertiesExternally(@NotNull final String name) {
+        var properties = new Properties();
 
-		loadPropertiesExternally(name, properties, LoadMode.ALLOW_MISSING);
+        loadPropertiesExternally(name, properties, LoadMode.ALLOW_MISSING);
 
-		return properties;
-	}
+        return properties;
+    }
 
-	/**
-	 * Loads properties from an external file.
-	 *
-	 * @param path
-	 *            The path to the properties file.
-	 * @param properties
-	 *            The Properties object to load the file into.
-	 * @param mode
-	 *            The load mode, either strict or allow missing.
-	 */
-	public static void loadPropertiesExternally(final String path, final Properties properties, LoadMode mode) {
-		try (var fileStream = new FileInputStream(new File(path))) {
-			properties.load(fileStream);
-		} catch (final Exception e) {
-			if (mode == LoadMode.STRICT) {
-				LOGGER.log(Level.SEVERE, "Could not load properties file: " + path + " " + e.getMessage(), e);
-			}
-		}
-	}
+    /**
+     * Loads properties from an external file.
+     *
+     * @param path
+     *            The path to the properties file.
+     * @param properties
+     *            The Properties object to load the file into.
+     * @param mode
+     *            The load mode, either strict or allow missing.
+     */
+    public static void loadPropertiesExternally(@NotNull final String path,
+            @NotNull final Properties properties, LoadMode mode) {
+        try (var fileStream = new FileInputStream(new File(path))) {
+            properties.load(fileStream);
+        } catch (final Exception e) {
+            if (mode == LoadMode.STRICT) {
+                LOGGER.log(Level.SEVERE, "Could not load properties file: " + path + " " + e.getMessage(), e);
+            }
+        }
+    }
 }

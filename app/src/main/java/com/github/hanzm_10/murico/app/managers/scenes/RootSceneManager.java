@@ -30,6 +30,8 @@ package com.github.hanzm_10.murico.app.managers.scenes;
 import javax.swing.JPanel;
 
 public class RootSceneManager extends JPanel {
-	public RootSceneManager() {
-	}
+    private static final long serialVersionUID = 1692613470432315571L;
+
+    public RootSceneManager() {
+    }
 }

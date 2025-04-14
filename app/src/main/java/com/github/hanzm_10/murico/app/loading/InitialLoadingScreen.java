@@ -30,43 +30,24 @@ package com.github.hanzm_10.murico.app.loading;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JWindow;
 import net.miginfocom.swing.MigLayout;
 
-public class InitialLoadingPage extends JWindow {
+public class InitialLoadingScreen extends JPanel {
     private static final long serialVersionUID = 1L;
     JProgressBar progressBar;
 
-    public InitialLoadingPage() {
-        var contentPane = getContentPane();
-        var container = new JPanel();
-
+    public InitialLoadingScreen() {
+        setLayout(new MigLayout("", "[grow]", "[grow]"));
         progressBar = new JProgressBar();
-
-        contentPane.setLayout(new MigLayout("", "[grow]", "[grow]"));
-        container.setLayout(new MigLayout("", "[100px:n:200px,grow,shrink 50]", "[grow]"));
 
         progressBar.setIndeterminate(true);
         progressBar.setStringPainted(true);
         progressBar.setString("Loading...");
 
-        contentPane.add(container, "grow");
-        container.add(progressBar, "alignx center,aligny center");
+        add(progressBar, "cell 0 0,alignx center,aligny center");
 
         var size = new Dimension(1280, 720);
         setSize(size);
         setPreferredSize(size);
-
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
-
-    public void setProgress(int value) {
-        progressBar.setValue(value);
-    }
-
-    public void setProgressLabel(String label) {
-        progressBar.setString(label);
     }
 }

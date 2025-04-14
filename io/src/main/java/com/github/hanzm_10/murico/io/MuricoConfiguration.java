@@ -30,7 +30,7 @@ package com.github.hanzm_10.murico.io;
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Logger;
-
+import org.jetbrains.annotations.NotNull;
 import com.github.hanzm_10.murico.platform.SystemInfo;
 import com.github.hanzm_10.murico.properties.PropertyLoader;
 import com.github.hanzm_10.murico.properties.PropertyLoader.LoadMode;
@@ -44,68 +44,74 @@ import com.github.hanzm_10.murico.utils.LogUtils;
  * and app data directory based on the operating system.
  */
 public class MuricoConfiguration {
-	private static final Logger LOGGER = LogUtils.getLogger(MuricoConfiguration.class);
-	public static final String DIRECTORY_NAME = "Murico";
-	public static final String LOGS_DIRECTORY;
-	public static final String CONFIG_DIRECTORY;
-	public static final String GLOBAL_CONFIG_FILE_NAME = "global.properties";
-	public static final String GLOBAL_CONFIG_FILE_PATH;
-	public static final String APP_DATA;
+    private static final Logger LOGGER = LogUtils.getLogger(MuricoConfiguration.class);
+    public static final String DIRECTORY_NAME = "Murico";
+    public static final String LOGS_DIRECTORY;
+    public static final String CONFIG_DIRECTORY;
+    public static final String GLOBAL_CONFIG_FILE_NAME = "global.properties";
+    public static final String GLOBAL_CONFIG_FILE_PATH;
+    public static final String APP_DATA;
 
-	static {
-		if (SystemInfo.IS_WINDOWS) {
-			APP_DATA = SystemInfo.USER_HOME + File.separator + "AppData" + File.separator + "Local" + File.separator
-					+ DIRECTORY_NAME;
-		} else if (SystemInfo.IS_MAC) {
-			APP_DATA = SystemInfo.USER_HOME + File.separator + "Library" + File.separator + "Application Support"
-					+ File.separator + DIRECTORY_NAME;
-		} else if (SystemInfo.IS_LINUX) {
-			APP_DATA = SystemInfo.USER_HOME + File.separator + "." + DIRECTORY_NAME;
-		} else {
-			APP_DATA = SystemInfo.USER_HOME + File.separator + "etc" + File.separator + DIRECTORY_NAME;
-		}
+    static {
+        if (SystemInfo.IS_WINDOWS) {
+            APP_DATA = SystemInfo.USER_HOME + File.separator + "AppData" + File.separator + "Local" + File.separator
+                    + DIRECTORY_NAME;
+        } else if (SystemInfo.IS_MAC) {
+            APP_DATA = SystemInfo.USER_HOME + File.separator + "Library" + File.separator + "Application Support"
+                    + File.separator + DIRECTORY_NAME;
+        } else if (SystemInfo.IS_LINUX) {
+            APP_DATA = SystemInfo.USER_HOME + File.separator + "." + DIRECTORY_NAME;
+        } else {
+            APP_DATA = SystemInfo.USER_HOME + File.separator + "etc" + File.separator + DIRECTORY_NAME;
+        }
 
-		CONFIG_DIRECTORY = APP_DATA + File.separator + "config";
-		LOGS_DIRECTORY = APP_DATA + File.separator + "logs";
-		GLOBAL_CONFIG_FILE_PATH = CONFIG_DIRECTORY + File.separator + GLOBAL_CONFIG_FILE_NAME;
-	}
+        CONFIG_DIRECTORY = APP_DATA + File.separator + "config";
+        LOGS_DIRECTORY = APP_DATA + File.separator + "logs";
+        GLOBAL_CONFIG_FILE_PATH = CONFIG_DIRECTORY + File.separator + GLOBAL_CONFIG_FILE_NAME;
+    }
 
-	/** Creates the configuration directory if they do not exist. */
-	public static void createConfigDirectory() {
-		LOGGER.info("Creating configuration directory...");
-		var configDir = new File(CONFIG_DIRECTORY);
+    /** Creates the configuration directory if they do not exist. */
+    public static void createConfigDirectory() {
+        LOGGER.info("Creating configuration directory...");
+        var configDir = new File(CONFIG_DIRECTORY);
 
-		if (!configDir.exists()) {
-			configDir.mkdirs();
-			LOGGER.info("Configuration directory created: " + configDir.getAbsolutePath());
-		} else {
-			LOGGER.info("Configuration directory already exists: " + configDir.getAbsolutePath());
-		}
-	}
+        if (!configDir.exists()) {
+            configDir.mkdirs();
+            LOGGER.info("Configuration directory created: " + configDir.getAbsolutePath());
+        } else {
+            LOGGER.info("Configuration directory already exists: " + configDir.getAbsolutePath());
+        }
+    }
 
-	/** Creates the logs directory if it does not exist. */
-	public static void createLogsDirectory() {
-		LOGGER.info("Creating logs directory...");
-		var logsDir = new File(LOGS_DIRECTORY);
+    /** Creates the logs directory if it does not exist. */
+    public static void createLogsDirectory() {
+        LOGGER.info("Creating logs directory...");
+        var logsDir = new File(LOGS_DIRECTORY);
 
-		if (!logsDir.exists()) {
-			logsDir.mkdirs();
-			LOGGER.info("Logs directory created: " + logsDir.getAbsolutePath());
-		} else {
-			LOGGER.info("Logs directory already exists: " + logsDir.getAbsolutePath());
-		}
-	}
+        if (!logsDir.exists()) {
+            logsDir.mkdirs();
+            LOGGER.info("Logs directory created: " + logsDir.getAbsolutePath());
+        } else {
+            LOGGER.info("Logs directory already exists: " + logsDir.getAbsolutePath());
+        }
+    }
 
-	/**
-	 * Loads the global configuration properties from the global.properties file.
-	 *
-	 * @return Properties object containing the global configuration properties.
-	 */
-	public static Properties getGlobalConfig() {
-		return PropertyLoader.loadPropertiesExternally(GLOBAL_CONFIG_FILE_PATH);
-	}
+    /**
+     * Loads the global configuration properties from the global.properties file.
+     *
+     * @return Properties object containing the global configuration properties.
+     */
+    public static @NotNull Properties getGlobalConfig() {
+        return PropertyLoader.loadPropertiesExternally(GLOBAL_CONFIG_FILE_PATH);
+    }
 
-	public static void loadGlobalConfig(final Properties properties) {
-		PropertyLoader.loadPropertiesExternally(GLOBAL_CONFIG_FILE_PATH, properties, LoadMode.ALLOW_MISSING);
-	}
+    /**
+     * Loads the global configuration properties from the global.properties file into the provided
+     * Properties object.
+     *
+     * @param properties The Properties object to load the configuration into.
+     */
+    public static void loadGlobalConfig(@NotNull final Properties properties) {
+        PropertyLoader.loadPropertiesExternally(GLOBAL_CONFIG_FILE_PATH, properties, LoadMode.ALLOW_MISSING);
+    }
 }
