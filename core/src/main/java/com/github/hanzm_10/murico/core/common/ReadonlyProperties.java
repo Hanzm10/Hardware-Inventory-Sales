@@ -25,24 +25,20 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app;
+package com.github.hanzm_10.murico.core.common;
 
-import javax.swing.JFrame;
-import com.github.hanzm_10.murico.core.constants.AppConfig;
+import java.util.Properties;
 
-public class MuricoAppWindow extends JFrame {
+public class ReadonlyProperties extends Properties {
+	private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 2596513398187183073L;
+	@Override
+	public synchronized Object remove(Object key) {
+		throw new UnsupportedOperationException("This properties object is read-only.");
+	}
 
-    public MuricoAppWindow() {
-        super();
-
-        // TODO: prompt user on exit when there are unsaved changes
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        setTitle(AppConfig.getInstance().getAppTitle() + " " + AppConfig.getInstance().getAppVersion());
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
+	@Override
+	public synchronized Object setProperty(String key, String value) {
+		throw new UnsupportedOperationException("This properties object is read-only.");
+	}
 }

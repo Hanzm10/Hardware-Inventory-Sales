@@ -32,7 +32,6 @@ import javax.swing.plaf.basic.BasicLookAndFeel;
 
 public class MuricoLookAndFeel extends BasicLookAndFeel {
 
-	/** */
 	private static final long serialVersionUID = 9057846770190092129L;
 
 	@Override

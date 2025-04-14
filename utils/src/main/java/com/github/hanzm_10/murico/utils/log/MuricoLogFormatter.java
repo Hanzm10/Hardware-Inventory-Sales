@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
 import com.github.hanzm_10.murico.utils.StringUtils;
 
 public class MuricoLogFormatter extends Formatter {
@@ -108,7 +107,6 @@ public class MuricoLogFormatter extends Formatter {
 
 	@Override
 	public String format(final LogRecord record) {
-		// TODO Auto-generated method stub
 		var stringBuilder = new StringBuilder();
 		stringBuilder.append(ANSI_BOLD_ON);
 		stringBuilder.append(ANSI_BLUE);

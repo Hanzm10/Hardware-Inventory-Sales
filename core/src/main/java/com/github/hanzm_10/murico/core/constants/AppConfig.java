@@ -25,24 +25,49 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app;
+package com.github.hanzm_10.murico.core.constants;
 
-import javax.swing.JFrame;
-import com.github.hanzm_10.murico.core.constants.AppConfig;
+import com.github.hanzm_10.murico.core.common.ReadonlyProperties;
+import com.github.hanzm_10.murico.properties.PropertyLoader;
 
-public class MuricoAppWindow extends JFrame {
+/** Read-only configuration class for application settings. */
+public class AppConfig extends ReadonlyProperties {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 2596513398187183073L;
+    private static AppConfig instance;
+    public static final String CONFIG_FILE = "/murico";
+    public static final String KEY_APP_TITLE = "app.title";
+    public static final String KEY_APP_VERSION = "app.version";
 
-    public MuricoAppWindow() {
+    // Method to get the singleton instance
+    public static synchronized AppConfig getInstance() {
+        if (instance == null) {
+            instance = new AppConfig();
+        }
+
+        return instance;
+    }
+
+    private AppConfig() {
         super();
+        PropertyLoader.loadProperties(this, AppConfig.class, CONFIG_FILE);
+    }
 
-        // TODO: prompt user on exit when there are unsaved changes
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    /**
+     * Get the application title.
+     *
+     * @return The application title.
+     */
+    public String getAppTitle() {
+        return getProperty(KEY_APP_TITLE);
+    }
 
-        setTitle(AppConfig.getInstance().getAppTitle() + " " + AppConfig.getInstance().getAppVersion());
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
+    /**
+     * Get the application version.
+     *
+     * @return The application version.
+     */
+    public String getAppVersion() {
+        return getProperty(KEY_APP_VERSION);
     }
 }

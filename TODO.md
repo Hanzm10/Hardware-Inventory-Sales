@@ -40,3 +40,6 @@ Project todos
  - [ ] Error messages for register
  - [ ] Setting SessionManager after login to then redirect to main page.
  
+## Image module
+ - [ ] An image factory to preload or cache images
+ 
