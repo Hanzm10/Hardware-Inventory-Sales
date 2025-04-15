@@ -35,10 +35,10 @@ import java.util.logging.Logger;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 /** Loads .properties files */
-public class PropertyLoader {
+public class MuricoPropertyLoader {
 	public enum LoadMode {
 		STRICT, ALLOW_MISSING;
 	}
@@ -52,7 +52,7 @@ public class PropertyLoader {
 
 	private static final String REFERENCE_PREFIX = "%";
 
-	private static final Logger LOGGER = LogUtils.getLogger(PropertyLoader.class);
+	private static final Logger LOGGER = MuricoLogUtils.getLogger(MuricoPropertyLoader.class);
 
 	public static String getReferencePrefix() {
 		return String.valueOf(REFERENCE_PREFIX);

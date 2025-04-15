@@ -35,10 +35,10 @@ import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import com.github.hanzm_10.murico.io.MuricoConfiguration;
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 public class GlobalUncaughtExceptionHandler implements UncaughtExceptionHandler {
-    private static final Logger LOGGER = LogUtils.getLogger(GlobalUncaughtExceptionHandler.class);
+    private static final Logger LOGGER = MuricoLogUtils.getLogger(GlobalUncaughtExceptionHandler.class);
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {

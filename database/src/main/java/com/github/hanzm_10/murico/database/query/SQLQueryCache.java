@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 /**
  * This class is responsible for caching SQL queries. It uses a simple in-memory
@@ -57,7 +57,7 @@ public class SQLQueryCache {
 		}
 	}
 
-	private static final Logger LOGGER = LogUtils.getLogger(SQLQueryCache.class);
+	private static final Logger LOGGER = MuricoLogUtils.getLogger(SQLQueryCache.class);
 	private static final String MY_SQL_QUERY_DIRECTORY = "mysql/";
 	private static final String SQL_QUERY_DIRECTORY = "/sql/";
 	private static final String SQL_QUERY_FILE_EXTENSION = ".sql";

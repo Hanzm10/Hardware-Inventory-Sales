@@ -28,9 +28,7 @@
 package com.github.hanzm_10.murico.app;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import javax.swing.JFrame;
-import javax.swing.UIManager;
 import com.github.hanzm_10.murico.app.managers.scenes.RootSceneManager;
 import com.github.hanzm_10.murico.core.constants.AppConfig;
 
@@ -48,19 +46,7 @@ public class MuricoAppWindow extends JFrame {
                 + AppConfig.getInstance().getAppVersion();
         rootSceneManager = new RootSceneManager();
 
-        var size = sizeFromTitle(title);
-
         setTitle(title);
-
-        if (size.width < rootSceneManager.getPreferredSize().width) {
-            size.width = rootSceneManager.getPreferredSize().width;
-        }
-
-        if (size.height < rootSceneManager.getPreferredSize().height) {
-            size.height = rootSceneManager.getPreferredSize().height;
-        }
-
-        setPreferredSize(size);
         add(rootSceneManager, BorderLayout.CENTER);
         pack();
 
@@ -69,13 +55,4 @@ public class MuricoAppWindow extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-
-    private Dimension sizeFromTitle(String title) {
-        var font = UIManager.getFont("defaultFont");
-        var metrics = getFontMetrics(font);
-        var width = metrics.stringWidth(title) + 146;
-        var height = metrics.getHeight() + 50;
-        return new Dimension(width, height);
-    }
-
 }

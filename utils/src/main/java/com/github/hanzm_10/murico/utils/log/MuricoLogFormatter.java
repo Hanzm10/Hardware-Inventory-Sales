@@ -38,7 +38,7 @@ import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import com.github.hanzm_10.murico.utils.StringUtils;
+import com.github.hanzm_10.murico.utils.MuricoStringUtils;
 
 public class MuricoLogFormatter extends Formatter {
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -138,11 +138,11 @@ public class MuricoLogFormatter extends Formatter {
 
 		var params = record.getParameters();
 		var spaceLen = timeString.length() + 3 + record.getLevel().getLocalizedName().length() + 3;
-		var space = StringUtils.repeat(" ", spaceLen);
+		var space = MuricoStringUtils.repeat(" ", spaceLen);
 
 		if (params != null) {
 			stringBuilder.append("\n");
-			stringBuilder.append(StringUtils.repeat(" ", spaceLen - 10));
+			stringBuilder.append(MuricoStringUtils.repeat(" ", spaceLen - 10));
 			stringBuilder.append(ANSI_YELLOW);
 			stringBuilder.append("[Details]");
 			stringBuilder.append(getMessageColor(record));

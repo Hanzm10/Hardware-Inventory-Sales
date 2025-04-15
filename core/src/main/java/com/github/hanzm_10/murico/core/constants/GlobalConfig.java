@@ -33,9 +33,9 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import com.github.hanzm_10.murico.io.MuricoConfiguration;
-import com.github.hanzm_10.murico.properties.PropertyLoader;
-import com.github.hanzm_10.murico.properties.PropertyLoader.LoadType;
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.properties.MuricoPropertyLoader;
+import com.github.hanzm_10.murico.properties.MuricoPropertyLoader.LoadType;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 /**
  * GlobalConfig.java
@@ -48,7 +48,7 @@ public class GlobalConfig extends Properties {
 	/** */
 	private static final long serialVersionUID = 6360603438810759226L;
 
-	private static final Logger LOGGER = LogUtils.getLogger(GlobalConfig.class);
+	private static final Logger LOGGER = MuricoLogUtils.getLogger(GlobalConfig.class);
 	private static GlobalConfig instance;
 	public static final String KEY_SESSION_UID = "db.sessions._session_uid";
 
@@ -73,7 +73,7 @@ public class GlobalConfig extends Properties {
 			}
 		}
 
-		PropertyLoader.loadProperties(this, GlobalConfig.class, MuricoConfiguration.GLOBAL_CONFIG_FILE_PATH,
+		MuricoPropertyLoader.loadProperties(this, GlobalConfig.class, MuricoConfiguration.GLOBAL_CONFIG_FILE_PATH,
 				LoadType.FILE_SYSTEM);
 	}
 

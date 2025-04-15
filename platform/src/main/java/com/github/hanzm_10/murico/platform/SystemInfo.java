@@ -28,7 +28,7 @@
 package com.github.hanzm_10.murico.platform;
 
 import java.util.Locale;
-import com.github.hanzm_10.murico.utils.StringUtils;
+import com.github.hanzm_10.murico.utils.MuricoStringUtils;
 
 /**
  * SystemInfo class provides information about the operating system. It retrieves the OS name using
@@ -82,17 +82,17 @@ public class SystemInfo {
 
     public static boolean isAppleJVM() {
         var vendor = getJavaJvmVendor();
-        return vendor != null && StringUtils.containsIgnoreCase(vendor, "Apple");
+        return vendor != null && MuricoStringUtils.containsIgnoreCase(vendor, "Apple");
     }
 
     public static boolean isOracleJVM() {
         var vendor = getJavaJvmVendor();
-        return vendor != null && StringUtils.containsIgnoreCase(vendor, "Oracle");
+        return vendor != null && MuricoStringUtils.containsIgnoreCase(vendor, "Oracle");
     }
 
     public static boolean isSunJVM() {
         var vendor = getJavaJvmVendor();
-        return vendor != null && StringUtils.containsIgnoreCase(vendor, "Sun")
-                && StringUtils.containsIgnoreCase(vendor, "Microsystems");
+        return vendor != null && MuricoStringUtils.containsIgnoreCase(vendor, "Sun")
+                && MuricoStringUtils.containsIgnoreCase(vendor, "Microsystems");
     }
 }

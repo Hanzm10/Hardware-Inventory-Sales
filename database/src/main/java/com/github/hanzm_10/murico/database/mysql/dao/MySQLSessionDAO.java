@@ -35,10 +35,10 @@ import com.github.hanzm_10.murico.database.dao.SessionDAO;
 import com.github.hanzm_10.murico.database.mysql.MySQLFactoryDAO;
 import com.github.hanzm_10.murico.database.query.SQLQueryCache;
 import com.github.hanzm_10.murico.database.query.SQLQueryCache.SQLQueryType;
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 public class MySQLSessionDAO implements SessionDAO {
-    private static final Logger LOGGER = LogUtils.getLogger(MySQLSessionDAO.class);
+    private static final Logger LOGGER = MuricoLogUtils.getLogger(MySQLSessionDAO.class);
 
     @Override
     public boolean deleteSession() {

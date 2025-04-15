@@ -24,7 +24,6 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
-import javax.swing.UIManager;
 import com.github.hanzm_10.murico.app.loading.InitialLoadingScreen;
 import com.github.hanzm_10.murico.app.loading.SplashScreenFactory;
 import com.github.hanzm_10.murico.app.managers.SessionManager;
@@ -33,8 +32,8 @@ import com.github.hanzm_10.murico.core.constants.GlobalConfig;
 import com.github.hanzm_10.murico.core.model.Session;
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
 import com.github.hanzm_10.murico.io.MuricoConfiguration;
-import com.github.hanzm_10.murico.lookandfeel.MuricoLookAndFeel;
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
+import com.github.weisj.darklaf.LafManager;
 
 public class Murico {
     private static class CheckSessionWorker extends SwingWorker<Void, String> {
@@ -104,9 +103,10 @@ public class Murico {
         }
     }
 
-    private static final Logger LOGGER = LogUtils.getLogger(Murico.class);
+    private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
 
     private static void initialize() {
+        LafManager.install();
         var splashScreen = new InitialLoadingScreen();
         var splashScreenWindow = SplashScreenFactory.createSplashScreenJWindow(splashScreen);
         var timer = new Timer(200, _ -> splashScreenWindow.setVisible(true));
@@ -125,15 +125,6 @@ public class Murico {
 
     public static void main(String[] args) {
         LOGGER.info("Initializing Murico application...");
-
-        try {
-            LOGGER.info("Setting Look and Feel...");
-            UIManager.setLookAndFeel(new MuricoLookAndFeel());
-            LOGGER.info("Look and Feel set to Murico Look and Feel.");
-        } catch (Exception e) {
-            LOGGER.severe("Failed to set Look and Feel: " + e.getMessage());
-        }
-
         Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
         SwingUtilities.invokeLater(Murico::initialize);
     }

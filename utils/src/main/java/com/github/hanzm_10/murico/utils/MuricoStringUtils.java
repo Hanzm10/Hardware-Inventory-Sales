@@ -27,50 +27,31 @@
  */
 package com.github.hanzm_10.murico.utils;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
-import com.github.hanzm_10.murico.utils.log.MuricoLogFormatter;
-import com.github.hanzm_10.murico.utils.log.MuricoLogHandler;
+public class MuricoStringUtils {
+    public static boolean containsIgnoreCase(final String str, final String pattern) {
+        return Pattern.compile(pattern, Pattern.LITERAL | Pattern.CASE_INSENSITIVE)
+                .matcher(str)
+                .find();
+    }
 
-public class LogUtils {
-	private static final Logger PARENT_LOGGER = Logger.getLogger("com.github.hanzm_10.murico");
-	private static final Handler HANDLER = new MuricoLogHandler();
+    public static String repeat(final String s, final int count) {
+        if (count < 0) {
+            return "";
+        }
 
-	static {
-		HANDLER.setFormatter(new MuricoLogFormatter());
-		PARENT_LOGGER.setUseParentHandlers(false);
-		PARENT_LOGGER.addHandler(HANDLER);
-	}
+        if (count == 1) {
+            return s;
+        }
 
-	public static Logger getDetachedLogger(final Class<?> c) {
-		var logger = getLogger(c);
-		logger.setParent(PARENT_LOGGER);
-		logger.setUseParentHandlers(false);
-		logger.addHandler(HANDLER);
+        var stringBuilder = new StringBuilder(s.length() * count);
+        stringBuilder.append(s.repeat(count));
 
-		return logger;
-	}
+        return stringBuilder.toString();
+    }
 
-	public static Level getLevel() {
-		return PARENT_LOGGER.getLevel();
-	}
-
-	public static Logger getLogger(final Class<?> c) {
-		var logger = Logger.getLogger(c.getName());
-		logger.setUseParentHandlers(true);
-
-		return logger;
-	}
-
-	public static <T> T log(final T obj) {
-		PARENT_LOGGER.info(String.valueOf(obj));
-		return obj;
-	}
-
-	public static void setLevel(final Level level) {
-		PARENT_LOGGER.setLevel(level);
-		HANDLER.setLevel(level);
-	}
+    private MuricoStringUtils() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 }

@@ -31,7 +31,7 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import com.github.hanzm_10.murico.platform.SystemInfo;
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 /**
  * Configuration class for Murico application.
@@ -41,7 +41,7 @@ import com.github.hanzm_10.murico.utils.LogUtils;
  * and app data directory based on the operating system.
  */
 public class MuricoConfiguration {
-	private static final Logger LOGGER = LogUtils.getLogger(MuricoConfiguration.class);
+	private static final Logger LOGGER = MuricoLogUtils.getLogger(MuricoConfiguration.class);
 	public static final String DIRECTORY_NAME = "Murico";
 	public static final String LOGS_DIRECTORY;
 	public static final String CONFIG_DIRECTORY;

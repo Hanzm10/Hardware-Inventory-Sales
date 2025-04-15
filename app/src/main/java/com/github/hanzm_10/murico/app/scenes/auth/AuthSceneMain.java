@@ -28,7 +28,7 @@ public class AuthSceneMain extends JPanel {
 
         var lblNewLabel = new ResizableImagePanel(
                 new ImageIcon(getClass().getResource("/authMain_img.png")).getImage());
-        lblNewLabel.setPreferredSize(new Dimension(1280, 760));
+        lblNewLabel.setPreferredSize(new Dimension(1280, 720));
         panel.add(lblNewLabel, "cell 0 0 3 1");
 
         var btnNewButton = new JButton("Log In");

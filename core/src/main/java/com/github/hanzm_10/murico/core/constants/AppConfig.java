@@ -28,7 +28,7 @@
 package com.github.hanzm_10.murico.core.constants;
 
 import com.github.hanzm_10.murico.core.common.ReadonlyProperties;
-import com.github.hanzm_10.murico.properties.PropertyLoader;
+import com.github.hanzm_10.murico.properties.MuricoPropertyLoader;
 
 /** Read-only configuration class for application settings. */
 public class AppConfig extends ReadonlyProperties {
@@ -52,7 +52,7 @@ public class AppConfig extends ReadonlyProperties {
 
     private AppConfig() {
         super();
-        PropertyLoader.loadProperties(this, AppConfig.class, CONFIG_FILE);
+        MuricoPropertyLoader.loadProperties(this, AppConfig.class, CONFIG_FILE);
     }
 
     /**

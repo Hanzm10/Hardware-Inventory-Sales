@@ -36,12 +36,12 @@ import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicLookAndFeel;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import com.github.hanzm_10.murico.platform.SystemInfo;
-import com.github.hanzm_10.murico.utils.LogUtils;
+import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 public class MuricoLookAndFeel extends BasicLookAndFeel {
 
     private static final long serialVersionUID = 9057846770190092129L;
-    private static final Logger LOGGER = LogUtils.getLogger(MuricoLookAndFeel.class);
+    private static final Logger LOGGER = MuricoLogUtils.getLogger(MuricoLookAndFeel.class);
 
     private final LookAndFeel base;
 

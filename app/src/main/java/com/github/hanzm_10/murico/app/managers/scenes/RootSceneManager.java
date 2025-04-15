@@ -27,6 +27,7 @@
  */
 package com.github.hanzm_10.murico.app.managers.scenes;
 
+import java.awt.Dimension;
 import javax.swing.JPanel;
 import com.github.hanzm_10.murico.app.scenes.auth.AuthScene;
 import net.miginfocom.swing.MigLayout;
@@ -38,6 +39,9 @@ public class RootSceneManager extends JPanel {
 
     public RootSceneManager() {
         super();
+
+        setPreferredSize(new Dimension(1440, 1020));
+        setSize(new Dimension(1440, 1020));
 
         setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
 
