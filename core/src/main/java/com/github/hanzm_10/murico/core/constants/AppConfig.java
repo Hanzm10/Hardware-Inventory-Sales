@@ -38,6 +38,8 @@ public class AppConfig extends ReadonlyProperties {
     public static final String CONFIG_FILE = "/murico";
     public static final String KEY_APP_TITLE = "app.title";
     public static final String KEY_APP_VERSION = "app.version";
+    public static final String KEY_PREFERRED_WIDTH = "app.preferred.width";
+    public static final String KEY_PREFERRED_HEIGHT = "app.preferred.height";
 
     // Method to get the singleton instance
     public static synchronized AppConfig getInstance() {

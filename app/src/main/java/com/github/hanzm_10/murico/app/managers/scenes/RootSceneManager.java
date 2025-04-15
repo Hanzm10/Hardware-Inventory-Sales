@@ -28,10 +28,25 @@
 package com.github.hanzm_10.murico.app.managers.scenes;
 
 import javax.swing.JPanel;
+import com.github.hanzm_10.murico.app.scenes.auth.AuthScene;
 
 public class RootSceneManager extends JPanel {
     private static final long serialVersionUID = 1692613470432315571L;
 
+    private AuthScene authScene;
+
     public RootSceneManager() {
+        super();
+
+        authScene = new AuthScene();
+
+        showAuthScene();
+    }
+
+    public void showAuthScene() {
+        removeAll();
+        add(authScene);
+        revalidate();
+        repaint();
     }
 }

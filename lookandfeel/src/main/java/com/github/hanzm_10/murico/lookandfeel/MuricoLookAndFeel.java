@@ -27,45 +27,122 @@
  */
 package com.github.hanzm_10.murico.lookandfeel;
 
+import java.awt.Font;
+import java.util.Objects;
+import java.util.logging.Logger;
+import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicLookAndFeel;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import com.github.hanzm_10.murico.platform.SystemInfo;
+import com.github.hanzm_10.murico.utils.LogUtils;
 
 public class MuricoLookAndFeel extends BasicLookAndFeel {
 
-	private static final long serialVersionUID = 9057846770190092129L;
+    private static final long serialVersionUID = 9057846770190092129L;
+    private static final Logger LOGGER = LogUtils.getLogger(MuricoLookAndFeel.class);
 
-	@Override
-	public UIDefaults getDefaults() {
-		return super.getDefaults();
-	}
+    private final LookAndFeel base;
 
-	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return "Murico Look and Feel";
-	}
+    public MuricoLookAndFeel() {
+        base = getBase();
+    }
 
-	@Override
-	public String getID() {
-		// TODO Auto-generated method stub
-		return "muricolookandfeel";
-	}
+    private LookAndFeel currOrFallback(final LookAndFeel currLaf) {
+        return Objects.requireNonNullElseGet(currLaf, MetalLookAndFeel::new);
+    }
 
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return "MuricoLookAndFeel";
-	}
+    private LookAndFeel getBase() {
+        LookAndFeel baseLookAndFeel;
 
-	@Override
-	public boolean isNativeLookAndFeel() {
-		// TODO Auto-generated method stub
-		return true;
-	}
+        if (SystemInfo.IS_WINDOWS || SystemInfo.IS_LINUX) {
+            baseLookAndFeel = new MetalLookAndFeel();
+        } else {
+            final var systemLafClassName = UIManager.getSystemLookAndFeelClassName();
+            final var currLaf = UIManager.getLookAndFeel();
 
-	@Override
-	public boolean isSupportedLookAndFeel() {
-		// TODO Auto-generated method stub
-		return true;
-	}
+            if (currLaf instanceof MuricoLookAndFeel) {
+                baseLookAndFeel = ((MuricoLookAndFeel) currLaf).base;
+            } else if (currLaf != null && systemLafClassName.equals(currLaf.getClass().getName())) {
+                baseLookAndFeel = currOrFallback(currLaf);
+            } else {
+                try {
+                    UIManager.setLookAndFeel(systemLafClassName);
+                    baseLookAndFeel = currOrFallback(UIManager.getLookAndFeel());
+                } catch (final Exception e) {
+                    LOGGER.severe("Failed to set system look and feel: " + e.getMessage());
+                    throw new IllegalStateException("Failed to set system look and feel", e);
+                }
+            }
+        }
+
+        return baseLookAndFeel;
+    }
+
+    @Override
+    public UIDefaults getDefaults() {
+        var defaults = base.getDefaults();
+
+        var baseFont = new Font("Montserrat", Font.PLAIN, 12);
+        var buttonFont = new Font("Montserrat", Font.BOLD, 12);
+        var labelFont = new Font("Montserrat", Font.PLAIN, 14);
+
+        defaults.put("defaultFont", baseFont);
+
+        // Apply to common components
+        Object[] fontDefaults = {
+                "Button.font", buttonFont, "Label.font", labelFont,
+                "TextField.font", baseFont,
+                "TextArea.font", baseFont,
+                "CheckBox.font", baseFont,
+                "RadioButton.font", baseFont,
+                "ComboBox.font", baseFont,
+                "List.font", baseFont,
+                "Table.font", baseFont,
+                "Tree.font", baseFont,
+                "Menu.font", baseFont,
+                "MenuItem.font", baseFont,
+                "TabbedPane.font", baseFont,
+                "ToolTip.font", baseFont,
+                "TitledBorder.font", baseFont,
+                "OptionPane.messageFont", baseFont,
+                "OptionPane.buttonFont", baseFont,
+                // Add more as needed
+        };
+
+        defaults.putDefaults(fontDefaults);
+
+        return defaults;
+    }
+
+    @Override
+    public String getDescription() {
+        // TODO Auto-generated method stub
+        return "Murico Look and Feel";
+    }
+
+    @Override
+    public String getID() {
+        // TODO Auto-generated method stub
+        return "muricolookandfeel";
+    }
+
+    @Override
+    public String getName() {
+        // TODO Auto-generated method stub
+        return "MuricoLookAndFeel";
+    }
+
+    @Override
+    public boolean isNativeLookAndFeel() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public boolean isSupportedLookAndFeel() {
+        // TODO Auto-generated method stub
+        return true;
+    }
 }
