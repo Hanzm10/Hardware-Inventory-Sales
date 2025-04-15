@@ -2,7 +2,6 @@ package com.github.hanzm_10.murico.app.scenes.auth;
 
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -19,7 +18,6 @@ public class AuthSceneMain extends JPanel {
      * Create the panel.
      */
     public AuthSceneMain(ActionListener actionListener) {
-        setPreferredSize(new Dimension(1440, 1024));
         this.actionListener = actionListener;
         setLayout(new MigLayout("", "[grow,center]", "[grow,center]"));
 
@@ -37,12 +35,6 @@ public class AuthSceneMain extends JPanel {
         btnNewButton.setActionCommand("login");
         btnNewButton.addActionListener(actionListener);
         panel.add(btnNewButton, "cell 0 1");
-
-        var horizontalStrut = Box.createHorizontalStrut(20);
-        horizontalStrut.setMaximumSize(new Dimension(64, 32767));
-        horizontalStrut.setMinimumSize(new Dimension(64, 0));
-        horizontalStrut.setPreferredSize(new Dimension(64, 0));
-        panel.add(horizontalStrut, "cell 1 1");
 
         var btnNewButton_1 = new JButton("Create an account");
         btnNewButton_1.setActionCommand("register");

@@ -29,6 +29,7 @@ package com.github.hanzm_10.murico.app.managers.scenes;
 
 import javax.swing.JPanel;
 import com.github.hanzm_10.murico.app.scenes.auth.AuthScene;
+import net.miginfocom.swing.MigLayout;
 
 public class RootSceneManager extends JPanel {
     private static final long serialVersionUID = 1692613470432315571L;
@@ -38,6 +39,8 @@ public class RootSceneManager extends JPanel {
     public RootSceneManager() {
         super();
 
+        setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
+
         authScene = new AuthScene();
 
         showAuthScene();
@@ -45,7 +48,7 @@ public class RootSceneManager extends JPanel {
 
     public void showAuthScene() {
         removeAll();
-        add(authScene);
+        add(authScene, "cell 0 0");
         revalidate();
         repaint();
     }
