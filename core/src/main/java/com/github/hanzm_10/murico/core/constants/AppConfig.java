@@ -28,14 +28,13 @@
 package com.github.hanzm_10.murico.core.constants;
 
 import com.github.hanzm_10.murico.core.common.ReadonlyProperties;
-import com.github.hanzm_10.murico.properties.MuricoPropertyLoader;
+import com.github.weisj.darklaf.properties.PropertyLoader;
 
 /** Read-only configuration class for application settings. */
 public class AppConfig extends ReadonlyProperties {
     private static final long serialVersionUID = 1L;
 
     private static AppConfig instance;
-    public static final String CONFIG_FILE = "/murico";
     public static final String KEY_APP_TITLE = "app.title";
     public static final String KEY_APP_VERSION = "app.version";
     public static final String KEY_PREFERRED_WIDTH = "app.preferred.width";
@@ -52,7 +51,8 @@ public class AppConfig extends ReadonlyProperties {
 
     private AppConfig() {
         super();
-        MuricoPropertyLoader.loadProperties(this, AppConfig.class, CONFIG_FILE);
+        var properties = PropertyLoader.loadProperties(AppConfig.class, "murico", "/");
+        putAll(properties);
     }
 
     /**

@@ -179,14 +179,6 @@ public class MuricoLogFormatter extends Formatter {
 			return ANSI_RED;
 		} else if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
 			return ANSI_YELLOW;
-		} else if (record.getLevel().intValue() >= Level.INFO.intValue()) {
-			return ANSI_GREEN;
-		} else if (record.getLevel().intValue() >= Level.CONFIG.intValue()) {
-			return ANSI_BLUE;
-		} else if (record.getLevel().intValue() >= Level.FINE.intValue()) {
-			return ANSI_PURPLE;
-		} else if (record.getLevel().intValue() >= Level.FINER.intValue()) {
-			return ANSI_CYAN;
 		} else {
 			return ANSI_BLACK;
 		}

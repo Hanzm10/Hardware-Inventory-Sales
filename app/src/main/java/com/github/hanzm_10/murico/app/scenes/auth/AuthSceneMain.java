@@ -27,18 +27,21 @@ public class AuthSceneMain extends JPanel {
                 "[:320.00:520px,grow 50,bottom][72.00px,grow,top]"));
 
         var lblNewLabel = new ResizableImagePanel(
-                new ImageIcon(getClass().getResource("/authMain_img.png")).getImage());
+                new ImageIcon(getClass().getResource("/assets/images/auth-main_img.png"))
+                        .getImage());
         lblNewLabel.setPreferredSize(new Dimension(1280, 720));
         panel.add(lblNewLabel, "cell 0 0 3 1");
 
         var btnNewButton = new JButton("Log In");
         btnNewButton.setActionCommand("login");
         btnNewButton.addActionListener(actionListener);
+        btnNewButton.setPreferredSize(new Dimension(160, 48));
         panel.add(btnNewButton, "cell 0 1");
 
         var btnNewButton_1 = new JButton("Create an account");
         btnNewButton_1.setActionCommand("register");
         btnNewButton_1.addActionListener(actionListener);
+        btnNewButton_1.setPreferredSize(new Dimension(160, 48));
         panel.add(btnNewButton_1, "cell 2 1");
     }
 

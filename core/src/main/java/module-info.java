@@ -4,6 +4,7 @@ module murico.core {
     requires static org.jetbrains.annotations;
     requires murico.utils;
     requires murico.io;
+    requires darklaf.properties;
 
     exports com.github.hanzm_10.murico.core;
     exports com.github.hanzm_10.murico.core.model;

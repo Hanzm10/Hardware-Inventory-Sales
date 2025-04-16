@@ -14,15 +14,5 @@
         <artifactId>utils</artifactId>
         <version>${project.version}</version>
     </dependency>
-    <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>platform</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>property-loader</artifactId>
-        <version>${project.version}</version>
-    </dependency>
   </dependencies>
 </project>

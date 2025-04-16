@@ -1,7 +1,7 @@
 module murico.io {
-    requires transitive murico.platform;
     requires transitive murico.utils;
-    requires transitive murico.properties;
+    requires transitive darklaf.platform.base;
+
 
     requires static org.jetbrains.annotations;
 
