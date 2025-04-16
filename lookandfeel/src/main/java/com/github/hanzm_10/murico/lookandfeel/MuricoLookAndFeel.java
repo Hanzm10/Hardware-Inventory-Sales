@@ -35,6 +35,8 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicLookAndFeel;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import com.github.hanzm_10.murico.lookandfeel.ui.button.MuricoButtonUI;
+import com.github.hanzm_10.murico.lookandfeel.ui.panel.MuricoPanelUI;
 import com.github.hanzm_10.murico.platform.SystemInfo;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
@@ -91,27 +93,18 @@ public class MuricoLookAndFeel extends BasicLookAndFeel {
         defaults.put("defaultFont", baseFont);
 
         // Apply to common components
-        Object[] fontDefaults = {
-                "Button.font", buttonFont, "Label.font", labelFont,
-                "TextField.font", baseFont,
-                "TextArea.font", baseFont,
-                "CheckBox.font", baseFont,
-                "RadioButton.font", baseFont,
-                "ComboBox.font", baseFont,
-                "List.font", baseFont,
-                "Table.font", baseFont,
-                "Tree.font", baseFont,
-                "Menu.font", baseFont,
-                "MenuItem.font", baseFont,
-                "TabbedPane.font", baseFont,
-                "ToolTip.font", baseFont,
-                "TitledBorder.font", baseFont,
-                "OptionPane.messageFont", baseFont,
-                "OptionPane.buttonFont", baseFont,
+        Object[] fontDefaults = {"Button.font", buttonFont, "Label.font", labelFont, "TextField.font", baseFont,
+                "TextArea.font", baseFont, "CheckBox.font", baseFont, "RadioButton.font", baseFont, "ComboBox.font",
+                baseFont, "List.font", baseFont, "Table.font", baseFont, "Tree.font", baseFont, "Menu.font", baseFont,
+                "MenuItem.font", baseFont, "TabbedPane.font", baseFont, "ToolTip.font", baseFont, "TitledBorder.font",
+                baseFont, "OptionPane.messageFont", baseFont, "OptionPane.buttonFont", baseFont,
                 // Add more as needed
         };
 
         defaults.putDefaults(fontDefaults);
+
+        defaults.put("ButtonUI", MuricoButtonUI.class.getName());
+        defaults.put("PanelUI", MuricoPanelUI.class.getName());
 
         return defaults;
     }
@@ -132,6 +125,12 @@ public class MuricoLookAndFeel extends BasicLookAndFeel {
     public String getName() {
         // TODO Auto-generated method stub
         return "MuricoLookAndFeel";
+    }
+
+    @Override
+    protected void initComponentDefaults(UIDefaults table) {
+        super.initComponentDefaults(table);
+
     }
 
     @Override

@@ -7,7 +7,6 @@ module murico.app {
     requires murico.database;
     requires static org.jetbrains.annotations;
     requires com.miglayout.swing;
-    requires darklaf.core;
 
     exports com.github.hanzm_10.murico.app;
 }

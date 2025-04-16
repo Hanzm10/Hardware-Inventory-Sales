@@ -1,20 +1,29 @@
-/**
- * Copyright 2025 - Aaron Ragudos - Hanz Mapua - Peter Dela Cruz - Jerick Remo - Kurt Raneses
+/** Copyright 2025
+ *  - Aaron Ragudos
+ *  - Hanz Mapua
+ *  - Peter Dela Cruz
+ *  - Jerick Remo
+ *  - Kurt Raneses
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the “Software”), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, LOGGER.info, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ *  Permission is hereby granted, free of charge, to any
+ *  person obtaining a copy of this software and associated
+ *  documentation files (the “Software”), to deal in the Software
+ *  without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons
+ *  to whom the Software is furnished to do so, subject to the
+ *  following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be
+ *  included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+ *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ *  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ *  ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.github.hanzm_10.murico.app;
 
@@ -24,6 +33,7 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import com.github.hanzm_10.murico.app.loading.InitialLoadingScreen;
 import com.github.hanzm_10.murico.app.loading.SplashScreenFactory;
 import com.github.hanzm_10.murico.app.managers.SessionManager;
@@ -32,8 +42,8 @@ import com.github.hanzm_10.murico.core.constants.GlobalConfig;
 import com.github.hanzm_10.murico.core.model.Session;
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
 import com.github.hanzm_10.murico.io.MuricoConfiguration;
+import com.github.hanzm_10.murico.lookandfeel.MuricoLookAndFeel;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
-import com.github.weisj.darklaf.LafManager;
 
 public class Murico {
     private static class CheckSessionWorker extends SwingWorker<Void, String> {
@@ -50,6 +60,7 @@ public class Murico {
         @Override
         protected Void doInBackground() throws Exception {
             LOGGER.info("Initializing file system...");
+            Thread.sleep(2000); // Simulate a delay for the splash screen
             initializeFileSystem();
 
             LOGGER.info("Getting session uid from GlobalConfig...");
@@ -106,7 +117,8 @@ public class Murico {
     private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
 
     private static void initialize() {
-        LafManager.install();
+
+
         var splashScreen = new InitialLoadingScreen();
         var splashScreenWindow = SplashScreenFactory.createSplashScreenJWindow(splashScreen);
         var timer = new Timer(200, _ -> splashScreenWindow.setVisible(true));
@@ -125,6 +137,12 @@ public class Murico {
 
     public static void main(String[] args) {
         LOGGER.info("Initializing Murico application...");
+        try {
+            LOGGER.info("Setting up Look and Feel...");
+            UIManager.setLookAndFeel(new MuricoLookAndFeel());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to set look and feel", e);
+        }
         Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
         SwingUtilities.invokeLater(Murico::initialize);
     }

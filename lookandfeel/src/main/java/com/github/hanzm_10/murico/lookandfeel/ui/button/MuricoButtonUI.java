@@ -25,7 +25,41 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.lookandfeel.theme.impl;
+package com.github.hanzm_10.murico.lookandfeel.ui.button;
 
-public class MuricoTheme {
+import java.awt.Graphics;
+import javax.swing.AbstractButton;
+import javax.swing.JComponent;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicButtonListener;
+import javax.swing.plaf.basic.BasicButtonUI;
+
+public class MuricoButtonUI extends BasicButtonUI {
+    public static ComponentUI createUI(final JComponent c) {
+        return new MuricoButtonUI();
+    }
+
+    protected boolean pressed;
+    protected boolean hovered;
+    protected boolean focused;
+
+    @Override
+    protected BasicButtonListener createButtonListener(AbstractButton b) {
+        return new MuricoButtonUIListener<>(b, this);
+    }
+
+    @Override
+    protected void installDefaults(AbstractButton b) {
+        super.installDefaults(b);
+    }
+
+    @Override
+    public void installUI(JComponent c) {
+        super.installUI(c);
+    }
+
+    @Override
+    public void paint(Graphics g, JComponent c) {
+        super.paint(g, c);
+    }
 }
