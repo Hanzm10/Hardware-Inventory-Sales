@@ -25,32 +25,39 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app;
+package com.github.hanzm_10.murico.core.constants;
 
-import java.awt.BorderLayout;
+import java.io.File;
 
-import javax.swing.JFrame;
-
-import com.github.hanzm_10.murico.app.managers.scenes.RootSceneManager;
 import com.github.hanzm_10.murico.core.config.AppConfig;
 
-public class MuricoAppWindow extends JFrame {
+import com.github.weisj.darklaf.platform.SystemInfo;
 
-	private static final long serialVersionUID = 2596513398187183073L;
+public class Directories {
+	public static final String USER_HOME = System.getProperty("user.home");
+	public static final String LOGS_DIRECTORY;
+	public static final String CONFIG_DIRECTORY;
 
-	public MuricoAppWindow() {
-		super();
+	/** Does not include the file extension. */
+	public static final String GLOBAL_CONFIG_FILE_PATH;
 
-		var rootSceneManager = new RootSceneManager();
-		var title = AppConfig.APP_TITLE + " " + AppConfig.APP_VERSION;
+	public static final String APP_DATA;
 
-		setTitle(title);
-		add(rootSceneManager, BorderLayout.CENTER);
-		pack();
+	static {
+		if (SystemInfo.isWindows) {
+			APP_DATA = USER_HOME + File.separator + "AppData" + File.separator + "Local" + File.separator
+					+ AppConfig.APP_TITLE;
+		} else if (SystemInfo.isMac) {
+			APP_DATA = USER_HOME + File.separator + "Library" + File.separator + "Application Support" + File.separator
+					+ AppConfig.APP_TITLE;
+		} else if (SystemInfo.isLinux) {
+			APP_DATA = USER_HOME + File.separator + "." + AppConfig.APP_TITLE;
+		} else {
+			APP_DATA = USER_HOME + File.separator + "etc" + File.separator + AppConfig.APP_TITLE;
+		}
 
-		// TODO: prompt user on exit when there are unsaved changes
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
-		setVisible(true);
+		CONFIG_DIRECTORY = APP_DATA + File.separator + "config";
+		LOGS_DIRECTORY = APP_DATA + File.separator + "logs";
+		GLOBAL_CONFIG_FILE_PATH = CONFIG_DIRECTORY + File.separator + Constants.CONFIG_FILE_NAME;
 	}
 }

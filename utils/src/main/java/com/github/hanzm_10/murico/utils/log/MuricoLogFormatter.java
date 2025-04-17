@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+
 import com.github.hanzm_10.murico.utils.MuricoStringUtils;
 
 public class MuricoLogFormatter extends Formatter {

@@ -25,20 +25,8 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.core.common;
+package com.github.hanzm_10.murico.core.constants;
 
-import java.util.Properties;
-
-public class ReadonlyProperties extends Properties {
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public synchronized Object remove(Object key) {
-		throw new UnsupportedOperationException("This properties object is read-only.");
-	}
-
-	@Override
-	public synchronized Object setProperty(String key, String value) {
-		throw new UnsupportedOperationException("This properties object is read-only.");
-	}
+public class Constants {
+	public static final String CONFIG_FILE_NAME = "murico";
 }

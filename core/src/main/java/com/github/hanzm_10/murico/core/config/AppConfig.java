@@ -25,32 +25,28 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app;
+package com.github.hanzm_10.murico.core.config;
 
-import java.awt.BorderLayout;
+import java.util.Properties;
 
-import javax.swing.JFrame;
+import com.github.hanzm_10.murico.core.constants.Constants;
+import com.github.hanzm_10.murico.core.constants.PropertyKey;
 
-import com.github.hanzm_10.murico.app.managers.scenes.RootSceneManager;
-import com.github.hanzm_10.murico.core.config.AppConfig;
+import com.github.weisj.darklaf.properties.PropertyLoader;
 
-public class MuricoAppWindow extends JFrame {
+public class AppConfig {
+	private static final Properties properties;
+	public static final String APP_TITLE;
+	public static final String APP_VERSION;
+	public static final int PREFERRED_WIDTH;
+	public static final int PREFERRED_HEIGHT;
 
-	private static final long serialVersionUID = 2596513398187183073L;
+	static {
+		properties = PropertyLoader.loadProperties(AppConfig.class, Constants.CONFIG_FILE_NAME, "/");
 
-	public MuricoAppWindow() {
-		super();
-
-		var rootSceneManager = new RootSceneManager();
-		var title = AppConfig.APP_TITLE + " " + AppConfig.APP_VERSION;
-
-		setTitle(title);
-		add(rootSceneManager, BorderLayout.CENTER);
-		pack();
-
-		// TODO: prompt user on exit when there are unsaved changes
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
-		setVisible(true);
+		APP_TITLE = properties.getProperty(PropertyKey.Murico.APP_TITLE);
+		APP_VERSION = properties.getProperty(PropertyKey.Murico.APP_VERSION);
+		PREFERRED_WIDTH = Integer.parseInt(properties.getProperty(PropertyKey.Murico.PREFERRED_WIDTH));
+		PREFERRED_HEIGHT = Integer.parseInt(properties.getProperty(PropertyKey.Murico.PREFERRED_HEIGHT));
 	}
 }
