@@ -31,7 +31,7 @@ import java.awt.Color;
 import java.util.Properties;
 import com.github.hanzm_10.murico.core.constants.Constants;
 import com.github.hanzm_10.murico.core.constants.PropertyKey;
-import com.github.weisj.darklaf.properties.PropertyLoader;
+import com.github.hanzm_10.murico.io.FileIO;
 
 public class AppConfig {
     private static final Properties properties;
@@ -55,7 +55,7 @@ public class AppConfig {
     public static final Color COLOR_PLACEHOLDER;
 
     static {
-        properties = PropertyLoader.loadProperties(AppConfig.class, Constants.CONFIG_FILE_NAME, "/");
+        properties = FileIO.loadProperties(AppConfig.class, Constants.CONFIG_FILE_NAME, "/");
 
         APP_TITLE = properties.getProperty(PropertyKey.Murico.APP_TITLE);
         APP_VERSION = properties.getProperty(PropertyKey.Murico.APP_VERSION);

@@ -1,7 +1,7 @@
 module murico.io {
-	requires transitive murico.utils;
-	requires transitive darklaf.platform.base;
-	requires static org.jetbrains.annotations;
+    requires transitive murico.utils;
 
-	exports com.github.hanzm_10.murico.io;
+    requires static org.jetbrains.annotations;
+
+    exports com.github.hanzm_10.murico.io;
 }

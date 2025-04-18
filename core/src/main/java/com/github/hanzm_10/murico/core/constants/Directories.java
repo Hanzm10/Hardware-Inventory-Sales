@@ -28,36 +28,34 @@
 package com.github.hanzm_10.murico.core.constants;
 
 import java.io.File;
-
 import com.github.hanzm_10.murico.core.config.AppConfig;
-
-import com.github.weisj.darklaf.platform.SystemInfo;
+import com.github.hanzm_10.murico.os.OS;
 
 public class Directories {
-	public static final String USER_HOME = System.getProperty("user.home");
-	public static final String LOGS_DIRECTORY;
-	public static final String CONFIG_DIRECTORY;
+    public static final String USER_HOME = System.getProperty("user.home");
+    public static final String LOGS_DIRECTORY;
+    public static final String CONFIG_DIRECTORY;
 
-	/** Does not include the file extension. */
-	public static final String GLOBAL_CONFIG_FILE_PATH;
+    /** Does not include the file extension. */
+    public static final String GLOBAL_CONFIG_FILE_PATH;
 
-	public static final String APP_DATA;
+    public static final String APP_DATA;
 
-	static {
-		if (SystemInfo.isWindows) {
-			APP_DATA = USER_HOME + File.separator + "AppData" + File.separator + "Local" + File.separator
-					+ AppConfig.APP_TITLE;
-		} else if (SystemInfo.isMac) {
-			APP_DATA = USER_HOME + File.separator + "Library" + File.separator + "Application Support" + File.separator
-					+ AppConfig.APP_TITLE;
-		} else if (SystemInfo.isLinux) {
-			APP_DATA = USER_HOME + File.separator + "." + AppConfig.APP_TITLE;
-		} else {
-			APP_DATA = USER_HOME + File.separator + "etc" + File.separator + AppConfig.APP_TITLE;
-		}
+    static {
+        if (OS.isWindows) {
+            APP_DATA = USER_HOME + File.separator + "AppData" + File.separator + "Local" + File.separator
+                    + AppConfig.APP_TITLE;
+        } else if (OS.isMac) {
+            APP_DATA = USER_HOME + File.separator + "Library" + File.separator + "Application Support" + File.separator
+                    + AppConfig.APP_TITLE;
+        } else if (OS.isLinux) {
+            APP_DATA = USER_HOME + File.separator + "." + AppConfig.APP_TITLE;
+        } else {
+            APP_DATA = USER_HOME + File.separator + "etc" + File.separator + AppConfig.APP_TITLE;
+        }
 
-		CONFIG_DIRECTORY = APP_DATA + File.separator + "config";
-		LOGS_DIRECTORY = APP_DATA + File.separator + "logs";
-		GLOBAL_CONFIG_FILE_PATH = CONFIG_DIRECTORY + File.separator + Constants.CONFIG_FILE_NAME;
-	}
+        CONFIG_DIRECTORY = APP_DATA + File.separator + "config";
+        LOGS_DIRECTORY = APP_DATA + File.separator + "logs";
+        GLOBAL_CONFIG_FILE_PATH = CONFIG_DIRECTORY + File.separator + Constants.CONFIG_FILE_NAME;
+    }
 }

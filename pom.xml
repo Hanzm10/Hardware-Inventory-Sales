@@ -76,6 +76,8 @@
         <module>database</module>
         <module>app</module>
         <module>io</module>
+        <module>lookandfeel</module>
+        <module>os</module>
     </modules>
 
     <build>
@@ -209,22 +211,6 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>24.0.1</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.github.weisj</groupId>
-            <artifactId>darklaf-utils</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.weisj</groupId>
-            <artifactId>darklaf-platform-base</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.weisj</groupId>
-            <artifactId>darklaf-property-loader</artifactId>
-            <version>3.0.2</version>
         </dependency>
         
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->

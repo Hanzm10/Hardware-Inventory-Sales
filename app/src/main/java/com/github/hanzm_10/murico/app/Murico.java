@@ -33,10 +33,10 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import com.github.hanzm_10.murico.app.loading.InitialLoadingScreen;
 import com.github.hanzm_10.murico.app.loading.SplashScreenFactory;
 import com.github.hanzm_10.murico.app.managers.SessionManager;
-import com.github.hanzm_10.murico.app.theme.MuricoLightTheme;
 import com.github.hanzm_10.murico.core.config.GlobalConfig;
 import com.github.hanzm_10.murico.core.constants.Directories;
 import com.github.hanzm_10.murico.core.constants.PropertyKey;
@@ -44,8 +44,8 @@ import com.github.hanzm_10.murico.core.exceptions.GlobalUncaughtExceptionHandler
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
 import com.github.hanzm_10.murico.database.model.Session;
 import com.github.hanzm_10.murico.io.FileIO;
+import com.github.hanzm_10.murico.lookandfeel.MuricoLookAndFeel;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
-import com.github.weisj.darklaf.LafManager;
 
 public class Murico {
     private static class CheckSessionWorker extends SwingWorker<Void, String> {
@@ -119,8 +119,13 @@ public class Murico {
     private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
 
     private static void initialize() {
-        LafManager.setTheme(new MuricoLightTheme());
-        LafManager.install();
+        try {
+            LOGGER.info("Setting look and feel...");
+            UIManager.setLookAndFeel(new MuricoLookAndFeel());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to set look and feel", e);
+        }
+
         var splashScreen = new InitialLoadingScreen();
         var splashScreenWindow = SplashScreenFactory.createSplashScreenJWindow(splashScreen);
         var timer = new Timer(200, _ -> splashScreenWindow.setVisible(true));

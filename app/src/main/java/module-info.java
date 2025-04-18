@@ -1,6 +1,6 @@
 module murico.app {
     requires transitive java.desktop;
-    requires darklaf.core;
+    requires murico.lookandfeel;
     requires murico.utils;
     requires murico.core;
     requires murico.io;

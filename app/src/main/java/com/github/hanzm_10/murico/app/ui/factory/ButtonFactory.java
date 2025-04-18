@@ -29,9 +29,7 @@ package com.github.hanzm_10.murico.app.ui.factory;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import javax.swing.JButton;
-import com.github.hanzm_10.murico.core.config.AppConfig;
 import com.github.hanzm_10.murico.core.constants.Constants;
 
 /** Creates buttons for the application. */
@@ -49,9 +47,6 @@ public class ButtonFactory {
         var button = new JButton(text);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setActionCommand(actionCommand);
-        button.setFont(new Font(Constants.FONT_NAME, Constants.Button.Font.STYLE,
-                Constants.Button.Font.SIZE));
-        button.setForeground(AppConfig.COLOR_PRIMARY_FOREGROUND);
 
         return button;
     }
