@@ -28,7 +28,9 @@
 package com.github.hanzm_10.murico.database;
 
 import org.jetbrains.annotations.Range;
+
 import com.github.hanzm_10.murico.database.dao.SessionDAO;
+import com.github.hanzm_10.murico.database.dao.UserCredentialsDAO;
 import com.github.hanzm_10.murico.database.dao.UserDAO;
 import com.github.hanzm_10.murico.database.mysql.MySQLFactoryDAO;
 
@@ -42,16 +44,18 @@ import com.github.hanzm_10.murico.database.mysql.MySQLFactoryDAO;
  *      Pattern by Oracle</a>
  */
 public abstract class AbstractSQLFactoryDAO {
-    public static final int MYSQL = 1;
+	public static final int MYSQL = 1;
 
-    public static AbstractSQLFactoryDAO getSQLFactoryDAO(@Range(from = 1, to = 1) int type) {
-        return switch (type) {
-            case MYSQL -> new MySQLFactoryDAO();
-            default -> throw new IllegalArgumentException("Invalid database type: " + type);
-        };
-    }
+	public static AbstractSQLFactoryDAO getSQLFactoryDAO(@Range(from = 1, to = 1) int type) {
+		return switch (type) {
+			case MYSQL -> new MySQLFactoryDAO();
+			default -> throw new IllegalArgumentException("Invalid database type: " + type);
+		};
+	}
 
-    public abstract SessionDAO getSessionDAO();
+	public abstract SessionDAO getSessionDAO();
 
-    public abstract UserDAO getUserDAO();
+	public abstract UserCredentialsDAO getUserCredentialsDAO();
+
+	public abstract UserDAO getUserDAO();
 }

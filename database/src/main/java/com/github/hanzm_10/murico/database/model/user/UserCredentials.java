@@ -25,7 +25,7 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.core.model;
+package com.github.hanzm_10.murico.database.model.user;
 
-public record User() {
+public record UserCredentials() {
 }

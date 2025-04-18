@@ -27,6 +27,7 @@
  */
 package com.github.hanzm_10.murico.app.ui.factory;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
@@ -44,6 +45,7 @@ public class ButtonFactory {
 	 */
 	public static JButton createButton(String text, String actionCommand) {
 		var button = new JButton(text);
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		button.setActionCommand(actionCommand);
 
 		return button;

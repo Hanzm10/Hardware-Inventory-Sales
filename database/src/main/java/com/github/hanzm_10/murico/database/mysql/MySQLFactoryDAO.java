@@ -33,8 +33,10 @@ import java.util.logging.Logger;
 
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
 import com.github.hanzm_10.murico.database.dao.SessionDAO;
+import com.github.hanzm_10.murico.database.dao.UserCredentialsDAO;
 import com.github.hanzm_10.murico.database.dao.UserDAO;
 import com.github.hanzm_10.murico.database.mysql.dao.MySQLSessionDAO;
+import com.github.hanzm_10.murico.database.mysql.dao.MySQLUserCredentialsDAO;
 import com.github.hanzm_10.murico.database.mysql.dao.MySQLUserDAO;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
@@ -75,6 +77,11 @@ public class MySQLFactoryDAO extends AbstractSQLFactoryDAO {
 	public SessionDAO getSessionDAO() {
 		// TODO Auto-generated method stub
 		return new MySQLSessionDAO();
+	}
+
+	@Override
+	public UserCredentialsDAO getUserCredentialsDAO() {
+		return new MySQLUserCredentialsDAO();
 	}
 
 	@Override

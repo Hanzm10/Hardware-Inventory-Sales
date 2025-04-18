@@ -39,7 +39,7 @@ public class AuthScene extends JPanel implements ActionListener {
 
     private CardLayout cardLayout;
 
-    private AuthSceneLogin authSceneLogin;
+    private LoginSystem authSceneLogin;
     private AuthSceneRegister authSceneRegister;
     private AuthSceneMain authSceneMain;
 
@@ -49,7 +49,7 @@ public class AuthScene extends JPanel implements ActionListener {
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
-        authSceneLogin = new AuthSceneLogin(this);
+        authSceneLogin = new LoginSystem();
         authSceneRegister = new AuthSceneRegister(this);
         authSceneMain = new AuthSceneMain(this);
 

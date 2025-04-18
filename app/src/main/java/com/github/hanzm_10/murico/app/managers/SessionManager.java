@@ -29,7 +29,7 @@ package com.github.hanzm_10.murico.app.managers;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.github.hanzm_10.murico.core.model.Session;
+import com.github.hanzm_10.murico.database.model.Session;
 
 /**
  * Singleton class to manage user sessions.

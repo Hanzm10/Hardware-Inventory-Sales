@@ -30,7 +30,7 @@ package com.github.hanzm_10.murico.database.dao;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-import com.github.hanzm_10.murico.core.model.User;
+import com.github.hanzm_10.murico.database.model.user.User;
 
 public interface UserDAO {
 	boolean deleteUser();

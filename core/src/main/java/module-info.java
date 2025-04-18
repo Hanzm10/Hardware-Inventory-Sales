@@ -4,10 +4,10 @@ module murico.core {
 	requires static org.jetbrains.annotations;
 	requires murico.utils;
 	requires murico.io;
+	requires murico.database;
 	requires darklaf.properties;
 
 	exports com.github.hanzm_10.murico.core;
-	exports com.github.hanzm_10.murico.core.model;
 	exports com.github.hanzm_10.murico.core.constants;
 	exports com.github.hanzm_10.murico.core.config;
 	exports com.github.hanzm_10.murico.core.exceptions;

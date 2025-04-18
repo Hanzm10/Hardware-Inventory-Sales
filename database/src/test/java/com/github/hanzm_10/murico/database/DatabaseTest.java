@@ -45,6 +45,15 @@ public class DatabaseTest {
 	}
 
 	@Test
+	@DisplayName("Print session table")
+	public void testPrintSessionTable() throws SQLException {
+		// Test if the session exists
+		var factory = AbstractSQLFactoryDAO.getSQLFactoryDAO(AbstractSQLFactoryDAO.MYSQL);
+		var session = factory.getSessionDAO();
+		session.printSessionTable();
+	}
+
+	@Test
 	@DisplayName("Test session shouldn't exist")
 	public void testSessionExists() throws SQLException {
 		// Test if the session exists

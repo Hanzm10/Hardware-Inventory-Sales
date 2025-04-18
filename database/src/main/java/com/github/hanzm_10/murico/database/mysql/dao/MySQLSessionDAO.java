@@ -27,92 +27,162 @@
  */
 package com.github.hanzm_10.murico.database.mysql.dao;
 
+import java.sql.Statement;
 import java.util.logging.Logger;
+
 import org.jetbrains.annotations.NotNull;
-import com.github.hanzm_10.murico.core.model.Session;
+
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
 import com.github.hanzm_10.murico.database.dao.SessionDAO;
+import com.github.hanzm_10.murico.database.model.Session;
+import com.github.hanzm_10.murico.database.model.user.User;
 import com.github.hanzm_10.murico.database.mysql.MySQLFactoryDAO;
 import com.github.hanzm_10.murico.database.query.SQLQueryCache;
 import com.github.hanzm_10.murico.database.query.SQLQueryCache.SQLQueryType;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 public class MySQLSessionDAO implements SessionDAO {
-    private static final Logger LOGGER = MuricoLogUtils.getLogger(MySQLSessionDAO.class);
+	private static final Logger LOGGER = MuricoLogUtils.getLogger(MySQLSessionDAO.class);
 
-    @Override
-    public boolean deleteSession() {
-        // TODO Auto-generated method stub
-        return false;
-    }
+	@Override
+	public String createSession(@NotNull User user) {
+		return createSession(user, "", "");
+	}
 
-    @Override
-    public Session getSessionByUid(@NotNull String _sessionUid) {
-        Session session = null;
+	@Override
+	public String createSession(@NotNull User user, String ipAddress) {
+		return createSession(user, ipAddress, "");
+	}
 
-        try (var conn = MySQLFactoryDAO.createConnection()) {
-            var query = SQLQueryCache.getInstance().getQuery("session_by_uid",
-                    AbstractSQLFactoryDAO.MYSQL, SQLQueryType.SELECT);
-            var statement = conn.prepareStatement(query);
-            statement.setString(1, _sessionUid);
+	@Override
+	public String createSession(@NotNull User user, String ipAddress, String userAgent) {
+		String _sessionUid = null;
 
-            var resultSet = statement.executeQuery();
+		try (var conn = MySQLFactoryDAO.createConnection()) {
+			var query = SQLQueryCache.getInstance().getQuery("sessions_insert_session", AbstractSQLFactoryDAO.MYSQL,
+					SQLQueryType.INSERT);
+			var statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			statement.setInt(1, user._userId());
+			statement.setString(2, ipAddress);
+			statement.setString(3, userAgent);
 
-            if (resultSet.next()) {
-                session = new Session.Builder().setUserId(resultSet.getInt("_user_id"))
-                        .setIpAddress(resultSet.getString("session_ip_address"))
-                        .setUserAgent(resultSet.getString("session_user_agent"))
-                        .setSessionId(resultSet.getInt("_session_id"))
-                        .setSessionUid(resultSet.getString("_session_uid"))
-                        .setSessionCreatedAt(resultSet.getTimestamp("_session_created_at"))
-                        .setSessionExpiresAt(resultSet.getTimestamp("_session_expires_at")).build();
-            }
+			var resultSet = statement.executeUpdate();
+			var RETURNED_SOMETHING = resultSet == 1;
 
-            LOGGER.info("Session retrieved: " + session);
+			if (RETURNED_SOMETHING) {
+				var generatedKeys = statement.getGeneratedKeys();
 
-            statement.close();
-        } catch (Exception e) {
-            LOGGER.severe("Error retrieving session: " + e.getMessage());
-        }
+				if (generatedKeys.next()) {
+					_sessionUid = generatedKeys.getString("_session_uid");
+				}
+			}
 
-        return session;
-    }
+			LOGGER.info("Session created: " + _sessionUid);
 
-    @Override
-    public int insertSession() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+			statement.close();
+		} catch (Exception e) {
+			LOGGER.severe("Error creating session: " + e.getMessage());
+		}
 
-    @Override
-    public boolean sessionExists(@NotNull String _sessionUid) {
-        var exists = false;
+		return _sessionUid;
+	}
 
-        try (var conn = MySQLFactoryDAO.createConnection()) {
-            var query = SQLQueryCache.getInstance().getQuery("session_exists", AbstractSQLFactoryDAO.MYSQL,
-                    SQLQueryType.SELECT);
-            var statement = conn.prepareStatement(query);
-            statement.setString(1, _sessionUid);
+	@Override
+	public boolean deleteSession() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-            var resultSet = statement.executeQuery();
+	@Override
+	public Session getSessionByUid(@NotNull String _sessionUid) {
+		Session session = null;
 
-            if (resultSet.next()) {
-                exists = resultSet.getInt(1) != 0;
-            }
+		try (var conn = MySQLFactoryDAO.createConnection()) {
+			var query = SQLQueryCache.getInstance().getQuery("session_by_uid", AbstractSQLFactoryDAO.MYSQL,
+					SQLQueryType.SELECT);
+			var statement = conn.prepareStatement(query);
+			statement.setString(1, _sessionUid);
 
-            LOGGER.info("Session exists: " + exists);
+			var resultSet = statement.executeQuery();
 
-            statement.close();
-        } catch (Exception e) {
-            LOGGER.severe("Error checking session existence: " + e.getMessage());
-        }
+			if (resultSet.next()) {
+				session = new Session.Builder().setUserId(resultSet.getInt("_user_id"))
+						.setIpAddress(resultSet.getString("session_ip_address"))
+						.setUserAgent(resultSet.getString("session_user_agent"))
+						.setSessionId(resultSet.getInt("_session_id"))
+						.setSessionUid(resultSet.getString("_session_uid"))
+						.setSessionCreatedAt(resultSet.getTimestamp("_session_created_at"))
+						.setSessionExpiresAt(resultSet.getTimestamp("_session_expires_at")).build();
+			}
 
-        return exists;
-    }
+			System.out.println("Session retrieved: " + session);
 
-    @Override
-    public int updateSession() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+			statement.close();
+		} catch (Exception e) {
+			LOGGER.severe("Error retrieving session: " + e.getMessage());
+		}
+
+		return session;
+	}
+
+	@Override
+	public void printSessionTable() {
+		try (var conn = MySQLFactoryDAO.createConnection()) {
+			var query = SQLQueryCache.getInstance().getQuery("session_table", AbstractSQLFactoryDAO.MYSQL,
+					SQLQueryType.SELECT);
+			var statement = conn.prepareStatement(query);
+
+			var rsmd = statement.getMetaData();
+			var columnCount = rsmd.getColumnCount();
+			var resultSet = statement.executeQuery();
+
+			for (var i = 1; i <= columnCount; i++) {
+				System.out.print(rsmd.getColumnName(i) + "\t");
+			}
+
+			while (resultSet.next()) {
+				System.out.println();
+				for (var i = 1; i <= columnCount; i++) {
+					System.out.print(resultSet.getString(i) + "\t");
+				}
+			}
+			System.out.println();
+
+			statement.close();
+		} catch (Exception e) {
+			LOGGER.severe("Error printing session table: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public boolean sessionExists(@NotNull String _sessionUid) {
+		var exists = false;
+
+		try (var conn = MySQLFactoryDAO.createConnection()) {
+			var query = SQLQueryCache.getInstance().getQuery("session_exists", AbstractSQLFactoryDAO.MYSQL,
+					SQLQueryType.SELECT);
+			var statement = conn.prepareStatement(query);
+			statement.setString(1, _sessionUid);
+
+			var resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				exists = resultSet.getInt(1) != 0;
+			}
+
+			LOGGER.info("Session exists: " + exists);
+
+			statement.close();
+		} catch (Exception e) {
+			LOGGER.severe("Error checking session existence: " + e.getMessage());
+		}
+
+		return exists;
+	}
+
+	@Override
+	public int updateSession() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

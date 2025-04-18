@@ -28,16 +28,52 @@
 package com.github.hanzm_10.murico.database.dao;
 
 import org.jetbrains.annotations.NotNull;
-import com.github.hanzm_10.murico.core.model.Session;
+
+import com.github.hanzm_10.murico.database.model.Session;
+import com.github.hanzm_10.murico.database.model.user.User;
 
 public interface SessionDAO {
-    boolean deleteSession();
+	/**
+	 * Creates a new session for the given user.
+	 *
+	 * @param user
+	 *            The user for whom to create the session.
+	 * @return The session UID of the newly created session.
+	 */
+	String createSession(@NotNull User user);
 
-    Session getSessionByUid(@NotNull String _sessionUid);
+	/**
+	 * Creates a new session for the given user with the specified IP address.
+	 *
+	 * @param user
+	 *            The user for whom to create the session.
+	 * @param ipAddress
+	 *            The IP address of the user.
+	 * @return The session UID of the newly created session.
+	 */
+	String createSession(@NotNull User user, String ipAddress);
 
-    int insertSession();
+	/**
+	 * Creates a new session for the given user with the specified IP address and
+	 * user agent.
+	 *
+	 * @param user
+	 *            The user for whom to create the session.
+	 * @param ipAddress
+	 *            The IP address of the user.
+	 * @param userAgent
+	 *            The user agent of the user's device.
+	 * @return The session UID of the newly created session.
+	 */
+	String createSession(@NotNull User user, String ipAddress, String userAgent);
 
-    boolean sessionExists(@NotNull String _sessionUid);
+	boolean deleteSession();
 
-    int updateSession();
+	Session getSessionByUid(@NotNull String _sessionUid);
+
+	void printSessionTable();
+
+	boolean sessionExists(@NotNull String _sessionUid);
+
+	int updateSession();
 }

@@ -27,5 +27,21 @@
  */
 package com.github.hanzm_10.murico.core;
 
+import com.github.hanzm_10.murico.database.model.user.User;
+
 public class MuricoCore {
+	private static User loggedInUser = null;
+
+	/**
+	 * This method is used to get the current loggedInUser.
+	 *
+	 * @return the current loggedInUser
+	 */
+	public static User getLoggedInUser() {
+		return loggedInUser;
+	}
+
+	public static void setLoggedInUser(User loggedInUser) {
+		MuricoCore.loggedInUser = loggedInUser;
+	}
 }

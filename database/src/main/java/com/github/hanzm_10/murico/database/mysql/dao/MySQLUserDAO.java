@@ -30,8 +30,8 @@ package com.github.hanzm_10.murico.database.mysql.dao;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-import com.github.hanzm_10.murico.core.model.User;
 import com.github.hanzm_10.murico.database.dao.UserDAO;
+import com.github.hanzm_10.murico.database.model.user.User;
 
 public class MySQLUserDAO implements UserDAO {
 

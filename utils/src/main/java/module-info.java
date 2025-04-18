@@ -4,4 +4,5 @@ module murico.utils {
 
 	exports com.github.hanzm_10.murico.utils;
 	exports com.github.hanzm_10.murico.utils.log;
+	exports com.github.hanzm_10.murico.utils.auth;
 }
