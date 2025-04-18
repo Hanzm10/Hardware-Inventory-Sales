@@ -25,32 +25,8 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app;
+package com.github.hanzm_10.murico.core.constants;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-
-import com.github.hanzm_10.murico.app.managers.scenes.RootSceneManager;
-import com.github.hanzm_10.murico.core.config.AppConfig;
-
-public class MuricoAppWindow extends JFrame {
-
-	private static final long serialVersionUID = 2596513398187183073L;
-
-	public MuricoAppWindow() {
-		super();
-
-		var rootSceneManager = new RootSceneManager();
-		var title = AppConfig.APP_TITLE + " " + AppConfig.APP_VERSION;
-
-		setTitle(title);
-		add(rootSceneManager, BorderLayout.CENTER);
-		pack();
-
-		// TODO: prompt user on exit when there are unsaved changes
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
-		setVisible(true);
-	}
+public class Constants {
+	public static final String CONFIG_FILE_NAME = "murico";
 }

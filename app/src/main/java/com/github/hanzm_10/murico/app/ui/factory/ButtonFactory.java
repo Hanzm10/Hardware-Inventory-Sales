@@ -25,32 +25,46 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app;
+package com.github.hanzm_10.murico.app.ui.factory;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 
-import javax.swing.JFrame;
+import javax.swing.JButton;
 
-import com.github.hanzm_10.murico.app.managers.scenes.RootSceneManager;
-import com.github.hanzm_10.murico.core.config.AppConfig;
+/** Creates buttons for the application. */
+public class ButtonFactory {
+	/**
+	 * Creates a button with the specified text and action command.
+	 *
+	 * @param text
+	 *            the text to display on the button
+	 * @param actionCommand
+	 *            the action command for the button
+	 * @return a JButton with the specified text and action command
+	 */
+	public static JButton createButton(String text, String actionCommand) {
+		var button = new JButton(text);
+		button.setActionCommand(actionCommand);
 
-public class MuricoAppWindow extends JFrame {
+		return button;
+	}
 
-	private static final long serialVersionUID = 2596513398187183073L;
+	/**
+	 * Creates a button with the specified text, action command, and size.
+	 *
+	 * @param text
+	 *            the text to display on the button
+	 * @param actionCommand
+	 *            the action command for the button
+	 * @param size
+	 *            the preferred size of the button
+	 * @return a JButton with the specified text, action command, and size
+	 */
+	public static JButton createButton(String text, String actionCommand, Dimension size) {
+		var button = createButton(text, actionCommand);
+		button.setPreferredSize(size);
+		button.setSize(size);
 
-	public MuricoAppWindow() {
-		super();
-
-		var rootSceneManager = new RootSceneManager();
-		var title = AppConfig.APP_TITLE + " " + AppConfig.APP_VERSION;
-
-		setTitle(title);
-		add(rootSceneManager, BorderLayout.CENTER);
-		pack();
-
-		// TODO: prompt user on exit when there are unsaved changes
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
-		setVisible(true);
+		return button;
 	}
 }

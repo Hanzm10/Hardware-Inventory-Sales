@@ -10,15 +10,11 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <name>Murico - Hardware Inventory and Sales System</name>
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>property-loader</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>utils</artifactId>

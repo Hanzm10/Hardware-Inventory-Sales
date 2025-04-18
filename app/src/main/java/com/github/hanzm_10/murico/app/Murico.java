@@ -33,17 +33,19 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
-import javax.swing.UIManager;
 import com.github.hanzm_10.murico.app.loading.InitialLoadingScreen;
 import com.github.hanzm_10.murico.app.loading.SplashScreenFactory;
 import com.github.hanzm_10.murico.app.managers.SessionManager;
-import com.github.hanzm_10.murico.core.GlobalUncaughtExceptionHandler;
-import com.github.hanzm_10.murico.core.constants.GlobalConfig;
+import com.github.hanzm_10.murico.app.theme.MuricoLightTheme;
+import com.github.hanzm_10.murico.core.config.GlobalConfig;
+import com.github.hanzm_10.murico.core.constants.Directories;
+import com.github.hanzm_10.murico.core.constants.PropertyKey;
+import com.github.hanzm_10.murico.core.exceptions.GlobalUncaughtExceptionHandler;
 import com.github.hanzm_10.murico.core.model.Session;
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
-import com.github.hanzm_10.murico.io.MuricoConfiguration;
-import com.github.hanzm_10.murico.lookandfeel.MuricoLookAndFeel;
+import com.github.hanzm_10.murico.io.FileIO;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
+import com.github.weisj.darklaf.LafManager;
 
 public class Murico {
     private static class CheckSessionWorker extends SwingWorker<Void, String> {
@@ -64,7 +66,7 @@ public class Murico {
             initializeFileSystem();
 
             LOGGER.info("Getting session uid from GlobalConfig...");
-            var sessionUid = GlobalConfig.getInstance().getProperty(GlobalConfig.KEY_SESSION_UID);
+            var sessionUid = GlobalConfig.getInstance().getProperty(PropertyKey.Session.UID);
 
             if (sessionUid != null) {
                 LOGGER.info("Verifying session uid...");
@@ -90,7 +92,7 @@ public class Murico {
                 // Show a dialog here to inform the user that something went wrong
             } else if (session.isExpired()) {
                 LOGGER.info("Session has expired. Removing session uid...");
-                GlobalConfig.getInstance().remove(GlobalConfig.KEY_SESSION_UID);
+                GlobalConfig.getInstance().remove(PropertyKey.Session.UID);
             } else {
                 LOGGER.info("Session is valid. Updating application state...");
                 SessionManager.getInstance().setSession(session);
@@ -109,7 +111,7 @@ public class Murico {
                 verifySession(session);
             } else {
                 LOGGER.info("Session does not exist. Removing session uid...");
-                GlobalConfig.getInstance().remove(GlobalConfig.KEY_SESSION_UID);
+                GlobalConfig.getInstance().remove(PropertyKey.Session.UID);
             }
         }
     }
@@ -117,8 +119,8 @@ public class Murico {
     private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
 
     private static void initialize() {
-
-
+        LafManager.setTheme(new MuricoLightTheme());
+        LafManager.install();
         var splashScreen = new InitialLoadingScreen();
         var splashScreenWindow = SplashScreenFactory.createSplashScreenJWindow(splashScreen);
         var timer = new Timer(200, _ -> splashScreenWindow.setVisible(true));
@@ -131,18 +133,12 @@ public class Murico {
     }
 
     private static void initializeFileSystem() {
-        MuricoConfiguration.createConfigDirectory();
-        MuricoConfiguration.createLogsDirectory();
+        FileIO.createDirectoryIfNotExists(Directories.CONFIG_DIRECTORY);
+        FileIO.createDirectoryIfNotExists(Directories.LOGS_DIRECTORY);
     }
 
     public static void main(String[] args) {
         LOGGER.info("Initializing Murico application...");
-        try {
-            LOGGER.info("Setting up Look and Feel...");
-            UIManager.setLookAndFeel(new MuricoLookAndFeel());
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to set look and feel", e);
-        }
         Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
         SwingUtilities.invokeLater(Murico::initialize);
     }
