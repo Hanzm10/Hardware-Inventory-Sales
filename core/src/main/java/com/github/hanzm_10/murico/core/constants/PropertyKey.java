@@ -28,14 +28,29 @@
 package com.github.hanzm_10.murico.core.constants;
 
 public final class PropertyKey {
-	public static final class Murico {
-		public static final String APP_TITLE = "app.title";
-		public static final String APP_VERSION = "app.version";
-		public static final String PREFERRED_WIDTH = "app.preferred.width";
-		public static final String PREFERRED_HEIGHT = "app.preferred.height";
-	}
+    public static final class Murico {
+        public static final String APP_TITLE = "app.title";
+        public static final String APP_VERSION = "app.version";
+        public static final String PREFERRED_WIDTH = "app.preferred.width";
+        public static final String PREFERRED_HEIGHT = "app.preferred.height";
+        public static final String COLOR_FOREGROUND = "color.foreground";
+        public static final String COLOR_FOREGROUND_DARK = "color.dark.foreground";
+        public static final String COLOR_BACKGROUND = "color.background";
+        public static final String COLOR_BACKGROUND_DARK = "color.dark.background";
+        public static final String COLOR_PRIMARY = "color.primary.default";
+        public static final String COLOR_PRIMARY_DARK = "color.dark.primary.default";
+        public static final String COLOR_PRIMARY_FOREGROUND = "color.primary.foreground";
+        public static final String COLOR_PRIMARY_FOREGROUND_DARK = "color.dark.primary.foreground";
+        public static final String COLOR_SECONDARY = "color.secondary.default";
+        public static final String COLOR_SECONDARY_DARK = "color.dark.secondary.default";
+        public static final String COLOR_SECONDARY_FOREGROUND = "color.secondary.foreground";
+        public static final String COLOR_SECONDARY_FOREGROUND_DARK =
+                "color.dark.secondary.foreground";
+        public static final String COLOR_BORDER = "color.border.default";
+        public static final String COLOR_PLACEHOLDER = "color.placeholder.default";
+    }
 
-	public static final class Session {
-		public static final String UID = "db.sessions._session_uid";
-	}
+    public static final class Session {
+        public static final String UID = "db.sessions._session_uid";
+    }
 }

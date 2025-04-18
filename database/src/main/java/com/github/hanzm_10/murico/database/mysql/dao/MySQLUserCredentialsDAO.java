@@ -25,49 +25,39 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app.managers.scenes;
+package com.github.hanzm_10.murico.database.mysql.dao;
 
-import java.awt.Dimension;
-import javax.swing.JPanel;
-import com.github.hanzm_10.murico.app.scenes.auth.AuthScene;
-import com.github.hanzm_10.murico.app.scenes.dashboard.DashboardScene;
-import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.NotNull;
 
-public class RootSceneManager extends JPanel {
-    private static final long serialVersionUID = 1692613470432315571L;
+import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
+import com.github.hanzm_10.murico.database.dao.UserCredentialsDAO;
+import com.github.hanzm_10.murico.database.mysql.MySQLFactoryDAO;
+import com.github.hanzm_10.murico.database.query.SQLQueryCache;
+import com.github.hanzm_10.murico.database.query.SQLQueryCache.SQLQueryType;
 
-    private AuthScene authScene;
-    private DashboardScene dashboardScene;
+public class MySQLUserCredentialsDAO implements UserCredentialsDAO {
 
-    public RootSceneManager() {
-        super();
+	@Override
+	public String getUserPasswordByUserDisplayName(@NotNull String _userDisplayName) {
+		String userPassword = null;
 
-        setPreferredSize(new Dimension(1440, 1020));
-        setSize(new Dimension(1440, 1020));
+		try (var conn = MySQLFactoryDAO.createConnection()) {
+			var query = SQLQueryCache.getInstance().getQuery("user_credentials_user_password_by_display_name",
+					AbstractSQLFactoryDAO.MYSQL, SQLQueryType.SELECT);
+			var statement = conn.prepareStatement(query);
+			statement.setString(1, _userDisplayName);
 
-        setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
+			var resultSet = statement.executeQuery();
 
-        authScene = new AuthScene();
+			if (resultSet.next()) {
+				userPassword = resultSet.getString("user_password");
+			}
 
-        showAuthScene();
-    }
+			statement.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    public void showAuthScene() {
-        removeAll();
-        add(authScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
-
-    public void showDashboardScene() {
-        removeAll();
-
-        if (dashboardScene == null) {
-            dashboardScene = new DashboardScene();
-        }
-
-        add(dashboardScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
+		return userPassword;
+	}
 }

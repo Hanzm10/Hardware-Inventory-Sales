@@ -25,49 +25,43 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app.managers.scenes;
+package com.github.hanzm_10.murico.database.model.user;
 
-import java.awt.Dimension;
-import javax.swing.JPanel;
-import com.github.hanzm_10.murico.app.scenes.auth.AuthScene;
-import com.github.hanzm_10.murico.app.scenes.dashboard.DashboardScene;
-import net.miginfocom.swing.MigLayout;
+public enum UserRole {
+	ADMIN, SUPPLIER, MANAGER, CLERK, EMPLOYEE, TRAINEE, TO_BE_ASSIGNED;
 
-public class RootSceneManager extends JPanel {
-    private static final long serialVersionUID = 1692613470432315571L;
+	/**
+	 * Returns the UserRole corresponding to the given string.
+	 *
+	 * @param role
+	 *            the string representation of the UserRole
+	 * @return the UserRole corresponding to the given string
+	 * @throws IllegalArgumentException
+	 *             if the string does not match any UserRole
+	 */
+	public static UserRole fromString(String role) throws IllegalArgumentException {
+		return switch (role.toUpperCase()) {
+			case "ADMIN" -> ADMIN;
+			case "SUPPLIER" -> SUPPLIER;
+			case "MANAGER" -> MANAGER;
+			case "CLERK" -> CLERK;
+			case "EMPLOYEE" -> EMPLOYEE;
+			case "TRAINEE" -> TRAINEE;
+			case "TO_BE_ASSIGNED" -> TO_BE_ASSIGNED;
+			default -> throw new IllegalArgumentException("Invalid role: " + role);
+		};
+	}
 
-    private AuthScene authScene;
-    private DashboardScene dashboardScene;
-
-    public RootSceneManager() {
-        super();
-
-        setPreferredSize(new Dimension(1440, 1020));
-        setSize(new Dimension(1440, 1020));
-
-        setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
-
-        authScene = new AuthScene();
-
-        showAuthScene();
-    }
-
-    public void showAuthScene() {
-        removeAll();
-        add(authScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
-
-    public void showDashboardScene() {
-        removeAll();
-
-        if (dashboardScene == null) {
-            dashboardScene = new DashboardScene();
-        }
-
-        add(dashboardScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
+	@Override
+	public String toString() {
+		return switch (this) {
+			case ADMIN -> "admin";
+			case SUPPLIER -> "supplier";
+			case MANAGER -> "manager";
+			case CLERK -> "clerk";
+			case EMPLOYEE -> "employee";
+			case TRAINEE -> "trainee";
+			case TO_BE_ASSIGNED -> "to_be_assigned";
+		};
+	}
 }

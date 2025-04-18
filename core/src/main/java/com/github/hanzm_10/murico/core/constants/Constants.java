@@ -27,6 +27,34 @@
  */
 package com.github.hanzm_10.murico.core.constants;
 
-public class Constants {
-	public static final String CONFIG_FILE_NAME = "murico";
+import java.awt.Dimension;
+
+public final class Constants {
+    public static final class Button {
+        public static enum ButtonSize {
+            LARGE(new Dimension(225, 50)), MEDIUM(new Dimension(175, 40)), SMALL(
+                    new Dimension(125, 30)), XSMALL(
+                            new Dimension(75, 20)), ICON(new Dimension(48, 48));
+
+            private final Dimension size;
+
+            ButtonSize(Dimension size) {
+                this.size = size;
+            }
+
+            public Dimension getValue() {
+                return size;
+            }
+        }
+
+        public static final class Font {
+            public static final int STYLE = java.awt.Font.BOLD;
+            public static final int SIZE = 14;
+        }
+
+        public static final String ICON_PATH = "/icons/";
+    }
+
+    public static final String CONFIG_FILE_NAME = "murico";
+    public static final String FONT_NAME = "Montserrat";
 }

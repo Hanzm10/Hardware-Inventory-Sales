@@ -25,49 +25,21 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app.managers.scenes;
+package com.github.hanzm_10.murico.utils;
 
-import java.awt.Dimension;
-import javax.swing.JPanel;
-import com.github.hanzm_10.murico.app.scenes.auth.AuthScene;
-import com.github.hanzm_10.murico.app.scenes.dashboard.DashboardScene;
-import net.miginfocom.swing.MigLayout;
+import com.github.hanzm_10.murico.utils.auth.PasswordHasher;
 
-public class RootSceneManager extends JPanel {
-    private static final long serialVersionUID = 1692613470432315571L;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-    private AuthScene authScene;
-    private DashboardScene dashboardScene;
+public class PasswordHasherTest {
+	@Test
+	@DisplayName("Test PasswordHasher.convert()")
+	public void testConvert() {
+		var password = "123456";
+		var expectedHash = "1.1903537742583659E26";
+		var actualHash = PasswordHasher.hash(password);
 
-    public RootSceneManager() {
-        super();
-
-        setPreferredSize(new Dimension(1440, 1020));
-        setSize(new Dimension(1440, 1020));
-
-        setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
-
-        authScene = new AuthScene();
-
-        showAuthScene();
-    }
-
-    public void showAuthScene() {
-        removeAll();
-        add(authScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
-
-    public void showDashboardScene() {
-        removeAll();
-
-        if (dashboardScene == null) {
-            dashboardScene = new DashboardScene();
-        }
-
-        add(dashboardScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
+		assert actualHash.equals(expectedHash) : "Password hashing failed";
+	}
 }

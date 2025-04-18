@@ -27,45 +27,50 @@
  */
 package com.github.hanzm_10.murico.app.scenes.auth;
 
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import com.github.hanzm_10.murico.app.ui.ResizableImagePanel;
+import com.github.hanzm_10.murico.app.ui.factory.ButtonFactory;
+import com.github.hanzm_10.murico.core.constants.Constants;
 import net.miginfocom.swing.MigLayout;
 
 public class AuthSceneMain extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private ActionListener actionListener;
+    private MigLayout layout;
+
+    private JPanel container;
+    private JButton loginButton;
+    private JButton registerButton;
+    private ResizableImagePanel imagePanel;
 
     /** Create the panel. */
     public AuthSceneMain(ActionListener actionListener) {
-        this.actionListener = actionListener;
-        setLayout(new MigLayout("", "[grow,center]", "[grow,center]"));
+        layout = new MigLayout("", "[grow,center]", "[grow,center]");
 
-        var panel = new JPanel();
-        add(panel, "flowx,cell 0 0");
-        panel.setLayout(new MigLayout("", "[grow,right][64px,center][grow,left]",
+        setLayout(layout);
+
+        container = new JPanel();
+        container.setLayout(new MigLayout("", "[grow,right][64px,center][grow,left]",
                 "[:320.00:520px,grow 50,bottom][72.00px,grow,top]"));
 
-        var resource = AuthSceneMain.class.getResource("/assets/images/auth-main_img.png");
-        var lblNewLabel = new ResizableImagePanel(new ImageIcon(resource).getImage());
-        lblNewLabel.setPreferredSize(new Dimension(1280, 720));
-        panel.add(lblNewLabel, "cell 0 0 3 1");
+        imagePanel = new ResizableImagePanel(new ImageIcon(AuthSceneMain.class.getResource("/assets/images/auth-main_img.png")).getImage());
 
-        var btnNewButton = new JButton("Log In");
-        btnNewButton.setActionCommand("login");
-        btnNewButton.addActionListener(actionListener);
-        btnNewButton.setPreferredSize(new Dimension(160, 48));
-        panel.add(btnNewButton, "cell 0 1");
+        loginButton =
+                ButtonFactory.createButton("Log In", "login", Constants.Button.ButtonSize.LARGE);
+        loginButton.addActionListener(actionListener);
 
-        var btnNewButton_1 = new JButton("Create an account");
-        btnNewButton_1.setActionCommand("register");
-        btnNewButton_1.addActionListener(actionListener);
-        btnNewButton_1.setPreferredSize(new Dimension(160, 48));
-        panel.add(btnNewButton_1, "cell 2 1");
+        registerButton = ButtonFactory.createButton("Create an account", "register",
+                Constants.Button.ButtonSize.LARGE);
+        registerButton.addActionListener(actionListener);
+
+        container.add(imagePanel, "cell 0 0 3 1,grow");
+        container.add(loginButton, "cell 0 1");
+        container.add(registerButton, "cell 2 1");
+
+        add(container, "flowx,cell 0 0");
     }
 }

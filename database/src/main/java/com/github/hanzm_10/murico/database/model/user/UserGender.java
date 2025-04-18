@@ -25,49 +25,35 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app.managers.scenes;
+package com.github.hanzm_10.murico.database.model.user;
 
-import java.awt.Dimension;
-import javax.swing.JPanel;
-import com.github.hanzm_10.murico.app.scenes.auth.AuthScene;
-import com.github.hanzm_10.murico.app.scenes.dashboard.DashboardScene;
-import net.miginfocom.swing.MigLayout;
+public enum UserGender {
+	MALE, FEMALE, UNKNOWN;
 
-public class RootSceneManager extends JPanel {
-    private static final long serialVersionUID = 1692613470432315571L;
+	/**
+	 * Returns the UserGender corresponding to the given string.
+	 *
+	 * @param gender
+	 *            the string representation of the UserGender
+	 * @return the UserGender corresponding to the given string
+	 * @throws IllegalArgumentException
+	 *             if the string does not match any UserGender
+	 */
+	public static UserGender fromString(String gender) throws IllegalArgumentException {
+		return switch (gender.toUpperCase()) {
+			case "MALE" -> MALE;
+			case "FEMALE" -> FEMALE;
+			case "UNKNOWN" -> UNKNOWN;
+			default -> throw new IllegalArgumentException("Invalid gender: " + gender);
+		};
+	}
 
-    private AuthScene authScene;
-    private DashboardScene dashboardScene;
-
-    public RootSceneManager() {
-        super();
-
-        setPreferredSize(new Dimension(1440, 1020));
-        setSize(new Dimension(1440, 1020));
-
-        setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
-
-        authScene = new AuthScene();
-
-        showAuthScene();
-    }
-
-    public void showAuthScene() {
-        removeAll();
-        add(authScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
-
-    public void showDashboardScene() {
-        removeAll();
-
-        if (dashboardScene == null) {
-            dashboardScene = new DashboardScene();
-        }
-
-        add(dashboardScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
+	@Override
+	public String toString() {
+		return switch (this) {
+			case MALE -> "male";
+			case FEMALE -> "female";
+			case UNKNOWN -> "unknown";
+		};
+	}
 }

@@ -1,5 +1,6 @@
 package com.github.hanzm_10.murico.app.ui;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.JPanel;
@@ -14,6 +15,7 @@ public class ResizableImagePanel extends JPanel {
     public ResizableImagePanel(Image image) {
         this.image = image;
         setOpaque(false); // Optional: let background show through
+        setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
     }
 
     @Override
