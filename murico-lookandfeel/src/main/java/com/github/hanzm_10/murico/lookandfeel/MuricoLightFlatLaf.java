@@ -25,22 +25,23 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp;
+package com.github.hanzm_10.murico.lookandfeel;
 
-import javax.swing.SwingUtilities;
+import com.formdev.flatlaf.FlatLightLaf;
 
-import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
-import com.github.hanzm_10.murico.swingapp.exceptions.handlers.GlobalUncaughtExceptionHandler;
-import com.github.hanzm_10.murico.swingapp.jframes.MainFrame;
+public final class MuricoLightFlatLaf extends FlatLightLaf {
+	public static final String NAME = "MuricoLightFlatLaf";
 
-public class MuricoSwingApp {
-	private static void initialize() {
-		MuricoLightFlatLaf.setup();
-		new MainFrame();
+	public static void installLafInfo() {
+		installLafInfo(NAME, MuricoLightFlatLaf.class);
 	}
 
-	public static void main(String[] args) {
-		Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
-		SwingUtilities.invokeLater(MuricoSwingApp::initialize);
+	public static boolean setup() {
+		return setup(new MuricoLightFlatLaf());
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 }

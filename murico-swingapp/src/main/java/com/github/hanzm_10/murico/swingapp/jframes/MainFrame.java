@@ -25,22 +25,20 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp;
+package com.github.hanzm_10.murico.swingapp.jframes;
 
-import javax.swing.SwingUtilities;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 
-import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
-import com.github.hanzm_10.murico.swingapp.exceptions.handlers.GlobalUncaughtExceptionHandler;
-import com.github.hanzm_10.murico.swingapp.jframes.MainFrame;
-
-public class MuricoSwingApp {
-	private static void initialize() {
-		MuricoLightFlatLaf.setup();
-		new MainFrame();
-	}
-
-	public static void main(String[] args) {
-		Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
-		SwingUtilities.invokeLater(MuricoSwingApp::initialize);
+public final class MainFrame extends JFrame {
+	public MainFrame() {
+		var panel = new javax.swing.JPanel();
+		panel.add(new JButton("Hello World!"));
+		add(panel);
+		setTitle("Murico");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(800, 600);
+		setLocationRelativeTo(null);
+		setVisible(true);
 	}
 }
