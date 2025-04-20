@@ -48,7 +48,24 @@
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <configuration>
+                    <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
+                    <failOnError>false</failOnError>
+                    <source>22</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <show>public</show>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <build>
         <resources>
             <resource>
@@ -63,6 +80,18 @@
                 <version>3.11.0</version>
                 <configuration>
                     <release>22</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <configuration>
+                    <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
+                    <failOnError>false</failOnError>
+                    <source>22</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <show>private</show>
                 </configuration>
             </plugin>
             <plugin>
