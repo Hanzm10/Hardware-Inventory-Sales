@@ -29,7 +29,12 @@ package com.github.hanzm_10.murico.app.scenes.auth;
 
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
+import com.github.hanzm_10.murico.app.ui.image.RoundedImageComponent;
+
+import net.miginfocom.swing.MigLayout;
 
 public class AuthSceneLogin extends JPanel {
 
@@ -40,5 +45,15 @@ public class AuthSceneLogin extends JPanel {
 	/** Create the panel. */
 	public AuthSceneLogin(ActionListener navigationListener) {
 		this.navigationListener = navigationListener;
+		setLayout(new MigLayout("", "[480px,grow,right][24px,center][640px,grow,left]", "[grow,center]"));
+
+		var panel = new JPanel();
+		add(panel, "cell 0 0,grow");
+		panel.setLayout(new MigLayout("", "[]", "[]"));
+
+		var resizableImagePanel = new RoundedImageComponent(
+				new ImageIcon(AuthSceneLogin.class.getResource("login_img.png")));
+
+		add(resizableImagePanel, "cell 2 0,grow");
 	}
 }

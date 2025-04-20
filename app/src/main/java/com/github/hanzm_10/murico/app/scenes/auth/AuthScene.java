@@ -30,64 +30,65 @@ package com.github.hanzm_10.murico.app.scenes.auth;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class AuthScene extends JPanel implements ActionListener {
 
-    private static final long serialVersionUID = -322983138401356081L;
+	private static final long serialVersionUID = -322983138401356081L;
 
-    private CardLayout cardLayout;
+	private CardLayout cardLayout;
 
-    private LoginSystem authSceneLogin;
-    private AuthSceneRegister authSceneRegister;
-    private AuthSceneMain authSceneMain;
+	private AuthSceneLogin authSceneLogin;
+	private AuthSceneRegister authSceneRegister;
+	private AuthSceneMain authSceneMain;
 
-    public AuthScene() {
-        super();
+	public AuthScene() {
+		super();
 
-        cardLayout = new CardLayout();
-        setLayout(cardLayout);
+		cardLayout = new CardLayout();
+		setLayout(cardLayout);
 
-        authSceneLogin = new LoginSystem();
-        authSceneRegister = new AuthSceneRegister(this);
-        authSceneMain = new AuthSceneMain(this);
+		authSceneLogin = new AuthSceneLogin(this);
+		authSceneRegister = new AuthSceneRegister(this);
+		authSceneMain = new AuthSceneMain(this);
 
-        add(authSceneLogin, "login");
-        add(authSceneRegister, "register");
-        add(authSceneMain, "main");
+		add(authSceneLogin, "login");
+		add(authSceneRegister, "register");
+		add(authSceneMain, "main");
 
-        showMainScene();
-    }
+		showMainScene();
+	}
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        SwingUtilities.invokeLater(() -> {
-            switch (e.getActionCommand()) {
-                case "login":
-                    showLoginScene();
-                    break;
-                case "register":
-                    showRegisterScene();
-                    break;
-                case "main":
-                    showMainScene();
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		SwingUtilities.invokeLater(() -> {
+			switch (e.getActionCommand()) {
+				case "login" :
+					showLoginScene();
+					break;
+				case "register" :
+					showRegisterScene();
+					break;
+				case "main" :
+					showMainScene();
+					break;
+				default :
+					break;
+			}
+		});
+	}
 
-    public void showLoginScene() {
-        cardLayout.show(this, "login");
-    }
+	public void showLoginScene() {
+		cardLayout.show(this, "login");
+	}
 
-    public void showMainScene() {
-        cardLayout.show(this, "main");
-    }
+	public void showMainScene() {
+		cardLayout.show(this, "main");
+	}
 
-    public void showRegisterScene() {
-        cardLayout.show(this, "register");
-    }
+	public void showRegisterScene() {
+		cardLayout.show(this, "register");
+	}
 }

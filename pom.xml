@@ -71,13 +71,16 @@
 
     <modules>
         <module>annotations</module>
-        <module>core</module>
         <module>utils</module>
         <module>database</module>
         <module>app</module>
         <module>io</module>
-        <module>lookandfeel</module>
         <module>os</module>
+        <module>image</module>
+        <module>gui</module>
+        <module>config</module>
+        <module>exceptions</module>
+        <module>constants</module>
     </modules>
 
     <build>
@@ -94,15 +97,13 @@
                     <include>**/*.png</include>
                     <include>**/*.jpg</include>
                     <include>**/*.jpeg</include>
-                    <include>**/*.gif</include>
-                    <include>**/*.svg</include>
-                    <include>**/*.ico</include>
                     <include>**/*.webp</include>
+                    <include>**/*.svg</include>
+                    <include>**/*.bmp</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
         </resources>
-    
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -212,8 +213,6 @@
             <artifactId>annotations</artifactId>
             <version>24.0.1</version>
         </dependency>
-        
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

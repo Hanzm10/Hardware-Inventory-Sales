@@ -28,49 +28,49 @@
 package com.github.hanzm_10.murico.app.scenes.auth;
 
 import java.awt.event.ActionListener;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import com.github.hanzm_10.murico.app.ui.ResizableImagePanel;
+
 import com.github.hanzm_10.murico.app.ui.factory.ButtonFactory;
-import com.github.hanzm_10.murico.core.constants.Constants;
+import com.github.hanzm_10.murico.app.ui.panel.ResizableImagePanel;
+
 import net.miginfocom.swing.MigLayout;
 
 public class AuthSceneMain extends JPanel {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private MigLayout layout;
+	private MigLayout layout;
 
-    private JPanel container;
-    private JButton loginButton;
-    private JButton registerButton;
-    private ResizableImagePanel imagePanel;
+	private JPanel container;
+	private JButton loginButton;
+	private JButton registerButton;
+	private ResizableImagePanel imagePanel;
 
-    /** Create the panel. */
-    public AuthSceneMain(ActionListener actionListener) {
-        layout = new MigLayout("", "[grow,center]", "[grow,center]");
+	/** Create the panel. */
+	public AuthSceneMain(ActionListener actionListener) {
+		layout = new MigLayout("", "[grow,center]", "[grow,center]");
 
-        setLayout(layout);
+		setLayout(layout);
 
-        container = new JPanel();
-        container.setLayout(new MigLayout("", "[grow,right][64px,center][grow,left]",
-                "[:320.00:520px,grow 50,bottom][72.00px,grow,top]"));
+		container = new JPanel();
+		container.setLayout(new MigLayout("", "[grow,right][64px,center][grow,left]",
+				"[:320.00:520px,grow 50,bottom][16px,center][grow,top]"));
 
-        imagePanel = new ResizableImagePanel(new ImageIcon(AuthSceneMain.class.getResource("/assets/images/auth-main_img.png")).getImage());
+		imagePanel = new ResizableImagePanel(new ImageIcon(AuthSceneMain.class.getResource("main_img.png")).getImage());
 
-        loginButton =
-                ButtonFactory.createButton("Log In", "login", Constants.Button.ButtonSize.LARGE);
-        loginButton.addActionListener(actionListener);
+		loginButton = ButtonFactory.createButton("Log In", "login");
+		loginButton.addActionListener(actionListener);
 
-        registerButton = ButtonFactory.createButton("Create an account", "register",
-                Constants.Button.ButtonSize.LARGE);
-        registerButton.addActionListener(actionListener);
+		registerButton = ButtonFactory.createButton("Create an account", "register");
+		registerButton.addActionListener(actionListener);
 
-        container.add(imagePanel, "cell 0 0 3 1,grow");
-        container.add(loginButton, "cell 0 1");
-        container.add(registerButton, "cell 2 1");
+		container.add(imagePanel, "cell 0 0 3 1,grow");
+		container.add(loginButton, "cell 0 2");
+		container.add(registerButton, "cell 2 2");
 
-        add(container, "flowx,cell 0 0");
-    }
+		add(container, "flowx,cell 0 0");
+	}
 }

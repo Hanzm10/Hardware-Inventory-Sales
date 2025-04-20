@@ -30,6 +30,7 @@ package com.github.hanzm_10.murico.app.managers;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.database.model.Session;
+import com.github.hanzm_10.murico.database.model.user.User;
 
 /**
  * Singleton class to manage user sessions.
@@ -49,9 +50,14 @@ public class SessionManager {
 	}
 
 	private Session session;
+	private User loggedInUser;
 
 	private SessionManager() {
 		// Private constructor to prevent instantiation
+	}
+
+	public User getLoggedInUser() {
+		return loggedInUser;
 	}
 
 	public Session getSession() {
@@ -59,7 +65,8 @@ public class SessionManager {
 	}
 
 	public void removeSession() {
-		this.session = null;
+		session = null;
+		loggedInUser = null;
 	}
 
 	/**
@@ -71,7 +78,8 @@ public class SessionManager {
 	 * @throws IllegalStateException
 	 *             if session already exists.
 	 */
-	public void setSession(@NotNull Session session) throws IllegalArgumentException, IllegalStateException {
+	public void setSession(@NotNull Session session, @NotNull User user)
+			throws IllegalArgumentException, IllegalStateException {
 		if (session == null) {
 			throw new IllegalArgumentException("Session cannot be null.");
 		}
@@ -85,6 +93,7 @@ public class SessionManager {
 		}
 
 		this.session = session;
+		this.loggedInUser = user;
 	}
 
 	public void updateSession(Session session) {

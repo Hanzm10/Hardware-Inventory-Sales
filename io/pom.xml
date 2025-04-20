@@ -9,9 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <name>Murico - Hardware Inventory and Sales System</name>
     <artifactId>io</artifactId>
-    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>

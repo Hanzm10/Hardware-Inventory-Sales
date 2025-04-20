@@ -27,124 +27,87 @@
  */
 package com.github.hanzm_10.murico.app;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JWindow;
+
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-import com.github.hanzm_10.murico.app.loading.InitialLoadingScreen;
-import com.github.hanzm_10.murico.app.loading.SplashScreenFactory;
+
 import com.github.hanzm_10.murico.app.managers.SessionManager;
-import com.github.hanzm_10.murico.core.config.GlobalConfig;
-import com.github.hanzm_10.murico.core.constants.Directories;
-import com.github.hanzm_10.murico.core.constants.PropertyKey;
-import com.github.hanzm_10.murico.core.exceptions.GlobalUncaughtExceptionHandler;
+import com.github.hanzm_10.murico.app.view.MuricoAppMainWindow;
+import com.github.hanzm_10.murico.config.app.ApplicationConfig;
+import com.github.hanzm_10.murico.constants.MuricoDirectories;
+import com.github.hanzm_10.murico.constants.PropertyKey;
 import com.github.hanzm_10.murico.database.AbstractSQLFactoryDAO;
-import com.github.hanzm_10.murico.database.model.Session;
+import com.github.hanzm_10.murico.exceptions.handlers.GlobalUncaughtExceptionHandler;
 import com.github.hanzm_10.murico.io.FileIO;
-import com.github.hanzm_10.murico.lookandfeel.MuricoLookAndFeel;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 public class Murico {
-    private static class CheckSessionWorker extends SwingWorker<Void, String> {
-        Timer showSplashScreenDelayTimer;
-        JWindow splashScreen;
+	private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
 
-        public CheckSessionWorker(JWindow splashScreen, Timer showSplashScreenDelayTimer) {
-            this.splashScreen = splashScreen;
-            this.showSplashScreenDelayTimer = showSplashScreenDelayTimer;
+	private static void initialize() {
+		initializeFileSystem();
+		MuricoLightLaf.setup();
 
-            showSplashScreenDelayTimer.start();
-        }
+		var sessionUid = ApplicationConfig.getInstance().getProperty(PropertyKey.Session.UID);
 
-        @Override
-        protected Void doInBackground() throws Exception {
-            LOGGER.info("Initializing file system...");
-            Thread.sleep(2000); // Simulate a delay for the splash screen
-            initializeFileSystem();
+		if (sessionUid != null) {
+			verifySessionUid(sessionUid);
+		}
 
-            LOGGER.info("Getting session uid from GlobalConfig...");
-            var sessionUid = GlobalConfig.getInstance().getProperty(PropertyKey.Session.UID);
+		new MuricoAppMainWindow();
+	}
 
-            if (sessionUid != null) {
-                LOGGER.info("Verifying session uid...");
-                verifySessionUid(sessionUid);
-            } else {
-                LOGGER.info("Session uid does not exist. Proceeding to login...");
-            }
+	private static void initializeFileSystem() {
+		FileIO.createDirectoryIfNotExists(MuricoDirectories.LOGS_DIRECTORY);
+	}
 
-            return null;
-        }
+	public static void main(String[] args) {
+		Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
+		SwingUtilities.invokeLater(Murico::initialize);
+	}
 
-        @Override
-        protected void done() {
-            LOGGER.info("Murico application initialized successfully.");
-            showSplashScreenDelayTimer.stop();
-            splashScreen.dispose();
-            new MuricoAppWindow();
-        }
+	private static void verifySessionUid(final String sessionUid) {
+		var factory = AbstractSQLFactoryDAO.getSQLFactoryDAO(AbstractSQLFactoryDAO.MYSQL);
+		var sessionDAO = factory.getSessionDAO();
+		var sessionExists = sessionDAO.sessionExists(sessionUid);
 
-        private void verifySession(Session session) throws Exception {
-            if (session == null) {
-                LOGGER.log(Level.SEVERE, "Session should have existed but was not found.");
-                // Show a dialog here to inform the user that something went wrong
-            } else if (session.isExpired()) {
-                LOGGER.info("Session has expired. Removing session uid...");
-                GlobalConfig.getInstance().remove(PropertyKey.Session.UID);
-            } else {
-                LOGGER.info("Session is valid. Updating application state...");
-                SessionManager.getInstance().setSession(session);
-            }
-        }
+		if (!sessionExists) {
+			try {
+				ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
+			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, "Failed to remove session uid from config file.", e);
+			}
 
-        private void verifySessionUid(String sessionUid) throws Exception {
-            var factory = AbstractSQLFactoryDAO.getSQLFactoryDAO(AbstractSQLFactoryDAO.MYSQL);
-            var sessionDAO = factory.getSessionDAO();
-            var sessionExists = sessionDAO.sessionExists(sessionUid);
+			return;
+		}
 
-            if (sessionExists) {
-                LOGGER.info("Session uid is valid. Verifying session...");
-                var session = sessionDAO.getSessionByUid(sessionUid);
+		var session = sessionDAO.getSessionByUid(sessionUid);
 
-                verifySession(session);
-            } else {
-                LOGGER.info("Session does not exist. Removing session uid...");
-                GlobalConfig.getInstance().remove(PropertyKey.Session.UID);
-            }
-        }
-    }
+		if (session.isExpired()) {
+			try {
+				ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-    private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
+			return;
+		}
 
-    private static void initialize() {
-        try {
-            LOGGER.info("Setting look and feel...");
-            UIManager.setLookAndFeel(new MuricoLookAndFeel());
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to set look and feel", e);
-        }
+		var userDAO = factory.getUserDAO();
+		var user = userDAO.getUserById(session._userId());
 
-        var splashScreen = new InitialLoadingScreen();
-        var splashScreenWindow = SplashScreenFactory.createSplashScreenJWindow(splashScreen);
-        var timer = new Timer(200, _ -> splashScreenWindow.setVisible(true));
+		if (user == null) {
+			try {
+				ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
+			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, "Failed to remove session uid from config file.", e);
+			}
+			return;
+		}
 
-        timer.setRepeats(false);
-
-        var worker = new CheckSessionWorker(splashScreenWindow, timer);
-
-        worker.execute();
-    }
-
-    private static void initializeFileSystem() {
-        FileIO.createDirectoryIfNotExists(Directories.CONFIG_DIRECTORY);
-        FileIO.createDirectoryIfNotExists(Directories.LOGS_DIRECTORY);
-    }
-
-    public static void main(String[] args) {
-        LOGGER.info("Initializing Murico application...");
-        Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
-        SwingUtilities.invokeLater(Murico::initialize);
-    }
+		SessionManager.getInstance().setSession(session, user);
+	}
 }
