@@ -25,49 +25,35 @@
  *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.app.managers.scenes;
+package com.github.hanzm_10.murico.app.view.scenes.auth;
 
-import java.awt.Dimension;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import com.github.hanzm_10.murico.app.view.scenes.auth.AuthScene;
-import com.github.hanzm_10.murico.app.view.scenes.dashboard.DashboardScene;
+
+import com.github.hanzm_10.murico.app.ui.image.RoundedImageComponent;
+
 import net.miginfocom.swing.MigLayout;
 
-public class RootSceneManager extends JPanel {
-    private static final long serialVersionUID = 1692613470432315571L;
+public class AuthSceneLogin extends JPanel {
 
-    private AuthScene authScene;
-    private DashboardScene dashboardScene;
+	private static final long serialVersionUID = 1L;
 
-    public RootSceneManager() {
-        super();
+	private ActionListener navigationListener;
 
-        setPreferredSize(new Dimension(1440, 1020));
-        setSize(new Dimension(1440, 1020));
+	/** Create the panel. */
+	public AuthSceneLogin(ActionListener navigationListener) {
+		this.navigationListener = navigationListener;
+		setLayout(new MigLayout("", "[480px,grow,right][24px,center][640px,grow,left]", "[grow,center]"));
 
-        setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
+		var panel = new JPanel();
+		add(panel, "cell 0 0,grow");
+		panel.setLayout(new MigLayout("", "[]", "[]"));
 
-        authScene = new AuthScene();
+		var resizableImagePanel = new RoundedImageComponent(
+				new ImageIcon(AuthSceneLogin.class.getResource("login_img.png")));
 
-        showAuthScene();
-    }
-
-    public void showAuthScene() {
-        removeAll();
-        add(authScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
-
-    public void showDashboardScene() {
-        removeAll();
-
-        if (dashboardScene == null) {
-            dashboardScene = new DashboardScene();
-        }
-
-        add(dashboardScene, "cell 0 0");
-        revalidate();
-        repaint();
-    }
+		add(resizableImagePanel, "cell 2 0,grow");
+	}
 }

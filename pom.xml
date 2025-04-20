@@ -11,50 +11,30 @@
 
     <name>Murico - Hardware Inventory and Sales System</name>
     <description>Murico is a hardware inventory and sales system designed to help users manage their hardware assets efficiently made by students of Technological Institute of the Philippines - Quezon City.</description>
-    <organization>
-        <name>Technological Institute of the Philippines - Quezon City</name>
-        <url>https://www.tip.edu.ph/</url>
-    </organization>
 
-    <developers>
-        <developer>
-            <name>Aaron Ragudos</name>
-            <roles>
-                <role>Lead Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Hanz Mapua</name>
-            <roles>
-                <role>Project Manager</role>
-                <role>Backend Developer</role>
-                <role>Database Operations</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Peter Dela Cruz</name>
-            <roles>
-                <role>Full-stack Developer</role>
-            </roles>
-        </developer>
-    </developers>
+    <scm>
+        <url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
+        <connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
+    </scm>
 
-    <contributors>
-        <contributor>
-            <name>Jerick Remo</name>
-            <roles>
-                <role>Frontend Developer</role>
-                <role>UI/UX Designer</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Kurt Raneses</name>
-            <roles>
-                <role>Frontend Developer</role>
-                <role>UI/UX Designer</role>
-            </roles>
-        </contributor>
-    </contributors>
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.13.0-M2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <module>murico-swingapp</module>
+    </modules>
 
     <licenses>
         <license>
@@ -64,46 +44,19 @@
     </licenses>
 
     <properties>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <modules>
-        <module>annotations</module>
-        <module>utils</module>
-        <module>database</module>
-        <module>app</module>
-        <module>io</module>
-        <module>os</module>
-        <module>image</module>
-        <module>gui</module>
-        <module>config</module>
-        <module>exceptions</module>
-        <module>constants</module>
-    </modules>
-
+    
     <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                    <include>**/*.txt</include>
-                    <include>**/*.json</include>
-                    <include>**/*.yml</include>
-                    <include>**/*.yaml</include>
-                    <include>**/*.png</include>
-                    <include>**/*.jpg</include>
-                    <include>**/*.jpeg</include>
-                    <include>**/*.webp</include>
-                    <include>**/*.svg</include>
-                    <include>**/*.bmp</include>
-                </includes>
                 <filtering>true</filtering>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -201,23 +154,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <scm>
-        <url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
-        <connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
-    </scm>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.13.0-M2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>

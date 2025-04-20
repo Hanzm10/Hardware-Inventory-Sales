@@ -30,9 +30,7 @@ package com.github.hanzm_10.murico.app;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.SwingUtilities;
-
 import com.github.hanzm_10.murico.app.managers.SessionManager;
 import com.github.hanzm_10.murico.app.view.MuricoAppMainWindow;
 import com.github.hanzm_10.murico.config.app.ApplicationConfig;
@@ -44,70 +42,70 @@ import com.github.hanzm_10.murico.io.FileIO;
 import com.github.hanzm_10.murico.utils.MuricoLogUtils;
 
 public class Murico {
-	private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
+    private static final Logger LOGGER = MuricoLogUtils.getLogger(Murico.class);
 
-	private static void initialize() {
-		initializeFileSystem();
-		MuricoLightLaf.setup();
+    private static void initialize() {
+        initializeFileSystem();
+        MuricoLightLaf.setup();
 
-		var sessionUid = ApplicationConfig.getInstance().getProperty(PropertyKey.Session.UID);
+        var sessionUid = ApplicationConfig.getInstance().getProperty(PropertyKey.Session.UID);
 
-		if (sessionUid != null) {
-			verifySessionUid(sessionUid);
-		}
+        if (sessionUid != null) {
+            verifySessionUid(sessionUid);
+        }
 
-		new MuricoAppMainWindow();
-	}
+        new MuricoAppMainWindow();
+    }
 
-	private static void initializeFileSystem() {
-		FileIO.createDirectoryIfNotExists(MuricoDirectories.LOGS_DIRECTORY);
-	}
+    private static void initializeFileSystem() {
+        FileIO.createDirectoryIfNotExists(MuricoDirectories.LOGS_DIRECTORY);
+    }
 
-	public static void main(String[] args) {
-		Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
-		SwingUtilities.invokeLater(Murico::initialize);
-	}
+    public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
+        SwingUtilities.invokeLater(Murico::initialize);
+    }
 
-	private static void verifySessionUid(final String sessionUid) {
-		var factory = AbstractSQLFactoryDAO.getSQLFactoryDAO(AbstractSQLFactoryDAO.MYSQL);
-		var sessionDAO = factory.getSessionDAO();
-		var sessionExists = sessionDAO.sessionExists(sessionUid);
+    private static void verifySessionUid(final String sessionUid) {
+        var factory = AbstractSQLFactoryDAO.getSQLFactoryDAO(AbstractSQLFactoryDAO.MYSQL);
+        var sessionDAO = factory.getSessionDAO();
+        var sessionExists = sessionDAO.sessionExists(sessionUid);
 
-		if (!sessionExists) {
-			try {
-				ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "Failed to remove session uid from config file.", e);
-			}
+        if (!sessionExists) {
+            try {
+                ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to remove session uid from config file.", e);
+            }
 
-			return;
-		}
+            return;
+        }
 
-		var session = sessionDAO.getSessionByUid(sessionUid);
+        var session = sessionDAO.getSessionByUid(sessionUid);
 
-		if (session.isExpired()) {
-			try {
-				ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+        if (session.isExpired()) {
+            try {
+                ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
-			return;
-		}
+            return;
+        }
 
-		var userDAO = factory.getUserDAO();
-		var user = userDAO.getUserById(session._userId());
+        var userDAO = factory.getUserDAO();
+        var user = userDAO.getUserById(session._userId());
 
-		if (user == null) {
-			try {
-				ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "Failed to remove session uid from config file.", e);
-			}
-			return;
-		}
+        if (user == null) {
+            try {
+                ApplicationConfig.getInstance().remove(PropertyKey.Session.UID);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to remove session uid from config file.", e);
+            }
+            return;
+        }
 
-		SessionManager.getInstance().setSession(session, user);
-	}
+        SessionManager.getInstance().setSession(session, user);
+    }
 }

@@ -44,11 +44,8 @@ import javax.swing.JComponent;
 public class RoundedImageComponent extends JComponent {
 	protected int radii;
 	protected int borderSize;
-	protected Image image;
 
-	public RoundedImageComponent(Image image) {
-		this.image = image;
-
+	public RoundedImageComponent(public Image image) {
 		borderSize = 0;
 		radii = 0;
 	}
