@@ -59,7 +59,6 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<encoding>utf8</encoding>
 				<filtering>true</filtering>
 				<properties>
 					<build.timestamp>${maven.build.timestamp}</build.timestamp>
@@ -68,6 +67,14 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
