@@ -31,6 +31,10 @@ public abstract class AbstractConfig {
      */
     public abstract String getFilePath();
 
+    public String getFullPath() {
+        return getFilePath() + getFileName() + getFileExtension();
+    }
+
     /** The header comment for the configuration file. */
     public abstract String getHeaderComment();
 }

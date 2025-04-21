@@ -1,0 +1,5 @@
+package com.github.hanzm_10.murico.swingapp.lib.validator;
+
+public class PasswordValidator {
+
+}

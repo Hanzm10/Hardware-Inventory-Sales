@@ -40,6 +40,10 @@ Project todos
  - [ ] Error messages for register
  - [ ] Setting SessionManager after login to then redirect to main page.
  
-## Image module
+## Image
  - [ ] An image factory to preload or cache images
+ 
+## Security (Optional)
+ - [ ] Encrypt sensitive files like db configurations
+ - [ ] Use KeyStore to store keys for decrypting encrypted files
  

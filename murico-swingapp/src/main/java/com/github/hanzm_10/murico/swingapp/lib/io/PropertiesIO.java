@@ -5,64 +5,23 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
+import com.github.hanzm_10.murico.swingapp.lib.utils.DateUtils;
 
 public final class PropertiesIO {
     private static final Logger LOGGER = MuricoLogger.getLogger(PropertiesIO.class);
-    public static final String PROPERTIES_FILE_EXTENSION = ".propertie";
+    public static final String PROPERTIES_FILE_EXTENSION = ".properties";
 
-    /**
-     * Loads a properties file from the classpath. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into the provided {@link Properties}
-     * object.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param properties The properties object to load the properties into.
-     * @param name The name of the properties file (without extension).
-     *
-     * @throws IllegalArgumentException If the name is null or empty.
-     * @throws FileNotFoundException If the properties file is not found and leniency is set to
-     *         MANDATORY.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final void loadProperties(@NotNull final Class<?> clazz,
             @NotNull final Properties properties, @NotNull final String name)
                     throws IllegalArgumentException, FileNotFoundException, IOException {
         loadProperties(clazz, properties, name, "", FileLoadLeniency.MANDATORY);
     }
 
-    /**
-     * Loads a properties file from the classpath. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into the provided {@link Properties}
-     * object.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param properties The properties object to load the properties into.
-     * @param name The name of the properties file (without extension).
-     *
-     * @throws IllegalArgumentException If the name is null or empty.
-     * @throws FileNotFoundException If the properties file is not found and leniency is set to
-     *         MANDATORY.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final void loadProperties(@NotNull final Class<?> clazz,
             @NotNull final Properties properties, @NotNull final String name,
             FileLoadLeniency leniency)
@@ -70,27 +29,6 @@ public final class PropertiesIO {
         loadProperties(clazz, properties, name, "", leniency);
     }
 
-    /**
-     * Loads a properties file from the classpath. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into the provided {@link Properties}
-     * object.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param properties The properties object to load the properties into.
-     * @param name The name of the properties file (without extension).
-     * @param path The path to the properties file (relative to the classpath).
-     *
-     * @throws IllegalArgumentException If the name is null or empty or if the path is null.
-     * @throws FileNotFoundException If the properties file is not found and leniency is set to
-     *         MANDATORY.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final void loadProperties(@NotNull final Class<?> clazz,
             @NotNull final Properties properties, @NotNull final String name,
             @NotNull final String path)
@@ -98,28 +36,6 @@ public final class PropertiesIO {
         loadProperties(clazz, properties, name, path, FileLoadLeniency.MANDATORY);
     }
 
-    /**
-     * Loads a properties file from the classpath. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into the provided {@link Properties}
-     * object.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param properties The properties object to load the properties into.
-     * @param name The name of the properties file (without extension).
-     * @param path The path to the properties file (relative to the classpath).
-     * @param leniency The leniency level for loading the properties file.
-     *
-     * @throws IllegalArgumentException If the name is null or empty or if the path is null.
-     * @throws FileNotFoundException If the properties file is not found and leniency is set to
-     *         MANDATORY.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final void loadProperties(@NotNull final Class<?> clazz,
             @NotNull final Properties properties, @NotNull final String name,
             @NotNull final String path, FileLoadLeniency leniency)
@@ -147,7 +63,7 @@ public final class PropertiesIO {
                     }
                     case CREATE_FILE_IF_MISSING -> {
                         // DO nothing since we cannot write to a resource file
-                        // as we don't know the path of the clazz
+                        // as we don't know the path of the clazz on runtime.
                     }
                     case ALLOW_MISSING -> {
                         LOGGER.info("Properties file not found: " + filePath);
@@ -159,29 +75,6 @@ public final class PropertiesIO {
         }
     }
 
-
-
-    /**
-     * Loads a properties file from the classpath. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into a new {@link Properties} object and
-     * returned.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param name The name of the properties file (without extension).
-     *
-     * @return A new {@link Properties} object with the loaded properties.
-     *
-     * @throws IllegalArgumentException If the name is null or empty.
-     * @throws FileNotFoundException If the properties file is not found and leniency is set to
-     *         MANDATORY.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final @NotNull Properties loadProperties(@NotNull final Class<?> clazz,
             @NotNull final String name) throws IllegalArgumentException,
     FileNotFoundException, IOException {
@@ -192,31 +85,9 @@ public final class PropertiesIO {
         return properties;
     }
 
-    /**
-     * Loads a properties file from the classpath. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into a new {@link Properties} object and
-     * returned.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param name The name of the properties file (without extension).
-     * @param path The path to the properties file (relative to the classpath).
-     *
-     * @return A new {@link Properties} object with the loaded properties.
-     *
-     * @throws IllegalArgumentException If the name is null or empty or if the path is null.
-     * @throws FileNotFoundException If the properties file is not found and leniency is set to
-     *         MANDATORY.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final @NotNull Properties loadProperties(@NotNull final Class<?> clazz,
             @NotNull final String name, @NotNull final String path)
-            throws IllegalArgumentException, FileNotFoundException, IOException {
+                    throws IllegalArgumentException, FileNotFoundException, IOException {
         var properties = new Properties();
 
         loadProperties(clazz, properties, name, path);
@@ -224,29 +95,6 @@ public final class PropertiesIO {
         return properties;
     }
 
-    /**
-     * Loads a properties file from the classpath. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into a new {@link Properties} object and
-     * returned.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param name The name of the properties file (without extension).
-     * @param path The path to the properties file (relative to the classpath).
-     * @param leniency The leniency level for loading the properties file.
-     *
-     * @return A new {@link Properties} object with the loaded properties.
-     *
-     * @throws IllegalArgumentException If the name is null or empty or if the path is null.
-     * @throws FileNotFoundException If the properties file is not found and leniency is set to
-     *         MANDATORY.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final @NotNull Properties loadProperties(@NotNull final Class<?> clazz,
             @NotNull final String name, @NotNull final String path, FileLoadLeniency leniency)
                     throws IllegalArgumentException, FileNotFoundException, IOException {
@@ -257,21 +105,6 @@ public final class PropertiesIO {
         return properties;
     }
 
-    /**
-     * Loads a properties file from the file system. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into a new {@link Properties} object and
-     * returned.
-     *
-     * @param filePath The path to the properties file (relative to the classpath).
-     *
-     * @return A new {@link Properties} object with the loaded properties.
-     *
-     * @throws FileNotFoundException If the properties file is not found.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
     public static final Properties loadPropertiesFromFileSystem(@NotNull final String filePath)
             throws FileNotFoundException, IOException {
         var properties = new Properties();
@@ -279,74 +112,63 @@ public final class PropertiesIO {
         return properties;
     }
 
-    /**
-     * Loads a properties file from the file system. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is found, it will be loaded into the provided {@link Properties}
-     * object.
-     *
-     * @param filePath The path to the properties file (relative to the classpath).
-     * @param properties The properties object to load the properties into.
-     *
-     * @throws FileNotFoundException If the properties file is not found.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
+    public static final Properties loadPropertiesFromFileSystem(@NotNull final String filePath,
+            @NotNull final FileLoadLeniency leniency) throws FileNotFoundException, IOException {
+        var properties = new Properties();
+        loadPropertiesFromFileSystem(filePath, properties, leniency);
+        return properties;
+    }
+
     public static final void loadPropertiesFromFileSystem(@NotNull final String filePath,
             @NotNull final Properties properties) throws FileNotFoundException, IOException {
+        loadPropertiesFromFileSystem(filePath, properties, FileLoadLeniency.MANDATORY);
+    }
+
+    public static final void loadPropertiesFromFileSystem(@NotNull final String filePath,
+            @NotNull final Properties properties, @NotNull final FileLoadLeniency leniency)
+                    throws FileNotFoundException, IOException {
         try (var inputStream = new FileInputStream(filePath)) {
             properties.load(inputStream);
+        } catch (FileNotFoundException e) {
+            switch (leniency) {
+                case MANDATORY -> {
+                    throw new FileNotFoundException("Properties file not found: " + filePath);
+                }
+                case LOG_MISSING -> {
+                    LOGGER.warning("Properties file not found: " + filePath);
+                }
+                case CREATE_FILE_IF_MISSING -> {
+                    new File(filePath).createNewFile();
+                }
+                case ALLOW_MISSING -> {
+                    LOGGER.info("Properties file not found: " + filePath);
+                }
+            }
         }
     }
 
-    /**
-     * Saves the properties to a file. <br>
-     * <br>
-     * The properties file is expected to be in the same package as the class provided. <br>
-     * <br>
-     * If the properties file is not found, the behavior depends on the {@link FileLoadLeniency}
-     * parameter. <br>
-     * <br>
-     * If the properties file is found, it will be saved to the provided {@link Properties} object.
-     *
-     * @param clazz The class to load the properties file from.
-     * @param properties The properties object to load the properties into.
-     * @param name The name of the properties file (without extension).
-     *
-     * @throws IllegalArgumentException If the name is null or empty.
-     * @throws FileNotFoundException If the properties file is not found.
-     * @throws IOException If an error occurs while loading the properties file.
-     */
-    public static final void saveProperties(@NotNull final Class<?> clazz,
-            @NotNull final Properties properties, @NotNull final String name,
-            @NotNull final String path)
-            throws IllegalArgumentException,
-    FileNotFoundException, IOException {
-        URI uri = null;
-        var filePath = path + name + PROPERTIES_FILE_EXTENSION;
+    public static final void savePropertiesInFileSystem(@NotNull final Properties properties,
+            @NotNull final String filePath)
+                    throws IllegalArgumentException, FileNotFoundException, IOException {
+        savePropertiesInFileSystem(properties, filePath, null);
+    }
 
-        try {
-            var url = clazz.getResource(filePath);
+    public static final void savePropertiesInFileSystem(@NotNull final Properties properties,
+            @NotNull final String filePath, @NotNull final String headerComment)
+                    throws IllegalArgumentException, FileNotFoundException, IOException {
+        var comment = DateUtils.getDateWithFormat();
 
-            if (url == null) {
-                throw new FileNotFoundException("Properties file not found: " + filePath + " in class: " + clazz.getName());
-            }
-
-            uri = url.toURI();
-        } catch (URISyntaxException e) {
-            LOGGER.warning("Failed to convert URL to URI: " + e.getMessage());
-            return;
+        if (headerComment != null && !headerComment.isEmpty()) {
+            comment = headerComment + "\n" + comment;
         }
 
-        var file = new File(uri);
-
-        try (var outputStream = new FileOutputStream(file)) {
-            properties.store(outputStream, null);
+        try (var outputStream = new FileOutputStream(filePath)) {
+            properties.store(outputStream, comment);
         } catch (SecurityException e) {
-            LOGGER.severe("Denied access to file: " + file.getAbsolutePath());
+            LOGGER.severe("Denied access to file: " + filePath);
         } catch (ClassCastException e) {
-            LOGGER.log(Level.SEVERE, "Configuration file in " + file.getAbsolutePath() + " contains invalid data. ", e);
+            // TODO: A way to clean the properties file if it is corrupted.
+            LOGGER.log(Level.SEVERE, "Configuration file in " + filePath + " contains invalid data. ", e);
         }
     }
 
