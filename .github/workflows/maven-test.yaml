@@ -28,7 +28,7 @@ jobs:
 
     - name: Upload all Surefire test reports
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: surefire-reports
         path: '**/target/surefire-reports/'
