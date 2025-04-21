@@ -38,6 +38,8 @@
 		<maven.compiler.source>22</maven.compiler.source>
 		<maven.compiler.target>22</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<build.timestamp>${maven.build.timestamp}</build.timestamp>
+		<env>${env.ENVIRONMENT}</env>
 	</properties>
 	<reporting>
 		<plugins>
@@ -60,10 +62,6 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-				<properties>
-					<build.timestamp>${maven.build.timestamp}</build.timestamp>
-					<env>${env.ENVIRONMENT}</env>
-				</properties>
 			</resource>
 		</resources>
 		<plugins>
