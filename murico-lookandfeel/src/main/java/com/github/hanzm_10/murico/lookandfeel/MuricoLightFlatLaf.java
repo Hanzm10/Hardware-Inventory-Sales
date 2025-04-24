@@ -42,6 +42,7 @@ public final class MuricoLightFlatLaf extends FlatLightLaf {
 
 	@Override
 	public String getName() {
+		System.out.println(getDefaults());
 		return NAME;
 	}
 }

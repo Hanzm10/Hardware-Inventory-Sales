@@ -1,127 +1,153 @@
+/** Copyright 2025
+ *  - Aaron Ragudos
+ *  - Hanz Mapua
+ *  - Peter Dela Cruz
+ *  - Jerick Remo
+ *  - Kurt Raneses
+ *
+ *  Permission is hereby granted, free of charge, to any
+ *  person obtaining a copy of this software and associated
+ *  documentation files (the “Software”), to deal in the Software
+ *  without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons
+ *  to whom the Software is furnished to do so, subject to the
+ *  following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be
+ *  included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+ *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ *  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ *  ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.github.hanzm_10.murico.swingapp.lib.cache;
 
 import java.util.HashMap;
 
 public class LRU<K, V> {
-    private int length;
-    private int capacity;
+	private int length;
+	private int capacity;
 
-    private Node<V> tail;
-    private Node<V> head;
+	private Node<V> tail;
+	private Node<V> head;
 
-    private HashMap<K, Node<V>> lookup;
-    private HashMap<Node<V>, K> reverseLookup;
+	private HashMap<K, Node<V>> lookup;
+	private HashMap<Node<V>, K> reverseLookup;
 
-    public LRU(int capacity) {
-        if (capacity <= 0) {
-            throw new IllegalArgumentException("Capacity must be greater than 0");
-        }
+	public LRU(int capacity) {
+		if (capacity <= 0) {
+			throw new IllegalArgumentException("Capacity must be greater than 0");
+		}
 
-        this.capacity = capacity;
+		this.capacity = capacity;
 
-        lookup = new HashMap<>();
-        reverseLookup = new HashMap<>();
-    }
+		lookup = new HashMap<>();
+		reverseLookup = new HashMap<>();
+	}
 
-    public boolean containsKey(K key) {
-        return lookup.containsKey(key);
-    }
+	public synchronized boolean containsKey(K key) {
+		return lookup.containsKey(key);
+	}
 
-    private void detach(Node<V> node) {
-        if (node.prev != null) {
-            node.prev.next = node.next;
-        }
+	private void detach(Node<V> node) {
+		if (node.prev != null) {
+			node.prev.next = node.next;
+		}
 
-        if (node.next != null) {
-            node.next.prev = node.prev;
-        }
+		if (node.next != null) {
+			node.next.prev = node.prev;
+		}
 
-        if (head == node) {
-            head = head.next;
-        }
+		if (head == node) {
+			head = head.next;
+		}
 
-        if (tail == node) {
-            tail = tail.prev;
-        }
+		if (tail == node) {
+			tail = tail.prev;
+		}
 
-        node.next = null;
-        node.prev = null;
-    }
+		node.next = null;
+		node.prev = null;
+	}
 
-    public V get(K key) {
-        var node = lookup.get(key);
+	public synchronized V get(K key) {
+		var node = lookup.get(key);
 
-        if (node == null) {
-            return null;
-        }
+		if (node == null) {
+			return null;
+		}
 
-        detach(node);
-        prepend(node);
+		detach(node);
+		prepend(node);
 
-        return node.value;
-    }
+		return node.value;
+	}
 
-    private void prepend(Node<V> node) {
-        if (head == null) {
-            head = tail = node;
-            return;
-        }
+	private void prepend(Node<V> node) {
+		if (head == null) {
+			head = tail = node;
+			return;
+		}
 
-        node.next = head;
-        head.prev = node;
-        head = node;
-    }
+		node.next = head;
+		head.prev = node;
+		head = node;
+	}
 
-    private void trimCache() {
-        if (length <= capacity) {
-            return;
-        }
+	private void trimCache() {
+		if (length <= capacity) {
+			return;
+		}
 
-        var referenceToTail = tail;
+		var referenceToTail = tail;
 
-        detach(tail);
+		detach(tail);
 
-        var key = reverseLookup.get(referenceToTail);
+		var key = reverseLookup.get(referenceToTail);
 
-        lookup.remove(key);
-        reverseLookup.remove(referenceToTail);
-        length -= 1;
-    }
+		lookup.remove(key);
+		reverseLookup.remove(referenceToTail);
+		length -= 1;
+	}
 
-    public void update(K key, V value) {
-        var node = lookup.get(key);
+	public synchronized void update(K key, V value) {
+		var node = lookup.get(key);
 
-        if (node == null) {
-            node = Node.createNode(value);
+		if (node == null) {
+			node = Node.createNode(value);
 
-            length += 1;
-            prepend(node);
-            trimCache();
+			length += 1;
+			prepend(node);
+			trimCache();
 
-            lookup.put(key, node);
-            reverseLookup.put(node, key);
-        } else {
-            detach(node);
-            prepend(node);
+			lookup.put(key, node);
+			reverseLookup.put(node, key);
+		} else {
+			detach(node);
+			prepend(node);
 
-            node.value = value;
-        }
-    }
+			node.value = value;
+		}
+	}
 }
 
-
 class Node<T> {
-    public static <T> Node<T> createNode(T data) {
-        return new Node<>(data);
-    }
+	public static <T> Node<T> createNode(T data) {
+		return new Node<>(data);
+	}
 
-    T value;
-    Node<T> prev;
-    Node<T> next;
+	T value;
+	Node<T> prev;
+	Node<T> next;
 
-    public Node(T value) {
-        this.value = value;
-        prev = null;
-        next = null;
-    }
+	public Node(T value) {
+		this.value = value;
+		prev = null;
+		next = null;
+	}
 }

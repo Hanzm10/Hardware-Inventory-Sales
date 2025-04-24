@@ -49,6 +49,7 @@ public final class PropertiesIO {
         }
 
         var filePath = path + name + PROPERTIES_FILE_EXTENSION;
+        LOGGER.info("Loading properties file: " + filePath);
 
         try (var inputStream = clazz.getResourceAsStream(filePath)) {
             if (properties != null) {
