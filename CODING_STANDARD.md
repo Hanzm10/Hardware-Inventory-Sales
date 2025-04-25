@@ -9,8 +9,8 @@ and is easy to read and maintain.
 
 ## Rules
 
-1. Do not use indirect recursion.
+1. Do not use indirect recursion if possible.
 2. Format the code before comitting changes.
 3. Follow the modular structure of the codebase.
 4. If possible, only create a function if a logic is used for at least three times.
-5. Code first, then abstract later.
+6. If possible, document why your code is that way and not how it works.

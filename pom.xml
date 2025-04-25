@@ -1,195 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.hanzm_10.murico</groupId>
-	<artifactId>murico</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>Murico - Hardware Inventory and Sales System</name>
-	<description>Murico is a hardware inventory and sales system designed to help users manage their hardware assets efficiently made by students of Technological Institute of the Philippines - Quezon City.</description>
-	<scm>
-		<url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
-		<connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
-	</scm>
-	<dependencies>
-		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>24.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.12.0</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<modules>
-		<module>murico-swingapp</module>
-		<module>murico-lookandfeel</module>
-	</modules>
-	<licenses>
-		<license>
-			<name>MIT</name>
-			<url>https://opensource.org/license/mit</url>
-		</license>
-	</licenses>
-	<properties>
-		<maven.compiler.source>22</maven.compiler.source>
-		<maven.compiler.target>22</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<build.timestamp>${maven.build.timestamp}</build.timestamp>
-		<env>${env.ENVIRONMENT}</env>
-	</properties>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
-				<configuration>
-					<stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
-					<failOnError>false</failOnError>
-					<source>22</source>
-					<encoding>${project.build.sourceEncoding}</encoding>
-					<show>public</show>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.hanzm_10.murico</groupId>
+    <artifactId>murico</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Murico - Hardware Inventory and Sales System</name>
+    <description>Murico is a hardware inventory and sales system designed to help users manage their hardware assets efficiently made by students of Technological Institute of the Philippines - Quezon City.</description>
+    <scm>
+        <url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
+        <connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
+    </scm>
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <modules>
+        <module>murico-swingapp</module>
+        <module>murico-lookandfeel</module>
+    </modules>
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>https://opensource.org/license/mit</url>
+        </license>
+    </licenses>
+    <properties>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+            </plugin>
+        </plugins>
+    </reporting>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                    <include>**/*.txt</include>
-                    <include>**/*.json</include>
-                    <include>**/*.yml</include>
-                    <include>**/*.yaml</include>
-                    <include>**/*.csv</include>
-                    <include>**/*.html</include>
-                    <include>**/*.jpg</include>
-                    <include>**/*.jpeg</include>
-                    <include>**/*.webp</include>
-                    <include>**/*.png</include>
-                    <include>**/*.gif</include>
-                    <include>**/*.bmp</include>
-                    <include>**/*.svg</include>
-                    <include>**/*.ico</include>
                 </includes>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.3.1</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
-				<configuration>
-					<release>22</release>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
-				<configuration>
-					<stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
-					<failOnError>false</failOnError>
-					<source>22</source>
-					<encoding>${project.build.sourceEncoding}</encoding>
-					<show>private</show>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.diffplug.spotless</groupId>
-				<artifactId>spotless-maven-plugin</artifactId>
-				<version>2.44.4</version>
-				<configuration>
-					<!-- optional: limit format enforcement to just the files changed by this feature branch -->
-					<ratchetFrom>origin/main</ratchetFrom>
-					<formats>
-						<!-- you can define as many formats as you want, each is independent -->
-						<format>
-							<!-- define the files to apply to -->
-							<includes>
-								<include>.gitattributes</include>
-								<include>.gitignore</include>
-							</includes>
-							<!-- define the steps to apply to those files -->
-							<trimTrailingWhitespace />
-							<endWithNewline />
-						</format>
-					</formats>
-					<!-- define a language-specific format -->
-					<java>
-						<!-- no need to specify files, inferred automatically, but you can if you want -->
-						<cleanthat />
-						<!-- apply a specific flavor of google-java-format and reflow long strings -->
-						<googleJavaFormat>
-							<version>1.26.0</version>
-							<style>GOOGLE</style>
-							<reflowLongStrings>true</reflowLongStrings>
-							<formatJavadoc>true</formatJavadoc>
-						</googleJavaFormat>
-						<eclipse />
-						<eclipse>
-							<sortMembersOrder>SF,SI,SM,F,I,C,M,T</sortMembersOrder>
-							<sortMembersVisibilityOrderEnabled>true</sortMembersVisibilityOrderEnabled>
-							<sortMembersVisibilityOrder>V,R,D,B</sortMembersVisibilityOrder>
-						</eclipse>
-						<importOrder />
-						<importOrder>
-							<wildcardsLast>false</wildcardsLast>
-							<order>java,javax,com.sun,com.oracle,org.w3c,org.xml,org.apache,org.jetbrains,com.intellij,com.github.hanzm_10.murico</order>
-							<semanticSort>true</semanticSort>
-						</importOrder>
-						<removeUnusedImports />
-						<formatAnnotations />
-						<!-- make sure every file has the following copyright header.
-                optionally, Spotless can set copyright years by digging
-                through git history (see "license" section below) -->
-						<licenseHeader>
-							<content>/** Copyright 2025
- *  - Aaron Ragudos
- *  - Hanz Mapua
- *  - Peter Dela Cruz
- *  - Jerick Remo
- *  - Kurt Raneses
- *
- *  Permission is hereby granted, free of charge, to any
- *  person obtaining a copy of this software and associated
- *  documentation files (the “Software”), to deal in the Software
- *  without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons
- *  to whom the Software is furnished to do so, subject to the
- *  following conditions:
- *
- *  The above copyright notice and this permission notice shall be
- *  included in all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
- *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- *  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
- *  ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */                         </content>
-						</licenseHeader>
-					</java>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <configuration>
+                    <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
+                    <failOnError>false</failOnError>
+                    <source>22</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <show>private</show>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.44.4</version>
+                <configuration>
+                    <java>
+                        <licenseHeader>
+                            <file>${project.basedir}/LICENSE</file>
+                        </licenseHeader>
+                    </java>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

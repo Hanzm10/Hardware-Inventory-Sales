@@ -1,34 +1,28 @@
-/** Copyright 2025
- *  - Aaron Ragudos
- *  - Hanz Mapua
- *  - Peter Dela Cruz
- *  - Jerick Remo
- *  - Kurt Raneses
+/** 
+ *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
- *  Permission is hereby granted, free of charge, to any
- *  person obtaining a copy of this software and associated
- *  documentation files (the “Software”), to deal in the Software
- *  without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons
- *  to whom the Software is furnished to do so, subject to the
- *  following conditions:
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
+ *  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be
- *  included in all copies or substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
- *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- *  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
- *  ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- *  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.github.hanzm_10.murico.swingapp.lib.cache;
 
 import java.util.HashMap;
 
+/**
+ * A simple LRU (Least Recently Used) cache implementation.
+ *
+ * @param <K>
+ *            The type of the keys in the cache.
+ * @param <V>
+ *            The type of the values in the cache.
+ */
 public class LRU<K, V> {
 	private int length;
 	private int capacity;
@@ -75,6 +69,14 @@ public class LRU<K, V> {
 		node.prev = null;
 	}
 
+	/**
+	 * Returns the value associated with the key in the cache. If the key is not
+	 * present, it returns null.
+	 *
+	 * @param key
+	 *            The key to look up.
+	 * @return The value associated with the key, or null if not found.
+	 */
 	public synchronized V get(K key) {
 		var node = lookup.get(key);
 
@@ -115,6 +117,15 @@ public class LRU<K, V> {
 		length -= 1;
 	}
 
+	/**
+	 * Updates the cache with the given key and value. If the key already exists, it
+	 * updates the value and moves the node to the front of the cache.
+	 *
+	 * @param key
+	 *            The key to update.
+	 * @param value
+	 *            The value to associate with the key.
+	 */
 	public synchronized void update(K key, V value) {
 		var node = lookup.get(key);
 

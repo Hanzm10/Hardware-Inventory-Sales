@@ -52,24 +52,7 @@ currently being edited
 
 ## Setup Instructions
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/HardwareInventorySystem.git
-cd HardwareInventorySystem
-```
-
-### 2. Configure the Database
-- Install MySQL and create a new database
-- Create a database in your MySQL server.
-- Apply the server details in [the database module resources.](database/src/main/resources), preferable the `.properties` file;
-- Refer to [our database schema](https://dbdocs.io/workemailaaronragudos/murico?table=low_stock_alerts&schema=public&view=table_structure&fbclid=IwY2xjawJPnkJleHRuA2FlbQIxMAABHXk9UHiYvKQmC8NfQNbt8FaTdjT6Q_h-LgpNDXAgp_2SBhyLJrQNFO2YdA_aem_xaf-g4VewS3l02DSjrTvIw) for more details of the schema.
-
-If you run into the error `communications link failure`, please make sure that the application is connecting to the database you want it to connect to with proper `PORT`, `PASSWORD`, `DATABASE NAME` and `USERNAME`.
-
-### 3. Run the Application
-
-**To be made**
+currently being edited
 
 ## UI Design
 
