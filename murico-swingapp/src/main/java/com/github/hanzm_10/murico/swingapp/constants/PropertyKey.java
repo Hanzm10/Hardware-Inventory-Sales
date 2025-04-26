@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -14,23 +14,24 @@
 package com.github.hanzm_10.murico.swingapp.constants;
 
 public final class PropertyKey {
-	public static final class Database {
-		public static final String DB_URL = "db.url";
-		public static final String DB_USER = "db.user";
-		public static final String DB_PASSWORD = "db.password";
-		public static final String DB_NAME = "db.name";
-	}
+    public static final class Database {
+        public static final String DB_URL = "db.url";
+        public static final String DB_USER = "db.user";
+        public static final String DB_PASSWORD = "db.password";
+        public static final String DB_NAME = "db.name";
+    }
 
-	public static final class Metadata {
-		public static final String APP_TITLE = "app.title";
-		public static final String APP_VERSION = "app.version";
-	}
+    public static final class Metadata {
+        public static final String APP_TITLE = "app.title";
+        public static final String APP_VERSION = "app.version";
+        public static final String APP_ENV = "app.env";
+    }
 
-	public static final class Session {
-		public static final String UID = "session.uid";
-	}
+    public static final class Session {
+        public static final String UID = "session.uid";
+    }
 
-	private PropertyKey() {
-		throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-	}
+    private PropertyKey() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 }

@@ -14,12 +14,30 @@
         <url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
         <connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
     </scm>
+    <properties>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+    <profiles>
+        <profile>
+            <id>production</id>
+            <properties>
+                <project.env>production</project.env>
+            </properties>
+        </profile>
+        <profile>
+            <id>development</id>
+            <properties>
+                <project.env>development</project.env>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
     <dependencies>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -37,11 +55,6 @@
             <url>https://opensource.org/license/mit</url>
         </license>
     </licenses>
-    <properties>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <reporting>
         <plugins>
             <plugin>
@@ -64,18 +77,9 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.11.2</version>
                 <configuration>
-                    <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
                     <failOnError>false</failOnError>
                     <source>22</source>
                     <encoding>${project.build.sourceEncoding}</encoding>

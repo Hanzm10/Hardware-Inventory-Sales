@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -22,6 +22,7 @@ public final class Metadata {
 
     public static final String APP_TITLE;
     public static final String APP_VERSION;
+    public static final String APP_ENV;
 
     static {
         try {
@@ -34,6 +35,7 @@ public final class Metadata {
 
         APP_TITLE = properties.getProperty(PropertyKey.Metadata.APP_TITLE);
         APP_VERSION = properties.getProperty(PropertyKey.Metadata.APP_VERSION);
+        APP_ENV = properties.getProperty(PropertyKey.Metadata.APP_ENV);
     }
 
     private Metadata() {
