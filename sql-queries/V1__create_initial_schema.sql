@@ -1,6 +1,10 @@
 -- Drag this file to the SQL editor to run it
 -- and create the initial schema for the database
 
+DROP DATABASE murico;
+CREATE DATABASE murico;
+USE murico;
+
 -- ===========================================
 -- Tables Creation
 -- ===========================================
@@ -72,7 +76,7 @@ CREATE TABLE `items` (
   `item_wholesale_price_php` DECIMAL(10,2) NOT NULL,
   `_item_category_id` INT NOT NULL,
   `_item_pack_type_id` INT NOT NULL,
-  CONSTRAINT `fk_items_item_category_id` FOREIGN KEY (`_item_category_id`) REFERENCES `item_categories` (`_item_category_id`) ON DELETE CASCADE
+  CONSTRAINT `fk_items_item_category_id` FOREIGN KEY (`_item_category_id`) REFERENCES `item_categories` (`_item_category_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_items_item_pack_type_id` FOREIGN KEY (`_item_pack_type_id`) REFERENCES `item_pack_types` (`_item_pack_type_id`) ON DELETE CASCADE
 );
 
