@@ -1,3 +1,6 @@
+-- Drag this file to the SQL editor to run it
+-- and create the initial schema for the database
+
 -- ===========================================
 -- Tables Creation
 -- ===========================================
@@ -13,7 +16,7 @@ CREATE TABLE `users` (
   `_user_id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `_user_created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_display_name` VARCHAR(255) UNIQUE NOT NULL,
-  `user_display_image` TEXT COMMENT 'A link text to user''s display image',
+  `user_display_image` TEXT COMMENT 'A link text to their display image',
   `user_gender` ENUM('male', 'female', 'unknown') NOT NULL DEFAULT 'unknown'
 );
 
