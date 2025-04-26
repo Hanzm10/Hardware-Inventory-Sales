@@ -195,7 +195,7 @@ CREATE TABLE `audit_logs` (
   `audit_previous_data` JSON COMMENT 'Data before operation',
   `audit_after_data` JSON COMMENT 'Data after operation',
   `_user_id` INT,
-  CONSTRAINT `fk_audit_logs_user_id` FOREIGN KEY (`_user_audit_logs`) REFERENCES `users` (`_user_id`) ON DELETE SET NULL
+  CONSTRAINT `fk_audit_logs_user_id` FOREIGN KEY (`_user_id`) REFERENCES `users` (`_user_id`) ON DELETE SET NULL
 );
 
 -- ===========================================
