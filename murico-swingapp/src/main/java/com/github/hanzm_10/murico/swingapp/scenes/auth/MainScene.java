@@ -13,6 +13,8 @@
  */
 package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
+import java.awt.Color;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -20,39 +22,42 @@ import com.github.hanzm_10.murico.swingapp.scenes.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.SceneNavigator;
 
 public class MainScene implements Scene {
-	private JPanel view;
+    private JPanel view;
 
-	public MainScene() {
-	}
+    public MainScene() {
+    }
 
-	@Override
-	public String getName() {
-		return "main";
-	}
+    @Override
+    public String getName() {
+        return "main";
+    }
 
-	@Override
-	public JPanel getView() {
-		return view == null ? (view = new JPanel()) : view;
-	}
+    @Override
+    public JPanel getView() {
+        return view == null ? (view = new JPanel()) : view;
+    }
 
-	@Override
-	public void onCreate() {
-		var button = new JButton("Login");
+    @Override
+    public void onCreate() {
+        var button = new JButton("Login");
 
-		button.addActionListener(_ -> {
-			SceneNavigator.navigateTo("auth/login");
-		});
+        button.addActionListener(_ -> {
+            SceneNavigator.navigateTo("auth/login");
+        });
 
-		view.add(button);
-	}
+        button.setBackground(new Color(0x213D65));
+        button.setForeground(Color.WHITE);
 
-	@Override
-	public void onHide() {
-		// TODO Auto-generated method stub
-	}
+        view.add(button);
+    }
 
-	@Override
-	public void onShow() {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void onHide() {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void onShow() {
+        // TODO Auto-generated method stub
+    }
 }
