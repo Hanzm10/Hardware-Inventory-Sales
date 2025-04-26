@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.github.hanzm_10.murico.swingapp.lib.cache.LRU;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 /**
@@ -42,16 +43,16 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
  * SceneNavigator.setSceneManager(sceneManager);
  *
  * class HomeScene implements Scene {
- * 	private JPanel view;
+ *     private JPanel view;
  *
- * 	public HomeScene() {
+ *     public HomeScene() {
  *
- * 		var button = new JButton("Go to Settings");
+ *         var button = new JButton("Go to Settings");
  *
- * 		button.addActionListener(e -> {
- * 			SceneNavigator.navigateTo("settings");
- * 		});
- * 	}
+ *         button.addActionListener(e -> {
+ *             SceneNavigator.navigateTo("settings");
+ *         });
+ *     }
  * }
  *
  * </pre>
@@ -59,230 +60,227 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
  * @author Aaron Ragudos
  */
 public class SceneManager {
-	private static class RouteEntry {
-		RouteFactory factory;
-		Pattern regex;
-		List<String> params;
-		RouteGuard guard;
-		int dynamicPathCount;
+    private static class RouteEntry {
+        RouteFactory factory;
+        Pattern regex;
+        List<String> params;
+        RouteGuard guard;
+        int dynamicPathCount;
 
-		public RouteEntry(String path, RouteFactory factory, RouteGuard guard) {
-			this.factory = factory;
-			this.guard = guard;
+        public RouteEntry(String path, RouteFactory factory, RouteGuard guard) {
+            this.factory = factory;
+            this.guard = guard;
 
-			var regexBuilder = new StringBuilder();
-			var params = new ArrayList<String>();
-			var dynamicPathCount = 0;
+            var regexBuilder = new StringBuilder();
+            var params = new ArrayList<String>();
+            var dynamicPathCount = 0;
 
-			for (String part : path.split("/")) {
-				if (part.startsWith(":")) {
-					regexBuilder.append("/([^/]+)");
-					params.add(part.substring(1));
-					dynamicPathCount++;
-				} else {
-					regexBuilder.append("/").append(part);
-				}
-			}
+            for (String part : path.split("/")) {
+                if (part.startsWith(":")) {
+                    regexBuilder.append("/([^/]+)");
+                    params.add(part.substring(1));
+                    dynamicPathCount++;
+                } else {
+                    regexBuilder.append("/").append(part);
+                }
+            }
 
-			this.regex = Pattern.compile("^" + regexBuilder.substring(1) + "$");
-			this.params = params;
-			this.dynamicPathCount = dynamicPathCount;
-		}
+            this.regex = Pattern.compile("^" + regexBuilder.substring(1) + "$");
+            this.params = params;
+            this.dynamicPathCount = dynamicPathCount;
+        }
 
-		Map<String, String> match(String path) {
-			var matcher = regex.matcher(path);
+        Map<String, String> match(String path) {
+            var matcher = regex.matcher(path);
 
-			if (!matcher.matches()) {
-				return null;
-			}
+            if (!matcher.matches()) {
+                return null;
+            }
 
-			var paramsMap = new HashMap<String, String>();
+            var paramsMap = new HashMap<String, String>();
 
-			for (var i = 0; i < params.size(); i++) {
-				paramsMap.put(params.get(i), matcher.group(i + 1));
-			}
+            for (var i = 0; i < params.size(); i++) {
+                paramsMap.put(params.get(i), matcher.group(i + 1));
+            }
 
-			return paramsMap;
-		}
-	}
+            return paramsMap;
+        }
+    }
 
-	@FunctionalInterface
-	public interface RouteFactory {
-		/**
-		 * A factory that creates a scene. This is useful for creating scenes that
-		 * require parameters to be passed to them.
-		 *
-		 * @param params
-		 *            The parameters of the route.
-		 * @return The scene to be created.
-		 */
-		Scene create(Map<String, String> params);
-	}
+    @FunctionalInterface
+    public interface RouteFactory {
+        /**
+         * A factory that creates a scene. This is useful for creating scenes that
+         * require parameters to be passed to them.
+         *
+         * @param params The parameters of the route.
+         * @return The scene to be created.
+         */
+        Scene create(Map<String, String> params);
+    }
 
-	@FunctionalInterface
-	public interface RouteGuard {
-		/**
-		 * A guard that checks if the user can access the route. This is useful for
-		 * checking if the user is logged in or has the required permissions to access
-		 * the route.
-		 *
-		 * @param params
-		 *            The parameters of the route.
-		 * @return true if the user can access the route, false otherwise.
-		 */
-		boolean canAccess(Map<String, String> params);
-	}
+    @FunctionalInterface
+    public interface RouteGuard {
+        /**
+         * A guard that checks if the user can access the route. This is useful for
+         * checking if the user is logged in or has the required permissions to access
+         * the route.
+         *
+         * @param params The parameters of the route.
+         * @return true if the user can access the route, false otherwise.
+         */
+        boolean canAccess(Map<String, String> params);
+    }
 
-	private static final Logger LOGGER = MuricoLogger.getLogger(SceneManager.class);
+    private static final Logger LOGGER = MuricoLogger.getLogger(SceneManager.class);
 
-	private final JPanel rootContainer;
-	private final CardLayout cardLayout;
+    private final JPanel rootContainer;
+    private final CardLayout cardLayout;
 
-	private final List<RouteEntry> routeEntries = new ArrayList<>();
-	private final HashMap<String, Scene> scenes = new HashMap<>();
-	private String currentPath = null;
+    private final List<RouteEntry> routeEntries = new ArrayList<>();
+    private final LRU<String, Scene> scenes = new LRU<>(50);
+    private String currentPath = null;
 
-	public SceneManager() {
-		cardLayout = new CardLayout();
-		rootContainer = new JPanel(cardLayout);
+    public SceneManager() {
+        cardLayout = new CardLayout();
+        rootContainer = new JPanel(cardLayout);
 
-		LOGGER.setLevel(Level.ALL);
-	}
+        LOGGER.setLevel(Level.ALL);
+    }
 
-	/**
-	 * This <b>DESTROYS</b> everything in this scene manager. Useful for sub scene
-	 * managers that are not needed anymore.
-	 */
-	public void destroy() {
-		SwingUtilities.invokeLater(() -> {
-			for (var entry : scenes.entrySet()) {
-				var scene = entry.getValue();
-				cardLayout.removeLayoutComponent(scene.getView());
-				scene.onDestroy();
-			}
+    /**
+     * This <b>DESTROYS</b> everything in this scene manager. Useful for sub scene
+     * managers that are not needed anymore.
+     */
+    public void destroy() {
+        SwingUtilities.invokeLater(() -> {
+            for (var entry : scenes.getAll().entrySet()) {
+                var scene = entry.getValue();
+                cardLayout.removeLayoutComponent(scene.getView());
+                scene.onDestroy();
+            }
 
-			scenes.clear();
-			routeEntries.clear();
-			currentPath = null;
-			rootContainer.removeAll();
-		});
-	}
+            scenes.clear();
+            routeEntries.clear();
+            currentPath = null;
+            rootContainer.removeAll();
+        });
+    }
 
-	public CardLayout getCardLayout() {
-		return cardLayout;
-	}
+    public CardLayout getCardLayout() {
+        return cardLayout;
+    }
 
-	public String getCurrentPath() {
-		return currentPath;
-	}
+    public String getCurrentPath() {
+        return currentPath;
+    }
 
-	public JPanel getRootContainer() {
-		return rootContainer;
-	}
+    public JPanel getRootContainer() {
+        return rootContainer;
+    }
 
-	public Scene getScene(String route) {
-		return scenes.get(route);
-	}
+    public Scene getScene(String route) {
+        return scenes.get(route);
+    }
 
-	/**
-	 * Navigate to the scene with the given route. The route is the name of the
-	 * scene in lowercase. The route must be unique among all scenes. If the scene
-	 * is not registered, an IllegalArgumentException is thrown.
-	 *
-	 * <p>
-	 * If route is the same as the current scene, this method does nothing.
-	 *
-	 * @param route
-	 * @throws IllegalArgumentException
-	 *             if the route is not registered
-	 */
-	public void navigateTo(String path) throws IllegalArgumentException {
-		SwingUtilities.invokeLater(() -> {
-			LOGGER.fine("Navigating to: " + path);
+    /**
+     * Navigate to the scene with the given route. The route is the name of the
+     * scene in lowercase. The route must be unique among all scenes. If the scene
+     * is not registered, an IllegalArgumentException is thrown.
+     *
+     * <p>
+     * If route is the same as the current scene, this method does nothing.
+     *
+     * @param route
+     * @throws IllegalArgumentException if the route is not registered
+     */
+    public void navigateTo(String path) throws IllegalArgumentException {
+        SwingUtilities.invokeLater(() -> {
+            LOGGER.fine("Navigating to: " + path);
 
-			Scene oldScene = null;
+            Scene oldScene = null;
 
-			if (currentPath == null) {
-				currentPath = path;
-			} else {
-				if (currentPath.equals(path)) {
-					return;
-				}
+            if (currentPath == null) {
+                currentPath = path;
+            } else {
+                if (currentPath.equals(path)) {
+                    return;
+                }
 
-				oldScene = scenes.get(currentPath);
+                oldScene = scenes.get(currentPath);
 
-				// We do this to prevent the user from navigating away from the current scene
-				// if it is not allowed to navigate away. For example, if the user is in a
-				// mode where they are editing something, we don't want them to be able to
-				// navigate away from the scene without saving or cancelling first.
-				if (!oldScene.canNavigateAway()) {
-					return;
-				}
-			}
+                // We do this to prevent the user from navigating away from the current scene
+                // if it is not allowed to navigate away. For example, if the user is in a
+                // mode where they are editing something, we don't want them to be able to
+                // navigate away from the scene without saving or cancelling first.
+                if (!oldScene.canNavigateAway()) {
+                    return;
+                }
+            }
 
-			for (var entry : routeEntries) {
-				var params = entry.match(path);
+            for (var entry : routeEntries) {
+                var params = entry.match(path);
 
-				if (params != null) {
-					if (!entry.guard.canAccess(params)) {
-						LOGGER.warning("Cannot access path: " + path);
-						return;
-					}
+                if (params != null) {
+                    if (!entry.guard.canAccess(params)) {
+                        LOGGER.warning("Cannot access path: " + path);
+                        return;
+                    }
 
-					var scene = scenes.get(path);
+                    var scene = scenes.get(path);
 
-					if (scene == null) {
-						scene = entry.factory.create(params);
+                    if (scene == null) {
+                        scene = entry.factory.create(params);
 
-						scenes.put(path, scene);
+                        scenes.update(path, scene);
 
-						var view = scene.getView();
+                        var view = scene.getView();
 
-						rootContainer.add(view);
-						cardLayout.addLayoutComponent(view, path);
-						scene.onCreate();
-					}
+                        rootContainer.add(view);
+                        cardLayout.addLayoutComponent(view, path);
+                        scene.onCreate();
+                    }
 
-					cardLayout.show(rootContainer, path);
+                    cardLayout.show(rootContainer, path);
 
-					if (oldScene != null) {
-						oldScene.onHide();
-					}
+                    if (oldScene != null) {
+                        oldScene.onHide();
+                    }
 
-					scene.onShow();
+                    scene.onShow();
 
-					currentPath = path;
+                    currentPath = path;
 
-					return;
-				}
-			}
+                    return;
+                }
+            }
 
-			LOGGER.warning("No route found for path: " + path);
-		});
-	}
+            LOGGER.warning("No route found for path: " + path);
+        });
+    }
 
-	public void register(String path, RouteFactory factory) {
-		routeEntries.add(new RouteEntry(path, factory, _ -> true));
-	}
+    public void register(String path, RouteFactory factory) {
+        routeEntries.add(new RouteEntry(path, factory, _ -> true));
+    }
 
-	public void register(String path, RouteFactory factory, RouteGuard guard) {
-		routeEntries.add(new RouteEntry(path, factory, guard));
-		// To avoid the edge case where the user registers a route with a dynamic path
-		// after the static paths, we sort the routes by the number of dynamic paths
-		// in descending order. This way, the static paths will be checked first.
-		routeEntries.sort(Comparator.comparingInt(e -> e.dynamicPathCount));
-	}
+    public void register(String path, RouteFactory factory, RouteGuard guard) {
+        routeEntries.add(new RouteEntry(path, factory, guard));
+        // To avoid the edge case where the user registers a route with a dynamic path
+        // after the static paths, we sort the routes by the number of dynamic paths
+        // in descending order. This way, the static paths will be checked first.
+        routeEntries.sort(Comparator.comparingInt(e -> e.dynamicPathCount));
+    }
 
-	public void unregisterScene(String route) {
-		SwingUtilities.invokeLater(() -> {
-			var removedScene = scenes.remove(route);
+    public void unregisterScene(String route) {
+        SwingUtilities.invokeLater(() -> {
+            var removedScene = scenes.remove(route);
 
-			if (removedScene == null) {
-				return;
-			}
+            if (removedScene == null) {
+                return;
+            }
 
-			removedScene.onDestroy();
-			rootContainer.remove(removedScene.getView());
-		});
-	}
+            removedScene.onDestroy();
+            rootContainer.remove(removedScene.getView());
+        });
+    }
 }

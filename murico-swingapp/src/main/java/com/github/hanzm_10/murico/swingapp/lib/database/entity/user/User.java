@@ -14,6 +14,7 @@
 package com.github.hanzm_10.murico.swingapp.lib.database.entity.user;
 
 import java.sql.Timestamp;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,21 +24,14 @@ import org.jetbrains.annotations.NotNull;
  * This class includes the user's ID, creation time, display name and image,
  * gender, and role.
  *
- * @param _userId
- *            The unique identifier of the user.
- * @param _userCreatedAt
- *            The timestamp when the user was created.
- * @param userDisplayName
- *            The user's display name.
- * @param userDisplayImage
- *            The URL or path to the user's display image.
- * @param userGender
- *            The user's gender.
- * @param userRole
- *            The user's role in the system.
+ * @param _userId          The unique identifier of the user.
+ * @param _userCreatedAt   The timestamp when the user was created.
+ * @param userDisplayName  The user's display name.
+ * @param userDisplayImage The URL or path to the user's display image.
+ * @param userGender       The user's gender.
  */
 public record User(int _userId, Timestamp _userCreatedAt, String userDisplayName, String userDisplayImage,
-        UserGender userGender, UserRole userRole) {
+        UserGender userGender) {
     /**
      * Builder class for constructing a {@link User} instance with validation and
      * chaining support.
@@ -48,14 +42,12 @@ public record User(int _userId, Timestamp _userCreatedAt, String userDisplayName
         private String userDisplayName;
         private String userDisplayImage;
         private UserGender userGender;
-        private UserRole userRole;
 
         /**
          * Builds and returns the {@link User} object after validating required fields.
          *
          * @return a fully constructed and valid {@link User} instance
-         * @throws IllegalStateException
-         *             if any required field is invalid or missing
+         * @throws IllegalStateException if any required field is invalid or missing
          */
         public @NotNull User build() throws IllegalStateException {
             if (userId <= 0) {
@@ -70,11 +62,8 @@ public record User(int _userId, Timestamp _userCreatedAt, String userDisplayName
             if (userGender == null) {
                 throw new IllegalStateException("User gender cannot be null");
             }
-            if (userRole == null) {
-                throw new IllegalStateException("User role cannot be null");
-            }
 
-            return new User(userId, userCreatedAt, userDisplayName, userDisplayImage, userGender, userRole);
+            return new User(userId, userCreatedAt, userDisplayName, userDisplayImage, userGender);
         }
 
         public Builder setUserCreatedAt(Timestamp userCreatedAt) {
@@ -102,9 +91,5 @@ public record User(int _userId, Timestamp _userCreatedAt, String userDisplayName
             return this;
         }
 
-        public Builder setUserRole(UserRole userRole) {
-            this.userRole = userRole;
-            return this;
-        }
     }
 }

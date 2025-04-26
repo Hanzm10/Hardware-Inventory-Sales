@@ -16,7 +16,9 @@ package com.github.hanzm_10.murico.swingapp.ui;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
+
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
 import com.github.hanzm_10.murico.swingapp.scenes.SceneManager;
 import com.github.hanzm_10.murico.swingapp.scenes.SceneNavigator;

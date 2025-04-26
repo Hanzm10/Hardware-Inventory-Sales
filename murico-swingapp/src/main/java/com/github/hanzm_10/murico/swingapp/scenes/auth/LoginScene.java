@@ -14,12 +14,14 @@
 package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
 import javax.swing.JPanel;
+
 import com.github.hanzm_10.murico.swingapp.scenes.Scene;
 
 public class LoginScene implements Scene {
     private JPanel view;
 
-    public LoginScene() {}
+    public LoginScene() {
+    }
 
     @Override
     public String getName() {
@@ -33,7 +35,6 @@ public class LoginScene implements Scene {
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
     }
 
     @Override
