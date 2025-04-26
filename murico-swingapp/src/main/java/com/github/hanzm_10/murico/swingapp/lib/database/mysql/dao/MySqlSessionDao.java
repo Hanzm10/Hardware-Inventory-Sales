@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -25,7 +25,8 @@ import com.github.hanzm_10.murico.swingapp.exceptions.NeedsDeveloperAttentionExc
 import com.github.hanzm_10.murico.swingapp.exceptions.UnimplementedException;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.Session;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.SessionStatus;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
@@ -105,7 +106,10 @@ public class MySqlSessionDao implements SessionDao {
                         .setIpAddress(resultSet.getString("_ip_address"))
                         .setUserAgent(resultSet.getString("_user_agent"))
                         .setSessionCreatedAt(resultSet.getTimestamp("_created_at"))
-                        .setSessionExpiresAt(resultSet.getTimestamp("_updated_at")).build();
+                        .setSessionExpiresAt(resultSet.getTimestamp("_updated_at"))
+                        .setSessionStatus(
+                                SessionStatus.fromString(resultSet.getString("session_status")))
+                        .build();
             }
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "SQL file not found", e);

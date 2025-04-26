@@ -14,7 +14,7 @@
 package com.github.hanzm_10.murico.swingapp.state;
 
 import org.jetbrains.annotations.NotNull;
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.Session;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
 

@@ -14,7 +14,7 @@
 package com.github.hanzm_10.murico.swingapp.lib.utils;
 
 import java.sql.Timestamp;
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.Session;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
 
 public final class SessionUtils {
     public static final boolean isSessionExpired(final Session session) {

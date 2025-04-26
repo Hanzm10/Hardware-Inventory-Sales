@@ -16,8 +16,7 @@ package com.github.hanzm_10.murico.swingapp.lib.database.dao;
 import java.sql.SQLException;
 
 import org.jetbrains.annotations.NotNull;
-
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.Session;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 
 public interface SessionDao {

@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -11,7 +11,7 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.lib.database.entity;
+package com.github.hanzm_10.murico.swingapp.lib.database.entity.session;
 
 import java.sql.Timestamp;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
  *            The timestamp when the session expires.
  */
 public record Session(int _userId, String ipAddress, String userAgent, int _sessionId, String _sesionUid,
-        Timestamp _sessionCreatedAt, Timestamp _sessionExpiresAt) {
+        Timestamp _sessionCreatedAt, Timestamp _sessionExpiresAt, SessionStatus sessionStatus) {
 
     /**
      * Builder class for creating UserSession objects.
@@ -51,8 +51,9 @@ public record Session(int _userId, String ipAddress, String userAgent, int _sess
         private int userId;
         private String ipAddress;
         private String userAgent;
-        private String sessionUid;
         private int sessionId;
+        private String sessionUid;
+        private SessionStatus sessionStatus;
         private Timestamp sessionCreatedAt;
         private Timestamp sessionExpiresAt;
 
@@ -82,7 +83,12 @@ public record Session(int _userId, String ipAddress, String userAgent, int _sess
                 throw new IllegalStateException("Session expiration time cannot be null");
             }
 
-            return new Session(userId, ipAddress, userAgent, sessionId, sessionUid, sessionCreatedAt, sessionExpiresAt);
+            if (sessionStatus == null) {
+                throw new IllegalStateException("Session status cannot be null");
+            }
+
+            return new Session(userId, ipAddress, userAgent, sessionId, sessionUid,
+                    sessionCreatedAt, sessionExpiresAt, sessionStatus);
         }
 
         public Builder setIpAddress(String ipAddress) {
@@ -136,7 +142,6 @@ public record Session(int _userId, String ipAddress, String userAgent, int _sess
 
             // will fail if called again and sessionCreatedAt is a timestamp from some older
             // UserSession
-            // class
             if (sessionCreatedAt != null) {
                 if (sessionExpiresAt.before(sessionCreatedAt)) {
                     throw new IllegalArgumentException("Session expiration time must be after session creation time");
@@ -163,6 +168,11 @@ public record Session(int _userId, String ipAddress, String userAgent, int _sess
 
             this.sessionId = sessionId;
 
+            return this;
+        }
+
+        public Builder setSessionStatus(SessionStatus sessionStatus) {
+            this.sessionStatus = sessionStatus;
             return this;
         }
 

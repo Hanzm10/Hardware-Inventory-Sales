@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -20,7 +20,10 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
 import com.github.hanzm_10.murico.swingapp.constants.Directories;
+import com.github.hanzm_10.murico.swingapp.constants.Metadata;
 import com.github.hanzm_10.murico.swingapp.exceptions.handlers.GlobalUncaughtExceptionHandler;
+import com.github.hanzm_10.murico.swingapp.lib.database.AbstractMigration.Migration;
+import com.github.hanzm_10.murico.swingapp.lib.database.mysql.migrations.MySqlMigration;
 import com.github.hanzm_10.murico.swingapp.lib.io.FileUtils;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
@@ -40,7 +43,33 @@ public class MuricoSwingApp {
         var _ = new MainFrame();
     }
 
+    private static void doDevelopmentSetup() {
+        var migrator = new MySqlMigration();
+
+        migrator.addMigration(new Migration() {
+            @Override
+            public String getName() {
+                return "V1__create_initial_schema";
+            }
+
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+        LOGGER.info("Initializing database schema...");
+        migrator.migrate();
+        LOGGER.info("Seeding database with dummy data...");
+        // TODO: Create a seeder class to seed the database with dummy data
+    }
+
     public static void main(String[] args) {
+        if (Metadata.APP_ENV.equals("development")) {
+            doDevelopmentSetup();
+        }
+
         Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
         SwingUtilities.invokeLater(() -> {
             FileUtils.createDirectoryIfNotExists(Directories.CONFIG_DIRECTORY);
