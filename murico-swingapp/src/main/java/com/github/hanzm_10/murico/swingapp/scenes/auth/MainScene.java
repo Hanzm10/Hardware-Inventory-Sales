@@ -15,11 +15,12 @@ package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
 import java.awt.Color;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.scenes.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.SceneNavigator;
+import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
+import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactoy;
 
 public class MainScene implements Scene {
     private JPanel view;
@@ -39,13 +40,13 @@ public class MainScene implements Scene {
 
     @Override
     public void onCreate() {
-        var button = new JButton("Login");
+        System.out.println(ButtonStyles.PRIMARY.getBackgroundColor());
+        var button = StyledButtonFactoy.createButton("Login", ButtonStyles.PRIMARY);
 
         button.addActionListener(_ -> {
             SceneNavigator.navigateTo("auth/login");
         });
 
-        button.setBackground(new Color(0x213D65));
         button.setForeground(Color.WHITE);
 
         view.add(button);

@@ -11,43 +11,19 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.lib.database.entity.role;
+package com.github.hanzm_10.murico.swingapp.ui.buttons;
 
-import java.sql.Timestamp;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 
-public record Role(int _roleId, Timestamp _roleCreatedAt, String roleName, String roleDescription) {
+public class StyledButtonFactoy {
+    public static JButton createButton(String text, ButtonStyles buttonStyle) {
+        var button = new JButton(text);
 
-    public static class Builder {
-        private int roleId;
-        private Timestamp roleCreatedAt;
-        private String roleName;
-        private String roleDescription;
+        button.setBackground(buttonStyle.getBackgroundColor());
+        button.setForeground(buttonStyle.getForegroundColor());
+        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        public Role build() {
-            return new Role(roleId, roleCreatedAt, roleName, roleDescription);
-        }
-
-        public Builder setRoleId(int roleId) throws IllegalArgumentException {
-            if (roleId <= 0) {
-                throw new IllegalArgumentException("Role ID must be greater than 0");
-            }
-            this.roleId = roleId;
-            return this;
-        }
-
-        public Builder setRoleCreatedAt(Timestamp roleCreatedAt) {
-            this.roleCreatedAt = roleCreatedAt;
-            return this;
-        }
-
-        public Builder setRoleName(String roleName) {
-            this.roleName = roleName;
-            return this;
-        }
-
-        public Builder setRoleDescription(String roleDescription) {
-            this.roleDescription = roleDescription;
-            return this;
-        }
+        return button;
     }
 }

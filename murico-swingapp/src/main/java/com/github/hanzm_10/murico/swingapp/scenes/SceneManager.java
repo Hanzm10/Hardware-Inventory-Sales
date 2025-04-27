@@ -19,7 +19,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -32,7 +31,7 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 /**
  * A class that manages the navigation between scenes in the application. It
  * uses a CardLayout to switch between scenes and keeps track of the current
- * scene and the history of scenes for backward navigation. An example usage:
+ * scene. An example usage:
  *
  * <pre>
  *
@@ -145,7 +144,19 @@ public class SceneManager {
         cardLayout = new CardLayout();
         rootContainer = new JPanel(cardLayout);
 
-        LOGGER.setLevel(Level.ALL);
+        scenes.addListener((key, value) -> {
+            SwingUtilities.invokeLater(() -> {
+                if (currentPath != null && currentPath.equals(key)) {
+                    currentPath = null;
+                }
+
+                var view = value.getView();
+
+                cardLayout.removeLayoutComponent(view);
+                rootContainer.remove(view);
+                value.onDestroy();
+            });
+        });
     }
 
     /**
