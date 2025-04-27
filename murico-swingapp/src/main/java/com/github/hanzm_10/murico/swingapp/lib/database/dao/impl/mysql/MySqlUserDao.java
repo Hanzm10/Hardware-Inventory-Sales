@@ -11,18 +11,15 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.lib.database.mysql.dao;
+package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-import com.github.hanzm_10.murico.swingapp.exceptions.NeedsDeveloperAttentionException;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
@@ -35,13 +32,11 @@ public class MySqlUserDao implements UserDao {
     private static final Logger LOGGER = MuricoLogger.getLogger(MySqlUserDao.class);
 
     @Override
-    public User getUserByDisplayName(@NotNull String _userDisplayName) throws SQLException {
+    public User getUserByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException {
         User user = null;
+        var query = MySqlQueryLoader.getInstance().get("get_user_by_display_name", "users", SqlQueryType.SELECT);
 
-        try (var conn = MySqlFactoryDao.createConnection()) {
-            var query = MySqlQueryLoader.getInstance().get("get_user_by_display_name", "users", SqlQueryType.SELECT);
-            var statement = conn.prepareStatement(query);
-
+        try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
             statement.setString(1, _userDisplayName);
 
             var resultSet = statement.executeQuery();
@@ -53,23 +48,18 @@ public class MySqlUserDao implements UserDao {
                         .setUserDisplayImage(resultSet.getString("user_display_image"))
                         .setUserGender(UserGender.fromString(resultSet.getString("user_gender"))).build();
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "SQL file not found", e);
-            throw new NeedsDeveloperAttentionException();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error reading SQL file", e);
         }
 
         return user;
     }
 
     @Override
-    public User getUserByEmail(@NotNull String _userEmail) throws SQLException {
+    public User getUserByEmail(@NotNull String _userEmail) throws IOException, SQLException {
         return null;
     }
 
     @Override
-    public User getUserById(@Range(from = 0, to = 2147483647) int _userID) throws SQLException {
+    public User getUserById(@Range(from = 0, to = 2147483647) int _userID) throws IOException, SQLException {
         // TODO Auto-generated method stub
         return null;
     }

@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities;
 import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
 import com.github.hanzm_10.murico.swingapp.constants.Directories;
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
-import com.github.hanzm_10.murico.swingapp.exceptions.handlers.GlobalUncaughtExceptionHandler;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.handlers.GlobalUncaughtExceptionHandler;
 import com.github.hanzm_10.murico.swingapp.lib.io.FileUtils;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.service.database.SessionService;

@@ -61,9 +61,10 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 public class SceneManager {
     private static class RouteEntry {
         RouteFactory factory;
+        RouteGuard guard;
+
         Pattern regex;
         List<String> params;
-        RouteGuard guard;
         int dynamicPathCount;
 
         public RouteEntry(String path, RouteFactory factory, RouteGuard guard) {
@@ -137,14 +138,15 @@ public class SceneManager {
     private final CardLayout cardLayout;
 
     private final List<RouteEntry> routeEntries = new ArrayList<>();
-    private final LRU<String, Scene> scenes = new LRU<>(50);
+    private final LRU<String, Scene> dynamicScenes = new LRU<>(50);
+    private final HashMap<String, Scene> staticScenes = new HashMap<>();
     private String currentPath = null;
 
     public SceneManager() {
         cardLayout = new CardLayout();
         rootContainer = new JPanel(cardLayout);
 
-        scenes.addListener((key, value) -> {
+        dynamicScenes.addListener((key, value) -> {
             SwingUtilities.invokeLater(() -> {
                 if (currentPath != null && currentPath.equals(key)) {
                     currentPath = null;
@@ -165,16 +167,23 @@ public class SceneManager {
      */
     public void destroy() {
         SwingUtilities.invokeLater(() -> {
-            for (var entry : scenes.getAll().entrySet()) {
+            for (var entry : dynamicScenes.getAll().entrySet()) {
                 var scene = entry.getValue();
                 cardLayout.removeLayoutComponent(scene.getView());
                 scene.onDestroy();
             }
 
-            scenes.clear();
+            for (var entry : staticScenes.entrySet()) {
+                var scene = entry.getValue();
+                cardLayout.removeLayoutComponent(scene.getView());
+                scene.onDestroy();
+            }
+
+            dynamicScenes.clear();
+            staticScenes.clear();
             routeEntries.clear();
-            currentPath = null;
             rootContainer.removeAll();
+            currentPath = null;
         });
     }
 
@@ -190,8 +199,12 @@ public class SceneManager {
         return rootContainer;
     }
 
-    public Scene getScene(String route) {
-        return scenes.get(route);
+    public Scene getDynamicScene(String route) {
+        return dynamicScenes.get(route);
+    }
+
+    public Scene getStaticScene(String route) {
+        return staticScenes.get(route);
     }
 
     /**
@@ -218,7 +231,7 @@ public class SceneManager {
                     return;
                 }
 
-                oldScene = scenes.get(currentPath);
+                oldScene = dynamicScenes.get(currentPath);
 
                 // We do this to prevent the user from navigating away from the current scene
                 // if it is not allowed to navigate away. For example, if the user is in a
@@ -238,12 +251,12 @@ public class SceneManager {
                         return;
                     }
 
-                    var scene = scenes.get(path);
+                    var scene = dynamicScenes.get(path);
 
                     if (scene == null) {
                         scene = entry.factory.create(params);
 
-                        scenes.update(path, scene);
+                        dynamicScenes.update(path, scene);
 
                         var view = scene.getView();
 
@@ -270,11 +283,28 @@ public class SceneManager {
         });
     }
 
-    public void register(String path, RouteFactory factory) {
+    public void registerStatic(String path, Scene scene) {
+        registerStatic(path, scene, _ -> true);
+    }
+
+    /**
+     * Register a static scene. This is useful for scenes that do not require any
+     * parameters to be passed to them. Also since we do not want to remove static
+     * scenes from the cache, we do not add them to the LRU cache.
+     *
+     * @param path  The path of the scene.
+     * @param scene The scene to be registered.
+     * @param guard The guard that checks if the user can access the route.
+     */
+    public void registerStatic(String path, Scene scene, RouteGuard guard) {
+        staticScenes.put(path, scene);
+    }
+
+    public void registerDynamic(String path, RouteFactory factory) {
         routeEntries.add(new RouteEntry(path, factory, _ -> true));
     }
 
-    public void register(String path, RouteFactory factory, RouteGuard guard) {
+    public void registerDynamic(String path, RouteFactory factory, RouteGuard guard) {
         routeEntries.add(new RouteEntry(path, factory, guard));
         // To avoid the edge case where the user registers a route with a dynamic path
         // after the static paths, we sort the routes by the number of dynamic paths
@@ -284,14 +314,19 @@ public class SceneManager {
 
     public void unregisterScene(String route) {
         SwingUtilities.invokeLater(() -> {
-            var removedScene = scenes.remove(route);
+            var removedScene = dynamicScenes.remove(route);
 
             if (removedScene == null) {
                 return;
             }
 
-            removedScene.onDestroy();
+            if (currentPath != null && currentPath.equals(route)) {
+                currentPath = null;
+            }
+
             rootContainer.remove(removedScene.getView());
+            cardLayout.removeLayoutComponent(removedScene.getView());
+            removedScene.onDestroy();
         });
     }
 }

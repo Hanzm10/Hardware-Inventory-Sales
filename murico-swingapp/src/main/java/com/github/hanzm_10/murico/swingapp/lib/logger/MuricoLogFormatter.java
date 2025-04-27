@@ -25,27 +25,44 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import com.github.hanzm_10.murico.swingapp.lib.utils.MuricoStringUtils;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.ErrorInterpreterRegistry;
 
 public class MuricoLogFormatter extends Formatter {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RED = "\u001B[91m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_BLUE = "\u001B[94m";
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_BOLD_ON = "\u001B[1m";
     public static final String ANSI_BOLD_OFF = "\u001B[22m";
 
+    private static final ErrorInterpreterRegistry errorInterpreterRegistry = new ErrorInterpreterRegistry();
+
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
             .withLocale(Locale.US).withZone(ZoneId.systemDefault());
 
     private void appendException(final StringBuilder stringBuilder, final Throwable exception) {
-        stringBuilder.append(exception.getClass().getCanonicalName()).append(": ");
-        stringBuilder.append(exception.getMessage());
+        stringBuilder.append("> ");
+        stringBuilder.append("[");
+
+        var simpleName = exception.getClass().getCanonicalName();
+
+        stringBuilder.append(simpleName);
+        stringBuilder.append("]");
+        stringBuilder.append(" ");
+
+        var friendlyMessage = errorInterpreterRegistry.interpret(exception);
+
+        if (friendlyMessage != null) {
+            stringBuilder.append(friendlyMessage);
+        } else {
+            stringBuilder.append(exception.getMessage());
+        }
+
         stringBuilder.append("\n");
 
         var stackTrace = exception.getStackTrace();
@@ -60,7 +77,7 @@ public class MuricoLogFormatter extends Formatter {
         var suppresedExceptions = exception.getSuppressed();
 
         if (suppresedExceptions.length != 0) {
-            stringBuilder.append("\t[SUPPRESSED]: ");
+            stringBuilder.append("\t[SUPRESSED]: ");
             stringBuilder.append("\n");
 
             for (Throwable suppressedException : suppresedExceptions) {
@@ -103,43 +120,42 @@ public class MuricoLogFormatter extends Formatter {
         stringBuilder.append(timeString);
         stringBuilder.append("]");
 
-        stringBuilder.append(ANSI_YELLOW);
+        stringBuilder.append(getMessageColor(record));
         stringBuilder.append(" ");
 
         stringBuilder.append("[");
         stringBuilder.append(record.getLevel().getLocalizedName());
         stringBuilder.append("]");
-
-        stringBuilder.append(ANSI_RESET);
-        stringBuilder.append(getMessageColor(record));
         stringBuilder.append(" ");
 
-        stringBuilder.append(record.getMessage());
-
-        stringBuilder.append(ANSI_RESET);
         stringBuilder.append(ANSI_BOLD_ON);
-        stringBuilder.append(" [at ");
+        stringBuilder.append("[Thread: ");
+        stringBuilder.append(Thread.currentThread().getName());
+        stringBuilder.append("] [Source: ");
         stringBuilder.append(record.getSourceClassName());
         stringBuilder.append("]");
         stringBuilder.append(ANSI_BOLD_OFF);
 
+        stringBuilder.append(ANSI_RESET);
+        stringBuilder.append(ANSI_WHITE);
+        stringBuilder.append("\n> ");
+        stringBuilder.append(record.getMessage().replaceAll("\n", "\n> "));
+
         var params = record.getParameters();
-        var spaceLen = timeString.length() + 3 + record.getLevel().getLocalizedName().length() + 3;
-        var space = MuricoStringUtils.repeat(" ", spaceLen);
 
         if (params != null) {
-            stringBuilder.append("\n");
-            stringBuilder.append(MuricoStringUtils.repeat(" ", spaceLen - 10));
-            stringBuilder.append(ANSI_YELLOW);
-            stringBuilder.append("[Details]");
+            stringBuilder.append("\n> ");
             stringBuilder.append(getMessageColor(record));
+            stringBuilder.append("[Details]");
+            stringBuilder.append(ANSI_WHITE);
+
+            stringBuilder.append("\n  ");
 
             for (int i = 0, l = params.length; i < l; ++i) {
                 stringBuilder.append(params[i]);
 
                 if (i < l - 1) {
-                    stringBuilder.append(",\n");
-                    stringBuilder.append(space);
+                    stringBuilder.append(",\n  ");
                 }
             }
         }
@@ -166,6 +182,14 @@ public class MuricoLogFormatter extends Formatter {
             return ANSI_RED;
         } else if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
             return ANSI_YELLOW;
+        } else if (record.getLevel().intValue() >= Level.INFO.intValue()) {
+            return ANSI_CYAN;
+        } else if (record.getLevel().intValue() >= Level.FINE.intValue()) {
+            return ANSI_GREEN;
+        } else if (record.getLevel().intValue() >= Level.FINER.intValue()) {
+            return ANSI_PURPLE;
+        } else if (record.getLevel().intValue() >= Level.FINEST.intValue()) {
+            return ANSI_BLACK;
         } else {
             return ANSI_WHITE;
         }
@@ -193,6 +217,7 @@ public class MuricoLogFormatter extends Formatter {
 
         for (var i = 0; i <= m; ++i) {
             stringBuilder.append(prefix).append("\tat ").append(stackTrace[i]);
+            stringBuilder.append("\n");
         }
 
         if (framesInCommon != 0) {
@@ -207,7 +232,7 @@ public class MuricoLogFormatter extends Formatter {
             stringBuilder.append("\n");
 
             for (Throwable suppressedException : suppressedExceptions) {
-                printEnclosedStackTrace(stringBuilder, suppressedException, enclosingTrace, "\t[SUPPRESSED]: ",
+                printEnclosedStackTrace(stringBuilder, suppressedException, enclosingTrace, "\n" + caption,
                         prefix + "\t", circularReferences);
             }
         }

@@ -79,6 +79,8 @@
                     <include>**/*.js</include>
                     <include>**/*.png</include>
                     <include>**/*.jpg</include>
+                    <include>**/*.jpeg</include>
+                    <include>**/*.webp</include>
                     <include>**/*.gif</include>
                     <include>**/*.svg</include>
                 </includes>

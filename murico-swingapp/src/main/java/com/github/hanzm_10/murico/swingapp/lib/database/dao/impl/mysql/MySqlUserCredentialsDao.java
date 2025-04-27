@@ -11,14 +11,14 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.lib.database.mysql.dao;
+package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+
 import org.jetbrains.annotations.NotNull;
-import com.github.hanzm_10.murico.swingapp.exceptions.NeedsDeveloperAttentionException;
+
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserCredentialsDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
@@ -29,15 +29,12 @@ public class MySqlUserCredentialsDao implements UserCredentialsDao {
     private static final Logger LOGGER = MuricoLogger.getLogger(MySqlUserCredentialsDao.class);
 
     @Override
-    public String getUserPasswordByUserDisplayName(@NotNull String _userDisplayName)
-            throws SQLException {
+    public String getUserPasswordByUserDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException {
         String userPassword = null;
+        var query = MySqlQueryLoader.getInstance().get("user_credentials", "select_user_password_by_display_name",
+                SqlQueryType.SELECT);
 
-        try (var conn = MySqlFactoryDao.createConnection()) {
-            var query = MySqlQueryLoader.getInstance().get("user_credentials",
-                    "select_user_password_by_display_name", SqlQueryType.SELECT);
-            var statement = conn.prepareStatement(query);
-
+        try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
             statement.setString(1, _userDisplayName);
 
             var resultSet = statement.executeQuery();
@@ -45,11 +42,6 @@ public class MySqlUserCredentialsDao implements UserCredentialsDao {
             if (resultSet.next()) {
                 userPassword = resultSet.getString("user_password");
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.severe("SQL query file not found: " + e.getMessage());
-            throw new NeedsDeveloperAttentionException();
-        } catch (IOException e) {
-            LOGGER.severe("Error reading SQL query file: " + e.getMessage());
         }
 
         return userPassword;
