@@ -145,20 +145,6 @@ public class SceneManager {
     public SceneManager() {
         cardLayout = new CardLayout();
         rootContainer = new JPanel(cardLayout);
-
-        dynamicScenes.addListener((key, value) -> {
-            SwingUtilities.invokeLater(() -> {
-                if (currentPath != null && currentPath.equals(key)) {
-                    currentPath = null;
-                }
-
-                var view = value.getView();
-
-                cardLayout.removeLayoutComponent(view);
-                rootContainer.remove(view);
-                value.onDestroy();
-            });
-        });
     }
 
     /**

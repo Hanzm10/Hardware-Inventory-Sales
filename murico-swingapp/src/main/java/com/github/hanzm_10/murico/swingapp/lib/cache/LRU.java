@@ -13,7 +13,6 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.cache;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -31,27 +30,6 @@ public class LRU<K, V> {
 
     private HashMap<K, Node<V>> lookup;
     private HashMap<Node<V>, K> reverseLookup;
-
-    private ArrayList<LRUListener<K, V>> listeners = new ArrayList<>();
-
-    @FunctionalInterface
-    public interface LRUListener<K, V> {
-        void onEvict(K key, V value);
-    }
-
-    public void addListener(LRUListener<K, V> listener) {
-        listeners.add(listener);
-    }
-
-    public void removeListener(LRUListener<K, V> listener) {
-        listeners.remove(listener);
-    }
-
-    private void notifyListeners(K key, V value) {
-        for (var listener : listeners) {
-            listener.onEvict(key, value);
-        }
-    }
 
     public LRU(int capacity) {
         if (capacity <= 0) {
@@ -120,9 +98,9 @@ public class LRU<K, V> {
         head = node;
     }
 
-    private void trimCache() {
+    protected V trimCache() {
         if (length <= capacity) {
-            return;
+            return null;
         }
 
         var referenceToTail = tail;
@@ -131,11 +109,11 @@ public class LRU<K, V> {
 
         var key = reverseLookup.get(referenceToTail);
 
-        notifyListeners(key, referenceToTail.value);
-
         lookup.remove(key);
         reverseLookup.remove(referenceToTail);
         length -= 1;
+
+        return referenceToTail.value;
     }
 
     /**
@@ -179,8 +157,6 @@ public class LRU<K, V> {
         }
 
         detach(node);
-
-        notifyListeners(key, node.value);
 
         lookup.remove(key);
         reverseLookup.remove(node);
