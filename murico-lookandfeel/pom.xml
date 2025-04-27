@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>murico-lookandfeel</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>com.formdev</groupId>
