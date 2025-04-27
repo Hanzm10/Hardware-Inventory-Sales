@@ -43,12 +43,16 @@ public class MuricoSwingApp {
         var _ = new MainFrame();
     }
 
-    private static void doDevelopmentSetup() {
+    private static boolean doDevelopmentSetup() {
+        return true;
     }
 
     public static void main(String[] args) {
         if (Metadata.APP_ENV.equals("development")) {
-            doDevelopmentSetup();
+            if (!doDevelopmentSetup()) {
+                LOGGER.log(Level.SEVERE, "Failed to setup development environment");
+                return;
+            }
         }
 
         Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());

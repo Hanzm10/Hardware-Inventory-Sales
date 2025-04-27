@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+
 import com.github.hanzm_10.murico.swingapp.lib.utils.MuricoStringUtils;
 
 public class MuricoLogFormatter extends Formatter {
@@ -166,7 +167,7 @@ public class MuricoLogFormatter extends Formatter {
         } else if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
             return ANSI_YELLOW;
         } else {
-            return ANSI_BLACK;
+            return ANSI_WHITE;
         }
     }
 

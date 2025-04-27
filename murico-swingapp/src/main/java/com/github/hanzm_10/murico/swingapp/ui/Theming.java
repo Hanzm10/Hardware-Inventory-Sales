@@ -11,54 +11,23 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.scenes.auth;
+package com.github.hanzm_10.murico.swingapp.ui;
 
-import java.awt.Color;
+import javax.swing.SwingUtilities;
 
-import javax.swing.JPanel;
-
-import com.github.hanzm_10.murico.swingapp.scenes.Scene;
-import com.github.hanzm_10.murico.swingapp.scenes.SceneNavigator;
-import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
-import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactoy;
-
-public class MainScene implements Scene {
-    private JPanel view;
-
-    public MainScene() {
+public class Theming {
+    public enum Themes {
+        LIGHT, DARK;
     }
 
-    @Override
-    public String getName() {
-        return "main";
-    }
-
-    @Override
-    public JPanel getView() {
-        return view == null ? (view = new JPanel()) : view;
-    }
-
-    @Override
-    public void onCreate() {
-        System.out.println(ButtonStyles.PRIMARY.getBackgroundColor());
-        var button = StyledButtonFactoy.createButton("Login", ButtonStyles.PRIMARY);
-
-        button.addActionListener(_ -> {
-            SceneNavigator.navigateTo("auth/login");
+    public static void changeTheme(Themes theme) {
+        SwingUtilities.invokeLater(() -> {
+            switch (theme) {
+            case LIGHT:
+                break;
+            case DARK:
+                break;
+            }
         });
-
-        button.setForeground(Color.WHITE);
-
-        view.add(button);
-    }
-
-    @Override
-    public void onHide() {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void onShow() {
-        // TODO Auto-generated method stub
     }
 }
