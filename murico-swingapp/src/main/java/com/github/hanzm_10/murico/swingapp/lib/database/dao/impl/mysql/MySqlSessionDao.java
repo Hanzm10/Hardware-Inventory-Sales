@@ -11,18 +11,17 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.lib.database.mysql.dao;
+package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.jetbrains.annotations.NotNull;
-import com.github.hanzm_10.murico.swingapp.exceptions.NeedsDeveloperAttentionException;
-import com.github.hanzm_10.murico.swingapp.exceptions.UnimplementedException;
+
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
@@ -37,26 +36,23 @@ public class MySqlSessionDao implements SessionDao {
 
     @Override
 
-    public @NotNull String createSession(@NotNull User user)
-            throws SQLException {
+    public @NotNull String createSession(@NotNull User user) throws IOException, SQLException {
         return createSession(user, "", "");
     }
 
     @Override
-    public @NotNull String createSession(@NotNull User user, String ipAddress)
-            throws SQLException {
+    public @NotNull String createSession(@NotNull User user, String ipAddress) throws IOException, SQLException {
         return createSession(user, ipAddress, "");
     }
 
     @Override
     public @NotNull String createSession(@NotNull User user, String ipAddress, String userAgent)
-            throws SQLException {
+            throws IOException, SQLException {
         String _sessionUid = null;
+        String query = MySqlQueryLoader.getInstance().get("sessions", "insert", SqlQueryType.INSERT);
 
-        try (var conn = MySqlFactoryDao.createConnection()) {
-            var query = MySqlQueryLoader.getInstance().get("sessions", "create_session",
-                    SqlQueryType.INSERT);
-            var statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        try (var conn = MySqlFactoryDao.createConnection();
+                var statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
 
             statement.setInt(1, user._userId());
             statement.setString(2, ipAddress);
@@ -72,72 +68,47 @@ public class MySqlSessionDao implements SessionDao {
                     _sessionUid = generatedKeys.getString("_session_uid");
                 }
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "SQL file not found", e);
-            throw new NeedsDeveloperAttentionException();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error reading SQL file", e);
         } catch (SQLFeatureNotSupportedException e) {
             LOGGER.log(Level.SEVERE, "SQL feature not supported", e);
-            throw new NeedsDeveloperAttentionException();
         }
 
         return _sessionUid;
     }
 
     @Override
-    public Session getSessionByUid(@NotNull String _sessionUid)
-            throws SQLException {
+    public Session getSessionByUid(@NotNull String _sessionUid) throws IOException, SQLException {
         Session session = null;
+        var query = MySqlQueryLoader.getInstance().get("sessions", "select_by_uid", SqlQueryType.SELECT);
 
-        try (var conn = MySqlFactoryDao.createConnection()) {
-            var query = MySqlQueryLoader.getInstance().get("sessions", "select_by_uid",
-                    SqlQueryType.SELECT);
-
-            var statement = conn.prepareStatement(query);
-
+        try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
             statement.setString(1, _sessionUid);
 
             var resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 session = new Session.Builder().setSessionUid(resultSet.getString("_session_uid"))
-                        .setUserId(resultSet.getInt("_user_id"))
-                        .setIpAddress(resultSet.getString("_ip_address"))
+                        .setUserId(resultSet.getInt("_user_id")).setIpAddress(resultSet.getString("_ip_address"))
                         .setUserAgent(resultSet.getString("_user_agent"))
                         .setSessionCreatedAt(resultSet.getTimestamp("_created_at"))
                         .setSessionExpiresAt(resultSet.getTimestamp("_updated_at"))
-                        .setSessionStatus(
-                                SessionStatus.fromString(resultSet.getString("session_status")))
-                        .build();
+                        .setSessionStatus(SessionStatus.fromString(resultSet.getString("session_status"))).build();
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "SQL file not found", e);
-            throw new NeedsDeveloperAttentionException();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error reading SQL file", e);
         }
 
         return session;
     }
 
     @Override
-    public void printSessionTableOfUser(@NotNull User user)
-            throws SQLException {
-        throw new UnimplementedException();
+    public void printSessionTableOfUser(@NotNull User user) throws IOException, SQLException {
+        // TODO: Implement this method
     }
 
     @Override
-    public boolean sessionExists(@NotNull String _sessionUid)
-            throws SQLException {
+    public boolean sessionExists(@NotNull String _sessionUid) throws IOException, SQLException {
         var sessionExists = false;
+        String query = MySqlQueryLoader.getInstance().get("sessions", "exists", SqlQueryType.SELECT);
 
-        try (var conn = MySqlFactoryDao.createConnection()) {
-            var query = MySqlQueryLoader.getInstance().get("sessions", "select_exists_by_uid",
-                    SqlQueryType.SELECT);
-
-            var statement = conn.prepareStatement(query);
-
+        try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
             statement.setString(1, _sessionUid);
 
             var resultSet = statement.executeQuery();
@@ -145,11 +116,6 @@ public class MySqlSessionDao implements SessionDao {
             if (resultSet.next()) {
                 sessionExists = resultSet.getInt(1) != 0;
             }
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "SQL file not found", e);
-            throw new NeedsDeveloperAttentionException();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error reading SQL file", e);
         }
 
         return sessionExists;

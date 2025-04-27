@@ -43,7 +43,7 @@ public class MainFrame extends JFrame {
 
         var sceneManager = new SceneManager();
 
-        sceneManager.register("auth", _ -> new AuthScene(), AuthScene.authSceneGuard);
+        sceneManager.registerDynamic("auth", _ -> new AuthScene(), AuthScene.authSceneGuard);
 
         SceneNavigator.setSceneManager(sceneManager);
 

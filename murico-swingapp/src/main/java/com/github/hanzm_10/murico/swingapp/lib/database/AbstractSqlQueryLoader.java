@@ -17,22 +17,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
+
 import org.jetbrains.annotations.NotNull;
-import com.github.hanzm_10.murico.swingapp.exceptions.UnreachableException;
+
 import com.github.hanzm_10.murico.swingapp.lib.cache.LRU;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 /**
- * Abstract class to load SQL queries from files. This class implements a cache for the SQL queries
- * to avoid loading them multiple times. The cache is an LRU (Least Recently Used) cache.
- * {@link LRU}
+ * Abstract class to load SQL queries from files. This class implements a cache
+ * for the SQL queries to avoid loading them multiple times. The cache is an LRU
+ * (Least Recently Used) cache. {@link LRU}
  * 
  * <p>
- * The SQL files should be located in the resources directory under the following structure:
+ * The SQL files should be located in the resources directory under the
+ * following structure:
  *
  * <pre>
  * sql/
- * └── database_name/
+ * └── [database_name]/
  *     ├── select/
  *     │   ├── table_name/
  *     │   │   ├── query_name.sql
@@ -62,10 +64,10 @@ public abstract class AbstractSqlQueryLoader {
         @Override
         public String toString() {
             return switch (this) {
-                case SELECT -> "select";
-                case INSERT -> "insert";
-                case UPDATE -> "update";
-                case DELETE -> "delete";
+            case SELECT -> "select";
+            case INSERT -> "insert";
+            case UPDATE -> "update";
+            case DELETE -> "delete";
             };
         }
     }
@@ -80,9 +82,8 @@ public abstract class AbstractSqlQueryLoader {
 
     public @NotNull String get(@NotNull final String name, @NotNull final String tableName,
             @NotNull final SqlQueryType queryType) throws FileNotFoundException, IOException {
-        var path = SQL_QUERY_DIRECTORY + getDatabaseName() + SEPARATOR + queryType.toString()
-        + SEPARATOR + tableName + SEPARATOR + name
-        + SQL_QUERY_FILE_EXTENSION;
+        var path = SQL_QUERY_DIRECTORY + getDatabaseName() + SEPARATOR + queryType.toString() + SEPARATOR + tableName
+                + SEPARATOR + name + SQL_QUERY_FILE_EXTENSION;
 
         if (queryCache.containsKey(path)) {
             return queryCache.get(path);
@@ -96,7 +97,8 @@ public abstract class AbstractSqlQueryLoader {
             return query;
         }
 
-        throw new UnreachableException("An exception should have been thrown before this point.");
+        // should not be reached
+        return null;
     }
 
     public abstract String getDatabaseName();

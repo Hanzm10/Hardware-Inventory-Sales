@@ -40,9 +40,9 @@ public class AuthScene implements Scene, SubSceneSupport {
     public AuthScene() {
         subSceneManager = new SceneManager();
 
-        subSceneManager.register("main", _ -> new MainScene(), authSceneGuard);
-        subSceneManager.register("login", _ -> new LoginScene(), authSceneGuard);
-        subSceneManager.register("register", _ -> new RegisterScene(), authSceneGuard);
+        subSceneManager.registerDynamic("main", _ -> new MainScene(), authSceneGuard);
+        subSceneManager.registerDynamic("login", _ -> new LoginScene(), authSceneGuard);
+        subSceneManager.registerDynamic("register", _ -> new RegisterScene(), authSceneGuard);
     }
 
     @Override
@@ -77,12 +77,10 @@ public class AuthScene implements Scene, SubSceneSupport {
 
     @Override
     public void onHide() {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void onShow() {
-        // TODO Auto-generated method stub
     }
 
     @Override

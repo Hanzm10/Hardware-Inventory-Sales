@@ -24,9 +24,9 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserCredentialsDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
-import com.github.hanzm_10.murico.swingapp.lib.database.mysql.dao.MySqlSessionDao;
-import com.github.hanzm_10.murico.swingapp.lib.database.mysql.dao.MySqlUserCredentialsDao;
-import com.github.hanzm_10.murico.swingapp.lib.database.mysql.dao.MySqlUserDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlSessionDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlUserCredentialsDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlUserDao;
 import com.github.hanzm_10.murico.swingapp.lib.io.PropertiesIO;
 
 public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
