@@ -104,7 +104,32 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.44.4</version>
                 <configuration>
+                    <ratchetFrom>origin/main</ratchetFrom>
                     <java>
+                        <googleJavaFormat>
+                            <version>1.26.0</version>
+                            <style>GOOGLE</style>
+                            <reflowLongStrings>true</reflowLongStrings>
+                            <formatJavadoc>true</formatJavadoc>
+                        </googleJavaFormat>
+
+                        <eclipse />
+                        <eclipse>
+                            <sortMembersOrder>SF,SI,SM,F,I,C,M,T</sortMembersOrder>
+                            <sortMembersVisibilityOrderEnabled>true</sortMembersVisibilityOrderEnabled>
+                            <sortMembersVisibilityOrder>V,R,D,B</sortMembersVisibilityOrder>
+                        </eclipse>
+
+                        <importOrder />
+                        <importOrder>
+                            <wildcardsLast>false</wildcardsLast>
+                            <order>java,javax,com.sun,com.oracle,org.w3c,org.xml,org.apache,org.jetbrains,com.intellij,com.github.hanzm_10.murico</order>
+                            <semanticSort>true</semanticSort>
+                        </importOrder>
+
+                        <removeUnusedImports />
+
+                        <formatAnnotations />
                         <licenseHeader>
                             <file>${project.basedir}/LICENSE</file>
                         </licenseHeader>

@@ -17,48 +17,66 @@ import java.awt.Color;
 
 import javax.swing.JPanel;
 
-import com.github.hanzm_10.murico.swingapp.scenes.Scene;
-import com.github.hanzm_10.murico.swingapp.scenes.SceneNavigator;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.Scene;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactoy;
 
 public class MainScene implements Scene {
-    private JPanel view;
+	private JPanel view;
 
-    public MainScene() {
-    }
+	public MainScene() {
+	}
 
-    @Override
-    public String getName() {
-        return "main";
-    }
+	@Override
+	public String getName() {
+		return "main";
+	}
 
-    @Override
-    public JPanel getView() {
-        return view == null ? (view = new JPanel()) : view;
-    }
+	@Override
+	public JPanel getView() {
+		return view == null ? (view = new JPanel()) : view;
+	}
 
-    @Override
-    public void onCreate() {
-        System.out.println(ButtonStyles.PRIMARY.getBackgroundColor());
-        var button = StyledButtonFactoy.createButton("Login", ButtonStyles.PRIMARY);
+	@Override
+	public boolean onCreate() {
+		System.out.println(ButtonStyles.PRIMARY.getBackgroundColor());
+		var button = StyledButtonFactoy.createButton("Login", ButtonStyles.PRIMARY);
 
-        button.addActionListener(_ -> {
-            SceneNavigator.navigateTo("auth/login");
-        });
+		button.addActionListener(_ -> {
+		});
 
-        button.setForeground(Color.WHITE);
+		button.setForeground(Color.WHITE);
 
-        view.add(button);
-    }
+		view.add(button);
 
-    @Override
-    public void onHide() {
-        // TODO Auto-generated method stub
-    }
+		return true;
+	}
 
-    @Override
-    public void onShow() {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void onHide() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onShow() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean onBeforeHide() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onBeforeShow() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onDestroy() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

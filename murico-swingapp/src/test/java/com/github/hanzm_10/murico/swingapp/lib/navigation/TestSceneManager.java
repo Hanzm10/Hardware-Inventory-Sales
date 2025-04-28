@@ -11,19 +11,50 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.scenes.inventory;
+package com.github.hanzm_10.murico.swingapp.lib.navigation;
+
+import java.awt.Dimension;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
-public class InventoryTest {
+public class TestSceneManager {
+
 	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		InventoryScene scene = new InventoryScene();
-		frame.add(scene);
-		scene.onCreate();
-		frame.setDefaultCloseOperation(2);
+		var frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Test Scene Manager");
+		SceneManager sceneManager = new SceneManager();
+
+		sceneManager.registerScene("TestDummyScene/1", _ -> new TestDummyScene(0, _ -> {
+			SwingUtilities.invokeLater(() -> {
+				sceneManager.navigateTo("TestDummyScene/2");
+			});
+		}));
+
+		sceneManager.registerScene("TestDummyScene/2", _ -> new TestDummyScene(1, _ -> {
+			SwingUtilities.invokeLater(() -> {
+				sceneManager.navigateTo("TestDummyScene/3");
+			});
+		}));
+
+		sceneManager.registerScene("TestDummyScene/3", _ -> new TestDummyScene(2, _ -> {
+			SwingUtilities.invokeLater(() -> {
+				sceneManager.navigateTo("TestDummyScene/1");
+			});
+		}));
+
+		var rootContainer = sceneManager.getRootContainer();
+
+		rootContainer.setPreferredSize(new Dimension(1280, 720));
+
+		frame.add(rootContainer);
 		frame.pack();
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		scene.onShow();
+
+		SwingUtilities.invokeLater(() -> {
+			sceneManager.navigateTo("TestDummyScene/1");
+		});
 	}
 }

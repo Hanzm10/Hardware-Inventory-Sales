@@ -13,49 +13,32 @@
  */
 package com.github.hanzm_10.murico.swingapp.ui;
 
-import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
-import com.github.hanzm_10.murico.swingapp.scenes.SceneManager;
-import com.github.hanzm_10.murico.swingapp.scenes.SceneNavigator;
-import com.github.hanzm_10.murico.swingapp.scenes.auth.AuthScene;
 
 public class MainFrame extends JFrame {
 
-    private class MainFrameWindowListener extends WindowAdapter {
-        @Override
-        public void windowClosing(WindowEvent e) {
-            // TODO: If a user is performing a task, ask if they want to save their progress
-            // before closing the application
-            dispose();
-        }
-    }
+	private class MainFrameWindowListener extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			// TODO: If a user is performing a task, ask if they want to save their progress
+			// before closing the application
+			dispose();
+		}
+	}
 
-    public MainFrame() {
-        addWindowListener(new MainFrameWindowListener());
+	public MainFrame() {
+		addWindowListener(new MainFrameWindowListener());
 
-        setTitle(Metadata.APP_TITLE + " " + Metadata.APP_VERSION);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setTitle(Metadata.APP_TITLE + " " + Metadata.APP_VERSION);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        var sceneManager = new SceneManager();
-
-        sceneManager.registerDynamic("auth", _ -> new AuthScene(), AuthScene.authSceneGuard);
-
-        SceneNavigator.setSceneManager(sceneManager);
-
-        var rootContainer = sceneManager.getRootContainer();
-
-        rootContainer.setPreferredSize(new Dimension(1280, 768));
-
-        add(rootContainer);
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-
-        sceneManager.navigateTo("auth");
-    }
+		pack();
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
 }

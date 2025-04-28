@@ -15,7 +15,7 @@ package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
 import javax.swing.JPanel;
 
-import com.github.hanzm_10.murico.swingapp.scenes.Scene;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.Scene;
 
 public class RegisterScene implements Scene {
 	private JPanel view;
@@ -34,8 +34,9 @@ public class RegisterScene implements Scene {
 	}
 
 	@Override
-	public void onCreate() {
+	public boolean onCreate() {
 		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
@@ -46,5 +47,23 @@ public class RegisterScene implements Scene {
 	@Override
 	public void onShow() {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean onBeforeHide() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onBeforeShow() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onDestroy() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

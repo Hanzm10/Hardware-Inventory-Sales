@@ -15,36 +15,54 @@ package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
 import javax.swing.JPanel;
 
-import com.github.hanzm_10.murico.swingapp.scenes.Scene;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.Scene;
 
 public class LoginScene implements Scene {
-    private JPanel view;
+	private JPanel view;
 
-    public LoginScene() {
-    }
+	public LoginScene() {
+	}
 
-    @Override
-    public String getName() {
-        return "login";
-    }
+	@Override
+	public String getName() {
+		return "login";
+	}
 
-    @Override
-    public JPanel getView() {
-        return view == null ? (view = new JPanel()) : view;
-    }
+	@Override
+	public JPanel getView() {
+		return view == null ? (view = new JPanel()) : view;
+	}
 
-    @Override
-    public void onCreate() {
-    }
+	@Override
+	public boolean onCreate() {
+		return false;
+	}
 
-    @Override
-    public void onHide() {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void onHide() {
+		// TODO Auto-generated method stub
+	}
 
-    @Override
-    public void onShow() {
-        System.out.println("LoginScene onShow");
-    }
+	@Override
+	public void onShow() {
+		System.out.println("LoginScene onShow");
+	}
 
+	@Override
+	public boolean onBeforeHide() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onBeforeShow() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onDestroy() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

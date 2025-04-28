@@ -11,54 +11,68 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.lib.cache;
+package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.ActionListener;
 
-import com.github.hanzm_10.murico.swingapp.lib.observer.Observer;
-import com.github.hanzm_10.murico.swingapp.lib.observer.Subscriber;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
-/** Useful for observing the LRU cache when it evicts an item. */
-public class ObserverLRU<K, V> extends LRU<K, V> implements Observer<V> {
-	protected List<Subscriber<V>> subscribers;
+public class TestDummyScene implements Scene {
+	JPanel view;
+	JLabel label;
+	JButton button;
 
-	public ObserverLRU(int capacity) {
-		super(capacity);
+	int count;
 
-		subscribers = new ArrayList<>();
+	ActionListener actionListener;
+
+	public TestDummyScene(int count, ActionListener actionListener) {
+		this.actionListener = actionListener;
+		this.count = count;
 	}
 
 	@Override
-	protected V trimCache() {
-		var val = super.trimCache();
-		notifySubscribers(val);
-
-		return val;
+	public String getName() {
+		return "TestDummyScene/" + (count + 1);
 	}
 
 	@Override
-	public void notifySubscribers(V value) {
-		for (var subscriber : subscribers) {
-			subscriber.notify(value);
-		}
+	public JPanel getView() {
+		return view == null ? (view = new JPanel()) : view;
 	}
 
 	@Override
-	public void subscribe(Subscriber<V> subscriber) {
-		if (subscribers.contains(subscriber)) {
-			return;
-		}
+	public boolean onCreate() {
+		label = new JLabel("Test Dummy Scene " + count);
+		label.setBounds(0, 0, 200, 50);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
 
-		subscribers.add(subscriber);
+		button = new JButton("Go to next scene");
+		button.setBounds(0, 50, 200, 50);
+		button.addActionListener(actionListener);
+
+		view.add(label);
+		view.add(button);
+
+		return true;
 	}
 
 	@Override
-	public void unsubscribe(Subscriber<V> subscriber) {
-		if (!subscribers.contains(subscriber)) {
-			return;
-		}
+	public void onShow() {
+	}
 
-		subscribers.remove(subscriber);
+	@Override
+	public boolean onDestroy() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onHide() {
+		// TODO Auto-generated method stub
+
 	}
 }

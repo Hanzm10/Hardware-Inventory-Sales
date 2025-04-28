@@ -11,54 +11,71 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.lib.cache;
+package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Logger;
 
-import com.github.hanzm_10.murico.swingapp.lib.observer.Observer;
-import com.github.hanzm_10.murico.swingapp.lib.observer.Subscriber;
+import javax.swing.JPanel;
 
-/** Useful for observing the LRU cache when it evicts an item. */
-public class ObserverLRU<K, V> extends LRU<K, V> implements Observer<V> {
-	protected List<Subscriber<V>> subscribers;
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
-	public ObserverLRU(int capacity) {
-		super(capacity);
+public class SceneWrapper implements Scene {
+	private static final Logger LOGGER = MuricoLogger.getLogger(Scene.class);
+	private final Scene scene;
 
-		subscribers = new ArrayList<>();
+	public SceneWrapper(Scene scene) {
+		this.scene = scene;
 	}
 
 	@Override
-	protected V trimCache() {
-		var val = super.trimCache();
-		notifySubscribers(val);
-
-		return val;
+	public JPanel getView() {
+		return scene.getView();
 	}
 
 	@Override
-	public void notifySubscribers(V value) {
-		for (var subscriber : subscribers) {
-			subscriber.notify(value);
-		}
+	public String getName() {
+		return scene.getName();
 	}
 
 	@Override
-	public void subscribe(Subscriber<V> subscriber) {
-		if (subscribers.contains(subscriber)) {
-			return;
-		}
+	public boolean onDestroy() {
+		LOGGER.info("onDestroy: " + scene.getName());
 
-		subscribers.add(subscriber);
+		return scene.onDestroy();
 	}
 
 	@Override
-	public void unsubscribe(Subscriber<V> subscriber) {
-		if (!subscribers.contains(subscriber)) {
-			return;
-		}
+	public boolean onBeforeHide() {
+		LOGGER.info("onBeforeHide: " + scene.getName());
 
-		subscribers.remove(subscriber);
+		return scene.onBeforeHide();
+	}
+
+	@Override
+	public boolean onBeforeShow() {
+		LOGGER.info("onBeforeShow: " + scene.getName());
+
+		return scene.onBeforeShow();
+	}
+
+	@Override
+	public boolean onCreate() {
+		LOGGER.info("onCreate: " + scene.getName());
+
+		return scene.onCreate();
+	}
+
+	@Override
+	public void onShow() {
+		LOGGER.info("onShow: " + scene.getName());
+
+		scene.onShow();
+	}
+
+	@Override
+	public void onHide() {
+		LOGGER.info("onHide: " + scene.getName());
+
+		scene.onHide();
 	}
 }

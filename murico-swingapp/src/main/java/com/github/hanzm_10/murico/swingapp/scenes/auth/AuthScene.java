@@ -18,75 +18,92 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
-import com.github.hanzm_10.murico.swingapp.scenes.Scene;
-import com.github.hanzm_10.murico.swingapp.scenes.Scene.SubSceneSupport;
-import com.github.hanzm_10.murico.swingapp.scenes.SceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.Scene;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.SubSceneSupport;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 
 public class AuthScene implements Scene, SubSceneSupport {
-    private static class AuthSceneGuard implements SceneManager.RouteGuard {
-        @Override
-        public boolean canAccess(Map<String, String> params) {
-            return true;
-        }
-    }
+	private static class AuthSceneGuard implements SceneGuard {
+		@Override
+		public boolean canAccess(Map<String, String> params) {
+			return true;
+		}
+	}
 
-    private static final Logger LOGGER = MuricoLogger.getLogger(AuthScene.class);
-    public static final AuthSceneGuard authSceneGuard = new AuthSceneGuard();
+	private static final Logger LOGGER = MuricoLogger.getLogger(AuthScene.class);
+	public static final AuthSceneGuard authSceneGuard = new AuthSceneGuard();
 
-    private JPanel view;
-    private SceneManager subSceneManager;
+	private SceneManager subSceneManager = new SceneManager();
 
-    public AuthScene() {
-        subSceneManager = new SceneManager();
+	private JPanel view;
 
-        subSceneManager.registerDynamic("main", _ -> new MainScene(), authSceneGuard);
-        subSceneManager.registerDynamic("login", _ -> new LoginScene(), authSceneGuard);
-        subSceneManager.registerDynamic("register", _ -> new RegisterScene(), authSceneGuard);
-    }
+	public AuthScene() {
+		subSceneManager.registerScene("main", _ -> new MainScene(), authSceneGuard);
+		subSceneManager.registerScene("login", _ -> new LoginScene(), authSceneGuard);
+		subSceneManager.registerScene("register", _ -> new RegisterScene(), authSceneGuard);
+	}
 
-    @Override
-    public String getName() {
-        return "auth";
-    }
+	@Override
+	public String getName() {
+		return "auth";
+	}
 
-    @Override
-    public SceneManager getSubSceneManager() {
-        return subSceneManager;
-    }
+	@Override
+	public SceneManager getSubSceneManager() {
+		return subSceneManager;
+	}
 
-    @Override
-    public JPanel getView() {
-        return view == null ? (view = new JPanel()) : view;
-    }
+	@Override
+	public JPanel getView() {
+		return view == null ? (view = new JPanel()) : view;
+	}
 
-    @Override
-    public void onCreate() {
-        if (view == null) {
-            LOGGER.severe("AuthScene view is null");
-            return;
-        }
+	@Override
+	public boolean onCreate() {
+		if (view == null) {
+			LOGGER.severe("AuthScene view is null");
+			return false;
+		}
 
-        view.add(subSceneManager.getRootContainer());
-        subSceneManager.navigateTo("main");
-    }
+		view.add(subSceneManager.getRootContainer());
+		subSceneManager.navigateTo("main");
 
-    @Override
-    public void onDestroy() {
-    }
+		return true;
+	}
 
-    @Override
-    public void onHide() {
-    }
+	@Override
+	public boolean onDestroy() {
+		return false;
+	}
 
-    @Override
-    public void onShow() {
-    }
+	@Override
+	public void onHide() {
+	}
 
-    @Override
-    public void showSubScene(String path) throws IllegalArgumentException {
-        // No need to check for more nested sub scenes
-        // since auth's sub scenes doesn't have any.
-        subSceneManager.navigateTo(path);
-    }
+	@Override
+	public void onShow() {
+	}
+
+	@Override
+	public boolean navigateTo(@NotNull final String sceneName) throws IllegalArgumentException, IllegalStateException {
+		// No need to check for more nested sub scenes
+		// since auth's sub scenes doesn't have any.
+		return subSceneManager.navigateTo(sceneName);
+	}
+
+	@Override
+	public boolean onBeforeHide() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onBeforeShow() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
