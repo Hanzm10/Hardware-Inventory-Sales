@@ -17,28 +17,65 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
+import com.github.hanzm_10.murico.swingapp.constants.Styles;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
+import com.github.hanzm_10.murico.swingapp.scenes.LoggedInScene;
+import com.github.hanzm_10.murico.swingapp.scenes.LoggedOutScene;
+import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+
+import net.miginfocom.swing.MigLayout;
 
 public class MainFrame extends JFrame {
 
-    private class MainFrameWindowListener extends WindowAdapter {
-        @Override
-        public void windowClosing(WindowEvent e) {
-            // TODO: If a user is performing a task, ask if they want to save their progress
-            // before closing the application
-            dispose();
-        }
-    }
+	private class MainFrameWindowListener extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			// TODO: If a user is performing a task, ask if they want to save their progress
+			// before closing the application
+			dispose();
+		}
+	}
 
-    public MainFrame() {
-        addWindowListener(new MainFrameWindowListener());
+	public MainFrame() {
+		addWindowListener(new MainFrameWindowListener());
 
-        setTitle(Metadata.APP_TITLE + " " + Metadata.APP_VERSION);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setTitle(Metadata.APP_TITLE + " " + Metadata.APP_VERSION);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
+		initSceneManager();
+
+		pack();
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+
+	private void initSceneManager() {
+		var sceneManager = new StaticSceneManager();
+
+		sceneManager.registerScene("auth", () -> new LoggedOutScene(), LoggedOutScene.GUARD);
+		sceneManager.registerScene("home", () -> new LoggedInScene(), LoggedOutScene.GUARD);
+
+		SceneNavigator.initialize(sceneManager);
+
+		if (SessionManager.getInstance().getSession() == null) {
+			SceneNavigator.navigateTo("auth");
+		} else {
+			SceneNavigator.navigateTo("home");
+		}
+
+		var rootContainer = sceneManager.getRootContainer();
+		var wrapper = new JPanel();
+
+		wrapper.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
+		wrapper.setPreferredSize(Styles.DEFAULT_DIMENSIONS);
+		wrapper.setSize(Styles.DEFAULT_DIMENSIONS);
+
+		wrapper.add(rootContainer, "cell 0 0");
+
+		add(wrapper);
+	}
 }

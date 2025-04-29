@@ -30,43 +30,43 @@ import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.ui.MainFrame;
 
 public class MuricoSwingApp {
-    private static final Logger LOGGER = MuricoLogger.getLogger(MuricoSwingApp.class);
+	private static final Logger LOGGER = MuricoLogger.getLogger(MuricoSwingApp.class);
 
-    private static void createAndShowGUI() {
-        var isSuccessful = MuricoLightFlatLaf.setup();
+	private static void createAndShowGUI() {
+		var isSuccessful = MuricoLightFlatLaf.setup();
 
-        if (!isSuccessful) {
-            LOGGER.log(Level.SEVERE, "Failed to setup MuricoLightFlatLaf for some reason");
-            LOGGER.log(Level.SEVERE, "Using default L&F");
-        }
+		if (!isSuccessful) {
+			LOGGER.log(Level.SEVERE, "Failed to setup MuricoLightFlatLaf for some reason");
+			LOGGER.log(Level.SEVERE, "Using default L&F");
+		}
 
-        var _ = new MainFrame();
-    }
+		new MainFrame();
+	}
 
-    private static boolean doDevelopmentSetup() {
-        return true;
-    }
+	private static boolean doDevelopmentSetup() {
+		return true;
+	}
 
-    public static void main(String[] args) {
-        if (Metadata.APP_ENV.equals("development")) {
-            if (!doDevelopmentSetup()) {
-                LOGGER.log(Level.SEVERE, "Failed to setup development environment");
-                return;
-            }
-        }
+	public static void main(String[] args) {
+		if (Metadata.APP_ENV.equals("development")) {
+			if (!doDevelopmentSetup()) {
+				LOGGER.log(Level.SEVERE, "Failed to setup development environment");
+				return;
+			}
+		}
 
-        Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
-        SwingUtilities.invokeLater(() -> {
-            FileUtils.createDirectoryIfNotExists(Directories.CONFIG_DIRECTORY);
-            FileUtils.createDirectoryIfNotExists(Directories.LOGS_DIRECTORY);
+		Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
+		SwingUtilities.invokeLater(() -> {
+			FileUtils.createDirectoryIfNotExists(Directories.CONFIG_DIRECTORY);
+			FileUtils.createDirectoryIfNotExists(Directories.LOGS_DIRECTORY);
 
-            try {
-                SessionService.checkPreviousSessionAndStoreInSessionManager();
-                createAndShowGUI();
-            } catch (IOException | SQLException e) {
-                // TODO: Probably don't start the app if this happens
-                LOGGER.log(Level.SEVERE, "Failed to load previous session", e);
-            }
-        });
-    }
+			try {
+				SessionService.checkPreviousSessionAndStoreInSessionManager();
+				createAndShowGUI();
+			} catch (IOException | SQLException e) {
+				// TODO: Probably don't start the app if this happens
+				LOGGER.log(Level.SEVERE, "Failed to load previous session", e);
+			}
+		});
+	}
 }
