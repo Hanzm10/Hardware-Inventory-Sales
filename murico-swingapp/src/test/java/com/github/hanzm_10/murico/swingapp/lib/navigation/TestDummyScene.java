@@ -20,59 +20,59 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+
 public class TestDummyScene implements Scene {
-	JPanel view;
-	JLabel label;
-	JButton button;
+    JPanel view;
+    JLabel label;
+    JButton button;
 
-	int count;
+    int count;
 
-	ActionListener actionListener;
+    ActionListener actionListener;
 
-	public TestDummyScene(int count, ActionListener actionListener) {
-		this.actionListener = actionListener;
-		this.count = count;
-	}
+    public TestDummyScene(int count, ActionListener actionListener) {
+        this.actionListener = actionListener;
+        this.count = count;
+    }
 
-	@Override
-	public String getName() {
-		return "TestDummyScene/" + (count + 1);
-	}
+    @Override
+    public String getSceneName() {
+        return "test" + count;
+    }
 
-	@Override
-	public JPanel getView() {
-		return view == null ? (view = new JPanel()) : view;
-	}
+    @Override
+    public JPanel getSceneView() {
+        return view == null ? (view = new JPanel()) : view;
+    }
 
-	@Override
-	public boolean onCreate() {
-		label = new JLabel("Test Dummy Scene " + count);
-		label.setBounds(0, 0, 200, 50);
-		label.setHorizontalAlignment(SwingConstants.CENTER);
+    @Override
+    public void onCreate() {
+        label = new JLabel("Test Dummy Scene " + count);
+        label.setBounds(0, 0, 200, 50);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
 
-		button = new JButton("Go to next scene");
-		button.setBounds(0, 50, 200, 50);
-		button.addActionListener(actionListener);
+        button = new JButton("Go to next scene");
+        button.setBounds(0, 50, 200, 50);
+        button.addActionListener(actionListener);
 
-		view.add(label);
-		view.add(button);
+        view.add(label);
+        view.add(button);
+    }
 
-		return true;
-	}
+    @Override
+    public void onShow() {
+    }
 
-	@Override
-	public void onShow() {
-	}
+    @Override
+    public boolean onDestroy() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean onDestroy() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public void onHide() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void onHide() {
-		// TODO Auto-generated method stub
-
-	}
+    }
 }

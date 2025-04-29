@@ -21,44 +21,52 @@ import com.github.hanzm_10.murico.swingapp.lib.observer.Subscriber;
 
 /** Useful for observing the LRU cache when it evicts an item. */
 public class ObserverLRU<K, V> extends LRU<K, V> implements Observer<V> {
-	protected List<Subscriber<V>> subscribers;
+    protected List<Subscriber<V>> subscribers;
 
-	public ObserverLRU(int capacity) {
-		super(capacity);
+    public ObserverLRU(int capacity) {
+        super(capacity);
 
-		subscribers = new ArrayList<>();
-	}
+        subscribers = new ArrayList<>();
+    }
 
-	@Override
-	protected V trimCache() {
-		var val = super.trimCache();
-		notifySubscribers(val);
+    @Override
+    public synchronized V remove(K key) {
+        var val = super.remove(key);
+        notifySubscribers(val);
 
-		return val;
-	}
+        return val;
+    }
 
-	@Override
-	public void notifySubscribers(V value) {
-		for (var subscriber : subscribers) {
-			subscriber.notify(value);
-		}
-	}
+    @Override
+    protected V trimCache() {
+        var val = super.trimCache();
+        notifySubscribers(val);
 
-	@Override
-	public void subscribe(Subscriber<V> subscriber) {
-		if (subscribers.contains(subscriber)) {
-			return;
-		}
+        return val;
+    }
 
-		subscribers.add(subscriber);
-	}
+    @Override
+    public void notifySubscribers(V value) {
+        for (var subscriber : subscribers) {
+            subscriber.notify(value);
+        }
+    }
 
-	@Override
-	public void unsubscribe(Subscriber<V> subscriber) {
-		if (!subscribers.contains(subscriber)) {
-			return;
-		}
+    @Override
+    public void subscribe(Subscriber<V> subscriber) {
+        if (subscribers.contains(subscriber)) {
+            return;
+        }
 
-		subscribers.remove(subscriber);
-	}
+        subscribers.add(subscriber);
+    }
+
+    @Override
+    public void unsubscribe(Subscriber<V> subscriber) {
+        if (!subscribers.contains(subscriber)) {
+            return;
+        }
+
+        subscribers.remove(subscriber);
+    }
 }

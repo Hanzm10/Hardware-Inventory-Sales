@@ -15,66 +15,58 @@ package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * This class manages the navigation between different scenes in a Java Swing
- * application. This is a global class that is used to navigate between scenes
- * for ease of use.
- *
- * <p>
- * It uses {@link SceneManager} to switch between scenes.
- */
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
+
 public class SceneNavigator {
-	private static SceneManager sceneManager;
-	private static boolean isInitialized = false;
+    private static SceneManager sceneManager;
+    private static boolean isInitialized = false;
 
-	public static void initialize(@NotNull final SceneManager manager) {
-		if (isInitialized) {
-			throw new IllegalStateException("SceneNavigator is already initialized.");
-		}
+    public static void initialize(@NotNull final SceneManager manager) {
+        if (isInitialized) {
+            throw new IllegalStateException("SceneNavigator is already initialized.");
+        }
 
-		sceneManager = manager;
-		isInitialized = true;
-	}
+        sceneManager = manager;
+        isInitialized = true;
+    }
 
-	/**
-	 * Navigates to the specified scene. This method is a global method that can be
-	 * used to navigate to any scene in the application.
-	 *
-	 * @param sceneName
-	 *            The name of the scene to navigate to.
-	 * @return {@code true} if the navigation was successful, {@code false}
-	 *         otherwise.
-	 * @throws IllegalStateException
-	 *             If the SceneNavigator is not initialized or if this is called
-	 *             from a non-EDT thread.
-	 * @throws IllegalArgumentException
-	 *             If the sceneName is null or empty or if the {@code sceneName} is
-	 *             not registered.
-	 */
-	public static boolean navigateTo(@NotNull final String sceneName)
-			throws IllegalStateException, IllegalArgumentException {
-		if (!isInitialized) {
-			throw new IllegalStateException("SceneNavigator is not initialized.");
-		}
+    /**
+     * <p>
+     * This method is useful to globally navigate to a scene. It will throw an
+     * exception if the scene is not registered or if the scene is not a valid
+     * scene.
+     * 
+     * The <code>sceneName</code> has the format of
+     * <code>[parentSceneName]/[subSceneName]/...</code> and the scene name must be
+     * registered in the {@link SceneManager}. Each [parentSceneName]'s respective
+     * scene must handle the [subSceneName] in its own {@link SceneManager}.
+     * </p>
+     * 
+     * Navigates to the specified scene. This method will throw an exception if the
+     * scene is not registered or if the scene is not a valid scene.
+     *
+     * @param sceneName The name of the scene to navigate to.
+     * @throws IllegalArgumentException If the scene name is invalid.
+     * @throws WrongThreadException     If this method is called from a thread other
+     *                                  than the Event Dispatch Thread.
+     * @throws MuricoError              If there is an error while navigating to the
+     *                                  scene.
+     */
+    public static void navigateTo(@NotNull final String sceneName)
+            throws IllegalArgumentException, WrongThreadException, MuricoError {
+        if (!isInitialized) {
+            throw new IllegalStateException("SceneNavigator is not initialized.");
+        }
 
-		var sceneNameParts = sceneName.split("/", 2);
-		var parentSceneName = sceneNameParts[0];
-		var result = sceneManager.navigateTo(parentSceneName);
+        sceneManager.navigateTo(sceneName);
+    }
 
-		if (sceneNameParts.length == 1) {
-			return result;
-		}
+    public static SceneManager getSceneManager() {
+        if (!isInitialized) {
+            throw new IllegalStateException("SceneNavigator is not initialized.");
+        }
 
-		var subSceneName = sceneNameParts[1];
-
-		if (subSceneName == null || subSceneName.isEmpty()) {
-			return false;
-		}
-
-		if (sceneManager.getScene(sceneName) instanceof SubSceneSupport subSceneSupport) {
-			return subSceneSupport.navigateTo(subSceneName);
-		}
-
-		return false;
-	}
+        return sceneManager;
+    }
 }

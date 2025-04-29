@@ -18,43 +18,32 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
+
 public class TestSceneManager {
 
-	public static void main(String[] args) {
-		var frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("Test Scene Manager");
-		SceneManager sceneManager = new SceneManager();
+    public static void main(String[] args) {
+        var frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Test Scene Manager");
+        SceneManager sceneManager = new StaticSceneManager();
 
-		sceneManager.registerScene("TestDummyScene/1", _ -> new TestDummyScene(0, _ -> {
-			SwingUtilities.invokeLater(() -> {
-				sceneManager.navigateTo("TestDummyScene/2");
-			});
-		}));
+        sceneManager.registerScene("TestDummyScene", () -> new TestDummySceneParent());
 
-		sceneManager.registerScene("TestDummyScene/2", _ -> new TestDummyScene(1, _ -> {
-			SwingUtilities.invokeLater(() -> {
-				sceneManager.navigateTo("TestDummyScene/3");
-			});
-		}));
+        SceneNavigator.initialize(sceneManager);
 
-		sceneManager.registerScene("TestDummyScene/3", _ -> new TestDummyScene(2, _ -> {
-			SwingUtilities.invokeLater(() -> {
-				sceneManager.navigateTo("TestDummyScene/1");
-			});
-		}));
+        var rootContainer = sceneManager.getRootContainer();
 
-		var rootContainer = sceneManager.getRootContainer();
+        rootContainer.setPreferredSize(new Dimension(1280, 720));
 
-		rootContainer.setPreferredSize(new Dimension(1280, 720));
+        frame.add(rootContainer);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
 
-		frame.add(rootContainer);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-
-		SwingUtilities.invokeLater(() -> {
-			sceneManager.navigateTo("TestDummyScene/1");
-		});
-	}
+        SwingUtilities.invokeLater(() -> {
+            sceneManager.navigateTo("TestDummyScene");
+        });
+    }
 }

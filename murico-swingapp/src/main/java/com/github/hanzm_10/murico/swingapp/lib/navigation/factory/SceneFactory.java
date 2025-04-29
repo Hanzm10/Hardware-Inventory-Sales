@@ -13,26 +13,21 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.navigation.factory;
 
-import java.util.Map;
-
-import com.github.hanzm_10.murico.swingapp.lib.navigation.Scene;
-import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 
 /**
- * Useful for lazy loading scenes or for creating scenes with specific
- * configurations.
+ * Useful for lazy loading scenes
  *
  * @see Scene
  * @see SceneManager
  */
 @FunctionalInterface
 public interface SceneFactory {
-	/**
-	 * Creates a new scene with the specified parameters.
-	 *
-	 * @param params
-	 *            The parameters to configure the scene.
-	 * @return A new instance of the scene.
-	 */
-	Scene createScene(Map<String, String> params);
+    /**
+     * Creates a new scene with the specified parameters.
+     *
+     * @return A new instance of the scene.
+     */
+    Scene createScene();
 }

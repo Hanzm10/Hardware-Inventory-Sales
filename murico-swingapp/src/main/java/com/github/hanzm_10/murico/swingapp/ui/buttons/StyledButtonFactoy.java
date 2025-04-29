@@ -13,7 +13,8 @@
  */
 package com.github.hanzm_10.murico.swingapp.ui.buttons;
 
-import javax.swing.BorderFactory;
+import java.awt.Dimension;
+
 import javax.swing.JButton;
 
 public class StyledButtonFactoy {
@@ -22,7 +23,13 @@ public class StyledButtonFactoy {
 
         button.setBackground(buttonStyle.getBackgroundColor());
         button.setForeground(buttonStyle.getForegroundColor());
-        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        return button;
+    }
+
+    public static JButton createButton(String text, ButtonStyles buttonStyle, int width, int height) {
+        var button = createButton(text, buttonStyle);
+        button.setPreferredSize(new Dimension(width, height));
 
         return button;
     }
