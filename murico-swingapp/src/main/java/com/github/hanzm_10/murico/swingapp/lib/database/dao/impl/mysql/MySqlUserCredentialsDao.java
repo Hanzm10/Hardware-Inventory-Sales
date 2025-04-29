@@ -31,7 +31,7 @@ public class MySqlUserCredentialsDao implements UserCredentialsDao {
     @Override
     public String getUserPasswordByUserDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException {
         String userPassword = null;
-        var query = MySqlQueryLoader.getInstance().get("user_credentials", "select_user_password_by_display_name",
+        var query = MySqlQueryLoader.getInstance().get("select_user_password_by_display_name", "user_credentials" ,
                 SqlQueryType.SELECT);
 
         try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
