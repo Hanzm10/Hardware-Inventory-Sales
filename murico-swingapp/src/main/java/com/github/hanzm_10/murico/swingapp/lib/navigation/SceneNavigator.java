@@ -19,54 +19,55 @@ import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 
 public class SceneNavigator {
-    private static SceneManager sceneManager;
-    private static boolean isInitialized = false;
+	private static SceneManager sceneManager;
+	private static boolean isInitialized = false;
 
-    public static void initialize(@NotNull final SceneManager manager) {
-        if (isInitialized) {
-            throw new IllegalStateException("SceneNavigator is already initialized.");
-        }
+	public static void initialize(@NotNull final SceneManager manager) {
+		if (isInitialized) {
+			throw new IllegalStateException("SceneNavigator is already initialized.");
+		}
 
-        sceneManager = manager;
-        isInitialized = true;
-    }
+		sceneManager = manager;
+		isInitialized = true;
+	}
 
-    /**
-     * <p>
-     * This method is useful to globally navigate to a scene. It will throw an
-     * exception if the scene is not registered or if the scene is not a valid
-     * scene.
-     * 
-     * The <code>sceneName</code> has the format of
-     * <code>[parentSceneName]/[subSceneName]/...</code> and the scene name must be
-     * registered in the {@link SceneManager}. Each [parentSceneName]'s respective
-     * scene must handle the [subSceneName] in its own {@link SceneManager}.
-     * </p>
-     * 
-     * Navigates to the specified scene. This method will throw an exception if the
-     * scene is not registered or if the scene is not a valid scene.
-     *
-     * @param sceneName The name of the scene to navigate to.
-     * @throws IllegalArgumentException If the scene name is invalid.
-     * @throws WrongThreadException     If this method is called from a thread other
-     *                                  than the Event Dispatch Thread.
-     * @throws MuricoError              If there is an error while navigating to the
-     *                                  scene.
-     */
-    public static void navigateTo(@NotNull final String sceneName)
-            throws IllegalArgumentException, WrongThreadException, MuricoError {
-        if (!isInitialized) {
-            throw new IllegalStateException("SceneNavigator is not initialized.");
-        }
+	/**
+	 * This method is useful to globally navigate to a scene. It will throw an
+	 * exception if the scene is not registered or if the scene is not a valid
+	 * scene.
+	 *
+	 * <p>
+	 * The <code>sceneName</code> has the format of
+	 * <code>[parentSceneName]/[subSceneName]/...
+	 * </code> and the scene name must be registered in the {@link SceneManager}.
+	 * Each [parentSceneName]'s respective scene must handle the [subSceneName] in
+	 * its own {@link SceneManager}. Navigates to the specified scene. This method
+	 * will throw an exception if the scene is not registered or if the scene is not
+	 * a valid scene.
+	 *
+	 * @param sceneName
+	 *            The name of the scene to navigate to.
+	 * @throws IllegalArgumentException
+	 *             If the scene name is invalid.
+	 * @throws WrongThreadException
+	 *             If this method is called from a thread other than the Event
+	 *             Dispatch Thread.
+	 * @throws MuricoError
+	 *             If there is an error while navigating to the scene.
+	 */
+	public static void navigateTo(@NotNull final String sceneName) {
+		if (!isInitialized) {
+			throw new IllegalStateException("SceneNavigator is not initialized.");
+		}
 
-        sceneManager.navigateTo(sceneName);
-    }
+		sceneManager.navigateTo(sceneName);
+	}
 
-    public static SceneManager getSceneManager() {
-        if (!isInitialized) {
-            throw new IllegalStateException("SceneNavigator is not initialized.");
-        }
+	public static SceneManager getSceneManager() {
+		if (!isInitialized) {
+			throw new IllegalStateException("SceneNavigator is not initialized.");
+		}
 
-        return sceneManager;
-    }
+		return sceneManager;
+	}
 }
