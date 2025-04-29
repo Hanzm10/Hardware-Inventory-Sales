@@ -17,17 +17,17 @@ import com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.ErrorInter
 
 public class SqlCommunicationErrorInterpreter implements ErrorInterpreter {
 
-	@Override
-	public boolean canInterpret(Throwable e) {
-		return e instanceof java.sql.SQLException && e.getMessage() != null
-				&& e.getMessage().contains("Communications link failure");
-	}
+    @Override
+    public boolean canInterpret(Throwable e) {
+        return e instanceof java.sql.SQLException && e.getMessage() != null
+                && e.getMessage().contains("Communications link failure");
+    }
 
-	@Override
-	public String interpret(Throwable e) {
-		return "Cannot connect to the database.\n"
-				+ "There might be invalid database credentials in the configuration file.\n"
-				+ " Please check your connection settings in"
-				+ " (src/main/resources/com/github/hanzm_10/murico/swingapp/lib/database).";
-	}
+    @Override
+    public String interpret(Throwable e) {
+        return "Cannot connect to the database.\n"
+                + "There might be invalid database credentials in the configuration file.\n"
+                + " Please check your connection settings in"
+                + " (src/main/resources/com/github/hanzm_10/murico/swingapp/lib/database).";
+    }
 }
