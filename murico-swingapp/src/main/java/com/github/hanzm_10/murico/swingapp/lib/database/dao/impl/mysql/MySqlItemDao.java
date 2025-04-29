@@ -66,6 +66,6 @@ public class MySqlItemDao implements InventoryDao {
 			
 					
 		}
-		return item;
+		return null;
 	}
 }
