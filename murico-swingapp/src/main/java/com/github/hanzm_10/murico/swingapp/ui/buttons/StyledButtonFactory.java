@@ -17,20 +17,20 @@ import java.awt.Dimension;
 
 import javax.swing.JButton;
 
-public class StyledButtonFactoy {
-    public static JButton createButton(String text, ButtonStyles buttonStyle) {
-        var button = new JButton(text);
+public class StyledButtonFactory {
+	public static JButton createButton(String text, ButtonStyles buttonStyle) {
+		var button = new JButton(text);
 
-        button.setBackground(buttonStyle.getBackgroundColor());
-        button.setForeground(buttonStyle.getForegroundColor());
+		button.setBackground(buttonStyle.getBackgroundColor());
+		button.setForeground(buttonStyle.getForegroundColor());
 
-        return button;
-    }
+		return button;
+	}
 
-    public static JButton createButton(String text, ButtonStyles buttonStyle, int width, int height) {
-        var button = createButton(text, buttonStyle);
-        button.setPreferredSize(new Dimension(width, height));
+	public static JButton createButton(String text, ButtonStyles buttonStyle, int width, int height) {
+		var button = createButton(text, buttonStyle);
+		button.setPreferredSize(new Dimension(width, height));
 
-        return button;
-    }
+		return button;
+	}
 }
