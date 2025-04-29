@@ -11,40 +11,39 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.scenes.auth;
+package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
-import javax.swing.JPanel;
+import java.awt.Dimension;
 
-import com.github.hanzm_10.murico.swingapp.scenes.Scene;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
-public class RegisterScene implements Scene {
-	private JPanel view;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
 
-	public RegisterScene() {
-	}
+public class TestSceneManager {
 
-	@Override
-	public String getName() {
-		return "register";
-	}
+    public static void main(String[] args) {
+        var frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Test Scene Manager");
+        SceneManager sceneManager = new StaticSceneManager();
 
-	@Override
-	public JPanel getView() {
-		return view == null ? (view = new JPanel()) : view;
-	}
+        sceneManager.registerScene("TestDummyScene", () -> new TestDummySceneParent());
 
-	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-	}
+        SceneNavigator.initialize(sceneManager);
 
-	@Override
-	public void onHide() {
-		// TODO Auto-generated method stub
-	}
+        var rootContainer = sceneManager.getRootContainer();
 
-	@Override
-	public void onShow() {
-		// TODO Auto-generated method stub
-	}
+        rootContainer.setPreferredSize(new Dimension(1280, 720));
+
+        frame.add(rootContainer);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        SwingUtilities.invokeLater(() -> {
+            sceneManager.navigateTo("TestDummyScene");
+        });
+    }
 }

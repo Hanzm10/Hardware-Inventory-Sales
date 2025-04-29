@@ -27,6 +27,7 @@ The database design is fairly straightforward and small. Refer to this [diagram]
 
 - For design patterns: [Refactoring Guru](https://refactoring.guru/)
 - Data Access Objects for database interactions: [Core J2EE Patterns - Data Access Objects](https://www.oracle.com/java/technologies/dataaccessobject.html)
+- For Regular Expressions or Pattern matching: [Pattern Matching using Regular Expressions](https://knowledge.square-9.com/gc230/pattern-matching-using-regular-expressions)
 
 ## UI/UX Design
 

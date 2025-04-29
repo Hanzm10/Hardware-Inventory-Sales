@@ -14,6 +14,7 @@
 package com.github.hanzm_10.murico.swingapp.constants;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -22,6 +23,8 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 public class Styles {
     private static final Logger LOGGER = MuricoLogger.getLogger(Styles.class);
+
+    public static Dimension DEFAULT_DIMENSIONS;
 
     public static Color PRIMARY_COLOR;
     public static Color PRIMARY_FOREGROUND_COLOR;
@@ -60,6 +63,11 @@ public class Styles {
         } catch (Exception e) {
             LOGGER.warning("Failed to load styles.properties: " + e.getMessage());
         }
+
+        var width = Integer.parseInt(properties.getProperty("size.width"));
+        var height = Integer.parseInt(properties.getProperty("size.height"));
+
+        DEFAULT_DIMENSIONS = new Dimension(width, height);
 
         PRIMARY_COLOR = Color.decode(properties.getProperty("primary.color"));
         PRIMARY_FOREGROUND_COLOR = Color.decode(properties.getProperty("primary.foreground.color"));

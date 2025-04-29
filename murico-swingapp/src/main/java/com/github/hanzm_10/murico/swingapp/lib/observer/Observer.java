@@ -11,40 +11,12 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.scenes.auth;
+package com.github.hanzm_10.murico.swingapp.lib.observer;
 
-import javax.swing.JPanel;
+public interface Observer<V> {
+	void notifySubscribers(V value);
 
-import com.github.hanzm_10.murico.swingapp.scenes.Scene;
+	void subscribe(Subscriber<V> subscriber);
 
-public class LoginScene implements Scene {
-    private JPanel view;
-
-    public LoginScene() {
-    }
-
-    @Override
-    public String getName() {
-        return "login";
-    }
-
-    @Override
-    public JPanel getView() {
-        return view == null ? (view = new JPanel()) : view;
-    }
-
-    @Override
-    public void onCreate() {
-    }
-
-    @Override
-    public void onHide() {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void onShow() {
-        System.out.println("LoginScene onShow");
-    }
-
+	void unsubscribe(Subscriber<V> subscriber);
 }

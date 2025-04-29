@@ -11,34 +11,15 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.ui;
+package com.github.hanzm_10.murico.swingapp.lib.observer;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JFrame;
-
-import com.github.hanzm_10.murico.swingapp.constants.Metadata;
-
-public class MainFrame extends JFrame {
-
-    private class MainFrameWindowListener extends WindowAdapter {
-        @Override
-        public void windowClosing(WindowEvent e) {
-            // TODO: If a user is performing a task, ask if they want to save their progress
-            // before closing the application
-            dispose();
-        }
-    }
-
-    public MainFrame() {
-        addWindowListener(new MainFrameWindowListener());
-
-        setTitle(Metadata.APP_TITLE + " " + Metadata.APP_VERSION);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
+/**
+ * A simple interface for a subscriber in the observer pattern.
+ *
+ * @param <V>
+ *            The type of the value that the subscriber receives.
+ */
+@FunctionalInterface
+public interface Subscriber<V> {
+	void notify(V value);
 }

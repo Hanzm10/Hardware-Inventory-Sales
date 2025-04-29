@@ -14,207 +14,217 @@
 package com.github.hanzm_10.murico.swingapp.lib.cache;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A simple LRU (Least Recently Used) cache implementation.
  *
- * @param <K> The type of the keys in the cache.
- * @param <V> The type of the values in the cache.
+ * @param <K>
+ *            The type of the keys in the cache.
+ * @param <V>
+ *            The type of the values in the cache.
  */
 public class LRU<K, V> {
-    private int length;
-    private int capacity;
+	private int length;
+	private int capacity;
 
-    private Node<V> tail;
-    private Node<V> head;
+	private Node<V> tail;
+	private Node<V> head;
 
-    private HashMap<K, Node<V>> lookup;
-    private HashMap<Node<V>, K> reverseLookup;
+	private HashMap<K, Node<V>> lookup;
+	private HashMap<Node<V>, K> reverseLookup;
 
-    private ArrayList<LRUListener<K, V>> listeners = new ArrayList<>();
+	public LRU(int capacity) {
+		if (capacity <= 0) {
+			throw new IllegalArgumentException("Capacity must be greater than 0");
+		}
 
-    @FunctionalInterface
-    public interface LRUListener<K, V> {
-        void onEvict(K key, V value);
-    }
+		this.capacity = capacity;
 
-    public void addListener(LRUListener<K, V> listener) {
-        listeners.add(listener);
-    }
+		lookup = new HashMap<>();
+		reverseLookup = new HashMap<>();
+	}
 
-    public void removeListener(LRUListener<K, V> listener) {
-        listeners.remove(listener);
-    }
+	public synchronized boolean containsKey(K key) {
+		return lookup.containsKey(key);
+	}
 
-    private void notifyListeners(K key, V value) {
-        for (var listener : listeners) {
-            listener.onEvict(key, value);
-        }
-    }
+	private void detach(Node<V> node) {
+		if (node.prev != null) {
+			node.prev.next = node.next;
+		}
 
-    public LRU(int capacity) {
-        if (capacity <= 0) {
-            throw new IllegalArgumentException("Capacity must be greater than 0");
-        }
+		if (node.next != null) {
+			node.next.prev = node.prev;
+		}
 
-        this.capacity = capacity;
+		if (head == node) {
+			head = head.next;
+		}
 
-        lookup = new HashMap<>();
-        reverseLookup = new HashMap<>();
-    }
+		if (tail == node) {
+			tail = tail.prev;
+		}
 
-    public synchronized boolean containsKey(K key) {
-        return lookup.containsKey(key);
-    }
+		node.next = null;
+		node.prev = null;
+	}
 
-    private void detach(Node<V> node) {
-        if (node.prev != null) {
-            node.prev.next = node.next;
-        }
+	/**
+	 * Returns the value associated with the key in the cache. If the key is not
+	 * present, it returns null.
+	 *
+	 * @param key
+	 *            The key to look up.
+	 * @return The value associated with the key, or null if not found.
+	 */
+	public synchronized V get(K key) {
+		var node = lookup.get(key);
 
-        if (node.next != null) {
-            node.next.prev = node.prev;
-        }
+		if (node == null) {
+			return null;
+		}
 
-        if (head == node) {
-            head = head.next;
-        }
+		detach(node);
+		prepend(node);
 
-        if (tail == node) {
-            tail = tail.prev;
-        }
+		return node.value;
+	}
 
-        node.next = null;
-        node.prev = null;
-    }
+	private void prepend(Node<V> node) {
+		if (head == null) {
+			head = tail = node;
+			return;
+		}
 
-    /**
-     * Returns the value associated with the key in the cache. If the key is not
-     * present, it returns null.
-     *
-     * @param key The key to look up.
-     * @return The value associated with the key, or null if not found.
-     */
-    public synchronized V get(K key) {
-        var node = lookup.get(key);
+		node.next = head;
+		head.prev = node;
+		head = node;
+	}
 
-        if (node == null) {
-            return null;
-        }
+	protected V trimCache() {
+		if (length <= capacity) {
+			return null;
+		}
 
-        detach(node);
-        prepend(node);
+		var referenceToTail = tail;
 
-        return node.value;
-    }
+		detach(tail);
 
-    private void prepend(Node<V> node) {
-        if (head == null) {
-            head = tail = node;
-            return;
-        }
+		var key = reverseLookup.get(referenceToTail);
 
-        node.next = head;
-        head.prev = node;
-        head = node;
-    }
+		lookup.remove(key);
+		reverseLookup.remove(referenceToTail);
+		length -= 1;
 
-    private void trimCache() {
-        if (length <= capacity) {
-            return;
-        }
+		return referenceToTail.value;
+	}
 
-        var referenceToTail = tail;
+	/**
+	 * Updates the cache with the given key and value. If the key already exists, it
+	 * updates the value and moves the node to the front of the cache.
+	 *
+	 * @param key
+	 *            The key to update.
+	 * @param value
+	 *            The value to associate with the key.
+	 */
+	public synchronized void update(K key, V value) {
+		var node = lookup.get(key);
 
-        detach(tail);
+		if (node == null) {
+			node = Node.createNode(value);
 
-        var key = reverseLookup.get(referenceToTail);
+			length += 1;
+			prepend(node);
+			trimCache();
 
-        notifyListeners(key, referenceToTail.value);
+			lookup.put(key, node);
+			reverseLookup.put(node, key);
+		} else {
+			detach(node);
+			prepend(node);
 
-        lookup.remove(key);
-        reverseLookup.remove(referenceToTail);
-        length -= 1;
-    }
+			node.value = value;
+		}
+	}
 
-    /**
-     * Updates the cache with the given key and value. If the key already exists, it
-     * updates the value and moves the node to the front of the cache.
-     *
-     * @param key   The key to update.
-     * @param value The value to associate with the key.
-     */
-    public synchronized void update(K key, V value) {
-        var node = lookup.get(key);
+	public synchronized void clear() {
+		while (length > 0) {
+			trimCache();
+		}
+	}
 
-        if (node == null) {
-            node = Node.createNode(value);
+	public synchronized V remove(K key) {
+		var node = lookup.get(key);
 
-            length += 1;
-            prepend(node);
-            trimCache();
+		if (node == null) {
+			return null;
+		}
 
-            lookup.put(key, node);
-            reverseLookup.put(node, key);
-        } else {
-            detach(node);
-            prepend(node);
+		detach(node);
 
-            node.value = value;
-        }
-    }
+		lookup.remove(key);
+		reverseLookup.remove(node);
+		length -= 1;
 
-    public synchronized void clear() {
-        while (length > 0) {
-            trimCache();
-        }
-    }
+		return node.value;
+	}
 
-    public synchronized V remove(K key) {
-        var node = lookup.get(key);
+	public synchronized Set<Entry<K, V>> entrySet() {
+		var result = new HashMap<K, V>();
 
-        if (node == null) {
-            return null;
-        }
+		for (var entry : lookup.entrySet()) {
+			var key = entry.getKey();
+			var value = entry.getValue().value;
 
-        detach(node);
+			result.put(key, value);
+		}
 
-        notifyListeners(key, node.value);
+		return result.entrySet();
+	}
 
-        lookup.remove(key);
-        reverseLookup.remove(node);
-        length -= 1;
+	public synchronized Collection<V> values() {
+		var result = new ArrayList<V>();
 
-        return node.value;
-    }
+		for (var entry : lookup.entrySet()) {
+			var value = entry.getValue().value;
 
-    public synchronized HashMap<K, V> getAll() {
-        var result = new HashMap<K, V>();
+			result.add(value);
+		}
 
-        for (var entry : lookup.entrySet()) {
-            var key = entry.getKey();
-            var value = entry.getValue().value;
+		return result;
+	}
 
-            result.put(key, value);
-        }
+	public synchronized HashMap<K, V> getCopy() {
+		var result = new HashMap<K, V>();
 
-        return result;
-    }
+		for (var entry : lookup.entrySet()) {
+			var key = entry.getKey();
+			var value = entry.getValue().value;
+
+			result.put(key, value);
+		}
+
+		return result;
+	}
 }
 
 class Node<T> {
-    public static <T> Node<T> createNode(T data) {
-        return new Node<>(data);
-    }
+	public static <T> Node<T> createNode(T data) {
+		return new Node<>(data);
+	}
 
-    T value;
-    Node<T> prev;
-    Node<T> next;
+	T value;
+	Node<T> prev;
+	Node<T> next;
 
-    public Node(T value) {
-        this.value = value;
-        prev = null;
-        next = null;
-    }
+	public Node(T value) {
+		this.value = value;
+		prev = null;
+		next = null;
+	}
 }
