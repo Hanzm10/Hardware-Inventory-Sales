@@ -13,5 +13,47 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.database.entity.user;
 
-public record UserCredentials() {
+import org.jetbrains.annotations.NotNull;
+
+public record UserCredentials(int _userId, String userEmail, String userPassword, String userFirstName, String userLastName, String userPhoneNumber) {
+	public static class Builder{
+		private int userId;
+		private String userEmail;
+		private String password;
+		private String firstName;
+		private String lastName;
+		private String phoneNum;
+		
+		public @NotNull UserCredentials build() throws IllegalStateException{
+			if (userId <= 0) {
+                throw new IllegalStateException("User ID must be greater than 0");
+                
+            }
+			return new UserCredentials(userId, userEmail, password, firstName, lastName, phoneNum);
+		}
+		public Builder setUserId(int userId) {
+			this.userId = userId;
+			return this;
+		}
+		public Builder setUserEmail(String userEmail) {
+			this.userEmail = userEmail;
+			return this;
+		}
+		public Builder setUserPassword(String password) {
+			this.password = password;
+			return this;
+		}
+		public Builder setFirstName(String firstName) {
+			this.firstName = firstName;
+			return this;
+		}
+		public Builder setLastName(String lastName) {
+			this.lastName = lastName;
+			return this;
+		}
+		public Builder setPhoneNum(String phoneNum) {
+			this.phoneNum = phoneNum;
+			return this;
+		}
+	}
 }

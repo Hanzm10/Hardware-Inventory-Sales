@@ -55,13 +55,44 @@ public class MySqlUserDao implements UserDao {
 
     @Override
     public User getUserByEmail(@NotNull String _userEmail) throws IOException, SQLException {
-        return null;
+    	User user = null;
+    	var query = MySqlQueryLoader.getInstance().get("get_user_by_email", "users", SqlQueryType.SELECT);
+    	
+    	try(var conn = MySqlFactoryDao.createConnection();
+    		var statement = conn.prepareStatement(query);){
+    		
+    		var resultSet = statement.executeQuery();
+    		
+    		if(resultSet.next()) {
+    			 user = new User.Builder().setUserId(resultSet.getInt("_user_id"))
+                         .setUserCreatedAt(resultSet.getTimestamp("_user_created_at"))
+                         .setUserDisplayName(resultSet.getString("user_display_name"))
+                         .setUserDisplayImage(resultSet.getString("user_display_image"))
+                         .setUserGender(UserGender.fromString(resultSet.getString("user_gender"))).build();
+    		}
+    	}
+    	return user;
     }
 
     @Override
     public User getUserById(@Range(from = 0, to = 2147483647) int _userID) throws IOException, SQLException {
-        // TODO Auto-generated method stub
-        return null;
+        User user = null;
+        var query = MySqlQueryLoader.getInstance().get("get_user_by_Id", "users", SqlQueryType.SELECT);
+    	
+    	try(var conn = MySqlFactoryDao.createConnection();
+    		var statement = conn.prepareStatement(query);){
+    		
+    		var resultSet = statement.executeQuery();
+    		
+    		if(resultSet.next()) {
+    			 user = new User.Builder().setUserId(resultSet.getInt("_user_id"))
+                         .setUserCreatedAt(resultSet.getTimestamp("_user_created_at"))
+                         .setUserDisplayName(resultSet.getString("user_display_name"))
+                         .setUserDisplayImage(resultSet.getString("user_display_image"))
+                         .setUserGender(UserGender.fromString(resultSet.getString("user_gender"))).build();
+    		}
+    	}
+    	return user;
     }
 
 }
