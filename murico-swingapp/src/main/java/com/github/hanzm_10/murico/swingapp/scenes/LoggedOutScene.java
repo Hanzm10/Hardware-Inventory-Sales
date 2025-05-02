@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -23,7 +23,9 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSce
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
+import com.github.hanzm_10.murico.swingapp.scenes.auth.LoginAuthScene;
 import com.github.hanzm_10.murico.swingapp.scenes.auth.MainAuthScene;
+import com.github.hanzm_10.murico.swingapp.scenes.auth.RegisterAuthScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 
 import net.miginfocom.swing.MigLayout;
@@ -57,13 +59,16 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 	public void onCreate() {
 		sceneManager = new StaticSceneManager();
 		sceneManager.registerScene("main", () -> new MainAuthScene(), GUARD);
-		sceneManager.navigateTo("main");
+        sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
+        sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
 
 		layout = new MigLayout("", "[grow, center]", "[grow, center]");
 		view.setLayout(layout);
 
 		var rootContainer = sceneManager.getRootContainer();
 		view.add(rootContainer, "cell 0 0");
+
+		sceneManager.navigateTo("main");
 	}
 
 	@Override
@@ -79,7 +84,7 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
-	public void navigateTo(@NotNull String SubSceneName) {
-		sceneManager.navigateTo(SubSceneName);
+	public void navigateTo(@NotNull String subSceneName) {
+		sceneManager.navigateTo(subSceneName);
 	}
 }

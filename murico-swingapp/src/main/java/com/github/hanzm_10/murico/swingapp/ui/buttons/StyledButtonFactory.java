@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -18,6 +18,8 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 
 public class StyledButtonFactory {
+
+
 	public static JButton createButton(String text, ButtonStyles buttonStyle) {
 		var button = new JButton(text);
 
@@ -34,3 +36,4 @@ public class StyledButtonFactory {
 		return button;
 	}
 }
+
