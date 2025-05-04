@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -35,7 +35,6 @@ public class MySqlSessionDao implements SessionDao {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlSessionDao.class);
 
 	@Override
-
 	public @NotNull String createSession(@NotNull User user) throws IOException, SQLException {
 		return createSession(user, "", "");
 	}
@@ -119,5 +118,4 @@ public class MySqlSessionDao implements SessionDao {
 
 		return sessionExists;
 	}
-
 }

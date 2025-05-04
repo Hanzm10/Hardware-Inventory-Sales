@@ -22,17 +22,17 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 
 public interface SessionDao {
-    public @NotNull String createSession(@NotNull final User user) throws IOException, SQLException;
+	public @NotNull String createSession(@NotNull final User user) throws IOException, SQLException;
 
-    public @NotNull String createSession(@NotNull final User user, final String ipAddress)
-            throws IOException, SQLException;
+	public @NotNull String createSession(@NotNull final User user, final String ipAddress)
+			throws IOException, SQLException;
 
-    public @NotNull String createSession(@NotNull final User user, final String ipAddress, final String userAgent)
-            throws IOException, SQLException;
+	public @NotNull String createSession(@NotNull final User user, final String ipAddress, final String userAgent)
+			throws IOException, SQLException;
 
-    public Session getSessionByToken(@NotNull final String _sessionUid) throws IOException, SQLException;
+	public Session getSessionByToken(@NotNull final String _sessionUid) throws IOException, SQLException;
 
-    public void printSessionTableOfUser(@NotNull final User user) throws IOException, SQLException;
+	public void printSessionTableOfUser(@NotNull final User user) throws IOException, SQLException;
 
-    public boolean sessionExists(@NotNull final String _sessionUid) throws IOException, SQLException;
+	public boolean sessionExists(@NotNull final String _sessionUid) throws IOException, SQLException;
 }
