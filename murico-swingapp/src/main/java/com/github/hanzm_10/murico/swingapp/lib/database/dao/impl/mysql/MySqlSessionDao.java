@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -32,93 +32,92 @@ import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 public class MySqlSessionDao implements SessionDao {
-    private static final Logger LOGGER = MuricoLogger.getLogger(MySqlSessionDao.class);
+	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlSessionDao.class);
 
-    @Override
+	@Override
 
-    public @NotNull String createSession(@NotNull User user) throws IOException, SQLException {
-        return createSession(user, "", "");
-    }
+	public @NotNull String createSession(@NotNull User user) throws IOException, SQLException {
+		return createSession(user, "", "");
+	}
 
-    @Override
-    public @NotNull String createSession(@NotNull User user, String ipAddress) throws IOException, SQLException {
-        return createSession(user, ipAddress, "");
-    }
+	@Override
+	public @NotNull String createSession(@NotNull User user, String ipAddress) throws IOException, SQLException {
+		return createSession(user, ipAddress, "");
+	}
 
-    @Override
-    public @NotNull String createSession(@NotNull User user, String ipAddress, String userAgent)
-            throws IOException, SQLException {
-        String _sessionUid = null;
-        String query = MySqlQueryLoader.getInstance().get("sessions", "insert", SqlQueryType.INSERT);
+	@Override
+	public @NotNull String createSession(@NotNull User user, String ipAddress, String userAgent)
+			throws IOException, SQLException {
+		String _sessionUid = null;
+		String query = MySqlQueryLoader.getInstance().get("create_session", "sessions", SqlQueryType.INSERT);
 
-        try (var conn = MySqlFactoryDao.createConnection();
-                var statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+		try (var conn = MySqlFactoryDao.createConnection();
+				var statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
 
-            statement.setInt(1, user._userId());
-            statement.setString(2, ipAddress);
-            statement.setString(3, userAgent);
+			statement.setInt(1, user._userId());
+			statement.setString(2, ipAddress);
+			statement.setString(3, userAgent);
 
-            var resultSet = statement.executeUpdate();
-            var RETURNED_SOMETHING = resultSet == 1;
+			var resultSet = statement.executeUpdate();
 
-            if (RETURNED_SOMETHING) {
-                var generatedKeys = statement.getGeneratedKeys();
+			if (resultSet == 1) {
+				var generatedKeys = statement.getGeneratedKeys();
 
-                if (generatedKeys.next()) {
-                    _sessionUid = generatedKeys.getString("_session_uid");
-                }
-            }
-        } catch (SQLFeatureNotSupportedException e) {
-            LOGGER.log(Level.SEVERE, "SQL feature not supported", e);
-        }
+				if (generatedKeys.next()) {
+					_sessionUid = generatedKeys.getString("_session_uid");
+				}
+			}
+		} catch (SQLFeatureNotSupportedException e) {
+			LOGGER.log(Level.SEVERE, "SQL feature not supported", e);
+		}
 
-        return _sessionUid;
-    }
+		return _sessionUid;
+	}
 
-    @Override
-    public Session getSessionByUid(@NotNull String _sessionUid) throws IOException, SQLException {
-        Session session = null;
-        var query = MySqlQueryLoader.getInstance().get("sessions", "select_by_uid", SqlQueryType.SELECT);
+	@Override
+	public Session getSessionByToken(@NotNull String _sessionUid) throws IOException, SQLException {
+		Session session = null;
+		var query = MySqlQueryLoader.getInstance().get("select_by_token", "sessions", SqlQueryType.SELECT);
 
-        try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
-            statement.setString(1, _sessionUid);
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setString(1, _sessionUid);
 
-            var resultSet = statement.executeQuery();
+			var resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                session = new Session.Builder().setSessionUid(resultSet.getString("_session_uid"))
-                        .setUserId(resultSet.getInt("_user_id")).setIpAddress(resultSet.getString("_ip_address"))
-                        .setUserAgent(resultSet.getString("_user_agent"))
-                        .setSessionCreatedAt(resultSet.getTimestamp("_created_at"))
-                        .setSessionExpiresAt(resultSet.getTimestamp("_updated_at"))
-                        .setSessionStatus(SessionStatus.fromString(resultSet.getString("session_status"))).build();
-            }
-        }
+			if (resultSet.next()) {
+				session = new Session(resultSet.getInt("_session_id"), resultSet.getInt("_user_id"),
+						resultSet.getString("_session_token"), resultSet.getTimestamp("_created_at"),
+						resultSet.getTimestamp("expires_at"), resultSet.getTimestamp("updated_at"),
+						resultSet.getString("ip_address"), resultSet.getString("user_agent"),
+						SessionStatus.fromString(resultSet.getString("status")),
+						resultSet.getTimestamp("status_updated_at"));
+			}
+		}
 
-        return session;
-    }
+		return session;
+	}
 
-    @Override
-    public void printSessionTableOfUser(@NotNull User user) throws IOException, SQLException {
-        // TODO: Implement this method
-    }
+	@Override
+	public void printSessionTableOfUser(@NotNull User user) throws IOException, SQLException {
+		// TODO: Implement this method
+	}
 
-    @Override
-    public boolean sessionExists(@NotNull String _sessionUid) throws IOException, SQLException {
-        var sessionExists = false;
-        String query = MySqlQueryLoader.getInstance().get("sessions", "exists", SqlQueryType.SELECT);
+	@Override
+	public boolean sessionExists(@NotNull String _sessionUid) throws IOException, SQLException {
+		var sessionExists = false;
+		String query = MySqlQueryLoader.getInstance().get("select_exists_by_token", "sessions", SqlQueryType.SELECT);
 
-        try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
-            statement.setString(1, _sessionUid);
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setString(1, _sessionUid);
 
-            var resultSet = statement.executeQuery();
+			var resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                sessionExists = resultSet.getInt(1) != 0;
-            }
-        }
+			if (resultSet.next()) {
+				sessionExists = resultSet.getInt(1) != 0;
+			}
+		}
 
-        return sessionExists;
-    }
+		return sessionExists;
+	}
 
 }
