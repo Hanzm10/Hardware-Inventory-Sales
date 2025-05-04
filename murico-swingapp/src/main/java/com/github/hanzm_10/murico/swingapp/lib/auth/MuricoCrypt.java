@@ -11,6 +11,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class MuricoCrypt {
 	public final record HashedStringWithSalt(@NotNull String hashedString, @NotNull Salt salt) {
+		public boolean equalsHashedString(@NotNull final HashedStringWithSalt hashedStringWithSalt) {
+			return hashedStringWithSalt.hashedString().equals(this.hashedString);
+		}
+
+		public boolean equalsSalt(@NotNull final HashedStringWithSalt hashedStringWithSalt) {
+			return hashedStringWithSalt.salt.equals(this.salt);
+		}
+
+		public boolean equals(@NotNull final HashedStringWithSalt hashedStringWithSalt) {
+			return equals(hashedStringWithSalt) && equalsSalt(hashedStringWithSalt);
+		}
 	}
 
 	/** Default iteration count (work factor) for the PBKDF2 algorithm. */
