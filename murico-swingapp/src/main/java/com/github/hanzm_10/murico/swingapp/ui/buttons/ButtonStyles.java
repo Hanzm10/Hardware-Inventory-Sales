@@ -18,90 +18,90 @@ import java.awt.Color;
 import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatLaf;
-import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 
 public enum ButtonStyles {
-    PRIMARY {
-        @Override
-        public Color getBackgroundColor() {
-            return FlatLaf.isLafDark() ? Styles.PRIMARY_COLOR_DARK : Styles.PRIMARY_COLOR;
-        }
+	PRIMARY {
+		@Override
+		public Color getBackgroundColor() {
+			return FlatLaf.isLafDark() ? Styles.PRIMARY_COLOR_DARK : Styles.PRIMARY_COLOR;
+		}
 
-        @Override
-        public Color getForegroundColor() {
-            return FlatLaf.isLafDark() ? Styles.PRIMARY_FOREGROUND_COLOR_DARK : Styles.PRIMARY_FOREGROUND_COLOR;
-        }
-    },
-    SECONDARY {
-        @Override
-        public Color getBackgroundColor() {
-            return FlatLaf.isLafDark() ? Styles.SECONDARY_COLOR_DARK : Styles.SECONDARY_COLOR;
-        }
+		@Override
+		public Color getForegroundColor() {
+			return FlatLaf.isLafDark() ? Styles.PRIMARY_FOREGROUND_COLOR_DARK : Styles.PRIMARY_FOREGROUND_COLOR;
+		}
+	},
+	SECONDARY {
+		@Override
+		public Color getBackgroundColor() {
+			return FlatLaf.isLafDark() ? Styles.SECONDARY_COLOR_DARK : Styles.SECONDARY_COLOR;
+		}
 
-        @Override
-        public Color getForegroundColor() {
-            return FlatLaf.isLafDark() ? Styles.SECONDARY_FOREGROUND_COLOR_DARK : Styles.SECONDARY_FOREGROUND_COLOR;
-        }
-    },
-    TERTIARY {
-        @Override
-        public Color getBackgroundColor() {
-            return FlatLaf.isLafDark() ? Styles.TERTIARY_COLOR_DARK : Styles.TERTIARY_COLOR;
-        }
+		@Override
+		public Color getForegroundColor() {
+			return FlatLaf.isLafDark() ? Styles.SECONDARY_FOREGROUND_COLOR_DARK : Styles.SECONDARY_FOREGROUND_COLOR;
+		}
+	},
+	TERTIARY {
+		@Override
+		public Color getBackgroundColor() {
+			return FlatLaf.isLafDark() ? Styles.TERTIARY_COLOR_DARK : Styles.TERTIARY_COLOR;
+		}
 
-        @Override
-        public Color getForegroundColor() {
-            return FlatLaf.isLafDark() ? Styles.TERTIARY_FOREGROUND_COLOR_DARK : Styles.TERTIARY_FOREGROUND_COLOR;
-        }
-    },
-    CONFIRM {
-        @Override
-        public Color getBackgroundColor() {
-            return FlatLaf.isLafDark() ? Styles.CONFIRM_COLOR_DARK : Styles.CONFIRM_COLOR;
-        }
+		@Override
+		public Color getForegroundColor() {
+			return FlatLaf.isLafDark() ? Styles.TERTIARY_FOREGROUND_COLOR_DARK : Styles.TERTIARY_FOREGROUND_COLOR;
+		}
+	},
+	CONFIRM {
+		@Override
+		public Color getBackgroundColor() {
+			return FlatLaf.isLafDark() ? Styles.CONFIRM_COLOR_DARK : Styles.CONFIRM_COLOR;
+		}
 
-        @Override
-        public Color getForegroundColor() {
-            return FlatLaf.isLafDark() ? Styles.CONFIRM_FOREGROUND_COLOR_DARK : Styles.CONFIRM_FOREGROUND_COLOR;
-        }
-    },
-    DANGER {
-        @Override
-        public Color getBackgroundColor() {
-            return FlatLaf.isLafDark() ? Styles.DANGER_COLOR_DARK : Styles.DANGER_COLOR;
-        }
+		@Override
+		public Color getForegroundColor() {
+			return FlatLaf.isLafDark() ? Styles.CONFIRM_FOREGROUND_COLOR_DARK : Styles.CONFIRM_FOREGROUND_COLOR;
+		}
+	},
+	DANGER {
+		@Override
+		public Color getBackgroundColor() {
+			return FlatLaf.isLafDark() ? Styles.DANGER_COLOR_DARK : Styles.DANGER_COLOR;
+		}
 
-        @Override
-        public Color getForegroundColor() {
-            return FlatLaf.isLafDark() ? Styles.DANGER_FOREGROUND_COLOR_DARK : Styles.DANGER_FOREGROUND_COLOR;
-        }
-    },
-    SUCCESS {
+		@Override
+		public Color getForegroundColor() {
+			return FlatLaf.isLafDark() ? Styles.DANGER_FOREGROUND_COLOR_DARK : Styles.DANGER_FOREGROUND_COLOR;
+		}
+	},
+	SUCCESS {
 
-        @Override
-        public Color getBackgroundColor() {
-            return FlatLaf.isLafDark() ? Styles.SUCCESS_COLOR_DARK : Styles.SUCCESS_COLOR;
-        }
+		@Override
+		public Color getBackgroundColor() {
+			return FlatLaf.isLafDark() ? Styles.SUCCESS_COLOR_DARK : Styles.SUCCESS_COLOR;
+		}
 
-        @Override
-        public Color getForegroundColor() {
-            return FlatLaf.isLafDark() ? Styles.SUCCESS_FOREGROUND_COLOR_DARK : Styles.SUCCESS_FOREGROUND_COLOR;
-        }
-    },
-    TRANSPARENT {
-        @Override
-        public Color getBackgroundColor() {
-            return new Color(0xff, true);
-        }
-        @Override
-        public Color getForegroundColor() {
-            return UIManager.getColor("foreground");
-        }
-    };
+		@Override
+		public Color getForegroundColor() {
+			return FlatLaf.isLafDark() ? Styles.SUCCESS_FOREGROUND_COLOR_DARK : Styles.SUCCESS_FOREGROUND_COLOR;
+		}
+	},
+	TRANSPARENT {
+		@Override
+		public Color getBackgroundColor() {
+			return new Color(0xff, true);
+		}
 
-    public abstract Color getBackgroundColor();
+		@Override
+		public Color getForegroundColor() {
+			return UIManager.getColor("foreground");
+		}
+	};
 
-    public abstract Color getForegroundColor();
+	public abstract Color getBackgroundColor();
+
+	public abstract Color getForegroundColor();
 
 }

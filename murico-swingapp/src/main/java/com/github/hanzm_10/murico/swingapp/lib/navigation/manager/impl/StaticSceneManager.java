@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -57,6 +57,23 @@ public class StaticSceneManager implements SceneManager {
 		sceneCache.subscribe((scene) -> SwingUtilities.invokeLater(() -> destroyScene(scene)));
 	}
 
+	@Override
+	public synchronized void destroy() {
+		throwIfWrongThread();
+
+		for (var scene : sceneCache.values()) {
+			destroyScene(scene);
+		}
+
+		registeredSceneEntries.clear();
+		sceneCache.clear();
+		currentSceneName = null;
+
+		rootContainer.removeAll();
+
+		LOGGER.info("Scene manager destroyed.");
+	}
+
 	private void destroyScene(Scene scene) {
 		if (scene == null) {
 			return;
@@ -79,10 +96,19 @@ public class StaticSceneManager implements SceneManager {
 		LOGGER.info("Scene destroyed: " + scene.getSceneName());
 	}
 
-	private void throwIfWrongThread() {
-		if (!SwingUtilities.isEventDispatchThread()) {
-			throw new WrongThreadException("This method must be called on the Event Dispatch Thread.");
-		}
+	@Override
+	public String getCurrentSceneName() {
+		return currentSceneName;
+	}
+
+	@Override
+	public JPanel getRootContainer() {
+		return rootContainer;
+	}
+
+	@Override
+	public synchronized Scene getScene(@NotNull String sceneName) {
+		return sceneCache.get(sceneName);
 	}
 
 	private Scene loadOrCreateScene(@NotNull final String sceneName, @NotNull final SceneEntry sceneEntry) {
@@ -100,31 +126,12 @@ public class StaticSceneManager implements SceneManager {
 						"Scene name does not match the scene's name: " + sceneName + " != " + scene.getSceneName());
 			}
 
-			var view = scene.getSceneView();
 			scene.onCreate();
 		}
 
 		sceneCache.update(sceneName, scene);
 
 		return scene;
-	}
-
-	private void navigateToSubScenesIfPossible(@NotNull final ParsedSceneName parsedSceneName) {
-		var currentScene = getScene(currentSceneName);
-
-		if (currentScene == null) {
-			LOGGER.severe("Current scene is set to a scene that does not exist: " + currentSceneName);
-			return;
-		}
-
-		if (currentScene.supportsSubScenes()) {
-			((SubSceneSupport) currentScene.getSelf()).navigateTo(parsedSceneName.subSceneName());
-		} else {
-			LOGGER.warning("Current scene does not support sub-scenes: " + currentSceneName);
-			return;
-		}
-
-		return;
 	}
 
 	@Override
@@ -173,6 +180,41 @@ public class StaticSceneManager implements SceneManager {
 		LOGGER.info("Navigated to scene: " + sceneName);
 	}
 
+	private void navigateToSubScenesIfPossible(@NotNull final ParsedSceneName parsedSceneName) {
+		var currentScene = getScene(currentSceneName);
+
+		if (currentScene == null) {
+			LOGGER.severe("Current scene is set to a scene that does not exist: " + currentSceneName);
+			return;
+		}
+
+		if (currentScene.supportsSubScenes()) {
+			((SubSceneSupport) currentScene.getSelf()).navigateTo(parsedSceneName.subSceneName());
+		} else {
+			LOGGER.warning("Current scene does not support sub-scenes: " + currentSceneName);
+			return;
+		}
+
+		return;
+	}
+
+	@Override
+	public synchronized void registerScene(@NotNull String sceneName, @NotNull SceneFactory sceneFactory) {
+		registerScene(sceneName, sceneFactory, () -> true);
+	}
+
+	@Override
+	public synchronized void registerScene(@NotNull String sceneName, @NotNull SceneFactory sceneFactory,
+			@NotNull SceneGuard sceneGuard) {
+		if (registeredSceneEntries.containsKey(sceneName)) {
+			LOGGER.warning("Scene already registered: " + sceneName);
+			return;
+		}
+
+		registeredSceneEntries.put(sceneName, new SceneEntry(sceneFactory, sceneGuard));
+		LOGGER.info("Scene registered: " + sceneName);
+	}
+
 	private void switchScenes(@NotNull Scene newScene, Scene oldScene) {
 		if (oldScene != null) {
 			oldScene.onBeforeHide();
@@ -193,21 +235,10 @@ public class StaticSceneManager implements SceneManager {
 		currentSceneName = newSceneName;
 	}
 
-	@Override
-	public synchronized void registerScene(@NotNull String sceneName, @NotNull SceneFactory sceneFactory) {
-		registerScene(sceneName, sceneFactory, () -> true);
-	}
-
-	@Override
-	public synchronized void registerScene(@NotNull String sceneName, @NotNull SceneFactory sceneFactory,
-			@NotNull SceneGuard sceneGuard) {
-		if (registeredSceneEntries.containsKey(sceneName)) {
-			LOGGER.warning("Scene already registered: " + sceneName);
-			return;
+	private void throwIfWrongThread() {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			throw new WrongThreadException("This method must be called on the Event Dispatch Thread.");
 		}
-
-		registeredSceneEntries.put(sceneName, new SceneEntry(sceneFactory, sceneGuard));
-		LOGGER.info("Scene registered: " + sceneName);
 	}
 
 	@Override
@@ -223,37 +254,5 @@ public class StaticSceneManager implements SceneManager {
 		registeredSceneEntries.remove(sceneName);
 
 		LOGGER.info("Scene unregistered: " + sceneName);
-	}
-
-	@Override
-	public synchronized void destroy() {
-		throwIfWrongThread();
-
-		for (var scene : sceneCache.values()) {
-			destroyScene(scene);
-		}
-
-		registeredSceneEntries.clear();
-		sceneCache.clear();
-		currentSceneName = null;
-
-		rootContainer.removeAll();
-
-		LOGGER.info("Scene manager destroyed.");
-	}
-
-	@Override
-	public synchronized Scene getScene(@NotNull String sceneName) {
-		return sceneCache.get(sceneName);
-	}
-
-	@Override
-	public String getCurrentSceneName() {
-		return currentSceneName;
-	}
-
-	@Override
-	public JPanel getRootContainer() {
-		return rootContainer;
 	}
 }
