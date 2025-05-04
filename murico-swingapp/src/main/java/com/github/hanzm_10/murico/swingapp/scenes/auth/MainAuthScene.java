@@ -13,17 +13,6 @@
  */
 package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
@@ -32,6 +21,16 @@ import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
 
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 public class MainAuthScene implements Scene {
@@ -76,11 +75,11 @@ public class MainAuthScene implements Scene {
             LOGGER.log(Level.SEVERE, "Failed to load image", e);
         }
 
-		layout = new MigLayout("", "[grow,right][64px,center][grow,left]",
-				"[:320.00:520px,grow 50,bottom][50px,grow,top]");
+        layout = new MigLayout("", "[::280px,grow,right]64[::280px,grow,left]",
+            "[240px::315px, bottom]24[50px::50px, top]");
 
-		loginButton = StyledButtonFactory.createButton("Log In", ButtonStyles.TERTIARY, 280, 50);
-		registerButton = StyledButtonFactory.createButton("Create an account", ButtonStyles.TERTIARY, 280, 50);
+        loginButton = StyledButtonFactory.createButton("Log In", ButtonStyles.TERTIARY, 280, 50);
+        registerButton = StyledButtonFactory.createButton("Create an account", ButtonStyles.TERTIARY, 280, 50);
 
         loginButton.addActionListener(btnListener);
         registerButton.addActionListener(btnListener);
@@ -91,10 +90,10 @@ public class MainAuthScene implements Scene {
 		view.setLayout(layout);
 
         if (imagePanel != null) {
-            view.add(imagePanel, "cell 0 0 3 1, grow");
+            view.add(imagePanel, "cell 0 0 2");
         }
 
 		view.add(loginButton, "cell 0 1");
-		view.add(registerButton, "cell 2 1");
+		view.add(registerButton, "cell 1 1");
 	}
 }
