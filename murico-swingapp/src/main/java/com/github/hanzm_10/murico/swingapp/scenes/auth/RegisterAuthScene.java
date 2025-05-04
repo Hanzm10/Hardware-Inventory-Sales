@@ -4,24 +4,27 @@ import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 
+import net.miginfocom.swing.MigLayout;
+
 public class RegisterAuthScene implements Scene {
+
+    protected JPanel view;
+    protected MigLayout viewLayout;
 
     @Override
     public String getSceneName() {
-        // TODO Auto-generated method stub
-        return null;
+        return "register";
     }
 
     @Override
     public JPanel getSceneView() {
-        // TODO Auto-generated method stub
-        return null;
+        return view == null ? (view = new JPanel()) : view;
     }
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
-
+        viewLayout = new MigLayout();
+        view.setLayout(viewLayout);
     }
 
 }
