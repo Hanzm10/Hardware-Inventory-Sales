@@ -60,6 +60,7 @@ public class StaticSceneManager implements SceneManager {
         }
 
         sceneCache.remove(scene.getSceneName());
+        rootContainer.remove(scene.getSceneView());
         scene.onDestroy();
 
         LOGGER.info("Scene destroyed: " + scene.getSceneName());
