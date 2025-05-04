@@ -7,18 +7,16 @@
     </parent>
 
     <artifactId>murico-swingapp</artifactId>
-    
+
     <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <!-- You can add includes/excludes here if needed, but often not required -->
-                <!-- Example: only include .properties and .ttf files
                 <includes>
                     <include>**/*.properties</include>
                     <include>**/*.ttf</include>
                 </includes>
-                -->
             </resource>
         </resources>
         <plugins>
@@ -54,7 +52,7 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>9.2.0</version>
         </dependency>
-        
+
 		<dependency>
     		<groupId>org.apache.pdfbox</groupId>
 	    	<artifactId>pdfbox</artifactId>
