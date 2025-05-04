@@ -7,6 +7,34 @@
     </parent>
 
     <artifactId>murico-swingapp</artifactId>
+    
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!-- You can add includes/excludes here if needed, but often not required -->
+                <!-- Example: only include .properties and .ttf files
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.ttf</include>
+                </includes>
+                -->
+            </resource>
+        </resources>
+        <plugins>
+            <!-- Ensure you have maven-compiler-plugin configured for your Java version -->
+            <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <version>3.11.0</version> <!-- Use a recent version -->
+                 <configuration>
+                     <source>22</source> <!-- Or your target Java version (e.g., 22) -->
+                     <target>22</target> <!-- Or your target Java version (e.g., 22) -->
+                 </configuration>
+             </plugin>
+             <!-- Other plugins like maven-jar-plugin might be relevant for packaging -->
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
@@ -26,6 +54,12 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>9.2.0</version>
         </dependency>
+        
+		<dependency>
+    		<groupId>org.apache.pdfbox</groupId>
+	    	<artifactId>pdfbox</artifactId>
+	    	<version>2.0.34</version> <!-- Use the latest 2.x version -->
+		</dependency>
 
         <dependency>
             <groupId>com.miglayout</groupId>

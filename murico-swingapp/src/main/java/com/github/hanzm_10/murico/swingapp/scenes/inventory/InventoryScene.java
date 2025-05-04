@@ -14,6 +14,7 @@
 package com.github.hanzm_10.murico.swingapp.scenes.inventory;
 
 import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
