@@ -28,8 +28,6 @@ import com.github.hanzm_10.murico.swingapp.scenes.LoggedInScene;
 import com.github.hanzm_10.murico.swingapp.scenes.LoggedOutScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 
-import net.miginfocom.swing.MigLayout;
-
 public class MainFrame extends JFrame {
 
 	private class MainFrameWindowListener extends WindowAdapter {

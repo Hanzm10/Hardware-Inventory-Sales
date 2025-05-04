@@ -18,33 +18,32 @@ import javax.swing.JTextField;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.formdev.flatlaf.ui.FlatBorder;
 import com.formdev.flatlaf.ui.FlatRoundBorder;
 
 public class TextFieldFactory {
-    public static JPasswordField createPasswordField() {
-        return createPasswordField("");
-    }
+	public static JPasswordField createPasswordField() {
+		return createPasswordField("");
+	}
 
-    public static JPasswordField createPasswordField(@NotNull final String initialMsg) {
-        var textField = new JPasswordField(initialMsg);
-        var border = new FlatRoundBorder();
+	public static JPasswordField createPasswordField(@NotNull final String initialMsg) {
+		var textField = new JPasswordField(initialMsg);
+		var border = new FlatRoundBorder();
 
-        textField.setBorder(border);
+		textField.setBorder(border);
 
-        return textField;
-    }
+		return textField;
+	}
 
-    public static JTextField createTextField() {
-        return createTextField("");
-    }
+	public static JTextField createTextField() {
+		return createTextField("");
+	}
 
-    public static JTextField createTextField(@NotNull final String initialMsg) {
-        var textField = new JTextField(initialMsg);
-        var border = new FlatRoundBorder();
+	public static JTextField createTextField(@NotNull final String initialMsg) {
+		var textField = new JTextField(initialMsg);
+		var border = new FlatRoundBorder();
 
-        textField.setBorder(border);
+		textField.setBorder(border);
 
-        return textField;
-    }
+		return textField;
+	}
 }

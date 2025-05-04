@@ -14,8 +14,6 @@
 package com.github.hanzm_10.murico.swingapp.assets;
 
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -28,16 +26,16 @@ import com.kitfox.svg.app.beans.SVGIcon;
 
 public class AssetManager {
 	private static final LRU<String, Image> images = new LRU<>(30);
-    private static final LRU<String, SVGIcon> icons = new LRU<>(20);
+	private static final LRU<String, SVGIcon> icons = new LRU<>(20);
 
-    public static SVGIcon getOrLoadIcon(@NotNull final String path) throws URISyntaxException {
-        var icon = new SVGIcon();
-        icon.setSvgURI(AssetManager.class.getResource(path).toURI());
+	public static SVGIcon getOrLoadIcon(@NotNull final String path) throws URISyntaxException {
+		var icon = new SVGIcon();
+		icon.setSvgURI(AssetManager.class.getResource(path).toURI());
 
-        icons.update("path", icon);
+		icons.update("path", icon);
 
-        return icon;
-    }
+		return icon;
+	}
 
 	public static Image getOrLoadImage(@NotNull final String path) throws IOException, InterruptedException {
 		var image = images.get(path);
@@ -58,16 +56,18 @@ public class AssetManager {
 			throw new IllegalArgumentException("Resource not found: " + path);
 		}
 
-        try (var inputStream = AssetManager.class.getResourceAsStream(path)) {
-            return ImageIO.read(inputStream);
-        }
+		try (var inputStream = AssetManager.class.getResourceAsStream(path)) {
+			return ImageIO.read(inputStream);
+		}
 
-		/*try (var dataInputStream = new DataInputStream(AssetManager.class.getResourceAsStream(path))) {
-			byte bytes[] = new byte[dataInputStream.available()];
-
-			dataInputStream.readFully(bytes);
-
-			return Toolkit.getDefaultToolkit().createImage(bytes);
-		}*/
+		/*
+		 * try (var dataInputStream = new
+		 * DataInputStream(AssetManager.class.getResourceAsStream(path))) { byte bytes[]
+		 * = new byte[dataInputStream.available()];
+		 * 
+		 * dataInputStream.readFully(bytes);
+		 * 
+		 * return Toolkit.getDefaultToolkit().createImage(bytes); }
+		 */
 	}
 }
