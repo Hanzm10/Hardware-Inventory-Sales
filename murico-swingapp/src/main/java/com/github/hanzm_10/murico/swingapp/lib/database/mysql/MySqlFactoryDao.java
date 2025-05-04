@@ -1,3 +1,16 @@
+/** 
+ *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
+ *  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.github.hanzm_10.murico.swingapp.lib.database.mysql;
 
 import java.io.IOException;
@@ -6,8 +19,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.Properties;
-import java.util.logging.Level; // Import Level for logging
-import java.util.logging.Logger; // Import Logger for logging
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.github.hanzm_10.murico.swingapp.constants.PropertyKey;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
@@ -20,6 +33,7 @@ import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlItem
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlSessionDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlUserDao;
 import com.github.hanzm_10.murico.swingapp.lib.io.PropertiesIO;
+
 // Consider adding your logger import if needed elsewhere too
 // import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
@@ -63,7 +77,8 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 		} catch (NullPointerException e) {
 			// This might happen if a required property key is missing
 			LOGGER.log(Level.SEVERE,
-					"A required database property (URL, User, Password, Name) is missing in 'config.properties'", e);
+					"A required database property (URL, User, Password, Name) is missing in" + " 'config.properties'",
+					e);
 			throw new RuntimeException("Missing required database property.", e);
 		}
 	}
@@ -73,7 +88,8 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	 * connection is already closed. Logs any SQLException that occurs during
 	 * closing.
 	 *
-	 * @param connection The Connection object to close.
+	 * @param connection
+	 *            The Connection object to close.
 	 */
 	public static void closeConnection(Connection connection) {
 		if (connection != null) {
@@ -99,10 +115,13 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	 * Creates a new database connection using the loaded properties.
 	 *
 	 * @return A new Connection object.
-	 * @throws SQLException        If a database access error occurs.
-	 * @throws SQLTimeoutException If the driver has determined that the timeout
-	 *                             value has been exceeded.
-	 * @throws RuntimeException    If the JDBC driver class cannot be found.
+	 * @throws SQLException
+	 *             If a database access error occurs.
+	 * @throws SQLTimeoutException
+	 *             If the driver has determined that the timeout value has been
+	 *             exceeded.
+	 * @throws RuntimeException
+	 *             If the JDBC driver class cannot be found.
 	 */
 	public static final Connection createConnection() throws SQLException, SQLTimeoutException {
 		// Ensure driver is loaded (optional for modern JDBC, but good practice)
@@ -148,5 +167,4 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	public UserDao getUserDao() {
 		return new MySqlUserDao();
 	}
-
 }

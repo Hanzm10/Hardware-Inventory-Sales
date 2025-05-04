@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -29,6 +29,7 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
  * <br>
  * Example usage of the AbstractSqlFactoryDao to retrieve a platform-specific
  * DAO implementation.
+ *
  * <p>
  * This snippet demonstrates how to obtain a MySQL-specific factory instance
  * using the factory method {@link AbstractSqlFactoryDao#getSqlFactoryDao(int)},
@@ -36,16 +37,17 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
  * This promotes loose coupling between database-specific implementations and
  * the business logic, making the codebase easier to maintain and extend for
  * other database platforms.
- * </p>
  *
  * <pre>
- * // Step 1: Get the factory for the specified database type (MySQL in this case)
+ * // Step 1: Get the factory for the specified database type (MySQL in this
+ * // case)
  * var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
  *
  * // Step 2: Retrieve the SessionDao implementation from the factory
  * var sessionDao = factory.getSessionDao();
  *
- * // Step 3: Use the Dao to perform operations, such as checking if a session exists
+ * // Step 3: Use the Dao to perform operations, such as checking if a session
+ * // exists
  * var sessionExists = sessionDao.sessionExists(sessionUid);
  * </pre>
  *
@@ -53,7 +55,6 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
  * This design allows easy substitution of different database backends by
  * changing only the factory input type, without modifying the business logic
  * that relies on the DAO interfaces.
- * </p>
  *
  * @see <a href=
  *      "https://www.oracle.com/java/technologies/dataaccessobject.html">Article
@@ -65,8 +66,8 @@ public abstract class AbstractSqlFactoryDao {
 
 	public static AbstractSqlFactoryDao getSqlFactoryDao(int type) {
 		return switch (type) {
-		case MYSQL -> new MySqlFactoryDao();
-		default -> throw new IllegalArgumentException("Invalid database type: " + type);
+			case MYSQL -> new MySqlFactoryDao();
+			default -> throw new IllegalArgumentException("Invalid database type: " + type);
 		};
 	}
 

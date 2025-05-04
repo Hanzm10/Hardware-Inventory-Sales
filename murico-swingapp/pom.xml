@@ -16,6 +16,16 @@
                 <includes>
                     <include>**/*.properties</include>
                     <include>**/*.ttf</include>
+                    <include>**/*.png</include>
+                    <include>**/*.svg</include>
+                    <include>**/*.jpg</include>
+                    <include>**/*.jpeg</include>
+                    <include>**/*.webp</include>
+                    <include>**/*.avif</include>
+                    <include>**/*.gif</include>
+                    <include>**/*.txt</include>
+                    <include>**/*.csv</include>
+                    <include>**/*.conf</include>
                 </includes>
             </resource>
         </resources>
