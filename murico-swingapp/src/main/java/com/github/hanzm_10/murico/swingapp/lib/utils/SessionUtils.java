@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -14,14 +14,15 @@
 package com.github.hanzm_10.murico.swingapp.lib.utils;
 
 import java.sql.Timestamp;
+
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
 
 public final class SessionUtils {
-    public static final boolean isSessionExpired(final Session session) {
-        if (session._sessionExpiresAt() != null) {
-            return session._sessionExpiresAt().before(new Timestamp(System.currentTimeMillis()));
-        }
+	public static final boolean isSessionExpired(final Session session) {
+		if (session.expiresAt() != null) {
+			return session.expiresAt().before(new Timestamp(System.currentTimeMillis()));
+		}
 
-        throw new IllegalStateException("Session expiration time is not set.");
-    }
+		throw new IllegalStateException("Session expiration time is not set.");
+	}
 }
