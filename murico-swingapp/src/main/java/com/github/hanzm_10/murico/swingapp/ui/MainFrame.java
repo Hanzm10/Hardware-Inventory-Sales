@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -13,6 +13,7 @@
  */
 package com.github.hanzm_10.murico.swingapp.ui;
 
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -70,11 +71,11 @@ public class MainFrame extends JFrame {
 		var rootContainer = sceneManager.getRootContainer();
 		var wrapper = new JPanel();
 
-		wrapper.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
+		wrapper.setLayout(new BorderLayout());
 		wrapper.setPreferredSize(Styles.DEFAULT_DIMENSIONS);
 		wrapper.setSize(Styles.DEFAULT_DIMENSIONS);
 
-		wrapper.add(rootContainer, "cell 0 0");
+		wrapper.add(rootContainer, BorderLayout.CENTER);
 
 		add(wrapper);
 	}

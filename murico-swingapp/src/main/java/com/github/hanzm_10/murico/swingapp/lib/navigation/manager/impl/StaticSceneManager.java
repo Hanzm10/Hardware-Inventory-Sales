@@ -34,6 +34,8 @@ public class StaticSceneManager implements SceneManager {
         super();
 
         cardLayout = new CardLayout();
+        cardLayout.setHgap(0);
+        cardLayout.setVgap(0);
         rootContainer = new JPanel(cardLayout);
         registeredSceneEntries = new HashMap<>();
         sceneCache = new ObserverLRU<>(10);
@@ -53,7 +55,6 @@ public class StaticSceneManager implements SceneManager {
 
         if (view != null) {
             rootContainer.remove(view);
-            cardLayout.removeLayoutComponent(view);
         } else {
             LOGGER.severe("Scene view is null before destroy of scene: " + scene.getSceneName());
         }
@@ -86,9 +87,6 @@ public class StaticSceneManager implements SceneManager {
             }
 
             var view = scene.getSceneView();
-
-            rootContainer.add(view);
-            cardLayout.addLayoutComponent(view, sceneName);
             scene.onCreate();
         }
 
@@ -169,9 +167,11 @@ public class StaticSceneManager implements SceneManager {
         var newSceneName = newScene.getSceneName();
 
         newScene.onBeforeShow();
+        rootContainer.add(newScene.getSceneView(), newSceneName);
         cardLayout.show(rootContainer, newSceneName);
 
         if (oldScene != null) {
+            rootContainer.remove(oldScene.getSceneView());
             oldScene.onHide();
         }
 

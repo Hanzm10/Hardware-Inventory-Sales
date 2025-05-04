@@ -11,36 +11,40 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.ui.buttons;
+package com.github.hanzm_10.murico.swingapp.ui.inputs;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
-import javax.swing.JButton;
+import org.jetbrains.annotations.NotNull;
 
 import com.formdev.flatlaf.ui.FlatBorder;
+import com.formdev.flatlaf.ui.FlatRoundBorder;
 
-public class StyledButtonFactory {
+public class TextFieldFactory {
+    public static JPasswordField createPasswordField() {
+        return createPasswordField("");
+    }
 
+    public static JPasswordField createPasswordField(@NotNull final String initialMsg) {
+        var textField = new JPasswordField(initialMsg);
+        var border = new FlatRoundBorder();
 
-	public static JButton createButton(String text, ButtonStyles buttonStyle) {
-		var button = new JButton(text);
+        textField.setBorder(border);
 
-		button.setBackground(buttonStyle.getBackgroundColor());
-		button.setForeground(buttonStyle.getForegroundColor());
+        return textField;
+    }
 
-        if (buttonStyle == ButtonStyles.TRANSPARENT) {
-            ((FlatBorder) button.getBorder()).applyStyleProperty("borderColor", new Color(0xff, true));
-        }
+    public static JTextField createTextField() {
+        return createTextField("");
+    }
 
-		return button;
-	}
+    public static JTextField createTextField(@NotNull final String initialMsg) {
+        var textField = new JTextField(initialMsg);
+        var border = new FlatRoundBorder();
 
-	public static JButton createButton(String text, ButtonStyles buttonStyle, int width, int height) {
-		var button = createButton(text, buttonStyle);
-		button.setPreferredSize(new Dimension(width, height));
+        textField.setBorder(border);
 
-		return button;
-	}
+        return textField;
+    }
 }
-

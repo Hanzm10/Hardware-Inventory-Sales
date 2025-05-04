@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -17,13 +17,27 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+
+import javax.imageio.ImageIO;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.cache.LRU;
+import com.kitfox.svg.app.beans.SVGIcon;
 
 public class AssetManager {
 	private static final LRU<String, Image> images = new LRU<>(30);
+    private static final LRU<String, SVGIcon> icons = new LRU<>(20);
+
+    public static SVGIcon getOrLoadIcon(@NotNull final String path) throws URISyntaxException {
+        var icon = new SVGIcon();
+        icon.setSvgURI(AssetManager.class.getResource(path).toURI());
+
+        icons.update("path", icon);
+
+        return icon;
+    }
 
 	public static Image getOrLoadImage(@NotNull final String path) throws IOException, InterruptedException {
 		var image = images.get(path);
@@ -44,12 +58,16 @@ public class AssetManager {
 			throw new IllegalArgumentException("Resource not found: " + path);
 		}
 
-		try (var dataInputStream = new DataInputStream(AssetManager.class.getResourceAsStream(path))) {
+        try (var inputStream = AssetManager.class.getResourceAsStream(path)) {
+            return ImageIO.read(inputStream);
+        }
+
+		/*try (var dataInputStream = new DataInputStream(AssetManager.class.getResourceAsStream(path))) {
 			byte bytes[] = new byte[dataInputStream.available()];
 
 			dataInputStream.readFully(bytes);
 
 			return Toolkit.getDefaultToolkit().createImage(bytes);
-		}
+		}*/
 	}
 }

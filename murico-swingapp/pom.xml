@@ -42,6 +42,12 @@
             <artifactId>murico-lookandfeel</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.kitfox.svg/svg-salamander -->
+        <dependency>
+            <groupId>com.kitfox.svg</groupId>
+            <artifactId>svg-salamander</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <dependency>
             <groupId>com.mysql</groupId>
