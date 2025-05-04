@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
-import com.github.hanzm_10.murico.swingapp.lib.database.dao.InventoryDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
-public class MySqlItemDao implements InventoryDao {
+public class MySqlItemDao implements ItemDao {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlItemDao.class);
 
 	@Override

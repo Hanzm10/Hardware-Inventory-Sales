@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Range;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 
-public interface InventoryDao {
+public interface ItemDao {
 	public Item getItemByItemName(@NotNull String itemName)throws IOException, SQLException;
 	public Item getItemById(@Range(from = 0, to = Integer.MAX_VALUE) int itemID) throws IOException, SQLException;
 }
