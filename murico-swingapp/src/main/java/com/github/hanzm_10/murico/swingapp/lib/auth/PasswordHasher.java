@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -13,9 +13,14 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.auth;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class PasswordHasher {
-    private int generateSalt() { return 0; }
+	private static int generateSalt() {
+		return 0;
+	}
+
+	public static String hash(@NotNull final String unhashedPassword) {
+		return null;
+	}
 }
