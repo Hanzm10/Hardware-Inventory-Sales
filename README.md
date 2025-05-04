@@ -1,6 +1,6 @@
 # Hardware Inventory Sales System
 
-A GUI inventory and sales application for a hardware store. Built by student of Technological Institute of the Philippines - Quezon City (T.I.P. - Q.C.) for their final project in ITE012.
+A GUI inventory and sales application for a hardware store. Built by students of Technological Institute of the Philippines - Quezon City (T.I.P. - Q.C.) for their final project in ITE012.
 
 ## Project Dependencies
  - Build tool: [Apache Maven](https://maven.apache.org/)
@@ -15,19 +15,16 @@ A GUI inventory and sales application for a hardware store. Built by student of 
 ## Database Design
 
 As much as possible, lessons from the video titled, ["How to Fake a Database Design - Curtis Poe (‎Ovid‎)"](https://youtu.be/y1tcbhWLiUM?si=TuftIGFaH6Z4yeMF) are followed.
-A few examples are:
-
- - `id` columns should be prefixed with its singular table name. For example, a `users` table should have `users.user_id` for its primary key id column.
- - using snake_case for more readability
- - an underscore prefix for auto-generated columns.
-
 The database design is fairly straightforward and small. Refer to this [diagram](https://dbdocs.io/workemailaaronragudos/murico) to see how it's structured.
 
-## Code Design Principles
+## Resources
 
 - For design patterns: [Refactoring Guru](https://refactoring.guru/)
 - Data Access Objects for database interactions: [Core J2EE Patterns - Data Access Objects](https://www.oracle.com/java/technologies/dataaccessobject.html)
 - For Regular Expressions or Pattern matching: [Pattern Matching using Regular Expressions](https://knowledge.square-9.com/gc230/pattern-matching-using-regular-expressions)
+- Creating an Authentication Module: [Best Practices for Designing a User Authentication Module](https://vertabelo.com/blog/user-authentication-module/)
+- Hashing Passwords: [Hashing a Password in Java](https://www.baeldung.com/java-password-hashing)
+- A simple lesson about database design: [How to Fake a Database Design - Curtis Poe \(Ovid_\)](https://www.youtube.com/watch?v=y1tcbhWLiUM)
 
 ## UI/UX Design
 
@@ -39,7 +36,6 @@ Our UI/UX designers worked hard to implement our designs. Refer to this [Figma f
 
  - [Project Setup Guide](https://youtu.be/TVhgt9oEcg0)
  - [Project Workflow Guide](https://youtu.be/6z39OYzFuaQ)
-
 
 ### IntelliJ
 
