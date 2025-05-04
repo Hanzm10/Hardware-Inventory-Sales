@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -15,7 +15,10 @@ package com.github.hanzm_10.murico.swingapp.ui.buttons;
 
 import java.awt.Color;
 
+import javax.swing.UIManager;
+
 import com.formdev.flatlaf.FlatLaf;
+import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 
 public enum ButtonStyles {
@@ -84,6 +87,16 @@ public enum ButtonStyles {
         @Override
         public Color getForegroundColor() {
             return FlatLaf.isLafDark() ? Styles.SUCCESS_FOREGROUND_COLOR_DARK : Styles.SUCCESS_FOREGROUND_COLOR;
+        }
+    },
+    TRANSPARENT {
+        @Override
+        public Color getBackgroundColor() {
+            return new Color(0xff, true);
+        }
+        @Override
+        public Color getForegroundColor() {
+            return UIManager.getColor("foreground");
         }
     };
 

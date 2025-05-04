@@ -92,6 +92,8 @@ public class StaticSceneManager implements SceneManager {
             scene.onCreate();
         }
 
+        sceneCache.update(sceneName, scene);
+
         return scene;
     }
 
