@@ -55,6 +55,11 @@ public class MySqlAccountDao implements AccountDao {
 
 					char[] passChars = writer.toCharArray();
 
+					writer.close();
+					streamReader.close();
+					statement.close();
+					conn.close();
+
 					return new HashedStringWithSalt(CharUtils.charArrayToByteArray(passChars),
 							Salt.fromBase64(resultSet.getString("password_salt")));
 				}
