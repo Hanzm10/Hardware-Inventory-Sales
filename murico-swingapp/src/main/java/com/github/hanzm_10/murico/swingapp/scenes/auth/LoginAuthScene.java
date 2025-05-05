@@ -40,6 +40,7 @@ import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.utils.Debouncer;
+import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.lib.validator.PasswordValidator;
 import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
 import com.github.hanzm_10.murico.swingapp.listeners.TogglePasswordFieldVisibilityListener;
@@ -200,12 +201,12 @@ public class LoginAuthScene implements Scene, ActionListener {
 		var isValid = true;
 
 		if (name.isBlank()) {
-			errorMessageName.setText("<html>Username must not be empty</html>");
+			errorMessageName.setText(HtmlUtils.wrapInHtml("Username must not be empty"));
 			isValid = false;
 		}
 
 		if (!PasswordValidator.isPasswordValid(password, PasswordValidator.STRONG_PASSWORD)) {
-			errorMessagePassword.setText("<html>" + PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE + "</html>");
+			errorMessagePassword.setText(HtmlUtils.wrapInHtml(PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE));
 			isValid = false;
 		}
 
