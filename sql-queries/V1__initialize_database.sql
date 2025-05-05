@@ -24,7 +24,7 @@ CREATE TABLE accounts (
 
     email VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    password_salt INTEGER NOT NULL,
+    password_salt VARCHAR(255) NOT NULL,
     verification_status ENUM("unverified", "verified") NOT NULL DEFAULT "unverified",
 
     UNIQUE (_user_id, email),

@@ -14,8 +14,6 @@
 package com.github.hanzm_10.murico.swingapp;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,15 +48,14 @@ public class MuricoSwingApp {
 	}
 
 	public static void main(String[] args) {
-        /*try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update("Hello, World!".getBytes());
-            String stringHash = new BigInteger(1, digest.digest()).toString(16);
-
-            System.out.println(stringHash + " " + stringHash.length());
-         } catch(Exception e) {
-            System.err.println(e);
-        }*/
+		/*
+		 * try { MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		 * digest.update("Hello, World!".getBytes()); String stringHash = new
+		 * BigInteger(1, digest.digest()).toString(16);
+		 * 
+		 * System.out.println(stringHash + " " + stringHash.length()); } catch(Exception
+		 * e) { System.err.println(e); }
+		 */
 
 		if (Metadata.APP_ENV.equals("development")) {
 			if (!doDevelopmentSetup()) {

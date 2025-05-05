@@ -13,9 +13,12 @@
  */
 package com.github.hanzm_10.murico.swingapp.ui.buttons;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
+
+import com.formdev.flatlaf.ui.FlatBorder;
 
 public class StyledButtonFactory {
 
@@ -25,6 +28,10 @@ public class StyledButtonFactory {
 
 		button.setBackground(buttonStyle.getBackgroundColor());
 		button.setForeground(buttonStyle.getForegroundColor());
+
+        if (buttonStyle == ButtonStyles.TRANSPARENT) {
+            ((FlatBorder) button.getBorder()).applyStyleProperty("borderColor", new Color(0xff, true));
+        }
 
 		return button;
 	}

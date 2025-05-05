@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -43,15 +43,15 @@ public class MainAuthScene implements Scene {
 				SceneNavigator.navigateTo(e.getActionCommand());
 			});
 		}
-
 	}
 
 	private static final Logger LOGGER = MuricoLogger.getLogger(MainAuthScene.class);
 
-    protected MainAuthSceneButtonNavigationListener btnListener = new MainAuthSceneButtonNavigationListener();
+	protected MainAuthSceneButtonNavigationListener btnListener = new MainAuthSceneButtonNavigationListener();
 
 	protected JPanel view;
 	protected MigLayout layout;
+	protected Image image;
 	protected ImagePanel imagePanel;
 	protected JButton loginButton;
 
@@ -67,34 +67,67 @@ public class MainAuthScene implements Scene {
 		return view == null ? (view = new JPanel()) : view;
 	}
 
-    @Override
-    public void onCreate() {
-        try {
-            Image image = AssetManager.getOrLoadImage("images/auth_main.png");
-            imagePanel = new ImagePanel(image);
-        } catch (IOException | InterruptedException e) {
-            LOGGER.log(Level.SEVERE, "Failed to load image", e);
-        }
+	private boolean imageLoaded() {
+		try {
+			image = AssetManager.getOrLoadImage("images/auth_main.png");
+			return true;
+		} catch (IOException | InterruptedException e) {
+			LOGGER.log(Level.SEVERE, "Failed to load image", e);
+		}
 
-		layout = new MigLayout("", "[grow,right][64px,center][grow,left]",
-				"[:320.00:520px,grow 50,bottom][50px,grow,top]");
+		return false;
+	}
 
-		loginButton = StyledButtonFactory.createButton("Log In", ButtonStyles.TERTIARY, 280, 50);
-		registerButton = StyledButtonFactory.createButton("Create an account", ButtonStyles.TERTIARY, 280, 50);
+	private void setViewLayout() {
+		layout = new MigLayout("", "[::280px,grow,right]64[::280px,grow,left]",
+				"[240px::315px, bottom]24[50px::50px, top]");
+		view.setLayout(layout);
+	}
 
-        loginButton.addActionListener(btnListener);
-        registerButton.addActionListener(btnListener);
+	private void attachListeners() {
+		loginButton.addActionListener(btnListener);
+		registerButton.addActionListener(btnListener);
 
 		loginButton.setActionCommand("auth/login");
 		registerButton.setActionCommand("auth/register");
+	}
 
-		view.setLayout(layout);
+	private void createComponents() {
+		loginButton = StyledButtonFactory.createButton("Log In", ButtonStyles.TERTIARY, 280, 50);
+		registerButton = StyledButtonFactory.createButton("Create an account", ButtonStyles.TERTIARY, 280, 50);
+	}
 
-        if (imagePanel != null) {
-            view.add(imagePanel, "cell 0 0 3 1, grow");
-        }
+	private void attachComponents() {
+		if (imageLoaded()) {
+			imagePanel = new ImagePanel(image);
+			view.add(imagePanel, "cell 0 0 2");
+		}
 
 		view.add(loginButton, "cell 0 1");
-		view.add(registerButton, "cell 2 1");
+		view.add(registerButton, "cell 1 1");
+	}
+
+	@Override
+	public void onCreate() {
+		setViewLayout();
+		createComponents();
+		attachListeners();
+		attachComponents();
+	}
+
+	@Override
+	public boolean onDestroy() {
+		loginButton.removeActionListener(btnListener);
+		registerButton.removeActionListener(btnListener);
+		view.removeAll();
+		loginButton = null;
+		registerButton = null;
+		image = null;
+		imagePanel = null;
+		view.setLayout(null);
+		layout = null;
+		view = null;
+
+		return true;
 	}
 }

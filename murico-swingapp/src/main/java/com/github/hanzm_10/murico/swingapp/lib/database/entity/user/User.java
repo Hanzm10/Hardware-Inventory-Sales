@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -15,81 +15,6 @@ package com.github.hanzm_10.murico.swingapp.lib.database.entity.user;
 
 import java.sql.Timestamp;
 
-import org.jetbrains.annotations.NotNull;
-
-/**
- * Represents a user in the application.
- *
- * <p>
- * This class includes the user's ID, creation time, display name and image,
- * gender, and role.
- *
- * @param _userId          The unique identifier of the user.
- * @param _userCreatedAt   The timestamp when the user was created.
- * @param userDisplayName  The user's display name.
- * @param userDisplayImage The URL or path to the user's display image.
- * @param userGender       The user's gender.
- */
-public record User(int _userId, Timestamp _userCreatedAt, String userDisplayName, String userDisplayImage,
-        UserGender userGender) {
-    /**
-     * Builder class for constructing a {@link User} instance with validation and
-     * chaining support.
-     */
-    public static class Builder {
-        private int userId;
-        private Timestamp userCreatedAt;
-        private String userDisplayName;
-        private String userDisplayImage;
-        private UserGender userGender;
-
-        /**
-         * Builds and returns the {@link User} object after validating required fields.
-         *
-         * @return a fully constructed and valid {@link User} instance
-         * @throws IllegalStateException if any required field is invalid or missing
-         */
-        public @NotNull User build() throws IllegalStateException {
-            if (userId <= 0) {
-                throw new IllegalStateException("User ID must be greater than 0");
-            }
-            if (userCreatedAt == null) {
-                throw new IllegalStateException("User creation time cannot be null");
-            }
-            if (userDisplayName == null || userDisplayName.isBlank()) {
-                throw new IllegalStateException("Display name cannot be null or empty");
-            }
-            if (userGender == null) {
-                throw new IllegalStateException("User gender cannot be null");
-            }
-
-            return new User(userId, userCreatedAt, userDisplayName, userDisplayImage, userGender);
-        }
-
-        public Builder setUserCreatedAt(Timestamp userCreatedAt) {
-            this.userCreatedAt = userCreatedAt;
-            return this;
-        }
-
-        public Builder setUserDisplayImage(String userDisplayImage) {
-            this.userDisplayImage = userDisplayImage;
-            return this;
-        }
-
-        public Builder setUserDisplayName(String userDisplayName) {
-            this.userDisplayName = userDisplayName;
-            return this;
-        }
-
-        public Builder setUserGender(UserGender userGender) {
-            this.userGender = userGender;
-            return this;
-        }
-
-        public Builder setUserId(int userId) {
-            this.userId = userId;
-            return this;
-        }
-
-    }
+public record User(int _userId, Timestamp _createdAt, Timestamp updatedAt, String displayName, String displayImage,
+		UserGender gender, String firstName, String lastName, String biography) {
 }
