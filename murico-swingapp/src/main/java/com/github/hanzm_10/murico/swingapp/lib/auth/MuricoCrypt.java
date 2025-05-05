@@ -15,25 +15,41 @@ package com.github.hanzm_10.murico.swingapp.lib.auth;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.lib.utils.CharUtils;
+
 public class MuricoCrypt {
-	public final record HashedStringWithSalt(@NotNull String hashedString, @NotNull Salt salt) {
+	public final record HashedStringWithSalt(@NotNull byte[] hashedString, @NotNull Salt salt) {
 		public boolean equalsHashedString(@NotNull final HashedStringWithSalt hashedStringWithSalt) {
-			return hashedStringWithSalt.hashedString().equals(this.hashedString);
+			return CharUtils.constantTimeEquals(hashedStringWithSalt.hashedString, this.hashedString);
 		}
 
 		public boolean equalsSalt(@NotNull final HashedStringWithSalt hashedStringWithSalt) {
-			return hashedStringWithSalt.salt.equals(this.salt);
+			return CharUtils.constantTimeEquals(hashedStringWithSalt.salt.getValue(), this.salt.getValue());
 		}
 
+		/**
+		 * Compares values
+		 *
+		 * @param hashedStringWithSalt
+		 * @return
+		 */
 		public boolean equals(@NotNull final HashedStringWithSalt hashedStringWithSalt) {
-			return equals(hashedStringWithSalt) && equalsSalt(hashedStringWithSalt);
+			return equalsHashedString(hashedStringWithSalt) && equalsSalt(hashedStringWithSalt);
+		}
+
+		/**
+		 * Essentially removes the information of this hashed string
+		 */
+		public void clearHashedStringBytes() {
+			for (int i = 0; i < hashedString().length; ++i) {
+				hashedString()[i] = 0;
+			}
 		}
 	}
 
@@ -54,7 +70,8 @@ public class MuricoCrypt {
 			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		var spec = new PBEKeySpec(password, salt.getValue(), DEFAULT_STRENGTH, KEY_LENGTH);
 		var hash = SecretKeyFactory.getInstance(ALGORITHM).generateSecret(spec).getEncoded();
+		spec.clearPassword();
 
-		return new HashedStringWithSalt(Base64.getEncoder().encodeToString(hash), salt);
+		return new HashedStringWithSalt(hash, salt);
 	}
 }
