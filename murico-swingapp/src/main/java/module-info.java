@@ -6,5 +6,6 @@ open module murico.swingapp {
 	requires com.miglayout.swing;
 	requires static org.jetbrains.annotations;
 	requires murico.lookandfeel;
+	requires jakarta.mail;
 	requires org.apache.pdfbox;
 }
