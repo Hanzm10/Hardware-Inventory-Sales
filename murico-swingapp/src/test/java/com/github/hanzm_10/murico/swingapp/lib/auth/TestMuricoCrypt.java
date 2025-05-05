@@ -13,8 +13,8 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.auth;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -31,8 +31,8 @@ public class TestMuricoCrypt {
 		var salt2 = new Salt();
 		var hasher = new MuricoCrypt();
 
-		assertNotEquals(hasher.hash(pass, salt).hashedString(), hasher.hash(pass, salt2).hashedString());
-		assertNotEquals(hasher.hash(pass).hashedString(), hasher.hash(pass).hashedString());
+		assertFalse(hasher.hash(pass, salt).equals(hasher.hash(pass, salt2)));
+		assertFalse(hasher.hash(pass).equals(hasher.hash(pass)));
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class TestMuricoCrypt {
 		var pass = "123456".toCharArray();
 		var pass2 = "654321".toCharArray();
 		var hasher = new MuricoCrypt();
-		assertNotEquals(hasher.hash(pass, salt).hashedString(), hasher.hash(pass2, salt).hashedString());
+		assertFalse(hasher.hash(pass, salt).equals(hasher.hash(pass2, salt)));
 	}
 
 	@Test
@@ -51,6 +51,6 @@ public class TestMuricoCrypt {
 		var salt = new Salt();
 		var pass = "123456".toCharArray();
 		var hasher = new MuricoCrypt();
-		assertEquals(hasher.hash(pass, salt).hashedString(), hasher.hash(pass, salt).hashedString());
+		assertTrue(hasher.hash(pass, salt).equals(hasher.hash(pass, salt)));
 	}
 }
