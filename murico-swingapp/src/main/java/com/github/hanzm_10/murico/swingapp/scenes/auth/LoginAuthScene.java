@@ -280,9 +280,9 @@ public class LoginAuthScene implements Scene, ActionListener {
 			try {
 				SessionService.loginUser(name, password);
 			} catch (MuricoError e) {
-				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(), "Murico - Log in",
+				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(), "Failed to log in",
 						JOptionPane.ERROR_MESSAGE));
-				LOGGER.log(Level.SEVERE, "", e);
+				LOGGER.log(Level.SEVERE, "Failed to log in", e);
 			} finally {
 				SwingUtilities.invokeLater(() -> enableComponents());
 				Arrays.fill(password, '\0');
