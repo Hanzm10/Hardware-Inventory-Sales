@@ -15,7 +15,14 @@ package com.github.hanzm_10.murico.swingapp.lib.auth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
 
 public class PasswordHasher {
-    private int generateSalt() { return 0; }
+    private int generateSalt() throws NoSuchAlgorithmException { 
+    	SecureRandom random = new SecureRandom();
+    	byte[] salt = new byte[16];
+    	random.nextBytes(salt);
+    	return salt;
+    }
 }
