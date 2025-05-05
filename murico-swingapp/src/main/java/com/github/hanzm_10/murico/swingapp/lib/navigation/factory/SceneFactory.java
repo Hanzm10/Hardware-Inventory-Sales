@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -24,10 +24,5 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
  */
 @FunctionalInterface
 public interface SceneFactory {
-    /**
-     * Creates a new scene with the specified parameters.
-     *
-     * @return A new instance of the scene.
-     */
-    Scene createScene();
+	Scene createScene();
 }

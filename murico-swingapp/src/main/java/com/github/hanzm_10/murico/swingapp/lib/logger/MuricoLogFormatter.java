@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -28,223 +28,224 @@ import java.util.logging.LogRecord;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.ErrorInterpreterRegistry;
 
 public class MuricoLogFormatter extends Formatter {
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[91m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[94m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
-    public static final String ANSI_BOLD_ON = "\u001B[1m";
-    public static final String ANSI_BOLD_OFF = "\u001B[22m";
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[91m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[94m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+	public static final String ANSI_BOLD_ON = "\u001B[1m";
+	public static final String ANSI_BOLD_OFF = "\u001B[22m";
 
-    private static final ErrorInterpreterRegistry errorInterpreterRegistry = new ErrorInterpreterRegistry();
+	private static final ErrorInterpreterRegistry errorInterpreterRegistry = new ErrorInterpreterRegistry();
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-            .withLocale(Locale.US).withZone(ZoneId.systemDefault());
+	private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+			.withLocale(Locale.US).withZone(ZoneId.systemDefault());
 
-    private void appendException(final StringBuilder stringBuilder, final Throwable exception) {
-        stringBuilder.append("> ");
-        stringBuilder.append("[");
+	private void appendException(final StringBuilder stringBuilder, final Throwable exception) {
+		stringBuilder.append("> ");
+		stringBuilder.append("[");
 
-        var simpleName = exception.getClass().getCanonicalName();
+		var simpleName = exception.getClass().getCanonicalName();
 
-        stringBuilder.append(simpleName);
-        stringBuilder.append("]");
-        stringBuilder.append(" ");
+		stringBuilder.append(simpleName);
+		stringBuilder.append("]");
+		stringBuilder.append(" ");
 
-        var friendlyMessage = errorInterpreterRegistry.interpret(exception);
+		var friendlyMessage = errorInterpreterRegistry.interpret(exception);
 
-        if (friendlyMessage != null) {
-            stringBuilder.append(friendlyMessage);
-        } else {
-            stringBuilder.append(exception.getMessage());
-        }
+		if (friendlyMessage != null) {
+			stringBuilder.append(friendlyMessage);
+		} else {
+			stringBuilder.append(exception.getMessage());
+		}
 
-        stringBuilder.append("\n");
+		stringBuilder.append("\n");
 
-        var stackTrace = exception.getStackTrace();
+		var stackTrace = exception.getStackTrace();
 
-        for (StackTraceElement element : stackTrace) {
-            stringBuilder.append("\tat ").append(element);
-            stringBuilder.append("\n");
-        }
+		for (StackTraceElement element : stackTrace) {
+			stringBuilder.append("\tat ").append(element);
+			stringBuilder.append("\n");
+		}
 
-        Set<Throwable> circularReferences = Collections.newSetFromMap(new IdentityHashMap<>());
+		Set<Throwable> circularReferences = Collections.newSetFromMap(new IdentityHashMap<>());
 
-        var suppresedExceptions = exception.getSuppressed();
+		var suppresedExceptions = exception.getSuppressed();
 
-        if (suppresedExceptions.length != 0) {
-            stringBuilder.append("\t[SUPRESSED]: ");
-            stringBuilder.append("\n");
+		if (suppresedExceptions.length != 0) {
+			stringBuilder.append("\t[SUPRESSED]: ");
+			stringBuilder.append("\n");
 
-            for (Throwable suppressedException : suppresedExceptions) {
-                printEnclosedStackTrace(stringBuilder, suppressedException, stackTrace, "\t[SUPPRESSED]: ", "\t",
-                        circularReferences);
-            }
-        }
+			for (Throwable suppressedException : suppresedExceptions) {
+				printEnclosedStackTrace(stringBuilder, suppressedException, stackTrace, "\t[SUPPRESSED]: ", "\t",
+						circularReferences);
+			}
+		}
 
-        var cause = exception.getCause();
+		var cause = exception.getCause();
 
-        if (cause != null) {
-            stringBuilder.append("\t[CAUSE]: ");
-            stringBuilder.append("\n");
+		if (cause != null) {
+			stringBuilder.append("\t[CAUSE]: ");
+			stringBuilder.append("\n");
 
-            printEnclosedStackTrace(stringBuilder, cause, stackTrace, "\t[CAUSE]: ", "\t", circularReferences);
-        }
-    }
+			printEnclosedStackTrace(stringBuilder, cause, stackTrace, "\t[CAUSE]: ", "\t", circularReferences);
+		}
+	}
 
-    private int computeFramesInCommon(final StackTraceElement[] trace, final StackTraceElement[] enclosingTrace,
-            final int m, final int n) {
-        var copyM = m;
-        var copyN = n;
+	private int computeFramesInCommon(final StackTraceElement[] trace, final StackTraceElement[] enclosingTrace,
+			final int m, final int n) {
+		var copyM = m;
+		var copyN = n;
 
-        while (copyM >= 0 && copyN >= 0 && trace[copyM].equals(enclosingTrace[copyN])) {
-            --copyM;
-            --copyN;
-        }
+		while (copyM >= 0 && copyN >= 0 && trace[copyM].equals(enclosingTrace[copyN])) {
+			--copyM;
+			--copyN;
+		}
 
-        return trace.length - copyM - 1;
-    }
+		return trace.length - copyM - 1;
+	}
 
-    @Override
-    public String format(final LogRecord record) {
-        var stringBuilder = new StringBuilder();
-        stringBuilder.append(ANSI_BOLD_ON);
-        stringBuilder.append(ANSI_BLUE);
+	@Override
+	public String format(final LogRecord record) {
+		var stringBuilder = new StringBuilder();
+		stringBuilder.append(ANSI_BOLD_ON);
+		stringBuilder.append(ANSI_BLUE);
 
-        var timeString = formatDateString(record.getMillis());
-        stringBuilder.append("[");
-        stringBuilder.append(timeString);
-        stringBuilder.append("]");
+		var timeString = formatDateString(record.getMillis());
+		stringBuilder.append("[");
+		stringBuilder.append(timeString);
+		stringBuilder.append("]");
 
-        stringBuilder.append(getMessageColor(record));
-        stringBuilder.append(" ");
+		stringBuilder.append(getMessageColor(record));
+		stringBuilder.append(" ");
 
-        stringBuilder.append("[");
-        stringBuilder.append(record.getLevel().getLocalizedName());
-        stringBuilder.append("]");
-        stringBuilder.append(" ");
+		stringBuilder.append("[");
+		stringBuilder.append(record.getLevel().getLocalizedName());
+		stringBuilder.append("]");
+		stringBuilder.append(" ");
 
-        stringBuilder.append(ANSI_BOLD_ON);
-        stringBuilder.append("[Thread: ");
-        stringBuilder.append(Thread.currentThread().getName());
-        stringBuilder.append("] [Source: ");
-        stringBuilder.append(record.getSourceClassName());
-        stringBuilder.append("]");
-        stringBuilder.append(ANSI_BOLD_OFF);
+		stringBuilder.append(ANSI_BOLD_ON);
+		stringBuilder.append("[Thread: ");
+		stringBuilder.append(Thread.currentThread().getName());
+		stringBuilder.append("] [Source: ");
+		stringBuilder.append(record.getSourceClassName());
+		stringBuilder.append("]");
+		stringBuilder.append(ANSI_BOLD_OFF);
 
-        stringBuilder.append(ANSI_RESET);
-        stringBuilder.append(ANSI_WHITE);
-        stringBuilder.append("\n> ");
-        stringBuilder.append(record.getMessage().replaceAll("\n", "\n> "));
+		stringBuilder.append(ANSI_RESET);
+		stringBuilder.append(ANSI_WHITE);
+		stringBuilder.append("\n> ");
+		stringBuilder.append(record.getMessage().replaceAll("\n", "\n> "));
 
-        var params = record.getParameters();
+		var params = record.getParameters();
 
-        if (params != null) {
-            stringBuilder.append("\n> ");
-            stringBuilder.append(getMessageColor(record));
-            stringBuilder.append("[Details]");
-            stringBuilder.append(ANSI_WHITE);
+		if (params != null) {
+			stringBuilder.append("\n> ");
+			stringBuilder.append(getMessageColor(record));
+			stringBuilder.append("[Details]");
+			stringBuilder.append(ANSI_WHITE);
 
-            stringBuilder.append("\n  ");
+			stringBuilder.append("\n  ");
 
-            for (int i = 0, l = params.length; i < l; ++i) {
-                stringBuilder.append(params[i]);
+			for (int i = 0, l = params.length; i < l; ++i) {
+				stringBuilder.append(params[i]);
 
-                if (i < l - 1) {
-                    stringBuilder.append(",\n  ");
-                }
-            }
-        }
+				if (i < l - 1) {
+					stringBuilder.append(",\n  ");
+				}
+			}
+		}
 
-        stringBuilder.append(ANSI_RESET);
-        stringBuilder.append("\n");
+		stringBuilder.append(ANSI_RESET);
+		stringBuilder.append("\n");
 
-        var thrown = record.getThrown();
+		var thrown = record.getThrown();
 
-        if (thrown != null) {
-            stringBuilder.append(getMessageColor(record));
-            appendException(stringBuilder, thrown);
-        }
+		if (thrown != null) {
+			stringBuilder.append(getMessageColor(record));
+			appendException(stringBuilder, thrown);
+			stringBuilder.append(ANSI_RESET);
+		}
 
-        return stringBuilder.toString();
-    }
+		return stringBuilder.toString();
+	}
 
-    private String formatDateString(final long ms) {
-        return dateTimeFormatter.format(Instant.ofEpochMilli(ms));
-    }
+	private String formatDateString(final long ms) {
+		return dateTimeFormatter.format(Instant.ofEpochMilli(ms));
+	}
 
-    private String getMessageColor(final LogRecord record) {
-        if (record.getLevel().intValue() >= Level.SEVERE.intValue()) {
-            return ANSI_RED;
-        } else if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
-            return ANSI_YELLOW;
-        } else if (record.getLevel().intValue() >= Level.INFO.intValue()) {
-            return ANSI_CYAN;
-        } else if (record.getLevel().intValue() >= Level.FINE.intValue()) {
-            return ANSI_GREEN;
-        } else if (record.getLevel().intValue() >= Level.FINER.intValue()) {
-            return ANSI_PURPLE;
-        } else if (record.getLevel().intValue() >= Level.FINEST.intValue()) {
-            return ANSI_BLACK;
-        } else {
-            return ANSI_WHITE;
-        }
-    }
+	private String getMessageColor(final LogRecord record) {
+		if (record.getLevel().intValue() >= Level.SEVERE.intValue()) {
+			return ANSI_RED;
+		} else if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
+			return ANSI_YELLOW;
+		} else if (record.getLevel().intValue() >= Level.INFO.intValue()) {
+			return ANSI_CYAN;
+		} else if (record.getLevel().intValue() >= Level.FINE.intValue()) {
+			return ANSI_GREEN;
+		} else if (record.getLevel().intValue() >= Level.FINER.intValue()) {
+			return ANSI_PURPLE;
+		} else if (record.getLevel().intValue() >= Level.FINEST.intValue()) {
+			return ANSI_BLACK;
+		} else {
+			return ANSI_WHITE;
+		}
+	}
 
-    private void printEnclosedStackTrace(final StringBuilder stringBuilder, final Throwable exception,
-            final StackTraceElement[] enclosingTrace, final String caption, final String prefix,
-            final Set<Throwable> circularReferences) {
-        if (circularReferences.contains(exception)) {
-            stringBuilder.append(prefix).append(caption).append(" [CIRCULAR REFERENCE]: ").append(this);
-            stringBuilder.append("\n");
+	private void printEnclosedStackTrace(final StringBuilder stringBuilder, final Throwable exception,
+			final StackTraceElement[] enclosingTrace, final String caption, final String prefix,
+			final Set<Throwable> circularReferences) {
+		if (circularReferences.contains(exception)) {
+			stringBuilder.append(prefix).append(caption).append(" [CIRCULAR REFERENCE]: ").append(this);
+			stringBuilder.append("\n");
 
-            return;
-        }
+			return;
+		}
 
-        circularReferences.add(exception);
+		circularReferences.add(exception);
 
-        var stackTrace = exception.getStackTrace();
-        var m = stackTrace.length - 1;
-        var n = enclosingTrace.length - 1;
-        var framesInCommon = computeFramesInCommon(stackTrace, enclosingTrace, m, n);
+		var stackTrace = exception.getStackTrace();
+		var m = stackTrace.length - 1;
+		var n = enclosingTrace.length - 1;
+		var framesInCommon = computeFramesInCommon(stackTrace, enclosingTrace, m, n);
 
-        stringBuilder.append(prefix).append(caption).append(exception);
-        stringBuilder.append("\n");
+		stringBuilder.append(prefix).append(caption).append(exception);
+		stringBuilder.append("\n");
 
-        for (var i = 0; i <= m; ++i) {
-            stringBuilder.append(prefix).append("\tat ").append(stackTrace[i]);
-            stringBuilder.append("\n");
-        }
+		for (var i = 0; i <= m; ++i) {
+			stringBuilder.append(prefix).append("\tat ").append(stackTrace[i]);
+			stringBuilder.append("\n");
+		}
 
-        if (framesInCommon != 0) {
-            stringBuilder.append(prefix).append("\t... ").append(framesInCommon).append(" more");
-            stringBuilder.append("\n");
-        }
+		if (framesInCommon != 0) {
+			stringBuilder.append(prefix).append("\t... ").append(framesInCommon).append(" more");
+			stringBuilder.append("\n");
+		}
 
-        var suppressedExceptions = exception.getSuppressed();
+		var suppressedExceptions = exception.getSuppressed();
 
-        if (suppressedExceptions.length != 0) {
-            stringBuilder.append(prefix).append("\t[SUPPRESSED]: ");
-            stringBuilder.append("\n");
+		if (suppressedExceptions.length != 0) {
+			stringBuilder.append(prefix).append("\t[SUPPRESSED]: ");
+			stringBuilder.append("\n");
 
-            for (Throwable suppressedException : suppressedExceptions) {
-                printEnclosedStackTrace(stringBuilder, suppressedException, enclosingTrace, "\n" + caption,
-                        prefix + "\t", circularReferences);
-            }
-        }
+			for (Throwable suppressedException : suppressedExceptions) {
+				printEnclosedStackTrace(stringBuilder, suppressedException, enclosingTrace, "\n" + caption,
+						prefix + "\t", circularReferences);
+			}
+		}
 
-        var cause = exception.getCause();
+		var cause = exception.getCause();
 
-        if (cause != null) {
-            stringBuilder.append(prefix).append("\t[CAUSE]: ");
-            stringBuilder.append("\n");
+		if (cause != null) {
+			stringBuilder.append(prefix).append("\t[CAUSE]: ");
+			stringBuilder.append("\n");
 
-            printEnclosedStackTrace(stringBuilder, cause, enclosingTrace, "\t[CAUSE]: ", prefix + "\t",
-                    circularReferences);
-        }
-    }
+			printEnclosedStackTrace(stringBuilder, cause, enclosingTrace, "\t[CAUSE]: ", prefix + "\t",
+					circularReferences);
+		}
+	}
 }

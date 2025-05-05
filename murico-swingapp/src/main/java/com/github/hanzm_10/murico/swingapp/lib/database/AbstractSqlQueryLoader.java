@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -27,7 +27,7 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
  * Abstract class to load SQL queries from files. This class implements a cache
  * for the SQL queries to avoid loading them multiple times. The cache is an LRU
  * (Least Recently Used) cache. {@link LRU}
- * 
+ *
  * <p>
  * The SQL files should be located in the resources directory under the
  * following structure:
@@ -58,66 +58,62 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
  * </pre>
  */
 public abstract class AbstractSqlQueryLoader {
-    public enum SqlQueryType {
-        SELECT, INSERT, UPDATE, DELETE;
+	public enum SqlQueryType {
+		SELECT, INSERT, UPDATE, DELETE;
 
-        @Override
-        public String toString() {
-            return switch (this) {
-            case SELECT -> "select";
-            case INSERT -> "insert";
-            case UPDATE -> "update";
-            case DELETE -> "delete";
-            };
-        }
-    }
+		@Override
+		public String toString() {
+			return switch (this) {
+			case SELECT -> "select";
+			case INSERT -> "insert";
+			case UPDATE -> "update";
+			case DELETE -> "delete";
+			};
+		}
+	}
 
-    private static final Logger LOGGER = MuricoLogger.getLogger(AbstractSqlQueryLoader.class);
-    private static final String SEPARATOR = "/";
-    private static final String SQL_QUERY_DIRECTORY = "sql" + SEPARATOR;
+	private static final Logger LOGGER = MuricoLogger.getLogger(AbstractSqlQueryLoader.class);
+	private static final String SEPARATOR = "/";
+	private static final String SQL_QUERY_DIRECTORY = "sql" + SEPARATOR;
 
-    private static final String SQL_QUERY_FILE_EXTENSION = ".sql";
+	private static final String SQL_QUERY_FILE_EXTENSION = ".sql";
 
-    protected LRU<String, String> queryCache;
+	protected LRU<String, String> queryCache;
 
-    public @NotNull String get(@NotNull final String name, @NotNull final String tableName,
-            @NotNull final SqlQueryType queryType) throws FileNotFoundException, IOException {
-        var path = SQL_QUERY_DIRECTORY + getDatabaseName() + SEPARATOR + queryType.toString() + SEPARATOR + tableName
-                + SEPARATOR + name + SQL_QUERY_FILE_EXTENSION;
+	public @NotNull String get(@NotNull final String name, @NotNull final String tableName,
+			@NotNull final SqlQueryType queryType) throws FileNotFoundException, IOException {
+		var path = SQL_QUERY_DIRECTORY + getDatabaseName() + SEPARATOR + queryType.toString() + SEPARATOR + tableName
+				+ SEPARATOR + name + SQL_QUERY_FILE_EXTENSION;
 
-        if (queryCache.containsKey(path)) {
-            return queryCache.get(path);
-        }
+		if (queryCache.containsKey(path)) {
+			return queryCache.get(path);
+		}
 
-        var query = loadQuery(path);
+		var query = loadQuery(path);
 
-        if (query != null) {
-            queryCache.update(path, query);
+		if (query != null) {
+			queryCache.update(path, query);
 
-            return query;
-        }
+			return query;
+		}
 
-        // should not be reached
-        return null;
-    }
+		// should not be reached
+		return null;
+	}
 
-    public abstract String getDatabaseName();
+	public abstract String getDatabaseName();
 
-    private String loadQuery(final String path) throws FileNotFoundException, IOException {
-        try (var inputStream = AbstractSqlQueryLoader.class.getResourceAsStream(path)) {
-            if (inputStream == null) {
-                throw new FileNotFoundException("Sql file not found: " + path);
-            }
+	private String loadQuery(final String path) throws FileNotFoundException, IOException {
+		try (var inputStream = AbstractSqlQueryLoader.class.getResourceAsStream(path)) {
+			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+		} catch (OutOfMemoryError e) {
+			// implement a way to read the file in chunks
+			LOGGER.severe("Out of memory error while reading SQL file: " + path);
+		} catch (NullPointerException e) {
+			// DO nothing
+		}
 
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (OutOfMemoryError e) {
-            // implement a way to read the file in chunks
-            LOGGER.severe("Out of memory error while reading SQL file: " + path);
-        } catch (NullPointerException e) {
-            // DO nothing
-        }
-
-        // to appease the compiler, shouldn't be reached
-        return null;
-    }
+		// to appease the compiler, shouldn't be reached
+		return null;
+	}
 }

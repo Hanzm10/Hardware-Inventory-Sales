@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -13,6 +13,7 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
+import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -24,7 +25,11 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.S
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
+import com.github.hanzm_10.murico.swingapp.lib.utils.CharUtils;
 
+/**
+ * NOTE: NEVER EVER STORE PASSWORDS.
+ */
 public class MySqlAccountDao implements AccountDao {
 
 	@Override
@@ -39,8 +44,25 @@ public class MySqlAccountDao implements AccountDao {
 			var resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
-				return new HashedStringWithSalt(resultSet.getString("password_hash"),
-						Salt.fromBase64(resultSet.getString("password_salt")));
+				try (var streamReader = resultSet.getCharacterStream("password_hash");) {
+					CharArrayWriter writer = new CharArrayWriter();
+					char[] buf = new char[1024];
+					int numOfCharsRead;
+
+					while ((numOfCharsRead = streamReader.read(buf)) != -1) {
+						writer.write(buf, 0, numOfCharsRead);
+					}
+
+					char[] passChars = writer.toCharArray();
+
+					writer.close();
+					streamReader.close();
+					statement.close();
+					conn.close();
+
+					return new HashedStringWithSalt(CharUtils.charArrayToByteArray(passChars),
+							Salt.fromBase64(resultSet.getString("password_salt")));
+				}
 			}
 		}
 

@@ -14,25 +14,32 @@
 package com.github.hanzm_10.murico.swingapp.assets;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.cache.LRU;
-import com.kitfox.svg.app.beans.SVGIcon;
+import com.github.weisj.jsvg.parser.LoaderContext;
+import com.github.weisj.jsvg.parser.SVGLoader;
+import com.github.weisj.jsvg.renderer.SVGRenderingHints;
 
 public class AssetManager {
 	private static final LRU<String, Image> images = new LRU<>(30);
-	private static final LRU<String, SVGIcon> icons = new LRU<>(20);
+	private static final LRU<String, ImageIcon> icons = new LRU<>(20);
 
-	public static SVGIcon getOrLoadIcon(@NotNull final String path) throws URISyntaxException {
-		var icon = new SVGIcon();
-		icon.setSvgURI(AssetManager.class.getResource(path).toURI());
+	public static ImageIcon getOrLoadIcon(@NotNull final String path) throws URISyntaxException {
+		var icon = icons.get(path);
 
-		icons.update("path", icon);
+		if (icon == null) {
+			icon = loadIcon(path);
+		}
+
+		icons.update(path, icon);
 
 		return icon;
 	}
@@ -47,6 +54,20 @@ public class AssetManager {
 		images.update(path, image);
 
 		return image;
+	}
+
+	private static ImageIcon loadIcon(@NotNull final String path) {
+		var svgLoader = new SVGLoader();
+		var url = AssetManager.class.getResource(path);
+		var svgDocument = svgLoader.load(url, LoaderContext.builder().build());
+		var size = svgDocument.size();
+		var icon = new BufferedImage((int) size.width, (int) size.height, BufferedImage.TYPE_INT_ARGB);
+		var g = icon.createGraphics();
+		// Will use the value of RenderingHints.KEY_ANTIALIASING by default
+		g.setRenderingHint(SVGRenderingHints.KEY_IMAGE_ANTIALIASING, SVGRenderingHints.VALUE_IMAGE_ANTIALIASING_ON);
+		svgDocument.render(null, g);
+		g.dispose();
+		return new ImageIcon(icon);
 	}
 
 	private static Image loadImage(@NotNull final String path) throws IOException, InterruptedException {
@@ -64,9 +85,9 @@ public class AssetManager {
 		 * try (var dataInputStream = new
 		 * DataInputStream(AssetManager.class.getResourceAsStream(path))) { byte bytes[]
 		 * = new byte[dataInputStream.available()];
-		 * 
+		 *
 		 * dataInputStream.readFully(bytes);
-		 * 
+		 *
 		 * return Toolkit.getDefaultToolkit().createImage(bytes); }
 		 */
 	}

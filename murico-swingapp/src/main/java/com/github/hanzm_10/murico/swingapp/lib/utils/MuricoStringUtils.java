@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -16,27 +16,26 @@ package com.github.hanzm_10.murico.swingapp.lib.utils;
 import java.util.regex.Pattern;
 
 public class MuricoStringUtils {
-    public static boolean containsIgnoreCase(final String str, final String pattern) {
-        return Pattern.compile(pattern, Pattern.LITERAL | Pattern.CASE_INSENSITIVE).matcher(str)
-                .find();
-    }
+	public static boolean containsIgnoreCase(final String str, final String pattern) {
+		return Pattern.compile(pattern, Pattern.LITERAL | Pattern.CASE_INSENSITIVE).matcher(str).find();
+	}
 
-    public static String repeat(final String s, final int count) {
-        if (count < 0) {
-            return "";
-        }
+	public static String repeat(final String s, final int count) {
+		if (count < 0) {
+			return "";
+		}
 
-        if (count == 1) {
-            return s;
-        }
+		if (count == 1) {
+			return s;
+		}
 
-        var stringBuilder = new StringBuilder(s.length() * count);
-        stringBuilder.append(s.repeat(count));
+		var stringBuilder = new StringBuilder(s.length() * count);
+		stringBuilder.append(s.repeat(count));
 
-        return stringBuilder.toString();
-    }
+		return stringBuilder.toString();
+	}
 
-    private MuricoStringUtils() {
-        throw new UnsupportedOperationException("Utility class");
-    }
+	private MuricoStringUtils() {
+		throw new UnsupportedOperationException("Utility class");
+	}
 }

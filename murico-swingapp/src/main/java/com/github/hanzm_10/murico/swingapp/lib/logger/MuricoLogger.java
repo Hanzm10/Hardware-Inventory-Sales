@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -42,7 +42,6 @@ public final class MuricoLogger {
 	public static Logger getLogger(final Class<?> c) {
 		var logger = Logger.getLogger(c.getName());
 		logger.setUseParentHandlers(true);
-		logger.setParent(PARENT_LOGGER);
 
 		return logger;
 	}

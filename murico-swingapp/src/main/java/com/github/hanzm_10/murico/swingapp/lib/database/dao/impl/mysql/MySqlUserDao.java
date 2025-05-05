@@ -45,6 +45,9 @@ public class MySqlUserDao implements UserDao {
 						resultSet.getString("first_name"), resultSet.getString("last_name"),
 						resultSet.getString("biography"));
 			}
+
+			statement.close();
+			conn.close();
 		}
 
 		return user;
@@ -66,6 +69,9 @@ public class MySqlUserDao implements UserDao {
 						resultSet.getString("first_name"), resultSet.getString("last_name"),
 						resultSet.getString("biography"));
 			}
+
+			statement.close();
+			conn.close();
 		}
 		return user;
 	}
@@ -86,6 +92,9 @@ public class MySqlUserDao implements UserDao {
 						resultSet.getString("first_name"), resultSet.getString("last_name"),
 						resultSet.getString("biography"));
 			}
+
+			statement.close();
+			conn.close();
 		}
 		return user;
 	}

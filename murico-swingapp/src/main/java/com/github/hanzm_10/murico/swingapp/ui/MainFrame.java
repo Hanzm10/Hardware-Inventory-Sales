@@ -27,6 +27,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSce
 import com.github.hanzm_10.murico.swingapp.scenes.LoggedInScene;
 import com.github.hanzm_10.murico.swingapp.scenes.LoggedOutScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 public class MainFrame extends JFrame {
 
@@ -35,6 +36,7 @@ public class MainFrame extends JFrame {
 		public void windowClosing(WindowEvent e) {
 			// TODO: If a user is performing a task, ask if they want to save their progress
 			// before closing the application
+			AbandonedConnectionCleanupThread.checkedShutdown();
 			dispose();
 		}
 	}

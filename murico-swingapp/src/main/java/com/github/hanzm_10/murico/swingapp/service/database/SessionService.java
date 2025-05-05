@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -15,6 +15,7 @@ package com.github.hanzm_10.murico.swingapp.service.database;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,8 @@ import com.github.hanzm_10.murico.swingapp.constants.PropertyKey;
 import com.github.hanzm_10.murico.swingapp.lib.auth.MuricoCrypt;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoErrorCodes;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
@@ -60,45 +63,58 @@ public class SessionService {
 		return true;
 	}
 
-	public static User loginUser(@NotNull String _userDisplayName, @NotNull String userPassword) throws Exception {
+	public static User loginUser(@NotNull String _userDisplayName, @NotNull char[] userPassword) throws MuricoError {
 		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
 		var userDao = factory.getUserDao();
-		var user = userDao.getUserByDisplayName(_userDisplayName);
 
-		if (user == null) {
-			throw new Exception("User not found with display name " + _userDisplayName);
+		try {
+			var user = userDao.getUserByDisplayName(_userDisplayName);
+
+			if (user == null) {
+				throw new MuricoError(MuricoErrorCodes.INVALID_CREDENTIALS);
+			}
+
+			var hashedPasswordWithSalt = factory.getAccountDao()
+					.getHashedPasswordWithSaltByUserDisplayName(_userDisplayName);
+
+			if (hashedPasswordWithSalt == null) {
+				throw new MuricoError(MuricoErrorCodes.INVALID_CREDENTIALS);
+			}
+
+			var hashedUserPassword = new MuricoCrypt().hash(userPassword, hashedPasswordWithSalt.salt());
+
+			if (!hashedPasswordWithSalt.equalsHashedString(hashedUserPassword)) {
+				hashedUserPassword.clearHashedStringBytes();
+				hashedUserPassword.clearHashedStringBytes();
+
+				throw new MuricoError(MuricoErrorCodes.INVALID_CREDENTIALS);
+			}
+
+			hashedUserPassword.clearHashedStringBytes();
+			hashedUserPassword.clearHashedStringBytes();
+
+			var sessionDao = factory.getSessionDao();
+			var sessionToken = sessionDao.createSession(user);
+
+			if (sessionToken == null) {
+				throw new MuricoError(MuricoErrorCodes.DATABASE_CONNECTION_FAILED);
+			}
+
+			var session = sessionDao.getSessionByToken(sessionToken);
+
+			if (session == null) {
+				throw new MuricoError(MuricoErrorCodes.UNREACHABLE_ERROR);
+			}
+
+			ApplicationConfig.getInstance().getConfig().setProperty(PropertyKey.Session.UID, sessionToken);
+			SessionManager.getInstance().setSession(session, user);
+
+			return user;
+		} catch (SQLException | IOException e) {
+			LOGGER.log(Level.SEVERE, "Failed to login user", e);
 		}
 
-		var hashedPasswordWithSalt = factory.getAccountDao()
-				.getHashedPasswordWithSaltByUserDisplayName(_userDisplayName);
-
-		if (hashedPasswordWithSalt == null) {
-			throw new Exception("User password not found for user with display name " + _userDisplayName);
-		}
-
-		var hashedUserPassword = new MuricoCrypt().hash(userPassword, hashedPasswordWithSalt.salt());
-
-		if (!hashedPasswordWithSalt.equalsHashedString(hashedUserPassword)) {
-			throw new Exception("User password does not match for user with display name " + _userDisplayName);
-		}
-
-		var sessionDao = factory.getSessionDao();
-		var sessionToken = sessionDao.createSession(user);
-
-		if (sessionToken == null) {
-			throw new Exception("Session creation failed");
-		}
-
-		var session = sessionDao.getSessionByToken(sessionToken);
-
-		if (session == null) {
-			throw new Exception("Session was created but not found with uid " + sessionToken);
-		}
-
-		ApplicationConfig.getInstance().getConfig().setProperty(PropertyKey.Session.UID, sessionToken);
-		SessionManager.getInstance().setSession(session, user);
-
-		return user;
+		return null;
 	}
 
 	private static void removeStoredSessionUid() throws IOException {

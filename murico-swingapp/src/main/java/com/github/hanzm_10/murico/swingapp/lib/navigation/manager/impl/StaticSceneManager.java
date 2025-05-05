@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -15,6 +15,7 @@ package com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl;
 
 import java.awt.CardLayout;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
@@ -23,6 +24,8 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.cache.ObserverLRU;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoErrorCodes;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.factory.SceneFactory;
@@ -154,7 +157,7 @@ public class StaticSceneManager implements SceneManager {
 		var sceneEntry = registeredSceneEntries.get(parsedSceneName.parentSceneName());
 
 		if (sceneEntry == null) {
-			LOGGER.severe("Scene entry not found: " + parsedSceneName.parentSceneName());
+			LOGGER.log(Level.SEVERE, "Failed to navigate", new MuricoError(MuricoErrorCodes.SCENE_NOT_FOUND));
 			return;
 		}
 
