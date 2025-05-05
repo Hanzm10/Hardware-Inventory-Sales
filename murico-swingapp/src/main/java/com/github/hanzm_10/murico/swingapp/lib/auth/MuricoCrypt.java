@@ -15,12 +15,15 @@ package com.github.hanzm_10.murico.swingapp.lib.auth;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.CharUtils;
 
 public class MuricoCrypt {
@@ -53,6 +56,8 @@ public class MuricoCrypt {
 		}
 	}
 
+	public static final Logger LOGGER = MuricoLogger.getLogger(MuricoCrypt.class);
+
 	/** Default iteration count (work factor) for the PBKDF2 algorithm. */
 	public static final int DEFAULT_STRENGTH = 65536;
 
@@ -66,12 +71,17 @@ public class MuricoCrypt {
 		return hash(password, new Salt());
 	}
 
-	public HashedStringWithSalt hash(@NotNull final char[] password, @NotNull final Salt salt)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
-		var spec = new PBEKeySpec(password, salt.getValue(), DEFAULT_STRENGTH, KEY_LENGTH);
-		var hash = SecretKeyFactory.getInstance(ALGORITHM).generateSecret(spec).getEncoded();
-		spec.clearPassword();
+	public HashedStringWithSalt hash(@NotNull final char[] password, @NotNull final Salt salt) {
+		try {
+			var spec = new PBEKeySpec(password, salt.getValue(), DEFAULT_STRENGTH, KEY_LENGTH);
+			var hash = SecretKeyFactory.getInstance(ALGORITHM).generateSecret(spec).getEncoded();
+			spec.clearPassword();
 
-		return new HashedStringWithSalt(hash, salt);
+			return new HashedStringWithSalt(hash, salt);
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			LOGGER.log(Level.SEVERE, "Cannot hash string", e);
+		}
+
+		return null;
 	}
 }
