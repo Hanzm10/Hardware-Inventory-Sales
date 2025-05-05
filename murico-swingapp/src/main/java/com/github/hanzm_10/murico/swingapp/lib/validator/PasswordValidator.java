@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -13,6 +13,24 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.validator;
 
-public class PasswordValidator {
+import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
+
+public class PasswordValidator {
+	/**
+	 * <ul>
+	 * <li>Has a minimum of 8 characters {8,}</li>
+	 * <li>At least one upper case English letter. (?=.*?[A-Z])</li>
+	 * <li>At least one lower case English letter. (?=.*?[a-z])</li>
+	 * <li>At least one digit. (?=.*?[0-9])</li>
+	 * <li>At least one special character. (?=.*? [#?!@$%^&*-])</li>
+	 * </ul>
+	 */
+	public static @NotNull final Pattern STRONG_PASSWORD = Pattern
+			.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+
+	public static boolean isPasswordValid(@NotNull final String password, @NotNull final Pattern regex) {
+		return regex.matcher(password).find();
+	}
 }
