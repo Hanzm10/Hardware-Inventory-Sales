@@ -275,23 +275,19 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 		disableComponents();
 
-		SwingUtilities.invokeLater(() -> {
-			MuricoError err = null;
-
+		new Thread(() -> {
 			try {
 				SessionService.loginUser(name, password);
 			} catch (MuricoError e) {
-				err = e;
+				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(), "Murico - Log in",
+						JOptionPane.ERROR_MESSAGE));
 				LOGGER.log(Level.SEVERE, "", e);
 			} finally {
-				enableComponents();
+				SwingUtilities.invokeLater(() -> enableComponents());
 				Arrays.fill(password, '\0');
 				isLoggingIn.set(false);
 			}
 
-			if (err != null) {
-				JOptionPane.showMessageDialog(null, err.toString(), "Murico - Log in", JOptionPane.ERROR_MESSAGE);
-			}
-		});
+		}).start();
 	}
 }
