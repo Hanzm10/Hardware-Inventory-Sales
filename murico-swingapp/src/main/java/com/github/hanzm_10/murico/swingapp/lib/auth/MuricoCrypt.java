@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -45,14 +45,14 @@ public class MuricoCrypt {
 
 	public static final String ALGORITHM = "PBKDF2WithHmacSHA256";
 
-	public HashedStringWithSalt hash(@NotNull final String password)
+	public HashedStringWithSalt hash(@NotNull final char[] password)
 			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		return hash(password, new Salt());
 	}
 
-	public HashedStringWithSalt hash(@NotNull final String password, @NotNull final Salt salt)
+	public HashedStringWithSalt hash(@NotNull final char[] password, @NotNull final Salt salt)
 			throws NoSuchAlgorithmException, InvalidKeySpecException {
-		var spec = new PBEKeySpec(password.toCharArray(), salt.getValue(), DEFAULT_STRENGTH, KEY_LENGTH);
+		var spec = new PBEKeySpec(password, salt.getValue(), DEFAULT_STRENGTH, KEY_LENGTH);
 		var hash = SecretKeyFactory.getInstance(ALGORITHM).generateSecret(spec).getEncoded();
 
 		return new HashedStringWithSalt(Base64.getEncoder().encodeToString(hash), salt);

@@ -10,19 +10,19 @@ public class TestPasswordValidator {
 	@Test
 	@DisplayName("Test strong password pattern")
 	void testStrongPasswordMathes() {
-		var weak = "12345";
-		var weak2 = "abcdef";
-		var weak3 = "ABCDEF";
-		var weak4 = "@$#$#%";
-		var med = "1adadasd24234";
-		var med2 = "SDFDFDR344523FD";
-		var med3 = "@$#43423343$#@$";
-		var med4 = "423432FfsdfsfsdfsFfsd";
-		var med5 = "fdfds454$%%$#";
-		var med6 = "FDSFSD42342$@#$#@";
+		var weak = "12345".toCharArray();
+		var weak2 = "abcdef".toCharArray();
+		var weak3 = "ABCDEF".toCharArray();
+		var weak4 = "@$#$#%".toCharArray();
+		var med = "1adadasd24234".toCharArray();
+		var med2 = "SDFDFDR344523FD".toCharArray();
+		var med3 = "@$#43423343$#@$".toCharArray();
+		var med4 = "423432FfsdfsfsdfsFfsd".toCharArray();
+		var med5 = "fdfds454$%%$#".toCharArray();
+		var med6 = "FDSFSD42342$@#$#@".toCharArray();
 
-		var strong = "123@heLoL";
-		var strongweak = "1@Ll";
+		var strong = "123@heLoL".toCharArray();
+		var strongweak = "1@Ll".toCharArray();
 
 		assertFalse(PasswordValidator.isPasswordValid(weak, PasswordValidator.STRONG_PASSWORD));
 		assertFalse(PasswordValidator.isPasswordValid(weak2, PasswordValidator.STRONG_PASSWORD));

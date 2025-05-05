@@ -13,6 +13,7 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.validator;
 
+import java.nio.CharBuffer;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,8 +30,9 @@ public class PasswordValidator {
 	 */
 	public static @NotNull final Pattern STRONG_PASSWORD = Pattern
 			.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+	public static @NotNull final String STRONG_PASSWORD_ERROR_MESSAGE = "Password must be 8+ characters with upper, lower, number, and special character.";
 
-	public static boolean isPasswordValid(@NotNull final String password, @NotNull final Pattern regex) {
-		return regex.matcher(password).find();
+	public static boolean isPasswordValid(@NotNull final char[] password, @NotNull final Pattern regex) {
+		return regex.matcher(CharBuffer.wrap(password)).find();
 	}
 }

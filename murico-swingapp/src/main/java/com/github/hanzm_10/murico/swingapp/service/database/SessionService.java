@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -60,7 +60,7 @@ public class SessionService {
 		return true;
 	}
 
-	public static User loginUser(@NotNull String _userDisplayName, @NotNull String userPassword) throws Exception {
+	public static User loginUser(@NotNull String _userDisplayName, @NotNull char[] userPassword) throws Exception {
 		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
 		var userDao = factory.getUserDao();
 		var user = userDao.getUserByDisplayName(_userDisplayName);
