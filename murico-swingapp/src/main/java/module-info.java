@@ -8,4 +8,5 @@ open module murico.swingapp {
 	requires murico.lookandfeel;
 	requires jakarta.mail;
 	requires org.apache.pdfbox;
+	requires mysql.connector.j;
 }

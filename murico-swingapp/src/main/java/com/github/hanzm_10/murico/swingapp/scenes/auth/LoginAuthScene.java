@@ -18,7 +18,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,12 +30,19 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.lib.utils.Debouncer;
+import com.github.hanzm_10.murico.swingapp.lib.validator.PasswordValidator;
 import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
 import com.github.hanzm_10.murico.swingapp.listeners.TogglePasswordFieldVisibilityListener;
+import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
@@ -49,22 +57,21 @@ public class LoginAuthScene implements Scene, ActionListener {
 	private static final Logger LOGGER = MuricoLogger.getLogger(LoginAuthScene.class);
 
 	/** A flag so that the components are aware whether this scene is busy or not */
-	protected boolean isLoggingIn;
-
+	protected final AtomicBoolean isLoggingIn = new AtomicBoolean(false);
 	protected ButtonSceneNavigatorListener navigationListener;
+
 	protected TogglePasswordFieldVisibilityListener changePasswordVisibilityListener;
 
 	protected JPanel view;
-
 	protected JPanel leftComponent;
 	protected Image rightComponentImage;
-	protected RoundedImagePanel rightComponent;
 
+	protected RoundedImagePanel rightComponent;
 	protected Image logoImage;
 	protected ImagePanel logo;
 	protected ImageIcon backBtnIcon;
-	protected JButton backBtn;
 
+	protected JButton backBtn;
 	protected JLabel signInLabel;
 	protected TextPlaceholder namePlaceholder;
 	protected JTextField nameInput;
@@ -77,20 +84,14 @@ public class LoginAuthScene implements Scene, ActionListener {
 	protected JButton registerBtn;
 	protected JPanel btnSeparator;
 
+	/**
+	 * To avoid rapid calls to the database
+	 */
+	protected Debouncer loginDebouncer = new Debouncer(250);
+
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (isLoggingIn) {
-			return;
-		}
-
-		isLoggingIn = true;
-
-		try {
-			loginBtn.setIcon(AssetManager.getOrLoadIcon("icons/pulse-rings-3.svg"));
-		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	public void actionPerformed(ActionEvent ev) {
+		loginDebouncer.call(this::tryLogin);
 	}
 
 	private void attachComponents() {
@@ -106,8 +107,8 @@ public class LoginAuthScene implements Scene, ActionListener {
 		leftComponent.add(btnSeparator, "cell 0 7 3, grow");
 		leftComponent.add(registerBtn, "cell 0 8 3, grow");
 
-		view.add(leftComponent);
-		view.add(rightComponent);
+		view.add(leftComponent, "grow");
+		view.add(rightComponent, "shrink");
 	}
 
 	private void attachListeners() {
@@ -121,9 +122,14 @@ public class LoginAuthScene implements Scene, ActionListener {
 		backBtn.setActionCommand("auth/main");
 	}
 
+	private void clearErrorMessage() {
+		errorMessageName.setText("");
+		errorMessagePassword.setText("");
+	}
+
 	private void createComponents() {
 		leftComponent = new JPanel();
-		leftComponent.setPreferredSize(new Dimension(720, 560));
+		leftComponent.setPreferredSize(new Dimension(424, 560));
 
 		logo = new ImagePanel(logoImage);
 		logo.setPreferredSize(new Dimension(96, 96));
@@ -141,11 +147,11 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 		nameInput = TextFieldFactory.createTextField();
 		namePlaceholder = new TextPlaceholder("Username", nameInput);
-		errorMessageName = LabelFactory.createErrorLabel("", 8);
+		errorMessageName = LabelFactory.createErrorLabel("", 10);
 
 		passwordInput = TextFieldFactory.createPasswordField();
 		passwordPlaceholder = new TextPlaceholder("Password", passwordInput);
-		errorMessagePassword = LabelFactory.createErrorLabel("", 8);
+		errorMessagePassword = LabelFactory.createErrorLabel("", 10);
 		passwordToggleRevealButton = new JToggleButton();
 
 		loginBtn = StyledButtonFactory.createButton("Log In", ButtonStyles.SECONDARY);
@@ -156,9 +162,27 @@ public class LoginAuthScene implements Scene, ActionListener {
 	}
 
 	private void createListeners() {
-		navigationListener = new ButtonSceneNavigatorListener(() -> isLoggingIn);
+		navigationListener = new ButtonSceneNavigatorListener(isLoggingIn);
 		changePasswordVisibilityListener = new TogglePasswordFieldVisibilityListener(passwordInput,
 				passwordToggleRevealButton);
+	}
+
+	private void disableComponents() {
+		backBtn.setEnabled(false);
+		nameInput.setEditable(false);
+		passwordInput.setEditable(false);
+		passwordToggleRevealButton.setEnabled(false);
+		loginBtn.setEnabled(false);
+		registerBtn.setEnabled(false);
+	}
+
+	private void enableComponents() {
+		backBtn.setEnabled(true);
+		nameInput.setEditable(true);
+		passwordInput.setEditable(true);
+		passwordToggleRevealButton.setEnabled(true);
+		loginBtn.setEnabled(true);
+		registerBtn.setEnabled(true);
 	}
 
 	@Override
@@ -169,6 +193,22 @@ public class LoginAuthScene implements Scene, ActionListener {
 	@Override
 	public JPanel getSceneView() {
 		return view == null ? (view = new JPanel()) : view;
+	}
+
+	private boolean isInputValid(@NotNull final String name, @NotNull final char[] password) {
+		var isValid = true;
+
+		if (name.isBlank()) {
+			errorMessageName.setText("<html>Username must not be empty</html>");
+			isValid = false;
+		}
+
+		if (!PasswordValidator.isPasswordValid(password, PasswordValidator.STRONG_PASSWORD)) {
+			errorMessagePassword.setText("<html>" + PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE + "</html>");
+			isValid = false;
+		}
+
+		return isValid;
 	}
 
 	private void loadImages() {
@@ -193,6 +233,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	@Override
 	public boolean onDestroy() {
+		loginDebouncer.cancel();
 		namePlaceholder.destroy();
 		passwordPlaceholder.destroy();
 
@@ -204,9 +245,45 @@ public class LoginAuthScene implements Scene, ActionListener {
 		return true;
 	}
 
+	@Override
+	public void onHide() {
+		loginDebouncer.cancel();
+	}
+
 	private void setLayouts() {
-		view.setLayout(new MigLayout("", "[300px::424px,grow,right]16[500px::540px,grow,left]", "[grow]"));
-		leftComponent.setLayout(new MigLayout("", "[254px,left]0[122px,right]0[48px::,right]",
+		view.setLayout(new MigLayout("", "[300px::424px,grow,right]24[500px::540px,grow,left]", "[grow]"));
+		leftComponent.setLayout(new MigLayout("", "[254px,left][122px,right][48px::,right]",
 				"[72px::]32[]16[50px::]2[]12[48px::]2[]20[48px::]12[32px::]24[48px::]"));
+	}
+
+	private void tryLogin() {
+		if (!isLoggingIn.compareAndSet(false, true)) {
+			return;
+		}
+
+		clearErrorMessage();
+
+		var name = nameInput.getText();
+		var password = passwordInput.getPassword();
+
+		if (!isInputValid(name, password)) {
+			Arrays.fill(password, '\0');
+			isLoggingIn.set(false);
+			return;
+		}
+
+		disableComponents();
+
+		SwingUtilities.invokeLater(() -> {
+			try {
+				SessionService.loginUser(name, password);
+			} catch (MuricoError e) {
+				LOGGER.log(Level.SEVERE, "", e);
+			} finally {
+				enableComponents();
+				Arrays.fill(password, '\0');
+				isLoggingIn.set(false);
+			}
+		});
 	}
 }
