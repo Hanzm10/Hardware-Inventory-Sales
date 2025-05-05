@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -275,14 +276,23 @@ public class LoginAuthScene implements Scene, ActionListener {
 		disableComponents();
 
 		SwingUtilities.invokeLater(() -> {
+			MuricoError err = null;
+
 			try {
 				SessionService.loginUser(name, password);
 			} catch (MuricoError e) {
+				err = e;
 				LOGGER.log(Level.SEVERE, "", e);
 			} finally {
 				enableComponents();
 				Arrays.fill(password, '\0');
 				isLoggingIn.set(false);
+			}
+
+			System.out.println("AAAAAAAAAAAAAA " + (err == null));
+
+			if (err != null) {
+				JOptionPane.showMessageDialog(null, err.toString(), "Murico - Log in", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 	}
