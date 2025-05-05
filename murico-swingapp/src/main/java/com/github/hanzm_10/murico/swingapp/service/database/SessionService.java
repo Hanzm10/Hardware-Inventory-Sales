@@ -79,8 +79,14 @@ public class SessionService {
 		var hashedUserPassword = new MuricoCrypt().hash(userPassword, hashedPasswordWithSalt.salt());
 
 		if (!hashedPasswordWithSalt.equalsHashedString(hashedUserPassword)) {
+			hashedUserPassword.clearHashedStringBytes();
+			hashedUserPassword.clearHashedStringBytes();
+
 			throw new Exception("User password does not match for user with display name " + _userDisplayName);
 		}
+
+		hashedUserPassword.clearHashedStringBytes();
+		hashedUserPassword.clearHashedStringBytes();
 
 		var sessionDao = factory.getSessionDao();
 		var sessionToken = sessionDao.createSession(user);
