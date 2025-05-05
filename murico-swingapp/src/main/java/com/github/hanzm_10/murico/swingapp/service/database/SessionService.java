@@ -15,7 +15,6 @@ package com.github.hanzm_10.murico.swingapp.service.database;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jetbrains.annotations.NotNull;
@@ -111,10 +110,8 @@ public class SessionService {
 
 			return user;
 		} catch (SQLException | IOException e) {
-			LOGGER.log(Level.SEVERE, "Failed to login user", e);
+			throw new MuricoError(MuricoErrorCodes.DATABASE_OPERATION_FAILED, e.getMessage());
 		}
-
-		return null;
 	}
 
 	private static void removeStoredSessionUid() throws IOException {

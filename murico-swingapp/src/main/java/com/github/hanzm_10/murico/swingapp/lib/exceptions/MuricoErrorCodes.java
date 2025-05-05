@@ -18,6 +18,7 @@ public enum MuricoErrorCodes {
 	FORBIDDEN_ACCESS(1002, "You do not have permission to access this resource."),
 	DATABASE_CONNECTION_FAILED(2001, "Unable to connect to the database. Please check your configuration."),
 	DATABASE_FAILED_INSERT(2002, "Unable to perform the speified action."),
+	DATABASE_OPERATION_FAILED(2003, "Something went wrong while querying the database"),
 	UNKNOWN_ERROR(9999, "An unknown error has occurred."), SCENE_NOT_FOUND(3001, "The requested scene was not found."),
 	INVALID_INPUT(4001, "Invalid input provided. Please check your data."),
 	NETWORK_ERROR(5001, "Network error occurred. Please check your connection."),
