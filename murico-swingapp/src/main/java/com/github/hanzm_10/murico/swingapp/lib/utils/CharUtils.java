@@ -1,6 +1,6 @@
 package com.github.hanzm_10.murico.swingapp.lib.utils;
 
-public class CharUtils {
+public final class CharUtils {
 	public static char[] byteArrayToCharArray(byte[] bArray) {
 		char[] cArray = new char[bArray.length];
 		for (int i = 0; i < bArray.length; ++i) {
