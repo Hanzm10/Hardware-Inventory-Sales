@@ -289,8 +289,6 @@ public class LoginAuthScene implements Scene, ActionListener {
 				isLoggingIn.set(false);
 			}
 
-			System.out.println("AAAAAAAAAAAAAA " + (err == null));
-
 			if (err != null) {
 				JOptionPane.showMessageDialog(null, err.toString(), "Murico - Log in", JOptionPane.ERROR_MESSAGE);
 			}
