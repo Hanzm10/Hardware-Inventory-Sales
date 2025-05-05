@@ -5,20 +5,20 @@ import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 import javax.swing.JToggleButton;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
-import com.kitfox.svg.app.beans.SVGIcon;
 
 public class TogglePasswordFieldVisibilityListener implements ActionListener {
 	private static final Logger LOGGER = MuricoLogger.getLogger(TogglePasswordFieldVisibilityListener.class);
 
 	private final JPasswordField passwordField;
 	private final JToggleButton toggleButton;
-	private SVGIcon toggledIcon;
-	private SVGIcon untoggledIcon;
+	private ImageIcon toggledIcon;
+	private ImageIcon untoggledIcon;
 	private char defaultChar;
 
 	public TogglePasswordFieldVisibilityListener(JPasswordField passwordField, JToggleButton toggleButton) {

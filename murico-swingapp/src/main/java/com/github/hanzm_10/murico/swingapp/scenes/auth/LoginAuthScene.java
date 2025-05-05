@@ -18,9 +18,11 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,7 +42,6 @@ import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedImagePane
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextFieldFactory;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextPlaceholder;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
-import com.kitfox.svg.app.beans.SVGIcon;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -61,7 +62,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	protected Image logoImage;
 	protected ImagePanel logo;
-	protected SVGIcon backBtnIcon;
+	protected ImageIcon backBtnIcon;
 	protected JButton backBtn;
 
 	protected JLabel signInLabel;
@@ -78,8 +79,18 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if (isLoggingIn) {
+			return;
+		}
 
+		isLoggingIn = true;
+
+		try {
+			loginBtn.setIcon(AssetManager.getOrLoadIcon("icons/pulse-rings-3.svg"));
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	private void attachComponents() {
@@ -115,6 +126,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 		leftComponent.setPreferredSize(new Dimension(720, 560));
 
 		logo = new ImagePanel(logoImage);
+		logo.setPreferredSize(new Dimension(96, 96));
 		backBtn = StyledButtonFactory.createButton(" Back", ButtonStyles.TRANSPARENT);
 		backBtn.setIcon(backBtnIcon);
 
