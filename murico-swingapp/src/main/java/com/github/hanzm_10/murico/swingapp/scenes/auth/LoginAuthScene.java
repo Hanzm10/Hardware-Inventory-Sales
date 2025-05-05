@@ -30,12 +30,13 @@ import javax.swing.JToggleButton;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
-import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
+import com.github.hanzm_10.murico.swingapp.listeners.TogglePasswordFieldVisibilityListener;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
-import com.github.hanzm_10.murico.swingapp.ui.components.inputs.ToggleablePasswordFieldWrapper;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedImagePanel;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextFieldFactory;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextPlaceholder;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
@@ -43,44 +44,22 @@ import com.kitfox.svg.app.beans.SVGIcon;
 
 import net.miginfocom.swing.MigLayout;
 
-public class LoginAuthScene implements Scene {
-	protected class BtnNavigationListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isLoggingIn) {
-				// this shouldn't happen anyway since we'll disable
-				// the buttons
-				return;
-			}
-
-			SceneNavigator.navigateTo(e.getActionCommand());
-		}
-	}
-
-	protected class LoginListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			errorMessageName.setText("ERROR!");
-			errorMessagePassword.setText("ERROR AAAA!");
-		}
-	}
-
+public class LoginAuthScene implements Scene, ActionListener {
 	private static final Logger LOGGER = MuricoLogger.getLogger(LoginAuthScene.class);
 
 	/** A flag so that the components are aware whether this scene is busy or not */
 	protected boolean isLoggingIn;
 
-	protected BtnNavigationListener btnNavigationListener = new BtnNavigationListener();
-	protected LoginListener loginListener = new LoginListener();
+	protected ButtonSceneNavigatorListener navigationListener;
+	protected TogglePasswordFieldVisibilityListener changePasswordVisibilityListener;
 
 	protected JPanel view;
-	protected MigLayout viewLayout;
 
 	protected JPanel leftComponent;
-	protected MigLayout leftComponentLayout;
+	protected Image rightComponentImage;
+	protected RoundedImagePanel rightComponent;
 
-	protected ImagePanel rightComponent;
-
+	protected Image logoImage;
 	protected ImagePanel logo;
 	protected SVGIcon backBtnIcon;
 	protected JButton backBtn;
@@ -90,80 +69,21 @@ public class LoginAuthScene implements Scene {
 	protected JTextField nameInput;
 	protected JLabel errorMessageName;
 	protected TextPlaceholder passwordPlaceholder;
-	protected ToggleablePasswordFieldWrapper passwordInputWrapper;
 	protected JPasswordField passwordInput;
 	protected JToggleButton passwordToggleRevealButton;
 	protected JLabel errorMessagePassword;
-
 	protected JButton loginBtn;
 	protected JButton registerBtn;
-
 	protected JPanel btnSeparator;
 
-	private void attachListeners() {
-		// call login controller, loading indicator, etc.
-		loginBtn.addActionListener(loginListener);
-		registerBtn.addActionListener(btnNavigationListener);
-		backBtn.addActionListener(btnNavigationListener);
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
 
-		registerBtn.setActionCommand("auth/register");
-		backBtn.setActionCommand("auth/main");
 	}
 
-	private void createComponents() {
-		try {
-			Image image = AssetManager.getOrLoadImage("images/logo.png");
-			logo = new ImagePanel(image);
-			logo.setPreferredSize(new Dimension(96, 96));
-			Image rightComponentImage = AssetManager.getOrLoadImage("images/auth_login.png");
-			backBtnIcon = AssetManager.getOrLoadIcon("icons/arrow-left.svg");
-			rightComponent = new ImagePanel(rightComponentImage);
-			rightComponent.setArc(250);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error loading image", e);
-		}
-
-		viewLayout = new MigLayout("", "[300px::424px,grow,right]16[500px::540px,grow,left]", "[grow]");
-		view.setLayout(viewLayout);
-
-		leftComponent = new JPanel();
-		leftComponent.setPreferredSize(new Dimension(720, 560));
-		leftComponentLayout = new MigLayout(
-				// insets
-				"",
-				// columns
-				"[254px,left][122px,right][48px::,right]",
-				// rows
-				"[72px::]32[]16[50px::]2[]12[48px::]2[]20[48px::]12[32px::]24[48px::]");
-		leftComponent.setLayout(leftComponentLayout);
-		backBtn = StyledButtonFactory.createButton(" Back", ButtonStyles.TRANSPARENT);
-
-		if (backBtnIcon != null) {
-			backBtn.setIcon(backBtnIcon);
-		}
-
-		signInLabel = new JLabel("Sign in");
-		signInLabel.setFont(signInLabel.getFont().deriveFont(Font.BOLD, 48));
-		nameInput = TextFieldFactory.createTextField();
-		namePlaceholder = new TextPlaceholder("Username", nameInput);
-		errorMessageName = LabelFactory.createErrorLabel("", 10);
-
-		passwordInputWrapper = new ToggleablePasswordFieldWrapper(TextFieldFactory.createPasswordField(),
-				new JToggleButton());
-		passwordInput = passwordInputWrapper.getPasswordField();
-		passwordToggleRevealButton = passwordInputWrapper.getToggleButton();
-		passwordPlaceholder = new TextPlaceholder("Password", passwordInput);
-
-		errorMessagePassword = LabelFactory.createErrorLabel("", 10);
-		loginBtn = StyledButtonFactory.createButton("Log In", ButtonStyles.SECONDARY);
-		registerBtn = StyledButtonFactory.createButton("Create an account", ButtonStyles.SECONDARY);
-		btnSeparator = new JPanel();
-
-		// TODO: fallback image
-		if (logo != null) {
-			leftComponent.add(logo, "cell 0 0");
-		}
-
+	private void attachComponents() {
+		leftComponent.add(logo, "cell 0 0");
 		leftComponent.add(backBtn, "cell 1 0 2");
 		leftComponent.add(signInLabel, "cell 0 1 3, grow");
 		leftComponent.add(nameInput, "cell 0 2 3, grow");
@@ -176,10 +96,57 @@ public class LoginAuthScene implements Scene {
 		leftComponent.add(registerBtn, "cell 0 8 3, grow");
 
 		view.add(leftComponent);
+		view.add(rightComponent);
+	}
 
-		if (rightComponent != null) {
-			view.add(rightComponent);
-		}
+	private void attachListeners() {
+		// call login controller, loading indicator, etc.
+		loginBtn.addActionListener(this);
+		registerBtn.addActionListener(navigationListener);
+		backBtn.addActionListener(navigationListener);
+		passwordToggleRevealButton.addActionListener(changePasswordVisibilityListener);
+
+		registerBtn.setActionCommand("auth/register");
+		backBtn.setActionCommand("auth/main");
+	}
+
+	private void createComponents() {
+		leftComponent = new JPanel();
+		leftComponent.setPreferredSize(new Dimension(720, 560));
+
+		logo = new ImagePanel(logoImage);
+		backBtn = StyledButtonFactory.createButton(" Back", ButtonStyles.TRANSPARENT);
+		backBtn.setIcon(backBtnIcon);
+
+		createFormComponents();
+
+		rightComponent = new RoundedImagePanel(rightComponentImage, 300);
+	}
+
+	private void createFormComponents() {
+		signInLabel = new JLabel("Sign in");
+		signInLabel.setFont(signInLabel.getFont().deriveFont(Font.BOLD, 48));
+
+		nameInput = TextFieldFactory.createTextField();
+		namePlaceholder = new TextPlaceholder("Username", nameInput);
+		errorMessageName = LabelFactory.createErrorLabel("", 8);
+
+		passwordInput = TextFieldFactory.createPasswordField();
+		passwordPlaceholder = new TextPlaceholder("Password", passwordInput);
+		errorMessagePassword = LabelFactory.createErrorLabel("", 8);
+		passwordToggleRevealButton = new JToggleButton();
+
+		loginBtn = StyledButtonFactory.createButton("Log In", ButtonStyles.SECONDARY);
+
+		btnSeparator = new JPanel();
+
+		registerBtn = StyledButtonFactory.createButton("Create an account", ButtonStyles.SECONDARY);
+	}
+
+	private void createListeners() {
+		navigationListener = new ButtonSceneNavigatorListener(() -> isLoggingIn);
+		changePasswordVisibilityListener = new TogglePasswordFieldVisibilityListener(passwordInput,
+				passwordToggleRevealButton);
 	}
 
 	@Override
@@ -192,21 +159,42 @@ public class LoginAuthScene implements Scene {
 		return view == null ? (view = new JPanel()) : view;
 	}
 
+	private void loadImages() {
+		try {
+			logoImage = AssetManager.getOrLoadImage("images/logo.png");
+			rightComponentImage = AssetManager.getOrLoadImage("images/auth_login.png");
+			backBtnIcon = AssetManager.getOrLoadIcon("icons/arrow-left.svg");
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error loading image", e);
+		}
+	}
+
 	@Override
 	public void onCreate() {
+		loadImages();
 		createComponents();
+		createListeners();
+		setLayouts();
 		attachListeners();
+		attachComponents();
 	}
 
 	@Override
 	public boolean onDestroy() {
 		namePlaceholder.destroy();
 		passwordPlaceholder.destroy();
-		passwordToggleRevealButton.removeActionListener(passwordInputWrapper);
-		loginBtn.removeActionListener(loginListener);
-		registerBtn.removeActionListener(btnNavigationListener);
-		backBtn.removeActionListener(btnNavigationListener);
+
+		loginBtn.removeActionListener(this);
+		registerBtn.removeActionListener(navigationListener);
+		backBtn.removeActionListener(navigationListener);
+		passwordToggleRevealButton.removeActionListener(changePasswordVisibilityListener);
 
 		return true;
+	}
+
+	private void setLayouts() {
+		view.setLayout(new MigLayout("", "[300px::424px,grow,right]16[500px::540px,grow,left]", "[grow]"));
+		leftComponent.setLayout(new MigLayout("", "[254px,left]0[122px,right]0[48px::,right]",
+				"[72px::]32[]16[50px::]2[]12[48px::]2[]20[48px::]12[32px::]24[48px::]"));
 	}
 }
