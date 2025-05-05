@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -126,6 +126,7 @@ public class StaticSceneManager implements SceneManager {
 						"Scene name does not match the scene's name: " + sceneName + " != " + scene.getSceneName());
 			}
 
+			scene.getSceneView();
 			scene.onCreate();
 		}
 
