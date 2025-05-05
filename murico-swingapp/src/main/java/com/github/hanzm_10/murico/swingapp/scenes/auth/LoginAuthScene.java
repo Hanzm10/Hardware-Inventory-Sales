@@ -40,6 +40,7 @@ import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.utils.Debouncer;
+import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.lib.validator.PasswordValidator;
 import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
 import com.github.hanzm_10.murico.swingapp.listeners.TogglePasswordFieldVisibilityListener;
@@ -200,12 +201,12 @@ public class LoginAuthScene implements Scene, ActionListener {
 		var isValid = true;
 
 		if (name.isBlank()) {
-			errorMessageName.setText("<html>Username must not be empty</html>");
+			errorMessageName.setText(HtmlUtils.wrapInHtml("Username must not be empty"));
 			isValid = false;
 		}
 
 		if (!PasswordValidator.isPasswordValid(password, PasswordValidator.STRONG_PASSWORD)) {
-			errorMessagePassword.setText("<html>" + PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE + "</html>");
+			errorMessagePassword.setText(HtmlUtils.wrapInHtml(PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE));
 			isValid = false;
 		}
 
@@ -275,25 +276,19 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 		disableComponents();
 
-		SwingUtilities.invokeLater(() -> {
-			MuricoError err = null;
-
+		new Thread(() -> {
 			try {
 				SessionService.loginUser(name, password);
 			} catch (MuricoError e) {
-				err = e;
-				LOGGER.log(Level.SEVERE, "", e);
+				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(), "Failed to log in",
+						JOptionPane.ERROR_MESSAGE));
+				LOGGER.log(Level.SEVERE, "Failed to log in", e);
 			} finally {
-				enableComponents();
+				SwingUtilities.invokeLater(() -> enableComponents());
 				Arrays.fill(password, '\0');
 				isLoggingIn.set(false);
 			}
 
-			System.out.println("AAAAAAAAAAAAAA " + (err == null));
-
-			if (err != null) {
-				JOptionPane.showMessageDialog(null, err.toString(), "Murico - Log in", JOptionPane.ERROR_MESSAGE);
-			}
-		});
+		}).start();
 	}
 }
