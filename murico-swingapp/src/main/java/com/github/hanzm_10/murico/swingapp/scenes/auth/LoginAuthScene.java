@@ -13,6 +13,7 @@
  */
 package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -49,6 +50,7 @@ import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.Line;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedImagePanel;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextFieldFactory;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextPlaceholder;
@@ -86,7 +88,11 @@ public class LoginAuthScene implements Scene, ActionListener {
 	protected JLabel errorMessagePassword;
 	protected JButton loginBtn;
 	protected JButton registerBtn;
+
 	protected JPanel btnSeparator;
+	protected Line leftLine;
+	protected JLabel orText;
+	protected Line rightLine;
 
 	/** To avoid multiple calls of login */
 	protected Debouncer loginDebouncer = new Debouncer(50);
@@ -110,6 +116,10 @@ public class LoginAuthScene implements Scene, ActionListener {
 		leftComponent.add(loginBtn, "cell 0 6 3, grow");
 		leftComponent.add(btnSeparator, "cell 0 7 3, grow");
 		leftComponent.add(registerBtn, "cell 0 8 3, grow");
+
+		btnSeparator.add(leftLine, "cell 0 0, grow");
+		btnSeparator.add(orText, "cell 1 0");
+		btnSeparator.add(rightLine, "cell 2 0, grow");
 
 		view.add(leftComponent);
 		view.add(rightComponent);
@@ -159,6 +169,12 @@ public class LoginAuthScene implements Scene, ActionListener {
 		loginBtn = StyledButtonFactory.createButton("Log In", ButtonStyles.SECONDARY);
 
 		btnSeparator = new JPanel();
+		var fractions = new float[] { 0f, 1f };
+		leftLine = Line.builder().setColors(new Color[] { new Color(0x00, true), Color.BLACK }).setFractions(fractions)
+				.build();
+		rightLine = Line.builder().setColors(new Color[] { Color.BLACK, new Color(0x00, true) }).setFractions(fractions)
+				.build();
+		orText = new JLabel("or");
 
 		registerBtn = StyledButtonFactory.createButton("Create an account", ButtonStyles.SECONDARY);
 	}
@@ -264,7 +280,8 @@ public class LoginAuthScene implements Scene, ActionListener {
 	private void setLayouts() {
 		view.setLayout(new MigLayout("", "[290px::424px,grow,right]24[390px::560px,grow,left]", "[grow,center]"));
 		leftComponent.setLayout(new MigLayout("", "[72px::96px,left][280px,right][48px::,right]",
-				"[72px::96px]32[]16[50px::]2[]12[48px::]2[]20[48px::]12[32px::]24[48px::]"));
+				"[72px::96px]32[]16[50px::]2[]12[48px::]2[]20[48px::]8[12px::]24[48px::]"));
+		btnSeparator.setLayout(new MigLayout("", "[grow][][grow]", "[center]"));
 	}
 
 	private void showLoadingIndicator() {
