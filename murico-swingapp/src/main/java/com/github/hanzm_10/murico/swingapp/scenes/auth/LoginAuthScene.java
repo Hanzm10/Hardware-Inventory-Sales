@@ -13,7 +13,6 @@
  */
 package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -36,8 +35,10 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.utils.Debouncer;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
@@ -60,6 +61,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	/** A flag so that the components are aware whether this scene is busy or not */
 	protected final AtomicBoolean isLoggingIn = new AtomicBoolean(false);
+
 	protected ButtonSceneNavigatorListener navigationListener;
 
 	protected TogglePasswordFieldVisibilityListener changePasswordVisibilityListener;
@@ -86,10 +88,10 @@ public class LoginAuthScene implements Scene, ActionListener {
 	protected JButton registerBtn;
 	protected JPanel btnSeparator;
 
-	/**
-	 * To avoid rapid calls to the database
-	 */
-	protected Debouncer loginDebouncer = new Debouncer(250);
+	/** To avoid multiple calls of login */
+	protected Debouncer loginDebouncer = new Debouncer(50);
+
+	protected Thread loginThread;
 
 	@Override
 	public void actionPerformed(ActionEvent ev) {
@@ -109,8 +111,8 @@ public class LoginAuthScene implements Scene, ActionListener {
 		leftComponent.add(btnSeparator, "cell 0 7 3, grow");
 		leftComponent.add(registerBtn, "cell 0 8 3, grow");
 
-		view.add(leftComponent, "grow");
-		view.add(rightComponent, "shrink");
+		view.add(leftComponent);
+		view.add(rightComponent);
 	}
 
 	private void attachListeners() {
@@ -131,10 +133,8 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	private void createComponents() {
 		leftComponent = new JPanel();
-		leftComponent.setPreferredSize(new Dimension(424, 560));
 
 		logo = new ImagePanel(logoImage);
-		logo.setPreferredSize(new Dimension(96, 96));
 		backBtn = StyledButtonFactory.createButton(" Back", ButtonStyles.TRANSPARENT);
 		backBtn.setIcon(backBtnIcon);
 
@@ -169,21 +169,13 @@ public class LoginAuthScene implements Scene, ActionListener {
 				passwordToggleRevealButton);
 	}
 
-	private void disableComponents() {
+	private void disableNavigationButtons() {
 		backBtn.setEnabled(false);
-		nameInput.setEditable(false);
-		passwordInput.setEditable(false);
-		passwordToggleRevealButton.setEnabled(false);
-		loginBtn.setEnabled(false);
 		registerBtn.setEnabled(false);
 	}
 
-	private void enableComponents() {
+	private void enableNavigationButtons() {
 		backBtn.setEnabled(true);
-		nameInput.setEditable(true);
-		passwordInput.setEditable(true);
-		passwordToggleRevealButton.setEnabled(true);
-		loginBtn.setEnabled(true);
 		registerBtn.setEnabled(true);
 	}
 
@@ -197,11 +189,23 @@ public class LoginAuthScene implements Scene, ActionListener {
 		return view == null ? (view = new JPanel()) : view;
 	}
 
+	private void hideLoadingIndicator() {
+		loginBtn.setText("Log In");
+	}
+
 	private boolean isInputValid(@NotNull final String name, @NotNull final char[] password) {
 		var isValid = true;
 
 		if (name.isBlank()) {
 			errorMessageName.setText(HtmlUtils.wrapInHtml("Username must not be empty"));
+			isValid = false;
+		} else if (name.length() < User.MINIMUM_USERNAME_LENGTH) {
+			errorMessageName.setText(
+					HtmlUtils.wrapInHtml("Username must be > " + User.MINIMUM_USERNAME_LENGTH + " characters long."));
+			isValid = false;
+		} else if (name.length() > User.MAXIMUM_USERNAME_LENGTH) {
+			errorMessageName.setText(
+					HtmlUtils.wrapInHtml("Username must be < " + User.MAXIMUM_USERNAME_LENGTH + " characters long."));
 			isValid = false;
 		}
 
@@ -217,7 +221,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 		try {
 			logoImage = AssetManager.getOrLoadImage("images/logo.png");
 			rightComponentImage = AssetManager.getOrLoadImage("images/auth_login.png");
-			backBtnIcon = AssetManager.getOrLoadIcon("icons/arrow-left.svg");
+			backBtnIcon = AssetManager.getOrLoadIcon("icons/move-left.svg");
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error loading image", e);
 		}
@@ -236,6 +240,11 @@ public class LoginAuthScene implements Scene, ActionListener {
 	@Override
 	public boolean onDestroy() {
 		loginDebouncer.cancel();
+
+		if (loginThread != null) {
+			loginThread.interrupt();
+		}
+
 		namePlaceholder.destroy();
 		passwordPlaceholder.destroy();
 
@@ -253,9 +262,13 @@ public class LoginAuthScene implements Scene, ActionListener {
 	}
 
 	private void setLayouts() {
-		view.setLayout(new MigLayout("", "[300px::424px,grow,right]24[500px::540px,grow,left]", "[grow]"));
-		leftComponent.setLayout(new MigLayout("", "[254px,left][122px,right][48px::,right]",
-				"[72px::]32[]16[50px::]2[]12[48px::]2[]20[48px::]12[32px::]24[48px::]"));
+		view.setLayout(new MigLayout("", "[290px::424px,grow,right]24[390px::560px,grow,left]", "[grow,center]"));
+		leftComponent.setLayout(new MigLayout("", "[72px::96px,left][280px,right][48px::,right]",
+				"[72px::96px]32[]16[50px::]2[]12[48px::]2[]20[48px::]12[32px::]24[48px::]"));
+	}
+
+	private void showLoadingIndicator() {
+		loginBtn.setText("Logging in...");
 	}
 
 	private void tryLogin() {
@@ -274,21 +287,40 @@ public class LoginAuthScene implements Scene, ActionListener {
 			return;
 		}
 
-		disableComponents();
+		disableNavigationButtons();
+		showLoadingIndicator();
 
-		new Thread(() -> {
+		loginThread = new Thread(() -> {
 			try {
 				SessionService.loginUser(name, password);
+
+				SwingUtilities.invokeLater(() -> {
+					SceneNavigator.navigateTo("home/profile");
+				});
 			} catch (MuricoError e) {
-				SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(), "Failed to log in",
-						JOptionPane.ERROR_MESSAGE));
-				LOGGER.log(Level.SEVERE, "Failed to log in", e);
+				switch (e.getErrorCode()) {
+				case INVALID_CREDENTIALS: {
+					errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+					errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+				}
+					break;
+				default: {
+					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(),
+							"Failed to log in", JOptionPane.ERROR_MESSAGE));
+					LOGGER.log(Level.SEVERE, "Failed to log in", e);
+				}
+				}
 			} finally {
-				SwingUtilities.invokeLater(() -> enableComponents());
+				SwingUtilities.invokeLater(() -> {
+					enableNavigationButtons();
+					hideLoadingIndicator();
+				});
+
 				Arrays.fill(password, '\0');
 				isLoggingIn.set(false);
 			}
+		});
 
-		}).start();
+		loginThread.start();
 	}
 }

@@ -3,5 +3,5 @@ INSERT INTO sessions (
   session_ip_address,
   session_user_agent,
 ) VALUES (
-    $1, $2, $3
+    ?, ?, ?
 );

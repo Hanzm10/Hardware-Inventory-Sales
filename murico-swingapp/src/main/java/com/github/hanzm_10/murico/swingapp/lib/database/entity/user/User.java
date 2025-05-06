@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -17,4 +17,11 @@ import java.sql.Timestamp;
 
 public record User(int _userId, Timestamp _createdAt, Timestamp updatedAt, String displayName, String displayImage,
 		UserGender gender, String firstName, String lastName, String biography) {
+	public static int MINIMUM_USERNAME_LENGTH = 3;
+	public static int MAXIMUM_USERNAME_LENGTH = 50;
+	public static int MINIMUM_FIRSTNAME_LENGTH = 3;
+	public static int MAXIMUM_FIRSTNAME_LENGTH = 100;
+	public static int MINIMUM_LASTNAME_LENGTH = 3;
+	public static int MAXIMUM_LASTNAME_LENGTH = 100;
+	public static int MAXIMUM_BIOGRAPHY_LENGTH = 255;
 }
