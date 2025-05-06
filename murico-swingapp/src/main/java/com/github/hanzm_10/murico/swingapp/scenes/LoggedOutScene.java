@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -56,19 +56,22 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
+	public void navigateTo(@NotNull String subSceneName) {
+		sceneManager.navigateTo(subSceneName);
+	}
+
+	@Override
 	public void onCreate() {
 		sceneManager = new StaticSceneManager();
 		sceneManager.registerScene("main", () -> new MainAuthScene(), GUARD);
-        sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
-        sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
+		sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
+		sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
 
 		layout = new MigLayout("", "[grow, center]", "[grow, center]");
 		view.setLayout(layout);
 
 		var rootContainer = sceneManager.getRootContainer();
 		view.add(rootContainer, "cell 0 0");
-
-		sceneManager.navigateTo("main");
 	}
 
 	@Override
@@ -84,7 +87,7 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
-	public void navigateTo(@NotNull String subSceneName) {
-		sceneManager.navigateTo(subSceneName);
+	public void onShow() {
+		sceneManager.navigateTo("main");
 	}
 }

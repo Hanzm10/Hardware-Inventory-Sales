@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -27,6 +27,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSce
 import com.github.hanzm_10.murico.swingapp.scenes.LoggedInScene;
 import com.github.hanzm_10.murico.swingapp.scenes.LoggedOutScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 public class MainFrame extends JFrame {
@@ -37,6 +38,7 @@ public class MainFrame extends JFrame {
 			// TODO: If a user is performing a task, ask if they want to save their progress
 			// before closing the application
 			AbandonedConnectionCleanupThread.checkedShutdown();
+			SceneNavigator.destroy();
 			dispose();
 		}
 	}

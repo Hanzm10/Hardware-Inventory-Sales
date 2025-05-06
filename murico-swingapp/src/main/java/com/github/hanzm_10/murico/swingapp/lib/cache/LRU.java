@@ -48,6 +48,12 @@ public class LRU<K, V> {
 		reverseLookup = new HashMap<>();
 	}
 
+	public synchronized void clear() {
+		while (length > 0) {
+			trimCache();
+		}
+	}
+
 	public synchronized boolean containsKey(K key) {
 		return lookup.containsKey(key);
 	}
@@ -73,6 +79,19 @@ public class LRU<K, V> {
 		node.prev = null;
 	}
 
+	public synchronized Set<Entry<K, V>> entrySet() {
+		var result = new HashMap<K, V>();
+
+		for (var entry : lookup.entrySet()) {
+			var key = entry.getKey();
+			var value = entry.getValue().value;
+
+			result.put(key, value);
+		}
+
+		return result.entrySet();
+	}
+
 	/**
 	 * Returns the value associated with the key in the cache. If the key is not
 	 * present, it returns null.
@@ -94,6 +113,19 @@ public class LRU<K, V> {
 		return node.value;
 	}
 
+	public synchronized HashMap<K, V> getCopy() {
+		var result = new HashMap<K, V>();
+
+		for (var entry : lookup.entrySet()) {
+			var key = entry.getKey();
+			var value = entry.getValue().value;
+
+			result.put(key, value);
+		}
+
+		return result;
+	}
+
 	private void prepend(Node<V> node) {
 		if (head == null) {
 			head = tail = node;
@@ -103,6 +135,22 @@ public class LRU<K, V> {
 		node.next = head;
 		head.prev = node;
 		head = node;
+	}
+
+	public synchronized V remove(K key) {
+		var node = lookup.get(key);
+
+		if (node == null) {
+			return null;
+		}
+
+		detach(node);
+
+		lookup.remove(key);
+		reverseLookup.remove(node);
+		length -= 1;
+
+		return node.value;
 	}
 
 	protected V trimCache() {
@@ -152,41 +200,6 @@ public class LRU<K, V> {
 		}
 	}
 
-	public synchronized void clear() {
-		while (length > 0) {
-			trimCache();
-		}
-	}
-
-	public synchronized V remove(K key) {
-		var node = lookup.get(key);
-
-		if (node == null) {
-			return null;
-		}
-
-		detach(node);
-
-		lookup.remove(key);
-		reverseLookup.remove(node);
-		length -= 1;
-
-		return node.value;
-	}
-
-	public synchronized Set<Entry<K, V>> entrySet() {
-		var result = new HashMap<K, V>();
-
-		for (var entry : lookup.entrySet()) {
-			var key = entry.getKey();
-			var value = entry.getValue().value;
-
-			result.put(key, value);
-		}
-
-		return result.entrySet();
-	}
-
 	public synchronized Collection<V> values() {
 		var result = new ArrayList<V>();
 
@@ -194,19 +207,6 @@ public class LRU<K, V> {
 			var value = entry.getValue().value;
 
 			result.add(value);
-		}
-
-		return result;
-	}
-
-	public synchronized HashMap<K, V> getCopy() {
-		var result = new HashMap<K, V>();
-
-		for (var entry : lookup.entrySet()) {
-			var key = entry.getKey();
-			var value = entry.getValue().value;
-
-			result.put(key, value);
 		}
 
 		return result;
