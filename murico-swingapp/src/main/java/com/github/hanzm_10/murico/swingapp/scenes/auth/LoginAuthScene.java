@@ -65,7 +65,6 @@ public class LoginAuthScene implements Scene, ActionListener {
 	protected final AtomicBoolean isLoggingIn = new AtomicBoolean(false);
 
 	protected ButtonSceneNavigatorListener navigationListener;
-
 	protected TogglePasswordFieldVisibilityListener changePasswordVisibilityListener;
 
 	protected JPanel view;
@@ -96,7 +95,6 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	/** To avoid multiple calls of login */
 	protected Debouncer loginDebouncer = new Debouncer(50);
-
 	protected Thread loginThread;
 
 	@Override
@@ -155,7 +153,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	private void createFormComponents() {
 		signInLabel = new JLabel("Sign in");
-		signInLabel.setFont(signInLabel.getFont().deriveFont(Font.BOLD, 48));
+		signInLabel.setFont(signInLabel.getFont().deriveFont(Font.BOLD, 32));
 
 		nameInput = TextFieldFactory.createTextField();
 		namePlaceholder = new TextPlaceholder("Username", nameInput);
@@ -279,8 +277,8 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	private void setLayouts() {
 		view.setLayout(new MigLayout("", "[290px::424px,grow,right]24[390px::560px,grow,left]", "[grow,center]"));
-		leftComponent.setLayout(new MigLayout("", "[72px::96px,left][280px,right][48px::,right]",
-				"[72px::96px]32[]16[50px::]2[]12[48px::]2[]20[48px::]8[12px::]24[48px::]"));
+		leftComponent.setLayout(new MigLayout("", "[72px::96px,left][280px,right][48px::48px,right]",
+				"[72px::96px]32[]16[48px::]2[]12[48px::]2[]20[48px::]8[12px::]24[48px::]"));
 		btnSeparator.setLayout(new MigLayout("", "[grow][][grow]", "[center]"));
 	}
 
