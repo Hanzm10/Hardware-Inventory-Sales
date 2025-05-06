@@ -9,20 +9,20 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 
 public interface SceneManager {
-    void navigateTo(@NotNull final String sceneName);
+	void destroy();
 
-    void registerScene(@NotNull final String sceneName, @NotNull final SceneFactory sceneFactory);
+	String getCurrentSceneName();
 
-    void registerScene(@NotNull final String sceneName, @NotNull final SceneFactory sceneFactory,
-            @NotNull final SceneGuard sceneGuard);
+	JPanel getRootContainer();
 
-    void unregisterScene(@NotNull final String sceneName);
+	Scene getScene(@NotNull final String sceneName);
 
-    void destroy();
+	void navigateTo(@NotNull final String sceneName);
 
-    Scene getScene(@NotNull final String sceneName);
+	void registerScene(@NotNull final String sceneName, @NotNull final SceneFactory sceneFactory);
 
-    String getCurrentSceneName();
+	void registerScene(@NotNull final String sceneName, @NotNull final SceneFactory sceneFactory,
+			@NotNull final SceneGuard sceneGuard);
 
-    JPanel getRootContainer();
+	void unregisterScene(@NotNull final String sceneName);
 }

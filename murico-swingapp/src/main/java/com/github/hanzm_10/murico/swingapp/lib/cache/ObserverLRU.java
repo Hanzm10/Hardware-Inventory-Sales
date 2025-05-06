@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -21,52 +21,78 @@ import com.github.hanzm_10.murico.swingapp.lib.observer.Subscriber;
 
 /** Useful for observing the LRU cache when it evicts an item. */
 public class ObserverLRU<K, V> extends LRU<K, V> implements Observer<V> {
-    protected List<Subscriber<V>> subscribers;
+	protected List<Subscriber<V>> subscribers;
 
-    public ObserverLRU(int capacity) {
-        super(capacity);
+	public ObserverLRU(int capacity) {
+		super(capacity);
 
-        subscribers = new ArrayList<>();
-    }
+		subscribers = new ArrayList<>();
+	}
 
-    @Override
-    public synchronized V remove(K key) {
-        var val = super.remove(key);
-        notifySubscribers(val);
+	@Override
+	public void notifySubscribers(V value) {
+		for (var subscriber : subscribers) {
+			subscriber.notify(value);
+		}
+	}
 
-        return val;
-    }
+	@Override
+	public synchronized V remove(K key) {
+		var val = super.remove(key);
 
-    @Override
-    protected V trimCache() {
-        var val = super.trimCache();
-        notifySubscribers(val);
+		if (val != null) {
+			notifySubscribers(val);
+		}
 
-        return val;
-    }
+		return val;
+	}
 
-    @Override
-    public void notifySubscribers(V value) {
-        for (var subscriber : subscribers) {
-            subscriber.notify(value);
-        }
-    }
+	/**
+	 * Used for whenever a caller, that's also a subscriber, does not need to be
+	 * updated since it's contextually aware that the item it's trying to remove is,
+	 * well... removed. Of course if {@code V} is null, then the subscribers will
+	 * also simply not be called.
+	 *
+	 * @param key
+	 * @param shouldPublishUpdate
+	 * @return
+	 */
+	public synchronized V remove(K key, boolean shouldPublishUpdate) {
+		var val = super.remove(key);
 
-    @Override
-    public void subscribe(Subscriber<V> subscriber) {
-        if (subscribers.contains(subscriber)) {
-            return;
-        }
+		if (val != null && shouldPublishUpdate) {
+			notifySubscribers(val);
+		}
 
-        subscribers.add(subscriber);
-    }
+		return val;
+	}
 
-    @Override
-    public void unsubscribe(Subscriber<V> subscriber) {
-        if (!subscribers.contains(subscriber)) {
-            return;
-        }
+	@Override
+	public void subscribe(Subscriber<V> subscriber) {
+		if (subscribers.contains(subscriber)) {
+			return;
+		}
 
-        subscribers.remove(subscriber);
-    }
+		subscribers.add(subscriber);
+	}
+
+	@Override
+	protected V trimCache() {
+		var val = super.trimCache();
+
+		if (val != null) {
+			notifySubscribers(val);
+		}
+
+		return val;
+	}
+
+	@Override
+	public void unsubscribe(Subscriber<V> subscriber) {
+		if (!subscribers.contains(subscriber)) {
+			return;
+		}
+
+		subscribers.remove(subscriber);
+	}
 }
