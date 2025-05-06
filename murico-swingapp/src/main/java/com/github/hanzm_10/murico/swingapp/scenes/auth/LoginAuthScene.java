@@ -317,8 +317,10 @@ public class LoginAuthScene implements Scene, ActionListener {
 			} catch (MuricoError e) {
 				switch (e.getErrorCode()) {
 				case INVALID_CREDENTIALS: {
-					errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-					errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+					SwingUtilities.invokeLater(() -> {
+						errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+						errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+					});
 				}
 					break;
 				default: {
