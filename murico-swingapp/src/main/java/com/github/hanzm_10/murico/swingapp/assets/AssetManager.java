@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -24,6 +24,8 @@ import javax.swing.ImageIcon;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.cache.LRU;
+
+import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.parser.LoaderContext;
 import com.github.weisj.jsvg.parser.SVGLoader;
 import com.github.weisj.jsvg.renderer.SVGRenderingHints;
@@ -31,6 +33,14 @@ import com.github.weisj.jsvg.renderer.SVGRenderingHints;
 public class AssetManager {
 	private static final LRU<String, Image> images = new LRU<>(30);
 	private static final LRU<String, ImageIcon> icons = new LRU<>(20);
+
+	public static SVGDocument getDocument(String path) {
+		var svgLoader = new SVGLoader();
+		var url = AssetManager.class.getResource(path);
+		var svgDocument = svgLoader.load(url, LoaderContext.builder().build());
+
+		return svgDocument;
+	}
 
 	public static ImageIcon getOrLoadIcon(@NotNull final String path) throws URISyntaxException {
 		var icon = icons.get(path);

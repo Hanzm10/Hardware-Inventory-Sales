@@ -1,1 +1,1 @@
-SELECT * FROM users WHERE display_name = $1;
+SELECT * FROM users WHERE display_name = ?;

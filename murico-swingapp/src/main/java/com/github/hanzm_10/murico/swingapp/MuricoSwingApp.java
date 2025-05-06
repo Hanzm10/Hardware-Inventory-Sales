@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -52,7 +52,7 @@ public class MuricoSwingApp {
 		 * try { MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		 * digest.update("Hello, World!".getBytes()); String stringHash = new
 		 * BigInteger(1, digest.digest()).toString(16);
-		 * 
+		 *
 		 * System.out.println(stringHash + " " + stringHash.length()); } catch(Exception
 		 * e) { System.err.println(e); }
 		 */

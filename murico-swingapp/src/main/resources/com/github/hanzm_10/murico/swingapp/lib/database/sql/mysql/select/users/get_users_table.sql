@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 SELECT 
 	u._user_id, 
 	u.user_display_name,
@@ -11,6 +10,3 @@ JOIN
 	accounts ac 
 	ON
 	u._user_id = ac._user_id;
-=======
-SELECT * FROM users;
->>>>>>> branch 'main' of https://github.com/alyastanga/Hardware-Inventory-Sales.git

@@ -3,5 +3,5 @@ FROM accounts
 WHERE _user_id = (
 	SELECT _user_id
 	FROM users
-	WHERE display_name = $1
+	WHERE display_name = ?
 );
