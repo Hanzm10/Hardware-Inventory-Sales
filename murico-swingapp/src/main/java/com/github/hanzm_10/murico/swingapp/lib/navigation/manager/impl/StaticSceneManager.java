@@ -50,8 +50,6 @@ public class StaticSceneManager implements SceneManager {
 		super();
 
 		cardLayout = new CardLayout();
-		cardLayout.setHgap(0);
-		cardLayout.setVgap(0);
 		rootContainer = new JPanel(cardLayout);
 		registeredSceneEntries = new HashMap<>();
 		sceneCache = new ObserverLRU<>(10);

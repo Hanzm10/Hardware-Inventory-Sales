@@ -2,46 +2,59 @@ package com.github.hanzm_10.murico.swingapp.lib.navigation.scene;
 
 import javax.swing.JPanel;
 
+import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
+
 public interface Scene {
-    String getSceneName();
+	default boolean canHide() {
+		return true;
+	}
 
-    JPanel getSceneView();
+	default boolean canShow() {
+		return true;
+	}
 
-    default boolean supportsSubScenes() {
-        return this instanceof SubSceneSupport;
-    }
+	/**
+	 *
+	 * @return The name that {@link SceneManager} will use for accessing this scene
+	 *         in its cache for navigation.
+	 */
+	String getSceneName();
 
-    default boolean canShow() {
-        return true;
-    }
+	/**
+	 * This is where a {@link Scene} should typically create its view if it doesn't
+	 * exist yet.
+	 *
+	 * @return
+	 */
+	JPanel getSceneView();
 
-    default void onBeforeShow() {
-    }
+	default Scene getSelf() {
+		return this;
+	}
 
-    default void onShow() {
-    }
+	default void onBeforeHide() {
+	}
 
-    default boolean canHide() {
-        return true;
-    }
+	default void onBeforeShow() {
+	}
 
-    default void onCannotHide() {
-    }
+	default void onCannotHide() {
+	}
 
-    default void onBeforeHide() {
-    }
+	void onCreate();
 
-    default void onHide() {
-    }
+	default boolean onDestroy() {
+		return true;
+	}
 
-    void onCreate();
+	default void onHide() {
+	}
 
-    default boolean onDestroy() {
-        return true;
-    }
+	default void onShow() {
+	}
 
-    default Scene getSelf() {
-        return this;
-    }
+	default boolean supportsSubScenes() {
+		return this instanceof SubSceneSupport;
+	}
 
 }
