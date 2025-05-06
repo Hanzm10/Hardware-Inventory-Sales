@@ -25,11 +25,12 @@ public class TextPlaceholder extends JLabel implements FocusListener, DocumentLi
 
 	protected boolean isDestroyed;
 
-	public TextPlaceholder(@NotNull final String placeholderText, JTextComponent textComponent) {
-		new TextPlaceholder(placeholderText, textComponent, Show.ALWAYS);
+	public TextPlaceholder(@NotNull final String placeholderText, @NotNull final JTextComponent textComponent) {
+		this(placeholderText, textComponent, Show.ALWAYS);
 	}
 
-	public TextPlaceholder(@NotNull final String placeholderText, JTextComponent textComponent, Show show) {
+	public TextPlaceholder(@NotNull final String placeholderText, @NotNull final JTextComponent textComponent,
+			@NotNull final Show show) {
 		this.show = show;
 		this.textComponent = textComponent;
 		document = textComponent.getDocument();
