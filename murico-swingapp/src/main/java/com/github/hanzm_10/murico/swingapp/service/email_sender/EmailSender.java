@@ -14,8 +14,8 @@ import jakarta.mail.internet.MimeMessage;
 
 public class EmailSender {
 		public static void emailSender(String toEmail) {
-        final String username = "peterdelacruz827@gmail.com";
-        final String password = "xfju giil velt xzpm";
+        final String username = "";
+        final String password = "";
         //String toEmail = "qpmdelacruz@tip.edu.ph";
 
         Properties props = new Properties();
