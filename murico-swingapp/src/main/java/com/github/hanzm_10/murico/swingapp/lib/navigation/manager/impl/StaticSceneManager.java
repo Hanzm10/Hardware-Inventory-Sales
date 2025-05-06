@@ -90,7 +90,7 @@ public class StaticSceneManager implements SceneManager {
 			LOGGER.severe("Scene view is null before destroy of scene: " + scene.getSceneName());
 		}
 
-		sceneCache.remove(scene.getSceneName());
+		sceneCache.remove(scene.getSceneName(), false);
 		rootContainer.remove(scene.getSceneView());
 		scene.onDestroy();
 
