@@ -22,6 +22,20 @@ public class SceneNavigator {
 	private static SceneManager sceneManager;
 	private static boolean isInitialized = false;
 
+	public static void destroy() {
+		sceneManager.destroy();
+		sceneManager = null;
+		isInitialized = false;
+	}
+
+	public static SceneManager getSceneManager() {
+		if (!isInitialized) {
+			throw new IllegalStateException("SceneNavigator is not initialized.");
+		}
+
+		return sceneManager;
+	}
+
 	public static void initialize(@NotNull final SceneManager manager) {
 		if (isInitialized) {
 			throw new IllegalStateException("SceneNavigator is already initialized.");
@@ -61,13 +75,5 @@ public class SceneNavigator {
 		}
 
 		sceneManager.navigateTo(sceneName);
-	}
-
-	public static SceneManager getSceneManager() {
-		if (!isInitialized) {
-			throw new IllegalStateException("SceneNavigator is not initialized.");
-		}
-
-		return sceneManager;
 	}
 }

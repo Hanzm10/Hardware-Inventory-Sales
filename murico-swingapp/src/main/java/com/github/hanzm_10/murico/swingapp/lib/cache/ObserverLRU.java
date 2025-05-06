@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -50,8 +50,8 @@ public class ObserverLRU<K, V> extends LRU<K, V> implements Observer<V> {
 	/**
 	 * Used for whenever a caller, that's also a subscriber, does not need to be
 	 * updated since it's contextually aware that the item it's trying to remove is,
-	 * well... removed. Of course if {@code V} is null, then the subscribers will
-	 * also simply not be called.
+	 * well... removed. Of course if {@code
+	 * V} is null, then the subscribers will also simply not be called.
 	 *
 	 * @param key
 	 * @param shouldPublishUpdate
