@@ -22,9 +22,11 @@ import org.jetbrains.annotations.Range;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 
 public interface UserDao {
-    public User getUserByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException;
+	public User getUserByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException;
 
-    public User getUserByEmail(@NotNull String _userEmail) throws IOException, SQLException;
+	public User getUserByEmail(@NotNull String _userEmail) throws IOException, SQLException;
 
-    public User getUserById(@Range(from = 0, to = Integer.MAX_VALUE) int _userID) throws IOException, SQLException;
+	public User getUserById(@Range(from = 0, to = Integer.MAX_VALUE) int _userID) throws IOException, SQLException;
+
+	public boolean isUsernameTaken(@NotNull final String name) throws IOException, SQLException;
 }

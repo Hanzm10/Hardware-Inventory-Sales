@@ -23,4 +23,21 @@ import com.github.hanzm_10.murico.swingapp.lib.auth.MuricoCrypt.HashedStringWith
 public interface AccountDao {
 	public HashedStringWithSalt getHashedPasswordWithSaltByUserDisplayName(@NotNull final String displayName)
 			throws IOException, SQLException;
+
+	public boolean isEmailTaken(@NotNull final String email) throws IOException, SQLException;
+
+	/**
+	 * Starts a transaction and handles two side effects
+	 *
+	 * <ul>
+	 * <li>Creates a row in {@code users} table
+	 * <li>Creates a row in {@code accounts_pending_verifications} table
+	 * </ul>
+	 *
+	 * <p>
+	 * These are necessary to prevent stale data. If one operation fails, a
+	 * transaction can roll back previous insertions/creations.
+	 */
+	public void registerAccount(@NotNull final String displayName, @NotNull final String email,
+			@NotNull final HashedStringWithSalt hashedPassword) throws IOException, SQLException;
 }

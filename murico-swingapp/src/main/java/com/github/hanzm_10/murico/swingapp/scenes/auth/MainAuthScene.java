@@ -14,20 +14,18 @@
 package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
-import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
@@ -35,19 +33,9 @@ import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
 import net.miginfocom.swing.MigLayout;
 
 public class MainAuthScene implements Scene {
-	public class MainAuthSceneButtonNavigationListener implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			SwingUtilities.invokeLater(() -> {
-				SceneNavigator.navigateTo(e.getActionCommand());
-			});
-		}
-	}
-
 	private static final Logger LOGGER = MuricoLogger.getLogger(MainAuthScene.class);
 
-	protected MainAuthSceneButtonNavigationListener btnListener = new MainAuthSceneButtonNavigationListener();
+	protected ButtonSceneNavigatorListener btnListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
 	protected JPanel view;
 	protected MigLayout layout;
@@ -56,6 +44,29 @@ public class MainAuthScene implements Scene {
 	protected JButton loginButton;
 
 	protected JButton registerButton;
+
+	private void attachComponents() {
+		if (imageLoaded()) {
+			imagePanel = new ImagePanel(image);
+			view.add(imagePanel, "cell 0 0 2");
+		}
+
+		view.add(loginButton, "cell 0 1");
+		view.add(registerButton, "cell 1 1");
+	}
+
+	private void attachListeners() {
+		loginButton.addActionListener(btnListener);
+		registerButton.addActionListener(btnListener);
+
+		loginButton.setActionCommand("auth/login");
+		registerButton.setActionCommand("auth/register");
+	}
+
+	private void createComponents() {
+		loginButton = StyledButtonFactory.createButton("Log In", ButtonStyles.TERTIARY, 280, 50);
+		registerButton = StyledButtonFactory.createButton("Create an account", ButtonStyles.TERTIARY, 280, 50);
+	}
 
 	@Override
 	public String getSceneName() {
@@ -76,35 +87,6 @@ public class MainAuthScene implements Scene {
 		}
 
 		return false;
-	}
-
-	private void setViewLayout() {
-		layout = new MigLayout("", "[::280px,grow,right]64[::280px,grow,left]",
-				"[240px::315px, bottom]24[50px::50px, top]");
-		view.setLayout(layout);
-	}
-
-	private void attachListeners() {
-		loginButton.addActionListener(btnListener);
-		registerButton.addActionListener(btnListener);
-
-		loginButton.setActionCommand("auth/login");
-		registerButton.setActionCommand("auth/register");
-	}
-
-	private void createComponents() {
-		loginButton = StyledButtonFactory.createButton("Log In", ButtonStyles.TERTIARY, 280, 50);
-		registerButton = StyledButtonFactory.createButton("Create an account", ButtonStyles.TERTIARY, 280, 50);
-	}
-
-	private void attachComponents() {
-		if (imageLoaded()) {
-			imagePanel = new ImagePanel(image);
-			view.add(imagePanel, "cell 0 0 2");
-		}
-
-		view.add(loginButton, "cell 0 1");
-		view.add(registerButton, "cell 1 1");
 	}
 
 	@Override
@@ -129,5 +111,11 @@ public class MainAuthScene implements Scene {
 		view = null;
 
 		return true;
+	}
+
+	private void setViewLayout() {
+		layout = new MigLayout("", "[::280px,grow,right]64[::280px,grow,left]",
+				"[240px::315px, bottom]24[50px::50px, top]");
+		view.setLayout(layout);
 	}
 }

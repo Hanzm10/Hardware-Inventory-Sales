@@ -13,6 +13,8 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
+import javax.swing.SwingUtilities;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
@@ -74,6 +76,8 @@ public class SceneNavigator {
 			throw new IllegalStateException("SceneNavigator is not initialized.");
 		}
 
-		sceneManager.navigateTo(sceneName);
+		SwingUtilities.invokeLater(() -> {
+			sceneManager.navigateTo(sceneName);
+		});
 	}
 }

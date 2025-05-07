@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -13,9 +13,10 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
-import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Logger;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,12 +26,12 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.S
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.CharUtils;
 
-/**
- * NOTE: NEVER EVER STORE PASSWORDS.
- */
+/** NOTE: NEVER EVER STORE PASSWORDS. */
 public class MySqlAccountDao implements AccountDao {
+	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlAccountDao.class);
 
 	@Override
 	public HashedStringWithSalt getHashedPasswordWithSaltByUserDisplayName(@NotNull String displayName)
@@ -44,28 +45,95 @@ public class MySqlAccountDao implements AccountDao {
 			var resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
-				try (var streamReader = resultSet.getCharacterStream("password_hash");) {
-					CharArrayWriter writer = new CharArrayWriter();
-					char[] buf = new char[1024];
-					int numOfCharsRead;
+				char[] passwordHash = CharUtils.byteArrayToCharArray(resultSet.getBytes("password_hash"));
+				String salt = resultSet.getString("password_salt");
 
-					while ((numOfCharsRead = streamReader.read(buf)) != -1) {
-						writer.write(buf, 0, numOfCharsRead);
-					}
+				statement.close();
+				conn.close();
 
-					char[] passChars = writer.toCharArray();
-
-					writer.close();
-					streamReader.close();
-					statement.close();
-					conn.close();
-
-					return new HashedStringWithSalt(CharUtils.charArrayToByteArray(passChars),
-							Salt.fromBase64(resultSet.getString("password_salt")));
-				}
+				return new HashedStringWithSalt(CharUtils.charArrayToByteArray(passwordHash), Salt.fromBase64(salt));
 			}
 		}
 
 		return null;
+	}
+
+	@Override
+	public boolean isEmailTaken(@NotNull String email) throws IOException, SQLException {
+		var emailTaken = false;
+		var query = MySqlQueryLoader.getInstance().get("is_email_taken", "accounts", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setString(1, email);
+
+			var resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				emailTaken = resultSet.getInt(1) != 0;
+			}
+
+			statement.close();
+			conn.close();
+		}
+
+		return emailTaken;
+	}
+
+	@Override
+	public void registerAccount(@NotNull String displayName, @NotNull String email,
+			@NotNull HashedStringWithSalt hashedPassword) throws IOException, SQLException {
+		var userCreationQuery = MySqlQueryLoader.getInstance().get("create_user", "users", SqlQueryType.INSERT);
+		var accountCreationQuery = MySqlQueryLoader.getInstance().get("create_account", "accounts",
+				SqlQueryType.INSERT);
+		var accountPendingVerificationsQuery = MySqlQueryLoader.getInstance().get("create_account_pending_verification",
+				"accounts_pending_verifications", SqlQueryType.INSERT);
+
+		try (var conn = MySqlFactoryDao.createConnection();) {
+			conn.setAutoCommit(false);
+
+			try (var createUserStmnt = conn.prepareStatement(userCreationQuery, Statement.RETURN_GENERATED_KEYS);
+					var createAccountStmnt = conn.prepareStatement(accountCreationQuery,
+							Statement.RETURN_GENERATED_KEYS);
+					var createAccountPendingVerificationStmnt = conn
+							.prepareStatement(accountPendingVerificationsQuery);) {
+				createUserStmnt.setString(1, displayName);
+				createUserStmnt.executeUpdate();
+
+				var userStmntKeys = createUserStmnt.getGeneratedKeys();
+
+				if (!userStmntKeys.next()) {
+					throw new SQLException("A user table was created but no surrogate key was generated.");
+				}
+
+				createAccountStmnt.setInt(1, userStmntKeys.getInt(1));
+				createAccountStmnt.setString(2, email);
+				createAccountStmnt.setBytes(3, hashedPassword.hashedString());
+				createAccountStmnt.setString(4, hashedPassword.salt().toBase64());
+				createAccountStmnt.executeUpdate();
+
+				var accountStmntKeys = createAccountStmnt.getGeneratedKeys();
+
+				if (!accountStmntKeys.next()) {
+					throw new SQLException("An account table was created but no surrogate key was generated.");
+				}
+
+				createAccountPendingVerificationStmnt.setInt(1, accountStmntKeys.getInt(1));
+				createAccountPendingVerificationStmnt.executeUpdate();
+
+				conn.commit();
+
+				createAccountPendingVerificationStmnt.close();
+				createAccountStmnt.close();
+				createUserStmnt.close();
+			} catch (SQLException e) {
+				if (conn != null) {
+					conn.rollback();
+				}
+
+				throw e;
+			}
+
+			conn.close();
+		}
 	}
 }

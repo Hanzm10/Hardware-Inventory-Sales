@@ -13,12 +13,23 @@
  */
 package com.github.hanzm_10.murico.swingapp.scenes;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
+import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
+import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
+
+import net.miginfocom.swing.MigLayout;
 
 public class LoggedInScene implements Scene {
 	public static class LoggedInSceneGuard implements SceneGuard {
@@ -33,6 +44,11 @@ public class LoggedInScene implements Scene {
 
 	protected JPanel view;
 
+	// just a temp mechanism so that we can go back to auth page
+	protected JPanel containerJPanel;
+	protected JButton logoutBtn;
+	protected JButton goToLoginBtn;
+
 	@Override
 	public String getSceneName() {
 		return "home";
@@ -45,5 +61,41 @@ public class LoggedInScene implements Scene {
 
 	@Override
 	public void onCreate() {
+		containerJPanel = new JPanel();
+		goToLoginBtn = new JButton("Go to login! :)");
+		logoutBtn = StyledButtonFactory.createButton("Get me outta here! :>", ButtonStyles.DANGER);
+
+		goToLoginBtn.addActionListener(_ -> {
+			SceneNavigator.navigateTo("auth/login");
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view), "HA! Got EM! (Click logout <3)",
+						"HEHE", JOptionPane.ERROR_MESSAGE);
+			});
+		});
+
+		logoutBtn.addActionListener(_ -> {
+			try {
+				SessionService.logout();
+				SceneNavigator.navigateTo("auth/login");
+			} catch (MuricoError e) {
+				SwingUtilities.invokeLater(() -> {
+					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view), e.getMessage(), "ERROR!",
+							JOptionPane.ERROR_MESSAGE);
+				});
+			}
+		});
+
+		containerJPanel.setLayout(new MigLayout("", "[center]", "[center]"));
+		containerJPanel.add(new JLabel("You're logged in! Congratulations"), "wrap");
+		containerJPanel.add(goToLoginBtn, "wrap");
+		containerJPanel.add(logoutBtn);
+
+		view.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
+		view.add(containerJPanel);
+	}
+
+	@Override
+	public boolean onDestroy() {
+		return Scene.super.onDestroy();
 	}
 }

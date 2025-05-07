@@ -17,22 +17,30 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.SessionStatus;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 
 public interface SessionDao {
-	public @NotNull String createSession(@NotNull final User user) throws IOException, SQLException;
+	public @NotNull Session createSession(@NotNull final User user) throws IOException, SQLException;
 
-	public @NotNull String createSession(@NotNull final User user, final String ipAddress)
+	public @NotNull Session createSession(@NotNull final User user, final String ipAddress)
 			throws IOException, SQLException;
 
-	public @NotNull String createSession(@NotNull final User user, final String ipAddress, final String userAgent)
+	public @NotNull Session createSession(@NotNull final User user, final String ipAddress, final String userAgent)
 			throws IOException, SQLException;
 
 	public Session getSessionByToken(@NotNull final String _sessionUid) throws IOException, SQLException;
 
+	public Session getSessionByUserId(@Range(from = 0, to = Integer.MAX_VALUE) final int _userId)
+			throws IOException, SQLException;
+
 	public void printSessionTableOfUser(@NotNull final User user) throws IOException, SQLException;
 
-	public boolean sessionExists(@NotNull final String _sessionUid) throws IOException, SQLException;
+	public boolean sessionExists(@NotNull final String _sessionToken) throws IOException, SQLException;
+
+	public void updateSessionStatusByToken(@NotNull final String _sessionToken, @NotNull final SessionStatus status)
+			throws IOException, SQLException;
 }
