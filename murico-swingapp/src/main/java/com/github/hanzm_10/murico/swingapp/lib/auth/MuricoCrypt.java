@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -46,9 +46,7 @@ public class MuricoCrypt {
 			return equalsHashedString(hashedStringWithSalt) && equalsSalt(hashedStringWithSalt);
 		}
 
-		/**
-		 * Essentially removes the information of this hashed string
-		 */
+		/** Essentially removes the information of this hashed string */
 		public void clearHashedStringBytes() {
 			for (int i = 0; i < hashedString().length; ++i) {
 				hashedString()[i] = 0;
@@ -66,8 +64,7 @@ public class MuricoCrypt {
 
 	public static final String ALGORITHM = "PBKDF2WithHmacSHA256";
 
-	public HashedStringWithSalt hash(@NotNull final char[] password)
-			throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public HashedStringWithSalt hash(@NotNull final char[] password) {
 		return hash(password, new Salt());
 	}
 
