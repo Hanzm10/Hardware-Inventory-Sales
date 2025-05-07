@@ -13,12 +13,14 @@
  */
 package com.github.hanzm_10.murico.swingapp.config;
 
+import java.io.File;
+
 import com.github.hanzm_10.murico.swingapp.constants.Directories;
 
 public abstract class AbstractFileSystemConfig extends AbstractConfig {
 	@Override
 	public String getFileDirectory() {
-		return Directories.CONFIG_DIRECTORY;
+		return Directories.CONFIG_DIRECTORY + File.separator;
 	}
 
 	public String getHeaderComment() {
