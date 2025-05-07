@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -61,12 +61,15 @@ public class SceneNavigator {
 	 * will throw an exception if the scene is not registered or if the scene is not
 	 * a valid scene.
 	 *
-	 * @param sceneName The name of the scene to navigate to.
-	 * @throws IllegalArgumentException If the scene name is invalid.
-	 * @throws WrongThreadException     If this method is called from a thread other
-	 *                                  than the Event Dispatch Thread.
-	 * @throws MuricoError              If there is an error while navigating to the
-	 *                                  scene.
+	 * @param sceneName
+	 *            The name of the scene to navigate to.
+	 * @throws IllegalArgumentException
+	 *             If the scene name is invalid.
+	 * @throws WrongThreadException
+	 *             If this method is called from a thread other than the Event
+	 *             Dispatch Thread.
+	 * @throws MuricoError
+	 *             If there is an error while navigating to the scene.
 	 */
 	public static void navigateTo(@NotNull final String sceneName) {
 		if (!isInitialized) {
