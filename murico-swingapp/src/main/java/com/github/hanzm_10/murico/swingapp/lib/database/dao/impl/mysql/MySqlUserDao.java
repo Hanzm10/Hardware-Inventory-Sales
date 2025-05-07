@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -59,6 +59,7 @@ public class MySqlUserDao implements UserDao {
 		var query = MySqlQueryLoader.getInstance().get("get_user_by_email", "users", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setString(1, _userEmail);
 
 			var resultSet = statement.executeQuery();
 
@@ -82,6 +83,7 @@ public class MySqlUserDao implements UserDao {
 		var query = MySqlQueryLoader.getInstance().get("get_user_by_id", "users", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setInt(1, _userID);
 
 			var resultSet = statement.executeQuery();
 
@@ -99,4 +101,24 @@ public class MySqlUserDao implements UserDao {
 		return user;
 	}
 
+	@Override
+	public boolean isUsernameTaken(@NotNull String name) throws IOException, SQLException {
+		var usernameTaken = false;
+		var query = MySqlQueryLoader.getInstance().get("is_username_taken", "users", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setString(1, name);
+
+			var resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				usernameTaken = resultSet.getInt(1) != 0;
+			}
+
+			statement.close();
+			conn.close();
+		}
+
+		return usernameTaken;
+	}
 }
