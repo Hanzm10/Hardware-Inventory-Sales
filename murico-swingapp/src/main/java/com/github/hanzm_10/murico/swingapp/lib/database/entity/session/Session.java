@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -15,6 +15,23 @@ package com.github.hanzm_10.murico.swingapp.lib.database.entity.session;
 
 import java.sql.Timestamp;
 
+/**
+ * Represents a user session in the system. Immutable data structure typically
+ * loaded from or saved to a database.
+ *
+ * @param _sessionId      Unique identifier for the session (primary key).
+ * @param _userId         ID of the user associated with the session.
+ * @param _sessionToken   Unique token used to identify or resume the session.
+ * @param _createdAt      Timestamp when the session was created.
+ * @param expiresAt       Timestamp when the session is set to expire.
+ * @param updatedAt       Timestamp of the last update to the session (e.g.,
+ *                        refresh).
+ * @param ipAddress       IP address from which the session was created.
+ * @param userAgent       User agent string from the client.
+ * @param status          Current status of the session (e.g., ACTIVE, EXPIRED,
+ *                        REVOKED).
+ * @param statusUpdatedAt Timestamp of the last change in session status.
+ */
 public record Session(int _sessionId, int _userId, String _sessionToken, Timestamp _createdAt, Timestamp expiresAt,
 		Timestamp updatedAt, String ipAddress, String userAgent, SessionStatus status, Timestamp statusUpdatedAt) {
 }
