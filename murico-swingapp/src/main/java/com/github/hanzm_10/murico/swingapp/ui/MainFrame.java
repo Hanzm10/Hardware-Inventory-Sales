@@ -60,7 +60,7 @@ public class MainFrame extends JFrame {
 		var sceneManager = new StaticSceneManager();
 
 		sceneManager.registerScene("auth", () -> new LoggedOutScene(), LoggedOutScene.GUARD);
-		sceneManager.registerScene("home", () -> new LoggedInScene(), LoggedOutScene.GUARD);
+		sceneManager.registerScene("home", () -> new LoggedInScene(), LoggedInScene.GUARD);
 
 		SceneNavigator.initialize(sceneManager);
 
