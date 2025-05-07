@@ -1,7 +1,7 @@
 INSERT INTO sessions (
   _user_id,
-  session_ip_address,
-  session_user_agent,
+  ip_address,
+  user_agent
 ) VALUES (
     ?, ?, ?
-) RETURNING *;
+);

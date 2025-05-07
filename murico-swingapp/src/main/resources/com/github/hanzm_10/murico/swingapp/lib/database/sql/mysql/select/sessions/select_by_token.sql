@@ -1,1 +1,1 @@
-SELECT * FROM sessions WHERE uid = ?;
+SELECT * FROM sessions WHERE _session_token = ?;

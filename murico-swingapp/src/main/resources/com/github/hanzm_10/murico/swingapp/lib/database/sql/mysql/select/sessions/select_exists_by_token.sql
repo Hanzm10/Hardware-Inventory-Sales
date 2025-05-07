@@ -1,5 +1,5 @@
 SELECT EXISTS (
     SELECT 1
     FROM sessions
-    WHERE _session_uid = ?
+    WHERE _session_token = ?
 );
