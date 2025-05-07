@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -14,18 +14,31 @@
 package com.github.hanzm_10.murico.swingapp.lib.exceptions;
 
 public enum MuricoErrorCodes {
-	INVALID_CREDENTIALS(1001, "Invalid credentials. Please check your username and password."),
-	FORBIDDEN_ACCESS(1002, "You do not have permission to access this resource."),
-	DATABASE_CONNECTION_FAILED(2001, "Unable to connect to the database. Please check your configuration."),
-	DATABASE_FAILED_INSERT(2002, "Unable to perform the speified action."),
-	DATABASE_OPERATION_FAILED(2003, "Something went wrong while querying the database"),
-	UNKNOWN_ERROR(9999, "An unknown error has occurred."), SCENE_NOT_FOUND(3001, "The requested scene was not found."),
-	INVALID_INPUT(4001, "Invalid input provided. Please check your data."),
-	NETWORK_ERROR(5001, "Network error occurred. Please check your connection."),
-	FILE_NOT_FOUND(6001, "The specified file was not found."),
-	UNSUPPORTED_OPERATION(7001, "This operation is not supported."),
-	TIMEOUT_ERROR(8001, "The operation timed out. Please try again later."),
-	UNREACHABLE_ERROR(9998, "An event that shouldn't have happened occured.");
+	INVALID_CREDENTIALS(1001, "Invalid credentials. Please check your username and password."), FORBIDDEN_ACCESS(1002,
+			"You do not have permission to access this resource."), ACCOUNT_EXISTS(1003,
+					"Account already exists."), LOGGING_OUT_FAILURE(1004,
+							"Failed to logout"), DATABASE_CONNECTION_FAILED(2001,
+									"Unable to connect to the database. Please check your configuration."), DATABASE_FAILED_INSERT(
+											2002,
+											"Unable to perform the specified action."), DATABASE_OPERATION_FAILED(2003,
+													"Something went wrong while querying the database"), UNKNOWN_ERROR(
+															9999,
+															"An unknown error has occurred."), SCENE_NOT_FOUND(3001,
+																	"The requested scene was not found."), INVALID_INPUT(
+																			4001,
+																			"Invalid input provided. Please check your data."), NETWORK_ERROR(
+																					5001,
+																					"Network error occurred. Please check your connection."), FILE_NOT_FOUND(
+																							6001,
+																							"The specified file was not found."), FILE_OPERATION_FAILED(
+																									6002,
+																									"Cannot perform necessary I/O file actions."), UNSUPPORTED_OPERATION(
+																											7001,
+																											"This operation is not supported."), TIMEOUT_ERROR(
+																													8001,
+																													"The operation timed out. Please try again later."), UNREACHABLE_ERROR(
+																															9998,
+																															"An event that shouldn't have happened occured."),;
 
 	private final int code;
 	private final String defaultMessage;
