@@ -307,7 +307,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 		loginThread = new Thread(() -> {
 			try {
-				SessionService.loginUser(name, password);
+				SessionService.login(name, password);
 
 				SwingUtilities.invokeLater(() -> {
 					SceneNavigator.navigateTo("home/profile");
