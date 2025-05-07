@@ -23,7 +23,7 @@ CREATE TABLE accounts (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     email VARCHAR(255) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) CHARACTER SET BINARY NOT NULL,
     password_salt VARCHAR(255) NOT NULL,
     verification_status ENUM("unverified", "verified") NOT NULL DEFAULT "unverified",
 
