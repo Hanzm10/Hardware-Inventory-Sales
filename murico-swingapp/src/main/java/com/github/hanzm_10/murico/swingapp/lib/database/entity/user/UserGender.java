@@ -16,32 +16,36 @@ package com.github.hanzm_10.murico.swingapp.lib.database.entity.user;
 import java.util.Locale;
 
 public enum UserGender {
-    MALE, FEMALE, UNKNOWN;
+	MALE, FEMALE, UNKNOWN;
 
-    /**
-     * Returns the UserGender corresponding to the given string.
-     *
-     * @param gender
-     *            the string representation of the UserGender
-     * @return the UserGender corresponding to the given string
-     * @throws IllegalArgumentException
-     *             if the string does not match any UserGender
-     */
-    public static UserGender fromString(String gender) throws IllegalArgumentException {
-        return switch (gender.toUpperCase(Locale.ENGLISH)) {
-            case "MALE" -> MALE;
-            case "FEMALE" -> FEMALE;
-            case "UNKNOWN" -> UNKNOWN;
-            default -> throw new IllegalArgumentException("Invalid gender: " + gender);
-        };
-    }
+	/**
+	 * Returns the UserGender corresponding to the given string.
+	 *
+	 * @param gender
+	 *            the string representation of the UserGender
+	 * @return the UserGender corresponding to the given string
+	 * @throws IllegalArgumentException
+	 *             if the string does not match any UserGender
+	 */
+	public static UserGender fromString(String gender) throws IllegalArgumentException {
+		if (gender == null) {
+			return UNKNOWN;
+		}
 
-    @Override
-    public String toString() {
-        return switch (this) {
-            case MALE -> "male";
-            case FEMALE -> "female";
-            case UNKNOWN -> "unknown";
-        };
-    }
+		return switch (gender.toUpperCase(Locale.ENGLISH)) {
+			case "MALE" -> MALE;
+			case "FEMALE" -> FEMALE;
+			case "UNKNOWN" -> UNKNOWN;
+			default -> throw new IllegalArgumentException("Invalid gender: " + gender);
+		};
+	}
+
+	@Override
+	public String toString() {
+		return switch (this) {
+			case MALE -> "male";
+			case FEMALE -> "female";
+			case UNKNOWN -> "unknown";
+		};
+	}
 }
