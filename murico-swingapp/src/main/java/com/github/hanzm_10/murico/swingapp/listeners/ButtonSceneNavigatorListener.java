@@ -15,7 +15,6 @@ public class ButtonSceneNavigatorListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(disableNavigation.get());
 		if (disableNavigation.get()) {
 			return;
 		}

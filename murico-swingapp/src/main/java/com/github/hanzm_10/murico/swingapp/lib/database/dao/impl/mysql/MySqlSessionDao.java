@@ -35,19 +35,19 @@ public class MySqlSessionDao implements SessionDao {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlSessionDao.class);
 
 	@Override
-	public @NotNull String createSession(@NotNull User user) throws IOException, SQLException {
+	public @NotNull Session createSession(@NotNull User user) throws IOException, SQLException {
 		return createSession(user, "", "");
 	}
 
 	@Override
-	public @NotNull String createSession(@NotNull User user, String ipAddress) throws IOException, SQLException {
+	public @NotNull Session createSession(@NotNull User user, String ipAddress) throws IOException, SQLException {
 		return createSession(user, ipAddress, "");
 	}
 
 	@Override
-	public @NotNull String createSession(@NotNull User user, String ipAddress, String userAgent)
+	public @NotNull Session createSession(@NotNull User user, String ipAddress, String userAgent)
 			throws IOException, SQLException {
-		String _sessionUid = null;
+		Session session = null;
 		String query = MySqlQueryLoader.getInstance().get("create_session", "sessions", SqlQueryType.INSERT);
 
 		try (var conn = MySqlFactoryDao.createConnection();
@@ -57,14 +57,15 @@ public class MySqlSessionDao implements SessionDao {
 			statement.setString(2, ipAddress);
 			statement.setString(3, userAgent);
 
-			var resultSet = statement.executeUpdate();
+			var resultSet = statement.executeQuery();
 
-			if (resultSet == 1) {
-				var generatedKeys = statement.getGeneratedKeys();
-
-				if (generatedKeys.next()) {
-					_sessionUid = generatedKeys.getString("_session_uid");
-				}
+			if (resultSet.next()) {
+				session = new Session(resultSet.getInt("_session_id"), resultSet.getInt("_user_id"),
+						resultSet.getString("_session_token"), resultSet.getTimestamp("_created_at"),
+						resultSet.getTimestamp("expires_at"), resultSet.getTimestamp("updated_at"),
+						resultSet.getString("ip_address"), resultSet.getString("user_agent"),
+						SessionStatus.fromString(resultSet.getString("status")),
+						resultSet.getTimestamp("status_updated_at"));
 			}
 
 			statement.close();
@@ -73,7 +74,7 @@ public class MySqlSessionDao implements SessionDao {
 			LOGGER.log(Level.SEVERE, "SQL feature not supported", e);
 		}
 
-		return _sessionUid;
+		return session;
 	}
 
 	@Override

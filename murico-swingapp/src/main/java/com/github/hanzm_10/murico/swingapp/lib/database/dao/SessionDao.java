@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -22,12 +22,12 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 
 public interface SessionDao {
-	public @NotNull String createSession(@NotNull final User user) throws IOException, SQLException;
+	public @NotNull Session createSession(@NotNull final User user) throws IOException, SQLException;
 
-	public @NotNull String createSession(@NotNull final User user, final String ipAddress)
+	public @NotNull Session createSession(@NotNull final User user, final String ipAddress)
 			throws IOException, SQLException;
 
-	public @NotNull String createSession(@NotNull final User user, final String ipAddress, final String userAgent)
+	public @NotNull Session createSession(@NotNull final User user, final String ipAddress, final String userAgent)
 			throws IOException, SQLException;
 
 	public Session getSessionByToken(@NotNull final String _sessionUid) throws IOException, SQLException;

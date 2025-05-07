@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -12,6 +12,8 @@
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.github.hanzm_10.murico.swingapp.lib.navigation;
+
+import javax.swing.SwingUtilities;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -59,21 +61,20 @@ public class SceneNavigator {
 	 * will throw an exception if the scene is not registered or if the scene is not
 	 * a valid scene.
 	 *
-	 * @param sceneName
-	 *            The name of the scene to navigate to.
-	 * @throws IllegalArgumentException
-	 *             If the scene name is invalid.
-	 * @throws WrongThreadException
-	 *             If this method is called from a thread other than the Event
-	 *             Dispatch Thread.
-	 * @throws MuricoError
-	 *             If there is an error while navigating to the scene.
+	 * @param sceneName The name of the scene to navigate to.
+	 * @throws IllegalArgumentException If the scene name is invalid.
+	 * @throws WrongThreadException     If this method is called from a thread other
+	 *                                  than the Event Dispatch Thread.
+	 * @throws MuricoError              If there is an error while navigating to the
+	 *                                  scene.
 	 */
 	public static void navigateTo(@NotNull final String sceneName) {
 		if (!isInitialized) {
 			throw new IllegalStateException("SceneNavigator is not initialized.");
 		}
 
-		sceneManager.navigateTo(sceneName);
+		SwingUtilities.invokeLater(() -> {
+			sceneManager.navigateTo(sceneName);
+		});
 	}
 }

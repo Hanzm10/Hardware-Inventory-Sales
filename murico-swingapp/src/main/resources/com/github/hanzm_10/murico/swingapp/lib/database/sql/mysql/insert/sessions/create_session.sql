@@ -4,4 +4,4 @@ INSERT INTO sessions (
   session_user_agent,
 ) VALUES (
     ?, ?, ?
-);
+) RETURNING *;

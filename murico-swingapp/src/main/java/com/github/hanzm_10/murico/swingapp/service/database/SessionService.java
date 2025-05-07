@@ -23,7 +23,6 @@ import com.github.hanzm_10.murico.swingapp.config.ApplicationConfig;
 import com.github.hanzm_10.murico.swingapp.constants.PropertyKey;
 import com.github.hanzm_10.murico.swingapp.lib.auth.MuricoCrypt;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoErrorCodes;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
@@ -62,7 +61,8 @@ public class SessionService {
 		return true;
 	}
 
-	public static User loginUser(@NotNull String _userDisplayName, @NotNull char[] userPassword) throws MuricoError {
+	public static void login(@NotNull final String _userDisplayName, @NotNull final char[] userPassword)
+			throws MuricoError {
 		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
 		var userDao = factory.getUserDao();
 
@@ -93,25 +93,36 @@ public class SessionService {
 			hashedUserPassword.clearHashedStringBytes();
 
 			var sessionDao = factory.getSessionDao();
-			var sessionToken = sessionDao.createSession(user);
-
-			if (sessionToken == null) {
-				throw new MuricoError(MuricoErrorCodes.DATABASE_CONNECTION_FAILED);
-			}
-
-			var session = sessionDao.getSessionByToken(sessionToken);
+			var session = sessionDao.createSession(user);
 
 			if (session == null) {
-				throw new MuricoError(MuricoErrorCodes.UNREACHABLE_ERROR);
+				throw new MuricoError(MuricoErrorCodes.DATABASE_FAILED_INSERT);
 			}
 
-			ApplicationConfig.getInstance().getConfig().setProperty(PropertyKey.Session.UID, sessionToken);
+			ApplicationConfig.getInstance().getConfig().setProperty(PropertyKey.Session.UID, session._sessionToken());
 			SessionManager.getInstance().setSession(session, user);
-
-			return user;
 		} catch (SQLException | IOException e) {
 			throw new MuricoError(MuricoErrorCodes.DATABASE_OPERATION_FAILED, e.getMessage());
 		}
+	}
+
+	public static void regsiter(@NotNull final String displayName, @NotNull final String email,
+			@NotNull final char[] password) throws MuricoError {
+		// check if name is taken
+		// check if email is taken
+
+		// if checks pass
+		// hash password
+		// clear plain-text password array
+
+		// start db transaction
+		// create the user row
+		// create the account row
+		// create pending accounts verification row
+
+		// create session
+
+		// store user and session token
 	}
 
 	private static void removeStoredSessionUid() throws IOException {
