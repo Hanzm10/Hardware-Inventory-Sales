@@ -1,3 +1,16 @@
+/** 
+ *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
+ *  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
 import java.awt.Color;
@@ -25,7 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
-import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoErrorCodes;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.utils.Debouncer;
@@ -34,6 +46,7 @@ import com.github.hanzm_10.murico.swingapp.lib.validator.EmailValidator;
 import com.github.hanzm_10.murico.swingapp.lib.validator.PasswordValidator;
 import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
 import com.github.hanzm_10.murico.swingapp.listeners.TogglePasswordFieldVisibilityListener;
+import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
@@ -86,6 +99,7 @@ public class RegisterAuthScene implements Scene, ActionListener {
 
 	/** To avoid multiple calls of register */
 	protected Debouncer registerDebouncer = new Debouncer(50);
+
 	protected Thread registerThread;
 
 	@Override
@@ -111,22 +125,24 @@ public class RegisterAuthScene implements Scene, ActionListener {
 
 		registerThread = new Thread(() -> {
 			try {
-				// register
-				throw new MuricoError(MuricoErrorCodes.UNSUPPORTED_OPERATION);
+				SessionService.register(name, email, password);;
 			} catch (MuricoError e) {
 				switch (e.getErrorCode()) {
-				case INVALID_CREDENTIALS: {
-					SwingUtilities.invokeLater(() -> {
-						errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-						errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-					});
-				}
-					break;
-				default: {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(),
-							"Failed to register", JOptionPane.ERROR_MESSAGE));
-					LOGGER.log(Level.SEVERE, "Failed to register", e);
-				}
+					case INVALID_CREDENTIALS :
+					case ACCOUNT_EXISTS : {
+						SwingUtilities.invokeLater(() -> {
+							errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+							errorMessageEmail.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+							errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+						});
+					}
+						break;
+					default : {
+						SwingUtilities
+								.invokeLater(() -> JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+										e.toString(), "Failed to register", JOptionPane.ERROR_MESSAGE));
+						LOGGER.log(Level.SEVERE, "Failed to register", e);
+					}
 				}
 			} finally {
 				SwingUtilities.invokeLater(() -> {
@@ -140,7 +156,6 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		});
 
 		registerThread.start();
-
 	}
 
 	private void attachComponents() {
@@ -215,10 +230,10 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		registerBtn = StyledButtonFactory.createButton("Create account", ButtonStyles.SECONDARY);
 
 		btnSeparator = new JPanel();
-		var fractions = new float[] { 0f, 1f };
-		leftLine = Line.builder().setColors(new Color[] { new Color(0x00, true), Color.BLACK }).setFractions(fractions)
+		var fractions = new float[]{0f, 1f};
+		leftLine = Line.builder().setColors(new Color[]{new Color(0x00, true), Color.BLACK}).setFractions(fractions)
 				.build();
-		rightLine = Line.builder().setColors(new Color[] { Color.BLACK, new Color(0x00, true) }).setFractions(fractions)
+		rightLine = Line.builder().setColors(new Color[]{Color.BLACK, new Color(0x00, true)}).setFractions(fractions)
 				.build();
 		orText = new JLabel("or");
 
@@ -232,9 +247,13 @@ public class RegisterAuthScene implements Scene, ActionListener {
 	}
 
 	private void disableNavigationButtons() {
+		backBtn.setEnabled(false);
+		loginBtn.setEnabled(false);
 	}
 
 	private void enableNavigationButtons() {
+		backBtn.setEnabled(true);
+		loginBtn.setEnabled(true);
 	}
 
 	@Override
@@ -248,6 +267,7 @@ public class RegisterAuthScene implements Scene, ActionListener {
 	}
 
 	private void hideLoadingIndicator() {
+		registerBtn.setText("Create an account");
 	}
 
 	private boolean isInputValid(@NotNull final String name, @NotNull final String email,
@@ -336,5 +356,6 @@ public class RegisterAuthScene implements Scene, ActionListener {
 	}
 
 	private void showLoadingIndicator() {
+		registerBtn.setText("Creating an account...");
 	}
 }

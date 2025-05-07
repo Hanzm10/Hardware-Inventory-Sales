@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -95,6 +95,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 
 	/** To avoid multiple calls of login */
 	protected Debouncer loginDebouncer = new Debouncer(50);
+
 	protected Thread loginThread;
 
 	@Override
@@ -167,10 +168,10 @@ public class LoginAuthScene implements Scene, ActionListener {
 		loginBtn = StyledButtonFactory.createButton("Log In", ButtonStyles.SECONDARY);
 
 		btnSeparator = new JPanel();
-		var fractions = new float[] { 0f, 1f };
-		leftLine = Line.builder().setColors(new Color[] { new Color(0x00, true), Color.BLACK }).setFractions(fractions)
+		var fractions = new float[]{0f, 1f};
+		leftLine = Line.builder().setColors(new Color[]{new Color(0x00, true), Color.BLACK}).setFractions(fractions)
 				.build();
-		rightLine = Line.builder().setColors(new Color[] { Color.BLACK, new Color(0x00, true) }).setFractions(fractions)
+		rightLine = Line.builder().setColors(new Color[]{Color.BLACK, new Color(0x00, true)}).setFractions(fractions)
 				.build();
 		orText = new JLabel("or");
 
@@ -314,18 +315,19 @@ public class LoginAuthScene implements Scene, ActionListener {
 				});
 			} catch (MuricoError e) {
 				switch (e.getErrorCode()) {
-				case INVALID_CREDENTIALS: {
-					SwingUtilities.invokeLater(() -> {
-						errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-						errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-					});
-				}
-					break;
-				default: {
-					SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, e.toString(),
-							"Failed to log in", JOptionPane.ERROR_MESSAGE));
-					LOGGER.log(Level.SEVERE, "Failed to log in", e);
-				}
+					case INVALID_CREDENTIALS : {
+						SwingUtilities.invokeLater(() -> {
+							errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+							errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+						});
+					}
+						break;
+					default : {
+						SwingUtilities
+								.invokeLater(() -> JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+										e.toString(), "Failed to log in", JOptionPane.ERROR_MESSAGE));
+						LOGGER.log(Level.SEVERE, "Failed to log in", e);
+					}
 				}
 			} finally {
 				SwingUtilities.invokeLater(() -> {
