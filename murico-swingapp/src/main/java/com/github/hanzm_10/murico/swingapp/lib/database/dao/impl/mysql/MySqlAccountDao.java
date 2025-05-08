@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -48,9 +48,6 @@ public class MySqlAccountDao implements AccountDao {
 				char[] passwordHash = CharUtils.byteArrayToCharArray(resultSet.getBytes("password_hash"));
 				String salt = resultSet.getString("password_salt");
 
-				statement.close();
-				conn.close();
-
 				return new HashedStringWithSalt(CharUtils.charArrayToByteArray(passwordHash), Salt.fromBase64(salt));
 			}
 		}
@@ -72,8 +69,6 @@ public class MySqlAccountDao implements AccountDao {
 				emailTaken = resultSet.getInt(1) != 0;
 			}
 
-			statement.close();
-			conn.close();
 		}
 
 		return emailTaken;
@@ -121,10 +116,6 @@ public class MySqlAccountDao implements AccountDao {
 				createAccountPendingVerificationStmnt.executeUpdate();
 
 				conn.commit();
-
-				createAccountPendingVerificationStmnt.close();
-				createAccountStmnt.close();
-				createUserStmnt.close();
 			} catch (SQLException e) {
 				if (conn != null) {
 					conn.rollback();
@@ -132,8 +123,6 @@ public class MySqlAccountDao implements AccountDao {
 
 				throw e;
 			}
-
-			conn.close();
 		}
 	}
 }

@@ -30,8 +30,6 @@ public class MySqlRoleDao implements RoleDao {
 						resultSet.getString("name"), resultSet.getString("description")));
 			}
 
-			statement.close();
-			conn.close();
 		}
 
 		return (Role[]) roles.toArray();

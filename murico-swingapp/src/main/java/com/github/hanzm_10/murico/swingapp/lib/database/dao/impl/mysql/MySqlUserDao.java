@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -46,8 +46,6 @@ public class MySqlUserDao implements UserDao {
 						resultSet.getString("biography"));
 			}
 
-			statement.close();
-			conn.close();
 		}
 
 		return user;
@@ -71,8 +69,6 @@ public class MySqlUserDao implements UserDao {
 						resultSet.getString("biography"));
 			}
 
-			statement.close();
-			conn.close();
 		}
 		return user;
 	}
@@ -95,8 +91,6 @@ public class MySqlUserDao implements UserDao {
 						resultSet.getString("biography"));
 			}
 
-			statement.close();
-			conn.close();
 		}
 		return user;
 	}
@@ -114,9 +108,6 @@ public class MySqlUserDao implements UserDao {
 			if (resultSet.next()) {
 				usernameTaken = resultSet.getInt(1) != 0;
 			}
-
-			statement.close();
-			conn.close();
 		}
 
 		return usernameTaken;

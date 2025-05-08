@@ -11,7 +11,7 @@ public abstract class AbstractMigratorFactory {
 	protected static final Logger LOGGER = MuricoLogger.getLogger(AbstractMigratorFactory.class);
 	public static final int MYSQL = 1;
 
-	public static AbstractMigratorFactory getSqlFactoryDao(int type) {
+	public static AbstractMigratorFactory getMigrator(int type) {
 		return switch (type) {
 		case MYSQL -> new MySqlMigratorFactory();
 		default -> throw new IllegalArgumentException("Invalid database type: " + type);

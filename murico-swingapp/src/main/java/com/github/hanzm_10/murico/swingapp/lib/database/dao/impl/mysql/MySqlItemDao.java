@@ -47,8 +47,6 @@ public class MySqlItemDao implements ItemDao {
 						.setItemPckId(resultSet.getInt("_item_pack_tupe_id")).build();
 			}
 
-			statement.close();
-			conn.close();
 		}
 		return item;
 	}
@@ -73,8 +71,6 @@ public class MySqlItemDao implements ItemDao {
 						.setItemPckId(resultSet.getInt("_item_pack_tupe_id")).build();
 			}
 
-			statement.close();
-			conn.close();
 		}
 		return item;
 	}
