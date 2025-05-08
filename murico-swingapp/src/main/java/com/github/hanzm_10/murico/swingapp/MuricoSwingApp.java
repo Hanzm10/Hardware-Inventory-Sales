@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -23,11 +23,13 @@ import javax.swing.SwingUtilities;
 import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
 import com.github.hanzm_10.murico.swingapp.constants.Directories;
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
+import com.github.hanzm_10.murico.swingapp.lib.database.AbstractMigratorFactory;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.handlers.GlobalUncaughtExceptionHandler;
 import com.github.hanzm_10.murico.swingapp.lib.io.FileUtils;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.ui.MainFrame;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 public class MuricoSwingApp {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MuricoSwingApp.class);
@@ -44,6 +46,8 @@ public class MuricoSwingApp {
 	}
 
 	private static boolean doDevelopmentSetup() {
+		AbstractMigratorFactory.getMigrator(AbstractMigratorFactory.MYSQL).getMigrator().migrate();
+
 		return true;
 	}
 
@@ -75,6 +79,7 @@ public class MuricoSwingApp {
 			} catch (IOException | SQLException e) {
 				// TODO: Probably don't start the app if this happens
 				LOGGER.log(Level.SEVERE, "Failed to load previous session", e);
+				AbandonedConnectionCleanupThread.checkedShutdown();
 			}
 		});
 	}
