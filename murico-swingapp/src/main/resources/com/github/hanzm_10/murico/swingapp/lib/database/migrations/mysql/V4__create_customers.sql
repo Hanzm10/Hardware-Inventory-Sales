@@ -1,0 +1,10 @@
+CREATE TABLE customers (
+    _customer_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    email VARCHAR(255),
+
+    UNIQUE (email)
+);
