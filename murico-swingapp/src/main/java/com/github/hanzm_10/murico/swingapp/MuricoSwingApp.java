@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -23,11 +23,13 @@ import javax.swing.SwingUtilities;
 import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
 import com.github.hanzm_10.murico.swingapp.constants.Directories;
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
+import com.github.hanzm_10.murico.swingapp.lib.database.AbstractMigratorFactory;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.handlers.GlobalUncaughtExceptionHandler;
 import com.github.hanzm_10.murico.swingapp.lib.io.FileUtils;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.ui.MainFrame;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 public class MuricoSwingApp {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MuricoSwingApp.class);
@@ -44,19 +46,17 @@ public class MuricoSwingApp {
 	}
 
 	private static boolean doDevelopmentSetup() {
+		var migratorFactory = AbstractMigratorFactory.getMigrator(AbstractMigratorFactory.MYSQL);
+		var migrator = migratorFactory.getMigrator();
+		var seeder = migratorFactory.getSeeder();
+
+		migrator.migrate();
+		seeder.seed();
+
 		return true;
 	}
 
 	public static void main(String[] args) {
-		/*
-		 * try { MessageDigest digest = MessageDigest.getInstance("SHA-256");
-		 * digest.update("Hello, World!".getBytes()); String stringHash = new
-		 * BigInteger(1, digest.digest()).toString(16);
-		 *
-		 * System.out.println(stringHash + " " + stringHash.length()); } catch(Exception
-		 * e) { System.err.println(e); }
-		 */
-
 		if (Metadata.APP_ENV.equals("development")) {
 			if (!doDevelopmentSetup()) {
 				LOGGER.log(Level.SEVERE, "Failed to setup development environment");
@@ -75,6 +75,7 @@ public class MuricoSwingApp {
 			} catch (IOException | SQLException e) {
 				// TODO: Probably don't start the app if this happens
 				LOGGER.log(Level.SEVERE, "Failed to load previous session", e);
+				AbandonedConnectionCleanupThread.checkedShutdown();
 			}
 		});
 	}

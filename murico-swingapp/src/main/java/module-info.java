@@ -9,4 +9,5 @@ open module murico.swingapp {
 	requires jakarta.mail;
 	requires org.apache.pdfbox;
 	requires mysql.connector.j;
+	requires io.github.classgraph;
 }

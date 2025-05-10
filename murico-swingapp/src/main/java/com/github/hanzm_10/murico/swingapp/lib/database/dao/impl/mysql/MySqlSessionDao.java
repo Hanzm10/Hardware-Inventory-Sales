@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -67,8 +67,6 @@ public class MySqlSessionDao implements SessionDao {
 				}
 			}
 
-			statement.close();
-
 			if (_sessionId != -1) {
 				var q2 = MySqlQueryLoader.getInstance().get("get_session_by_id", "sessions", SqlQueryType.SELECT);
 
@@ -86,8 +84,6 @@ public class MySqlSessionDao implements SessionDao {
 					}
 				}
 			}
-
-			conn.close();
 		} catch (SQLFeatureNotSupportedException e) {
 			LOGGER.log(Level.SEVERE, "SQL feature not supported", e);
 		}
@@ -114,8 +110,6 @@ public class MySqlSessionDao implements SessionDao {
 						resultSet.getTimestamp("status_updated_at"));
 			}
 
-			statement.close();
-			conn.close();
 		}
 
 		return session;
@@ -140,8 +134,6 @@ public class MySqlSessionDao implements SessionDao {
 						resultSet.getTimestamp("status_updated_at"));
 			}
 
-			statement.close();
-			conn.close();
 		}
 
 		return session;
@@ -166,8 +158,6 @@ public class MySqlSessionDao implements SessionDao {
 				sessionExists = resultSet.getInt(1) != 0;
 			}
 
-			statement.close();
-			conn.close();
 		}
 
 		return sessionExists;
@@ -184,8 +174,6 @@ public class MySqlSessionDao implements SessionDao {
 
 			statement.executeUpdate();
 
-			statement.close();
-			conn.close();
 		}
 	}
 }

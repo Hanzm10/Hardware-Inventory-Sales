@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -31,6 +31,7 @@ import com.github.hanzm_10.murico.swingapp.lib.utils.CharUtils;
 
 /** NOTE: NEVER EVER STORE PASSWORDS. */
 public class MySqlAccountDao implements AccountDao {
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlAccountDao.class);
 
 	@Override
@@ -45,13 +46,10 @@ public class MySqlAccountDao implements AccountDao {
 			var resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
-				char[] passwordHash = CharUtils.byteArrayToCharArray(resultSet.getBytes("password_hash"));
+				byte[] passwordHash = CharUtils.fromBase64(resultSet.getString("password_hash"));
 				String salt = resultSet.getString("password_salt");
 
-				statement.close();
-				conn.close();
-
-				return new HashedStringWithSalt(CharUtils.charArrayToByteArray(passwordHash), Salt.fromBase64(salt));
+				return new HashedStringWithSalt(passwordHash, Salt.fromBase64(salt));
 			}
 		}
 
@@ -72,8 +70,6 @@ public class MySqlAccountDao implements AccountDao {
 				emailTaken = resultSet.getInt(1) != 0;
 			}
 
-			statement.close();
-			conn.close();
 		}
 
 		return emailTaken;
@@ -107,7 +103,7 @@ public class MySqlAccountDao implements AccountDao {
 
 				createAccountStmnt.setInt(1, userStmntKeys.getInt(1));
 				createAccountStmnt.setString(2, email);
-				createAccountStmnt.setBytes(3, hashedPassword.hashedString());
+				createAccountStmnt.setString(3, CharUtils.toBase64(hashedPassword.hashedString()));
 				createAccountStmnt.setString(4, hashedPassword.salt().toBase64());
 				createAccountStmnt.executeUpdate();
 
@@ -121,10 +117,6 @@ public class MySqlAccountDao implements AccountDao {
 				createAccountPendingVerificationStmnt.executeUpdate();
 
 				conn.commit();
-
-				createAccountPendingVerificationStmnt.close();
-				createAccountStmnt.close();
-				createUserStmnt.close();
 			} catch (SQLException e) {
 				if (conn != null) {
 					conn.rollback();
@@ -132,8 +124,6 @@ public class MySqlAccountDao implements AccountDao {
 
 				throw e;
 			}
-
-			conn.close();
 		}
 	}
 }

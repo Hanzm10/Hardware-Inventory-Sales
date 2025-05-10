@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -19,24 +19,15 @@ import java.sql.Timestamp;
  * Represents a user in the system. Contains both profile information and
  * metadata such as creation time.
  *
- * @param _userId
- *            Unique identifier for the user (primary key).
- * @param _createdAt
- *            Timestamp when the user was created.
- * @param updatedAt
- *            Timestamp of the last update to the user profile.
- * @param displayName
- *            The display name shown publicly (e.g., "JohnDoe42").
- * @param displayImage
- *            URL or path to the user's profile image.
- * @param gender
- *            The user's gender (enum).
- * @param firstName
- *            The user's first name.
- * @param lastName
- *            The user's last name.
- * @param biography
- *            A short personal biography or description.
+ * @param _userId      Unique identifier for the user (primary key).
+ * @param _createdAt   Timestamp when the user was created.
+ * @param updatedAt    Timestamp of the last update to the user profile.
+ * @param displayName  The display name shown publicly (e.g., "JohnDoe42").
+ * @param displayImage URL or path to the user's profile image.
+ * @param gender       The user's gender (enum).
+ * @param firstName    The user's first name.
+ * @param lastName     The user's last name.
+ * @param biography    A short personal biography or description.
  */
 public record User(int _userId, Timestamp _createdAt, Timestamp updatedAt, String displayName, String displayImage,
 		UserGender gender, String firstName, String lastName, String biography) {

@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -63,6 +63,15 @@ public class MuricoCrypt {
 	public static final int KEY_LENGTH = 256;
 
 	public static final String ALGORITHM = "PBKDF2WithHmacSHA256";
+
+	public static void main(String[] args) {
+		var pass = "Seed@123";
+		var hashed = new MuricoCrypt().hash(pass.toCharArray());
+		var str = CharUtils.toBase64(hashed.hashedString);
+
+		System.out.println("Password: " + pass + ", Hash: " + str);
+		System.out.println("Salt: " + hashed.salt.toBase64());
+	}
 
 	public HashedStringWithSalt hash(@NotNull final char[] password) {
 		return hash(password, new Salt());
