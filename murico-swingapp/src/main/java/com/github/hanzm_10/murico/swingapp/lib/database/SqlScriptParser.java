@@ -19,7 +19,7 @@ public final class SqlScriptParser {
 
 		// Pattern includes optional object type (like TABLE, TRIGGER, etc.)
 		Pattern pattern = Pattern.compile(
-				"(?i)\\b(CREATE|ALTER|DROP|INSERT|UPDATE|DELETE|TRUNCATE)\\s+(TABLE|DATABASE|INDEX|TRIGGER)?\\s*`?(\\w+)`?",
+				"(?i)\\b(CREATE|ALTER|DROP|INSERT|UPDATE|DELETE|TRUNCATE)\\s+(TABLE|DATABASE|INDEX|TRIGGER|VIEW)?\\s*`?(\\w+)`?",
 				Pattern.CASE_INSENSITIVE);
 
 		Matcher matcher = pattern.matcher(sql);

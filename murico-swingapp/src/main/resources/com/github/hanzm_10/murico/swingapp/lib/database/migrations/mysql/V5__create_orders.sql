@@ -1,14 +1,14 @@
 CREATE TABLE orders (
     _order_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    -- the employee that created this order
-    _employee_id INTEGER,
     _supplier_id INTEGER,
+    -- employee that created this order
+    _employee_id INTEGER,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     _order_number CHAR(36) NOT NULL DEFAULT (UUID()),
-    discount_type ENUM("none", "fixed", "percentage") NOT NULL DEFAULT "none",
+    discount_type ENUM("none", "fixed", "percent") NOT NULL DEFAULT "none",
     discount_value_php DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     vat_percent DECIMAL(5,2) NOT NULL DEFAULT 12.00,
-    status ENUM("pending", "acknowledged", "rejected", "cancelled") NOT NULL DEFAULT "pending",
+    status ENUM("pending", "acknowledged", "rejected", "cancelled", "audited") NOT NULL DEFAULT "pending",
     status_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     remarks VARCHAR(255),
 
@@ -41,7 +41,7 @@ CREATE TABLE items_orders (
     wsp_php DECIMAL(10,2) NOT NULL CHECK (wsp_php >= 0),
     quantity INTEGER NOT NULL CHECK (quantity > 0),
 
-    UNIQUE (_order_id, _item_id),
+	UNIQUE (_order_id, _item_id),
     FOREIGN KEY (_order_id)
         REFERENCES orders(_order_id)
         ON DELETE CASCADE,

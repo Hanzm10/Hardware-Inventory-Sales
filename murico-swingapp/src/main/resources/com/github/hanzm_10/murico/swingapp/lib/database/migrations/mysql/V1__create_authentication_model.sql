@@ -19,36 +19,13 @@ CREATE TABLE accounts (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     email VARCHAR(255) NOT NULL,
-    password_hash VARCHAR(255) CHARACTER SET BINARY NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     password_salt VARCHAR(255) NOT NULL,
     verification_status ENUM("unverified", "verified") NOT NULL DEFAULT "unverified",
+    verified_at  TIMESTAMP NULL,
 
     UNIQUE (_user_id, email),
     FOREIGN KEY (_user_id)
-        REFERENCES users(_user_id)
-        ON DELETE CASCADE
-);
-
-CREATE TABLE accounts_pending_verifications (
-    _account_pending_verification_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    _account_id INTEGER,
-    _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    UNIQUE (_account_id),
-    FOREIGN KEY (_account_id)
-        REFERENCES accounts(_account_id)
-        ON DELETE CASCADE
-);
-
-CREATE TABLE accounts_verifications (
-    _account_id INTEGER PRIMARY KEY,
-    _verified_by INTEGER,
-    _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (_account_id)
-        REFERENCES accounts(_account_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (_verified_by)
         REFERENCES users(_user_id)
         ON DELETE CASCADE
 );

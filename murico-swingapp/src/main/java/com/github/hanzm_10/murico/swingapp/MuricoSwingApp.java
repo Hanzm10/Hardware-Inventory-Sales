@@ -46,21 +46,17 @@ public class MuricoSwingApp {
 	}
 
 	private static boolean doDevelopmentSetup() {
-		AbstractMigratorFactory.getMigrator(AbstractMigratorFactory.MYSQL).getMigrator().migrate();
+		var migratorFactory = AbstractMigratorFactory.getMigrator(AbstractMigratorFactory.MYSQL);
+		var migrator = migratorFactory.getMigrator();
+		var seeder = migratorFactory.getSeeder();
+
+		migrator.migrate();
+		seeder.seed();
 
 		return true;
 	}
 
 	public static void main(String[] args) {
-		/*
-		 * try { MessageDigest digest = MessageDigest.getInstance("SHA-256");
-		 * digest.update("Hello, World!".getBytes()); String stringHash = new
-		 * BigInteger(1, digest.digest()).toString(16);
-		 *
-		 * System.out.println(stringHash + " " + stringHash.length()); } catch(Exception
-		 * e) { System.err.println(e); }
-		 */
-
 		if (Metadata.APP_ENV.equals("development")) {
 			if (!doDevelopmentSetup()) {
 				LOGGER.log(Level.SEVERE, "Failed to setup development environment");

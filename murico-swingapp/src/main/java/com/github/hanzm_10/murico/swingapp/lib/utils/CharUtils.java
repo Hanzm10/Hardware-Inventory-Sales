@@ -1,5 +1,7 @@
 package com.github.hanzm_10.murico.swingapp.lib.utils;
 
+import java.util.Base64;
+
 public final class CharUtils {
 	public static char[] byteArrayToCharArray(byte[] bArray) {
 		char[] cArray = new char[bArray.length];
@@ -32,5 +34,13 @@ public final class CharUtils {
 		}
 
 		return res == 0;
+	}
+
+	public static byte[] fromBase64(String str) {
+		return Base64.getDecoder().decode(str);
+	}
+
+	public static String toBase64(byte[] str) {
+		return Base64.getEncoder().encodeToString(str);
 	}
 }

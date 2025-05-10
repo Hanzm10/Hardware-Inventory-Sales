@@ -49,7 +49,7 @@ public class MySqlMigrator implements Migrator {
 
 		createMigrationTableIfNotExists();
 		LOGGER.info("Performing migrations...");
-		System.out.println("\n=========================================");
+		System.out.println("\n=============================================\n");
 
 		try (var conn = MySqlFactoryDao.createConnection()) {
 			conn.setAutoCommit(false);
@@ -62,7 +62,7 @@ public class MySqlMigrator implements Migrator {
 			LOGGER.log(Level.SEVERE, "Failed to migrate", e);
 		}
 
-		System.out.println("\n=========================================\n");
+		System.out.println("=============================================\n");
 	}
 
 	protected boolean migrationExists(@NotNull final int migrationVersionNumber, @NotNull final String migrationName) {
@@ -93,18 +93,16 @@ public class MySqlMigrator implements Migrator {
 	}
 
 	private void processMigration(Connection conn, ParsedSqlMigration sqlQuery) throws SQLException {
-		System.out.print("\n> Migrating " + sqlQuery.migrationName() + "... ");
+		System.out.print("> Migrating " + sqlQuery.migrationName() + "... ");
 
 		if (migrationExists(sqlQuery.versionNumber(), sqlQuery.migrationName())) {
-			System.out.println("already exists, skipping..");
+			System.out.println("already exists, skipping...");
 			return;
 		}
 
 		var insertMigrationQuery = "INSERT INTO migrations (version_number, name) VALUES (?, ?);";
 
 		try (var insertMigrationStmnt = conn.prepareStatement(insertMigrationQuery)) {
-			System.out.print("\n");
-
 			for (var raw : splitStatements(sqlQuery.query())) {
 				String trimmed = raw.trim();
 
@@ -120,11 +118,10 @@ public class MySqlMigrator implements Migrator {
 			insertMigrationStmnt.executeUpdate();
 
 			conn.commit();
-			System.out.println("\n\n> Migration " + sqlQuery.migrationName() + " successful");
-
+			System.out.println("\n> Migration " + sqlQuery.migrationName() + " successful\n");
 		} catch (SQLException e) {
 			conn.rollback();
-			System.out.println("\n\n> Migration " + sqlQuery.migrationName() + " failed");
+			System.out.println("\n> Migration " + sqlQuery.migrationName() + " failed\n");
 			throw e;
 		}
 	}

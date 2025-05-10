@@ -1,6 +1,7 @@
 package com.github.hanzm_10.murico.swingapp.lib.database.mysql;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -68,6 +69,15 @@ public class MySqlMigratorFactory extends AbstractMigratorFactory {
 			validQueries.sort(Comparator.comparingInt((sqlM) -> sqlM.versionNumber()));
 
 			return validQueries;
+		}
+	}
+
+	public static String getSeederQuery() {
+		try (var stream = MySqlSeeder.class.getResourceAsStream("mysql/seeder.sql")) {
+			return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "Failed to load seeder query", e);
+			return null;
 		}
 	}
 

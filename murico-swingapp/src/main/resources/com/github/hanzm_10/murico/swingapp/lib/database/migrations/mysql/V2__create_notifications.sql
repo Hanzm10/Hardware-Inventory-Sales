@@ -9,7 +9,7 @@ CREATE TABLE notification_types (
 CREATE TABLE notifications (
     _notification_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _user_id INTEGER,
-    _notification_type_id INTEGER,
+    _notification_type_id INTEGER NULL,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     read_at TIMESTAMP NULL DEFAULT NULL,

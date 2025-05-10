@@ -31,6 +31,7 @@ import com.github.hanzm_10.murico.swingapp.lib.utils.CharUtils;
 
 /** NOTE: NEVER EVER STORE PASSWORDS. */
 public class MySqlAccountDao implements AccountDao {
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlAccountDao.class);
 
 	@Override
@@ -45,10 +46,10 @@ public class MySqlAccountDao implements AccountDao {
 			var resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
-				char[] passwordHash = CharUtils.byteArrayToCharArray(resultSet.getBytes("password_hash"));
+				byte[] passwordHash = CharUtils.fromBase64(resultSet.getString("password_hash"));
 				String salt = resultSet.getString("password_salt");
 
-				return new HashedStringWithSalt(CharUtils.charArrayToByteArray(passwordHash), Salt.fromBase64(salt));
+				return new HashedStringWithSalt(passwordHash, Salt.fromBase64(salt));
 			}
 		}
 
@@ -102,7 +103,7 @@ public class MySqlAccountDao implements AccountDao {
 
 				createAccountStmnt.setInt(1, userStmntKeys.getInt(1));
 				createAccountStmnt.setString(2, email);
-				createAccountStmnt.setBytes(3, hashedPassword.hashedString());
+				createAccountStmnt.setString(3, CharUtils.toBase64(hashedPassword.hashedString()));
 				createAccountStmnt.setString(4, hashedPassword.salt().toBase64());
 				createAccountStmnt.executeUpdate();
 

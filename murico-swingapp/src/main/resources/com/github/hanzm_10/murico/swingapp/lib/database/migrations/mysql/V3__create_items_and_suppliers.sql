@@ -62,7 +62,6 @@ CREATE TABLE item_restocks (
     quantity_before INTEGER NOT NULL CHECK (quantity_before >= 0),
     quantity_after INTEGER NOT NULL CHECK (quantity_after > 0),
     quantity_added INTEGER NOT NULL CHECK (quantity_added > 0),
-    UNIQUE (_item_stock_id),
     FOREIGN KEY (_item_stock_id)
         REFERENCES item_stocks(_item_stock_id)
         ON DELETE CASCADE
