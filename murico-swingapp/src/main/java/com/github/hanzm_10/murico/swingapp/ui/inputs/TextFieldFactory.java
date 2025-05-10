@@ -18,18 +18,16 @@ import javax.swing.JTextField;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.formdev.flatlaf.ui.FlatRoundBorder;
+import com.formdev.flatlaf.FlatClientProperties;
 
 public class TextFieldFactory {
 	public static JPasswordField createPasswordField() {
-		return createPasswordField("");
+		return createPasswordField("Password");
 	}
 
-	public static JPasswordField createPasswordField(@NotNull final String initialMsg) {
-		var textField = new JPasswordField(initialMsg);
-		var border = new FlatRoundBorder();
-
-		textField.setBorder(border);
+	public static JPasswordField createPasswordField(@NotNull final String placeholder) {
+		var textField = new JPasswordField();
+		textField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, placeholder);
 
 		return textField;
 	}
@@ -38,11 +36,10 @@ public class TextFieldFactory {
 		return createTextField("");
 	}
 
-	public static JTextField createTextField(@NotNull final String initialMsg) {
-		var textField = new JTextField(initialMsg);
-		var border = new FlatRoundBorder();
-
-		textField.setBorder(border);
+	public static JTextField createTextField(@NotNull final String placeholder) {
+		var textField = new JTextField();
+		textField.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
+		textField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, placeholder);
 
 		return textField;
 	}

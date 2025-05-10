@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -28,7 +28,7 @@ public class ButtonSceneNavigatorListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (disableNavigation.get()) {
+		if (disableNavigation == null || disableNavigation.get()) {
 			return;
 		}
 

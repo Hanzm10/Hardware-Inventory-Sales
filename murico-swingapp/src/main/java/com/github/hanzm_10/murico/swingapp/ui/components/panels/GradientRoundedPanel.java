@@ -17,7 +17,6 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.LayoutManager;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 
@@ -29,8 +28,9 @@ public class GradientRoundedPanel extends JPanel {
 	private Color endColor;
 	private int cornerRadius;
 
-	public GradientRoundedPanel(LayoutManager layout, Color start, Color end, int radius) {
-		super(layout);
+	public GradientRoundedPanel(Color start, Color end, int radius) {
+		super();
+
 		this.startColor = start;
 		this.endColor = end;
 		this.cornerRadius = radius;

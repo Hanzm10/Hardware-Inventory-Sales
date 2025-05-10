@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -16,22 +16,22 @@ package com.github.hanzm_10.murico.swingapp.ui;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
-import com.github.hanzm_10.murico.swingapp.scenes.LoggedInScene;
 import com.github.hanzm_10.murico.swingapp.scenes.LoggedOutScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.HomeScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
-
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 public class MainFrame extends JFrame {
-
 	private class MainFrameWindowListener extends WindowAdapter {
 		@Override
 		public void windowClosing(WindowEvent e) {
@@ -43,7 +43,11 @@ public class MainFrame extends JFrame {
 		}
 	}
 
+	@SuppressWarnings("unused")
+	private static final Logger LOGGER = MuricoLogger.getLogger(MainFrame.class);
+
 	public MainFrame() {
+
 		addWindowListener(new MainFrameWindowListener());
 
 		setTitle(Metadata.APP_TITLE + " " + Metadata.APP_VERSION);
@@ -60,7 +64,7 @@ public class MainFrame extends JFrame {
 		var sceneManager = new StaticSceneManager();
 
 		sceneManager.registerScene("auth", () -> new LoggedOutScene(), LoggedOutScene.GUARD);
-		sceneManager.registerScene("home", () -> new LoggedInScene(), LoggedInScene.GUARD);
+		sceneManager.registerScene("home", () -> new HomeScene(), HomeScene.GUARD);
 
 		SceneNavigator.initialize(sceneManager);
 
