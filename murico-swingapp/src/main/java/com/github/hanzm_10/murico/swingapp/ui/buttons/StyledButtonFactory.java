@@ -17,11 +17,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
+import javax.swing.JToggleButton;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatBorder;
 
 public class StyledButtonFactory {
-
 
 	public static JButton createButton(String text, ButtonStyles buttonStyle) {
 		var button = new JButton(text);
@@ -29,9 +30,10 @@ public class StyledButtonFactory {
 		button.setBackground(buttonStyle.getBackgroundColor());
 		button.setForeground(buttonStyle.getForegroundColor());
 
-        if (buttonStyle == ButtonStyles.TRANSPARENT) {
-            ((FlatBorder) button.getBorder()).applyStyleProperty("borderColor", new Color(0xff, true));
-        }
+		if (buttonStyle == ButtonStyles.TRANSPARENT) {
+			((FlatBorder) button.getBorder()).applyStyleProperty("borderColor", new Color(0x00, true));
+			button.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_BORDERLESS);
+		}
 
 		return button;
 	}
@@ -42,5 +44,11 @@ public class StyledButtonFactory {
 
 		return button;
 	}
-}
 
+	public static JToggleButton createJToggleButton() {
+		var button = new JToggleButton();
+		((FlatBorder) button.getBorder()).applyStyleProperty("borderColor", new Color(0x00, true));
+
+		return button;
+	}
+}

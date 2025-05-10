@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -43,7 +43,6 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 	protected SceneManager sceneManager;
 
 	protected JPanel view;
-	protected MigLayout layout;
 
 	@Override
 	public String getSceneName() {
@@ -67,8 +66,7 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 		sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
 		sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
 
-		layout = new MigLayout("", "[grow, center]", "[grow, center]");
-		view.setLayout(layout);
+		view.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
 
 		var rootContainer = sceneManager.getRootContainer();
 		view.add(rootContainer, "cell 0 0");

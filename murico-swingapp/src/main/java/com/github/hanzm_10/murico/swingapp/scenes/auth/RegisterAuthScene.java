@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -53,7 +53,6 @@ import com.github.hanzm_10.murico.swingapp.ui.components.panels.ImagePanel;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.Line;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedImagePanel;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextFieldFactory;
-import com.github.hanzm_10.murico.swingapp.ui.inputs.TextPlaceholder;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
 import net.miginfocom.swing.MigLayout;
@@ -79,13 +78,10 @@ public class RegisterAuthScene implements Scene, ActionListener {
 	protected ImagePanel logo;
 
 	protected JLabel createAccountLabel;
-	protected TextPlaceholder namePlaceholder;
 	protected JTextField nameInput;
 	protected JLabel errorMessageName;
-	protected TextPlaceholder emailPlaceholder;
 	protected JTextField emailInput;
 	protected JLabel errorMessageEmail;
-	protected TextPlaceholder passwordPlaceholder;
 	protected JPasswordField passwordInput;
 	protected JLabel errorMessagePassword;
 	protected JToggleButton passwordToggleRevealButton;
@@ -125,24 +121,25 @@ public class RegisterAuthScene implements Scene, ActionListener {
 
 		registerThread = new Thread(() -> {
 			try {
-				SessionService.register(name, email, password);;
+				SessionService.register(name, email, password);
+				;
 			} catch (MuricoError e) {
 				switch (e.getErrorCode()) {
-					case INVALID_CREDENTIALS :
-					case ACCOUNT_EXISTS : {
-						SwingUtilities.invokeLater(() -> {
-							errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-							errorMessageEmail.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-							errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-						});
-					}
-						break;
-					default : {
-						SwingUtilities
-								.invokeLater(() -> JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
-										e.toString(), "Failed to register", JOptionPane.ERROR_MESSAGE));
-						LOGGER.log(Level.SEVERE, "Failed to register", e);
-					}
+				case INVALID_CREDENTIALS:
+				case ACCOUNT_EXISTS: {
+					SwingUtilities.invokeLater(() -> {
+						errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+						errorMessageEmail.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+						errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+					});
+				}
+					break;
+				default: {
+					SwingUtilities
+							.invokeLater(() -> JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+									e.toString(), "Failed to register", JOptionPane.ERROR_MESSAGE));
+					LOGGER.log(Level.SEVERE, "Failed to register", e);
+				}
 				}
 			} finally {
 				SwingUtilities.invokeLater(() -> {
@@ -195,6 +192,10 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		errorMessageName.setText("");
 		errorMessageEmail.setText("");
 		errorMessagePassword.setText("");
+
+		nameInput.putClientProperty("JComponent.outline", "");
+		emailInput.putClientProperty("JComponent.outline", "");
+		passwordInput.putClientProperty("JComponent.outline", "");
 	}
 
 	private void createComponents() {
@@ -214,26 +215,23 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		createAccountLabel = new JLabel(HtmlUtils.wrapInHtml("Create an account"));
 		createAccountLabel.setFont(createAccountLabel.getFont().deriveFont(Font.BOLD, 32));
 
-		nameInput = TextFieldFactory.createTextField();
-		namePlaceholder = new TextPlaceholder("Username", nameInput);
+		nameInput = TextFieldFactory.createTextField("Username");
 		errorMessageName = LabelFactory.createErrorLabel("", 10);
 
-		emailInput = TextFieldFactory.createTextField();
-		emailPlaceholder = new TextPlaceholder("Email", emailInput);
+		emailInput = TextFieldFactory.createTextField("Email");
 		errorMessageEmail = LabelFactory.createErrorLabel("", 10);
 
 		passwordInput = TextFieldFactory.createPasswordField();
-		passwordPlaceholder = new TextPlaceholder("Password", passwordInput);
 		errorMessagePassword = LabelFactory.createErrorLabel("", 10);
-		passwordToggleRevealButton = new JToggleButton();
+		passwordToggleRevealButton = StyledButtonFactory.createJToggleButton();
 
 		registerBtn = StyledButtonFactory.createButton("Create account", ButtonStyles.SECONDARY);
 
 		btnSeparator = new JPanel();
-		var fractions = new float[]{0f, 1f};
-		leftLine = Line.builder().setColors(new Color[]{new Color(0x00, true), Color.BLACK}).setFractions(fractions)
+		var fractions = new float[] { 0f, 1f };
+		leftLine = Line.builder().setColors(new Color[] { new Color(0x00, true), Color.BLACK }).setFractions(fractions)
 				.build();
-		rightLine = Line.builder().setColors(new Color[]{Color.BLACK, new Color(0x00, true)}).setFractions(fractions)
+		rightLine = Line.builder().setColors(new Color[] { Color.BLACK, new Color(0x00, true) }).setFractions(fractions)
 				.build();
 		orText = new JLabel("or");
 
@@ -276,27 +274,33 @@ public class RegisterAuthScene implements Scene, ActionListener {
 
 		if (name.isBlank()) {
 			errorMessageName.setText(HtmlUtils.wrapInHtml("Username must not be empty"));
+			nameInput.putClientProperty("JComponent.outline", "warning");
 			isValid = false;
 		} else if (name.length() < User.MINIMUM_USERNAME_LENGTH) {
 			errorMessageName.setText(
 					HtmlUtils.wrapInHtml("Username must be > " + User.MINIMUM_USERNAME_LENGTH + " characters long."));
+			nameInput.putClientProperty("JComponent.outline", "warning");
 			isValid = false;
 		} else if (name.length() > User.MAXIMUM_USERNAME_LENGTH) {
 			errorMessageName.setText(
 					HtmlUtils.wrapInHtml("Username must be < " + User.MAXIMUM_USERNAME_LENGTH + " characters long."));
+			nameInput.putClientProperty("JComponent.outline", "warning");
 			isValid = false;
 		}
 
 		if (email.isBlank()) {
 			errorMessageEmail.setText(HtmlUtils.wrapInHtml("Email must not be empty."));
+			emailInput.putClientProperty("JComponent.outline", "warning");
 			isValid = false;
 		} else if (!EmailValidator.isEmailValid(email, EmailValidator.EMAIL_REGEX)) {
 			errorMessageEmail.setText(HtmlUtils.wrapInHtml("Email format not accepted."));
+			emailInput.putClientProperty("JComponent.outline", "warning");
 			isValid = false;
 		}
 
 		if (!PasswordValidator.isPasswordValid(password, PasswordValidator.STRONG_PASSWORD)) {
 			errorMessagePassword.setText(HtmlUtils.wrapInHtml(PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE));
+			passwordInput.putClientProperty("JComponent.outline", "warning");
 			isValid = false;
 		}
 
@@ -330,10 +334,6 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		if (registerThread != null) {
 			registerThread.interrupt();
 		}
-
-		namePlaceholder.destroy();
-		emailPlaceholder.destroy();
-		passwordPlaceholder.destroy();
 
 		registerBtn.removeActionListener(this);
 		loginBtn.removeActionListener(navigationListener);
