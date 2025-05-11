@@ -28,10 +28,10 @@ public class ButtonSceneNavigatorListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (disableNavigation == null || disableNavigation.get()) {
+		if (disableNavigation != null && disableNavigation.get()) {
 			return;
 		}
 
-		SceneNavigator.navigateTo(e.getActionCommand());
+		SceneNavigator.getInstance().navigateTo(e.getActionCommand());
 	}
 }

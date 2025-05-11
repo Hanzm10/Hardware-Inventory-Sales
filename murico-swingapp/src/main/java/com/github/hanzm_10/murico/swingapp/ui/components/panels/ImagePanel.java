@@ -15,9 +15,12 @@ package com.github.hanzm_10.murico.swingapp.ui.components.panels;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 
 import javax.swing.JPanel;
+
+import com.github.hanzm_10.murico.swingapp.lib.utils.PaintUtils;
 
 public class ImagePanel extends JPanel {
 	protected Image image;
@@ -46,6 +49,10 @@ public class ImagePanel extends JPanel {
 			var imgHeight = image.getHeight(null);
 
 			if (imgWidth > 0 && imgHeight > 0) {
+				var g2 = (Graphics2D) g.create();
+
+				PaintUtils.valueQuality(g2);
+
 				var scaleX = panelWidth / (double) imgWidth;
 				var scaleY = panelHeight / (double) imgHeight;
 				var scale = Math.min(scaleX, scaleY);
@@ -56,7 +63,8 @@ public class ImagePanel extends JPanel {
 				var x = (panelWidth - drawWidth) / 2;
 				var y = (panelHeight - drawHeight) / 2;
 
-				g.drawImage(image, x, y, drawWidth, drawHeight, this);
+				g2.drawImage(image, x, y, drawWidth, drawHeight, this);
+				g2.dispose();
 			}
 		}
 	}

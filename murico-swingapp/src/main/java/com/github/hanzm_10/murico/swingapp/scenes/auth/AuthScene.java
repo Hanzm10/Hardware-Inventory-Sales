@@ -11,27 +11,25 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.scenes;
+package com.github.hanzm_10.murico.swingapp.scenes.auth;
 
 import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
-import com.github.hanzm_10.murico.swingapp.scenes.auth.LoginAuthScene;
-import com.github.hanzm_10.murico.swingapp.scenes.auth.MainAuthScene;
-import com.github.hanzm_10.murico.swingapp.scenes.auth.RegisterAuthScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 
 import net.miginfocom.swing.MigLayout;
 
-public class LoggedOutScene implements Scene, SubSceneSupport {
-	public static class LoggedOutSceneGuard implements SceneGuard {
+public class AuthScene implements Scene, SubSceneSupport {
+	public static class AuthSceneGuard implements SceneGuard {
 		@Override
 		public boolean canAccess() {
 			return SessionManager.getInstance().getSession() == null
@@ -39,7 +37,7 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 		}
 	}
 
-	public static final SceneGuard GUARD = new LoggedOutSceneGuard();
+	public static final SceneGuard GUARD = new AuthSceneGuard();
 	protected SceneManager sceneManager;
 
 	protected JPanel view;
@@ -86,6 +84,6 @@ public class LoggedOutScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onShow() {
-		sceneManager.navigateTo("main");
+		SceneNavigator.getInstance().navigateTo(getSceneName() + "/main");
 	}
 }

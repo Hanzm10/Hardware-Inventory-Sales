@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -38,7 +38,7 @@ public class MainAuthScene implements Scene {
 	protected ButtonSceneNavigatorListener btnListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
 	protected JPanel view;
-	protected MigLayout layout;
+	protected JPanel container;
 	protected Image image;
 	protected ImagePanel imagePanel;
 	protected JButton loginButton;
@@ -48,11 +48,12 @@ public class MainAuthScene implements Scene {
 	private void attachComponents() {
 		if (imageLoaded()) {
 			imagePanel = new ImagePanel(image);
-			view.add(imagePanel, "cell 0 0 2");
+			container.add(imagePanel, "cell 0 0 2");
 		}
 
-		view.add(loginButton, "cell 0 1");
-		view.add(registerButton, "cell 1 1");
+		container.add(loginButton, "cell 0 1");
+		container.add(registerButton, "cell 1 1");
+		view.add(container, "center");
 	}
 
 	private void attachListeners() {
@@ -64,6 +65,7 @@ public class MainAuthScene implements Scene {
 	}
 
 	private void createComponents() {
+		container = new JPanel();
 		loginButton = StyledButtonFactory.createButton("Log In", ButtonStyles.TERTIARY, 280, 50);
 		registerButton = StyledButtonFactory.createButton("Create an account", ButtonStyles.TERTIARY, 280, 50);
 	}
@@ -91,8 +93,8 @@ public class MainAuthScene implements Scene {
 
 	@Override
 	public void onCreate() {
-		setViewLayout();
 		createComponents();
+		setViewLayout();
 		attachListeners();
 		attachComponents();
 	}
@@ -101,21 +103,15 @@ public class MainAuthScene implements Scene {
 	public boolean onDestroy() {
 		loginButton.removeActionListener(btnListener);
 		registerButton.removeActionListener(btnListener);
+		container.removeAll();
 		view.removeAll();
-		loginButton = null;
-		registerButton = null;
-		image = null;
-		imagePanel = null;
-		view.setLayout(null);
-		layout = null;
-		view = null;
 
 		return true;
 	}
 
 	private void setViewLayout() {
-		layout = new MigLayout("", "[::280px,grow,right]64[::280px,grow,left]",
-				"[240px::315px, bottom]24[50px::50px, top]");
-		view.setLayout(layout);
+		container.setLayout(new MigLayout("", "[::280px,grow,right]64[::280px,grow,left]",
+				"[240px::315px, bottom]24[50px::50px, top]"));
+		view.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
 	}
 }

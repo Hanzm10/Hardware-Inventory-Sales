@@ -26,7 +26,7 @@ import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
-import com.github.hanzm_10.murico.swingapp.scenes.LoggedOutScene;
+import com.github.hanzm_10.murico.swingapp.scenes.auth.AuthScene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.HomeScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
@@ -38,7 +38,7 @@ public class MainFrame extends JFrame {
 			// TODO: If a user is performing a task, ask if they want to save their progress
 			// before closing the application
 			AbandonedConnectionCleanupThread.checkedShutdown();
-			SceneNavigator.destroy();
+			SceneNavigator.getInstance().destroy();
 			dispose();
 		}
 	}
@@ -63,15 +63,17 @@ public class MainFrame extends JFrame {
 	private void initSceneManager() {
 		var sceneManager = new StaticSceneManager();
 
-		sceneManager.registerScene("auth", () -> new LoggedOutScene(), LoggedOutScene.GUARD);
+		sceneManager.registerScene("auth", () -> new AuthScene(), AuthScene.GUARD);
 		sceneManager.registerScene("home", () -> new HomeScene(), HomeScene.GUARD);
 
-		SceneNavigator.initialize(sceneManager);
+		var sceneNavigator = SceneNavigator.getInstance();
+
+		sceneNavigator.initialize(sceneManager);
 
 		if (SessionManager.getInstance().getSession() == null) {
-			SceneNavigator.navigateTo("auth");
+			sceneNavigator.navigateTo("auth");
 		} else {
-			SceneNavigator.navigateTo("home");
+			sceneNavigator.navigateTo("home");
 		}
 
 		var rootContainer = sceneManager.getRootContainer();

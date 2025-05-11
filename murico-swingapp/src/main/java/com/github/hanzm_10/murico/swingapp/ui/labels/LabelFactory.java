@@ -1,29 +1,43 @@
 package com.github.hanzm_10.murico.swingapp.ui.labels;
 
+import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 
 public class LabelFactory {
-    public static JLabel createErrorLabel() {
-        return createErrorLabel("");
-    }
+	public static JLabel createBoldItalicLabel(@NotNull final int fontSize) {
+		return createBoldItalicLabel(fontSize, UIManager.getColor("foreground"));
+	}
 
-    public static JLabel createErrorLabel(@NotNull final String msg) {
-        return createErrorLabel(msg, 16);
-    }
+	public static JLabel createBoldItalicLabel(@NotNull final int fontSize, @NotNull Color color) {
+		var label = new JLabel();
 
-    public static JLabel createErrorLabel(@NotNull final String msg, @NotNull final int fontSize) {
-        var label = new JLabel();
+		label.setFont(label.getFont().deriveFont(Font.BOLD | Font.ITALIC, fontSize));
+		label.setForeground(color);
 
-        label.setFont(label.getFont().deriveFont(Font.BOLD, fontSize));
-        label.setForeground(Styles.DANGER_COLOR);
+		return label;
+	}
 
-        return label;
-    }
+	public static JLabel createErrorLabel() {
+		return createErrorLabel("");
+	}
+
+	public static JLabel createErrorLabel(@NotNull final String msg) {
+		return createErrorLabel(msg, 16);
+	}
+
+	public static JLabel createErrorLabel(@NotNull final String msg, @NotNull final int fontSize) {
+		var label = new JLabel();
+
+		label.setFont(label.getFont().deriveFont(Font.BOLD, fontSize));
+		label.setForeground(Styles.DANGER_COLOR);
+
+		return label;
+	}
 }
-

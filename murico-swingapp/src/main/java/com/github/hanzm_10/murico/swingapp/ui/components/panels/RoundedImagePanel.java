@@ -4,11 +4,12 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
 import org.jetbrains.annotations.NotNull;
+
+import com.github.hanzm_10.murico.swingapp.lib.utils.PaintUtils;
 
 public final class RoundedImagePanel extends ImagePanel {
 	protected int arc;
@@ -40,7 +41,7 @@ public final class RoundedImagePanel extends ImagePanel {
 		Graphics2D g2 = output.createGraphics();
 
 		g2.setComposite(AlphaComposite.Src);
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		PaintUtils.valueQuality(g2);
 		g2.setColor(Color.WHITE);
 		g2.fill(new RoundRectangle2D.Float(0, 0, w, h, arc, arc));
 		g2.setComposite(AlphaComposite.SrcAtop);
