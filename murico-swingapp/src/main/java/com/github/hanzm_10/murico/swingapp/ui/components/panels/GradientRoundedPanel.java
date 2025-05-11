@@ -17,10 +17,12 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.Insets;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.JPanel;
+
+import com.github.hanzm_10.murico.swingapp.lib.utils.PaintUtils;
 
 public class GradientRoundedPanel extends JPanel {
 
@@ -47,14 +49,17 @@ public class GradientRoundedPanel extends JPanel {
 		// behind.
 
 		Graphics2D g2d = (Graphics2D) g.create();
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		PaintUtils.valueQuality(g2d);
 
-		int width = getWidth();
-		int height = getHeight();
+        Insets insets = getInsets(); // Get the border insets
+        int x = insets.left;
+        int y = insets.top;
+        int width = getWidth() - insets.left - insets.right;
+        int height = getHeight() - insets.top - insets.bottom;
 
 		// Gradient and Rounded Rectangle setup (same as before)
-		GradientPaint gp = new GradientPaint(0, 0, startColor, 0, height, endColor);
-		RoundRectangle2D roundedRect = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, cornerRadius,
+		GradientPaint gp = new GradientPaint(x, y, startColor, width, height, endColor);
+		RoundRectangle2D roundedRect = new RoundRectangle2D.Float(x, y, width - 1, height - 1, cornerRadius,
 				cornerRadius); // Use width-1, height-1 to avoid potential minor border clipping
 
 		// --- Custom Painting ---

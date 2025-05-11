@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -13,24 +13,49 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.SwingUtilities;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.github.hanzm_10.murico.swingapp.lib.exceptions.MuricoError;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.observer.Observer;
+import com.github.hanzm_10.murico.swingapp.lib.observer.Subscriber;
 
-public class SceneNavigator {
-	private static SceneManager sceneManager;
-	private static boolean isInitialized = false;
+public class SceneNavigator implements Observer<String> {
+	private static SceneNavigator instance;
 
-	public static void destroy() {
+	public static synchronized SceneNavigator getInstance() {
+		if (instance == null) {
+			instance = new SceneNavigator();
+		}
+
+		return instance;
+	}
+
+	private List<Subscriber<String>> navigationSubscribers = new ArrayList<Subscriber<String>>();
+
+	private String currentFullSceneName = null;
+	private SceneManager sceneManager;
+
+	private boolean isInitialized = false;
+
+	private SceneNavigator() {
+	}
+
+	public void destroy() {
 		sceneManager.destroy();
 		sceneManager = null;
 		isInitialized = false;
 	}
 
-	public static SceneManager getSceneManager() {
+	public String getCurrentFullSceneName() {
+		return currentFullSceneName;
+	}
+
+	public SceneManager getSceneManager() {
 		if (!isInitialized) {
 			throw new IllegalStateException("SceneNavigator is not initialized.");
 		}
@@ -38,7 +63,7 @@ public class SceneNavigator {
 		return sceneManager;
 	}
 
-	public static void initialize(@NotNull final SceneManager manager) {
+	public void initialize(@NotNull final SceneManager manager) {
 		if (isInitialized) {
 			throw new IllegalStateException("SceneNavigator is already initialized.");
 		}
@@ -61,23 +86,38 @@ public class SceneNavigator {
 	 * will throw an exception if the scene is not registered or if the scene is not
 	 * a valid scene.
 	 *
-	 * @param sceneName
-	 *            The name of the scene to navigate to.
-	 * @throws IllegalArgumentException
-	 *             If the scene name is invalid.
-	 * @throws WrongThreadException
-	 *             If this method is called from a thread other than the Event
-	 *             Dispatch Thread.
-	 * @throws MuricoError
-	 *             If there is an error while navigating to the scene.
+	 * @param sceneName The name of the scene to navigate to.
+	 * @throws IllegalArgumentException If the scene name is invalid.
+	 * @throws WrongThreadException     If this method is called from a thread other
+	 *                                  than the Event Dispatch Thread.
 	 */
-	public static void navigateTo(@NotNull final String sceneName) {
+	public void navigateTo(@NotNull final String sceneName) {
 		if (!isInitialized) {
 			throw new IllegalStateException("SceneNavigator is not initialized.");
 		}
 
 		SwingUtilities.invokeLater(() -> {
 			sceneManager.navigateTo(sceneName);
+
+			synchronized (sceneName) {
+				currentFullSceneName = sceneName;
+				notifySubscribers(sceneName);
+			}
 		});
+	}
+
+	@Override
+	public synchronized void notifySubscribers(String value) {
+		navigationSubscribers.forEach((cb) -> cb.notify(value));
+	}
+
+	@Override
+	public synchronized void subscribe(Subscriber<String> subscriber) {
+		navigationSubscribers.add(subscriber);
+	}
+
+	@Override
+	public synchronized void unsubscribe(Subscriber<String> subscriber) {
+		navigationSubscribers.remove(subscriber);
 	}
 }

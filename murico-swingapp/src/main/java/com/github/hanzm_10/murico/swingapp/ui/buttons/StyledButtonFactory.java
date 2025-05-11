@@ -23,7 +23,6 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatBorder;
 
 public class StyledButtonFactory {
-
 	public static JButton createButton(String text, ButtonStyles buttonStyle) {
 		var button = new JButton(text);
 
@@ -43,6 +42,14 @@ public class StyledButtonFactory {
 		button.setPreferredSize(new Dimension(width, height));
 
 		return button;
+	}
+
+	public static JButton createButtonButToggleStyle() {
+		var btn = new JButton();
+
+		btn.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
+
+		return btn;
 	}
 
 	public static JToggleButton createJToggleButton() {
