@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.JPanel;
@@ -50,12 +51,15 @@ public class GradientRoundedPanel extends JPanel {
 		Graphics2D g2d = (Graphics2D) g.create();
 		PaintUtils.valueQuality(g2d);
 
-		int width = getWidth();
-		int height = getHeight();
+        Insets insets = getInsets(); // Get the border insets
+        int x = insets.left;
+        int y = insets.top;
+        int width = getWidth() - insets.left - insets.right;
+        int height = getHeight() - insets.top - insets.bottom;
 
 		// Gradient and Rounded Rectangle setup (same as before)
-		GradientPaint gp = new GradientPaint(0, 0, startColor, 0, height, endColor);
-		RoundRectangle2D roundedRect = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, cornerRadius,
+		GradientPaint gp = new GradientPaint(x, y, startColor, width, height, endColor);
+		RoundRectangle2D roundedRect = new RoundRectangle2D.Float(x, y, width - 1, height - 1, cornerRadius,
 				cornerRadius); // Use width-1, height-1 to avoid potential minor border clipping
 
 		// --- Custom Painting ---

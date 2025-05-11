@@ -17,6 +17,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Insets;
 
 import javax.swing.JPanel;
 
@@ -43,8 +44,11 @@ public class ImagePanel extends JPanel {
 		super.paintComponent(g);
 
 		if (image != null) {
-			var panelWidth = getWidth();
-			var panelHeight = getHeight();
+            Insets insets = getInsets(); // Get the border insets
+            var panelX = insets.left;
+            var panelY = insets.top;
+			var panelWidth = getWidth() - insets.left - insets.right;
+			var panelHeight = getHeight() - insets.top - insets.bottom;
 			var imgWidth = image.getWidth(null);
 			var imgHeight = image.getHeight(null);
 
@@ -60,8 +64,8 @@ public class ImagePanel extends JPanel {
 				var drawWidth = (int) (imgWidth * scale);
 				var drawHeight = (int) (imgHeight * scale);
 
-				var x = (panelWidth - drawWidth) / 2;
-				var y = (panelHeight - drawHeight) / 2;
+				var x = panelX + (panelWidth - drawWidth) / 2;
+				var y = panelY + (panelHeight - drawHeight) / 2;
 
 				g2.drawImage(image, x, y, drawWidth, drawHeight, this);
 				g2.dispose();
