@@ -17,10 +17,11 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.JPanel;
+
+import com.github.hanzm_10.murico.swingapp.lib.utils.PaintUtils;
 
 public class GradientRoundedPanel extends JPanel {
 
@@ -47,7 +48,7 @@ public class GradientRoundedPanel extends JPanel {
 		// behind.
 
 		Graphics2D g2d = (Graphics2D) g.create();
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		PaintUtils.valueQuality(g2d);
 
 		int width = getWidth();
 		int height = getHeight();
