@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -23,27 +23,27 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSce
 
 public class TestSceneManager {
 
-    public static void main(String[] args) {
-        var frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Test Scene Manager");
-        SceneManager sceneManager = new StaticSceneManager();
+	public static void main(String[] args) {
+		var frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Test Scene Manager");
+		SceneManager sceneManager = new StaticSceneManager();
 
-        sceneManager.registerScene("TestDummyScene", () -> new TestDummySceneParent());
+		sceneManager.registerScene("TestDummyScene", () -> new TestDummySceneParent());
 
-        SceneNavigator.initialize(sceneManager);
+		SceneNavigator.getInstance().initialize(sceneManager);
 
-        var rootContainer = sceneManager.getRootContainer();
+		var rootContainer = sceneManager.getRootContainer();
 
-        rootContainer.setPreferredSize(new Dimension(1280, 720));
+		rootContainer.setPreferredSize(new Dimension(1280, 720));
 
-        frame.add(rootContainer);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+		frame.add(rootContainer);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 
-        SwingUtilities.invokeLater(() -> {
-            sceneManager.navigateTo("TestDummyScene");
-        });
-    }
+		SwingUtilities.invokeLater(() -> {
+			sceneManager.navigateTo("TestDummyScene");
+		});
+	}
 }

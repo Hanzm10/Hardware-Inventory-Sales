@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -55,12 +55,14 @@ public class StaticSceneManager implements SceneManager {
 		sceneCache = new ObserverLRU<>(10);
 		currentSceneName = null;
 
-		sceneCache.subscribe((scene) -> SwingUtilities.invokeLater(() -> destroyScene(scene)));
+		sceneCache.subscribe(this::listenToLRU);
 	}
 
 	@Override
 	public synchronized void destroy() {
 		throwIfWrongThread();
+
+		sceneCache.unsubscribe(this::listenToLRU);
 
 		for (var scene : sceneCache.values()) {
 			destroyScene(scene);
@@ -110,6 +112,10 @@ public class StaticSceneManager implements SceneManager {
 	@Override
 	public synchronized Scene getScene(@NotNull String sceneName) {
 		return sceneCache.get(sceneName);
+	}
+
+	private void listenToLRU(Scene removedScene) {
+		SwingUtilities.invokeLater(() -> destroyScene(removedScene));
 	}
 
 	private Scene loadOrCreateScene(@NotNull final String sceneName, @NotNull final SceneEntry sceneEntry) {
