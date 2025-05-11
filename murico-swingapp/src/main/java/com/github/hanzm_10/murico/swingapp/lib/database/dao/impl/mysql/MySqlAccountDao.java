@@ -81,17 +81,13 @@ public class MySqlAccountDao implements AccountDao {
 		var userCreationQuery = MySqlQueryLoader.getInstance().get("create_user", "users", SqlQueryType.INSERT);
 		var accountCreationQuery = MySqlQueryLoader.getInstance().get("create_account", "accounts",
 				SqlQueryType.INSERT);
-		var accountPendingVerificationsQuery = MySqlQueryLoader.getInstance().get("create_account_pending_verification",
-				"accounts_pending_verifications", SqlQueryType.INSERT);
 
 		try (var conn = MySqlFactoryDao.createConnection();) {
 			conn.setAutoCommit(false);
 
 			try (var createUserStmnt = conn.prepareStatement(userCreationQuery, Statement.RETURN_GENERATED_KEYS);
 					var createAccountStmnt = conn.prepareStatement(accountCreationQuery,
-							Statement.RETURN_GENERATED_KEYS);
-					var createAccountPendingVerificationStmnt = conn
-							.prepareStatement(accountPendingVerificationsQuery);) {
+							Statement.RETURN_GENERATED_KEYS);) {
 				createUserStmnt.setString(1, displayName);
 				createUserStmnt.executeUpdate();
 
@@ -112,9 +108,6 @@ public class MySqlAccountDao implements AccountDao {
 				if (!accountStmntKeys.next()) {
 					throw new SQLException("An account table was created but no surrogate key was generated.");
 				}
-
-				createAccountPendingVerificationStmnt.setInt(1, accountStmntKeys.getInt(1));
-				createAccountPendingVerificationStmnt.executeUpdate();
 
 				conn.commit();
 			} catch (SQLException e) {
