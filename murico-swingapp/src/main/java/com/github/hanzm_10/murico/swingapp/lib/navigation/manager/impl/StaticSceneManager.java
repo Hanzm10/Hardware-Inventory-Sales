@@ -93,6 +93,7 @@ public class StaticSceneManager implements SceneManager {
 		}
 
 		sceneCache.remove(scene.getSceneName(), false);
+		cardLayout.removeLayoutComponent(scene.getSceneView());
 		rootContainer.remove(scene.getSceneView());
 		scene.onDestroy();
 
@@ -133,7 +134,11 @@ public class StaticSceneManager implements SceneManager {
 						"Scene name does not match the scene's name: " + sceneName + " != " + scene.getSceneName());
 			}
 
-			scene.getSceneView();
+			var view = scene.getSceneView();
+
+			rootContainer.add(view, sceneName);
+			cardLayout.addLayoutComponent(view, sceneName);
+
 			scene.onCreate();
 		}
 
@@ -231,11 +236,9 @@ public class StaticSceneManager implements SceneManager {
 		var newSceneName = newScene.getSceneName();
 
 		newScene.onBeforeShow();
-		rootContainer.add(newScene.getSceneView(), newSceneName);
 		cardLayout.show(rootContainer, newSceneName);
 
 		if (oldScene != null) {
-			rootContainer.remove(oldScene.getSceneView());
 			oldScene.onHide();
 		}
 
