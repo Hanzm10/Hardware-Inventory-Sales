@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
@@ -64,11 +65,13 @@ public class HomeScene implements Scene, SubSceneSupport {
 		sidebar = new Sidebar();
 		header = new Header();
 
-		view.setLayout(new MigLayout("", "[72px::96px,center][200px::,grow,center]", "[center][grow]"));
+		view.setLayout(new MigLayout("", "[96px::96px,center]24px[200px::,grow,center]", "[72px::72px, grow, center][grow]"));
 
 		view.add(header.getContainer(), "cell 0 0 2, grow");
         view.add(sceneManager.getRootContainer(), "cell 1 1, grow");
 		view.add(sidebar.getContainer(), "cell 0 1, grow");
+
+		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR +  "profile");
 	}
 
 	@Override
@@ -82,6 +85,5 @@ public class HomeScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onShow() {
-		SceneNavigator.getInstance().navigateTo(getSceneName() + "/profile");
 	}
 }

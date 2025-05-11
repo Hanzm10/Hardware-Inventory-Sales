@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
@@ -68,6 +69,8 @@ public class AuthScene implements Scene, SubSceneSupport {
 
 		var rootContainer = sceneManager.getRootContainer();
 		view.add(rootContainer, "cell 0 0");
+
+		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "main");
 	}
 
 	@Override
@@ -84,6 +87,5 @@ public class AuthScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onShow() {
-		SceneNavigator.getInstance().navigateTo(getSceneName() + "/main");
 	}
 }
