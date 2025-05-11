@@ -26,13 +26,13 @@ public class ReportsScene implements Scene {
 
 	@Override
 	public void onCreate() {
-        view.setLayout(new MigLayout("", "", ""));
+        view.setLayout(new MigLayout("", "[grow, left]", "[96px::96px,grow][grow]"));
 
         header = new ReportsHeader();
 	    table = new ReportsTable();
 
-        view.add(header.getContainer());
-        view.add(table.getContainer());
+        view.add(header.getContainer(), "cell 0 0, grow");
+        view.add(table.getContainer(), "cell 0 1, grow");
     }
 
     @Override

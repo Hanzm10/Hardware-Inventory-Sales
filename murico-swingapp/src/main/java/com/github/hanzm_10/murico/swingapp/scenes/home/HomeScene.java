@@ -64,10 +64,11 @@ public class HomeScene implements Scene, SubSceneSupport {
 		sidebar = new Sidebar();
 		header = new Header();
 
-		view.setLayout(new MigLayout("", "[72px::96px,center][200px::,grow,center]", "[center][grow,center]"));
+		view.setLayout(new MigLayout("", "[72px::96px,center][200px::,grow,center]", "[center][grow]"));
 
-		view.add(header.getContainer(), "cell 0 0 2, grow, center");
-		view.add(sidebar.getContainer(), "cell 0 1, grow, center");
+		view.add(header.getContainer(), "cell 0 0 2, grow");
+        view.add(sceneManager.getRootContainer(), "cell 1 1, grow");
+		view.add(sidebar.getContainer(), "cell 0 1, grow");
 	}
 
 	@Override
