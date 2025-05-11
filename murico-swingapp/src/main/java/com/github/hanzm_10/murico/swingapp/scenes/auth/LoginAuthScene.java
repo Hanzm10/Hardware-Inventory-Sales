@@ -307,10 +307,7 @@ public class LoginAuthScene implements Scene, ActionListener {
 		loginThread = new Thread(() -> {
 			try {
 				SessionService.login(name, password);
-
-				SwingUtilities.invokeLater(() -> {
-					SceneNavigator.navigateTo("home/profile");
-				});
+				SceneNavigator.getInstance().navigateTo("home/profile");
 			} catch (MuricoError e) {
 				switch (e.getErrorCode()) {
 				case INVALID_CREDENTIALS: {
