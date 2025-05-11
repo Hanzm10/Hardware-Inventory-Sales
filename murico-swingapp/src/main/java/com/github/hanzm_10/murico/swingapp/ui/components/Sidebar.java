@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 
@@ -23,7 +24,7 @@ import com.github.hanzm_10.murico.swingapp.ui.components.panels.GradientRoundedP
 
 import net.miginfocom.swing.MigLayout;
 
-public class Sidebar implements FocusListener {
+public class Sidebar {
 	private static Logger LOGGER = MuricoLogger.getLogger(Sidebar.class);
 	private GradientRoundedPanel container;
 	private ButtonSceneNavigatorListener navListener;
@@ -43,6 +44,8 @@ public class Sidebar implements FocusListener {
 		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.PRIMARY_COLOR, 22);
 		navListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
+        container.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
+
 		container.setLayout(new MigLayout("insets 16", "[48px::50px,grow]",
 				"[48px::50px,grow][48px::50px,grow][48px::50px,grow][48px::50px,grow][48px::50px,grow][48px::50px,grow]96px:push[48px::50px,grow]"));
 
@@ -53,9 +56,6 @@ public class Sidebar implements FocusListener {
 		attachListeners();
 
 		SceneNavigator.getInstance().subscribe(this::handleNavigation);
-
-		dashboardBtn.addFocusListener(this);
-
 		sceneButtonMap = Map.of("profile", profileBtn, "dashboard", dashboardBtn, "reports", reportsBtn, "inventory",
 				inventoryBtn, "order menu", orderMenuBtn, "contacts", contactsBtn, "settings", settingsBtn);
 	}
@@ -94,8 +94,8 @@ public class Sidebar implements FocusListener {
 				var btn = entry.getValue();
 
 				btnGroup.setSelected(btn.getModel(), true);
-				btn.putClientProperty("JComponent.focusType", "strong");
-				btn.putClientProperty("JComponent.hoverType", "");
+                btn.putClientProperty("JComponent.focusType", "strong");
+                btn.putClientProperty("JComponent.hoverType", "");
 				break;
 			}
 		}
@@ -110,14 +110,6 @@ public class Sidebar implements FocusListener {
 		orderMenuBtn.removeActionListener(navListener);
 		contactsBtn.removeActionListener(navListener);
 		settingsBtn.removeActionListener(navListener);
-	}
-
-	@Override
-	public void focusGained(FocusEvent e) {
-	}
-
-	@Override
-	public void focusLost(FocusEvent e) {
 	}
 
 	public GradientRoundedPanel getContainer() {
