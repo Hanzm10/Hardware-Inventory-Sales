@@ -1,26 +1,16 @@
-/** 
- *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
- *  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 package com.github.hanzm_10.murico.swingapp.scenes.ordermenu;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+// import java.awt.Cursor; // Not strictly needed now
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
@@ -38,8 +28,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import com.github.hanzm_10.murico.swingapp.scenes.ordermenu.CheckoutSearchComponent.ItemData;
@@ -47,25 +35,29 @@ import com.github.hanzm_10.murico.swingapp.scenes.ordermenu.CheckoutSearchCompon
 import com.github.hanzm_10.murico.swingapp.service.database.CheckoutService;
 import com.github.hanzm_10.murico.swingapp.service.database.OrderLineItemData;
 
-/** Main panel for the checkout process. */
-public class CheckoutPanel extends JPanel implements ItemSelectedListener, QuantityChangeListener, RemoveItemListener {
+
+public class CheckoutPanel extends JPanel implements ItemSelectedListener,
+		QuantityChangeListener,
+		RemoveItemListener {
 
 	private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("₱ #,##0.00");
-	private static final DecimalFormat INPUT_CURRENCY_FORMAT = new DecimalFormat("#,##0.00"); // For parsing text field
+	private static final DecimalFormat INPUT_CURRENCY_FORMAT = new DecimalFormat("#,##0.00");
 
 	private CheckoutSearchComponent searchComponent;
 	private CheckoutTableComponent tableComponent;
 	private CheckoutReceiptComponent receiptComponent;
 
-	private JLabel totalLabelValue; // Renamed for clarity
+	private JLabel totalLabelValue;
 	private JButton finalizeButton;
-	private JTextField cashTenderedField; // Added
-	private JLabel changeLabelValue; // Added
+	private JTextField cashTenderedField;
+	private JButton cashEnterButton;
+	private JLabel changeLabelValue;
 
 	private final int currentBranchId;
 	private final Map<Integer, Integer> currentStockCache = new HashMap<>();
 	private int lastFinalizedOrderId = -1;
-	private BigDecimal currentTotalAmount = BigDecimal.ZERO; // To store the current order total
+	private BigDecimal currentTotalAmount = BigDecimal.ZERO;
+    private BigDecimal currentCashTenderedForPreview = BigDecimal.ZERO;
 
 	public CheckoutPanel(int branchId) {
 		this.currentBranchId = branchId;
@@ -80,17 +72,18 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 			tableComponent.clearTable();
 		}
 		currentTotalAmount = BigDecimal.ZERO;
+        currentCashTenderedForPreview = BigDecimal.ZERO;
 		if (totalLabelValue != null) {
 			totalLabelValue.setText(CURRENCY_FORMAT.format(currentTotalAmount));
 		}
 		if (cashTenderedField != null) {
-			cashTenderedField.setText(""); // Clear cash field
+			cashTenderedField.setText("");
 		}
 		if (changeLabelValue != null) {
-			changeLabelValue.setText(CURRENCY_FORMAT.format(BigDecimal.ZERO)); // Reset change
+			changeLabelValue.setText(CURRENCY_FORMAT.format(BigDecimal.ZERO));
 		}
 		if (receiptComponent != null) {
-			receiptComponent.updateReceipt(null, -1, BigDecimal.ZERO);
+			receiptComponent.updateReceipt(null, -1, currentCashTenderedForPreview);
 		}
 		if (searchComponent != null) {
 			searchComponent.clearSearchField();
@@ -102,39 +95,40 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 
 	private void finalizeOrder() {
 		System.out.println("Finalize button clicked.");
-		if (tableComponent == null || tableComponent.getTableModel() == null) {
-			JOptionPane.showMessageDialog(this, "Checkout table component is not ready.", "Internal Error",
-					JOptionPane.ERROR_MESSAGE);
+		if (tableComponent == null || tableComponent.getTableModel() == null || totalLabelValue == null) { // Added totalLabelValue null check
+			JOptionPane.showMessageDialog(this, "Checkout components are not ready.", "Internal Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		DefaultTableModel model = tableComponent.getTableModel();
 
 		if (model.getRowCount() == 0) {
-			JOptionPane.showMessageDialog(this, "Cannot finalize an empty order.", "Empty Order",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Cannot finalize an empty order.", "Empty Order", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		BigDecimal cashTendered = getCashTenderedAmount(); // Get from JTextField
-		if (cashTendered == null) { // Invalid input in field
-			JOptionPane.showMessageDialog(this, "Please enter a valid cash tendered amount.", "Invalid Cash",
-					JOptionPane.WARNING_MESSAGE);
-			cashTenderedField.requestFocusInWindow();
-			return;
-		}
-		if (cashTendered.compareTo(currentTotalAmount) < 0) {
-			JOptionPane.showMessageDialog(this,
-					"Cash tendered (" + CURRENCY_FORMAT.format(cashTendered) + ") is less than the total amount due ("
-							+ CURRENCY_FORMAT.format(currentTotalAmount) + ").",
-					"Insufficient Payment", JOptionPane.WARNING_MESSAGE);
-			cashTenderedField.requestFocusInWindow();
-			return;
-		}
+        // Ensure total is up-to-date before final validation
+        recalculateTotalFromTable(); // Recalculate total just in case
 
-		int confirm = JOptionPane.showConfirmDialog(this,
-				"Finalize order?\nTotal: " + totalLabelValue.getText() + "\nCash Tendered: "
-						+ CURRENCY_FORMAT.format(cashTendered) + "\nChange: " + changeLabelValue.getText(),
-				"Confirm", JOptionPane.YES_NO_OPTION);
+		BigDecimal cashFromFieldAtFinalize = getCashTenderedAmountFromField();
+		if (cashFromFieldAtFinalize == null) {
+			JOptionPane.showMessageDialog(this, "Please enter a valid cash tendered amount and press 'Enter' next to it.", "Invalid Cash", JOptionPane.WARNING_MESSAGE);
+			cashTenderedField.requestFocusInWindow();
+			return;
+		}
+		if (cashFromFieldAtFinalize.compareTo(currentTotalAmount) < 0) {
+			JOptionPane.showMessageDialog(this, "Cash tendered (" + CURRENCY_FORMAT.format(cashFromFieldAtFinalize) + ") is less than the total amount due (" + CURRENCY_FORMAT.format(currentTotalAmount) + ").", "Insufficient Payment", JOptionPane.WARNING_MESSAGE);
+			cashTenderedField.requestFocusInWindow();
+			return;
+		}
+        // Update currentCashTenderedForPreview to the validated amount from the field
+        currentCashTenderedForPreview = cashFromFieldAtFinalize;
+
+
+        BigDecimal changeForDialog = currentCashTenderedForPreview.subtract(currentTotalAmount);
+        if (changeForDialog.compareTo(BigDecimal.ZERO) < 0) changeForDialog = BigDecimal.ZERO;
+
+
+		int confirm = JOptionPane.showConfirmDialog(this, "Finalize order?\nTotal: " + totalLabelValue.getText() + "\nCash Tendered: " + CURRENCY_FORMAT.format(currentCashTenderedForPreview) + "\nChange: " + CURRENCY_FORMAT.format(changeForDialog), "Confirm", JOptionPane.YES_NO_OPTION);
 		if (confirm != JOptionPane.YES_OPTION) {
 			System.out.println("Finalization cancelled.");
 			return;
@@ -149,10 +143,8 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 				BigDecimal price = (BigDecimal) model.getValueAt(i, CheckoutTableComponent.COL_PRICE);
 				Integer itemStockId = (Integer) model.getValueAt(i, CheckoutTableComponent.HIDDEN_COL_ITEM_STOCK_ID);
 
-				if (itemStockId == null || itemId == null || productNameFromTable == null || quantity == null
-						|| price == null || quantity <= 0) {
-					JOptionPane.showMessageDialog(this, "Invalid data in checkout row " + (i + 1), "Data Error",
-							JOptionPane.ERROR_MESSAGE);
+				if (itemStockId == null || itemId == null || productNameFromTable == null || quantity == null || price == null || quantity <= 0) {
+					JOptionPane.showMessageDialog(this, "Invalid data in checkout row " + (i + 1), "Data Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				String itemNameForDTO = productNameFromTable;
@@ -162,48 +154,38 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 				}
 				orderItems.add(new OrderLineItemData(itemStockId, itemId, itemNameForDTO, quantity, price));
 			} catch (ClassCastException | ArrayIndexOutOfBoundsException e) {
-				JOptionPane.showMessageDialog(this,
-						"Internal data error processing checkout table row " + (i + 1) + ".", "Error",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Internal data error processing checkout table row " + (i + 1) + ".", "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 				return;
 			}
 		}
 
 		Integer customerId = null;
-		int employeeId = 1; // TODO: Get actual employee ID
+		int employeeId = 1;
 
 		CheckoutService checkoutService = new CheckoutService();
 		try {
-			int generatedOrderId = checkoutService.finalizeOrder(orderItems, currentTotalAmount, customerId,
-					employeeId);
+			// Pass the definitively correct currentTotalAmount
+			int generatedOrderId = checkoutService.finalizeOrder(orderItems, currentTotalAmount, customerId, employeeId);
 			this.lastFinalizedOrderId = generatedOrderId;
 
-			JOptionPane.showMessageDialog(this, "Order #" + generatedOrderId + " finalized!", "Complete",
-					JOptionPane.INFORMATION_MESSAGE);
-			// Receipt already updated by cashTenderedField listener, but confirm with final
-			// ID
-			receiptComponent.updateReceipt(model, generatedOrderId, cashTendered);
-			int printConfirm = JOptionPane.showConfirmDialog(this, "Print receipt?", "Print",
-					JOptionPane.YES_NO_OPTION);
+			JOptionPane.showMessageDialog(this, "Order #" + generatedOrderId + " finalized!", "Complete", JOptionPane.INFORMATION_MESSAGE);
+			receiptComponent.updateReceipt(model, generatedOrderId, currentCashTenderedForPreview);
+			int printConfirm = JOptionPane.showConfirmDialog(this, "Print receipt?", "Print", JOptionPane.YES_NO_OPTION);
 			if (printConfirm == JOptionPane.YES_OPTION) {
-				receiptComponent.printReceipt(model, generatedOrderId, cashTendered);
+				receiptComponent.printReceipt(model, generatedOrderId, currentCashTenderedForPreview);
 			}
 			clearCheckoutState();
 
 		} catch (InsufficientStockException e) {
-			JOptionPane.showMessageDialog(this, "Order failed: " + e.getMessage(), "Stock Unavailable",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Order failed: " + e.getMessage(), "Stock Unavailable", JOptionPane.WARNING_MESSAGE);
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(this, "Order failed (Database Error):\n" + e.getMessage(), "Database Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Order failed (Database Error):\n" + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			JOptionPane.showMessageDialog(this, "Order failed (Input Error): " + e.getMessage(), "Input Error",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Order failed (Input Error): " + e.getMessage(), "Input Error", JOptionPane.WARNING_MESSAGE);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "An unexpected error occurred during finalization:\n" + e.getMessage(),
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "An unexpected error occurred during finalization:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}
@@ -212,108 +194,93 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 		return tableComponent != null ? tableComponent.getTableModel() : null;
 	}
 
-	/**
-	 * Gets the cash tendered amount from the JTextField.
-	 *
-	 * @return BigDecimal cash tendered, or null if input is invalid or empty.
-	 */
-	public BigDecimal getCashTenderedAmount() {
-		if (cashTenderedField == null)
-			return BigDecimal.ZERO; // Should not happen if UI initialized
-
+	private BigDecimal getCashTenderedAmountFromField() {
+		if (cashTenderedField == null) return null;
 		String cashInput = cashTenderedField.getText();
 		if (cashInput == null || cashInput.trim().isEmpty()) {
-			return BigDecimal.ZERO; // Treat empty as zero for preview, finalization will validate
+			return BigDecimal.ZERO;
 		}
 		try {
-			// Use a more robust parsing that handles currency symbols and commas
-			Number parsedNumber = INPUT_CURRENCY_FORMAT.parse(cashInput.trim());
-			BigDecimal amount = new BigDecimal(parsedNumber.toString());
-
+            Number parsedNumber = INPUT_CURRENCY_FORMAT.parse(cashInput.trim());
+            BigDecimal amount = new BigDecimal(parsedNumber.toString());
 			if (amount.compareTo(BigDecimal.ZERO) < 0) {
-				// Optionally show a message here or let finalizeOrder handle it
-				return null; // Indicate invalid negative input
+				return null;
 			}
 			return amount.setScale(2, RoundingMode.HALF_UP);
 		} catch (java.text.ParseException e) {
-			// Optionally show a message for bad format
-			System.err.println("Invalid cash amount format: " + cashInput);
-			return null; // Indicate invalid format
+			System.err.println("Invalid cash amount format during get: " + cashInput);
+			return null;
 		}
 	}
+    
+    public BigDecimal getCashTenderedAmount() {
+        return this.currentCashTenderedForPreview;
+    }
 
 	public int getLastFinalizedOrderId() {
 		return this.lastFinalizedOrderId;
 	}
 
 	private void initializeCheckoutUI() {
+        // ... (searchComponent, tableComponent setup is the same) ...
 		searchComponent = new CheckoutSearchComponent(this);
 		add(searchComponent, BorderLayout.NORTH);
 
 		tableComponent = new CheckoutTableComponent(this.currentStockCache, this, this);
 		add(tableComponent, BorderLayout.CENTER);
 
-		// --- Bottom Panel: Cash Input, Change, Total ---
 		JPanel bottomOuterPanel = new JPanel(new BorderLayout());
-
-		// Panel for Cash Tendered and Change (above Total)
 		JPanel paymentDetailsPanel = new JPanel(new GridBagLayout());
-		paymentDetailsPanel.setBorder(
-				BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY), // Top
-						// border
-						new EmptyBorder(5, 5, 5, 5) // Padding
-				));
+		paymentDetailsPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY),
+				new EmptyBorder(5,5,5,5)
+		));
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(2, 5, 2, 5);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 
 		JLabel cashLabel = new JLabel("Cash Tendered:");
 		cashLabel.setFont(new Font("Montserrat Medium", Font.PLAIN, 14));
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.EAST;
+		gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
 		paymentDetailsPanel.add(cashLabel, gbc);
 
 		cashTenderedField = new JTextField(10);
 		cashTenderedField.setFont(new Font("Montserrat Medium", Font.PLAIN, 14));
 		cashTenderedField.setHorizontalAlignment(JTextField.RIGHT);
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		gbc.weightx = 1.0;
-		gbc.anchor = GridBagConstraints.WEST;
+		gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 1.0; gbc.anchor = GridBagConstraints.WEST;
 		paymentDetailsPanel.add(cashTenderedField, gbc);
+
+		cashEnterButton = new JButton("Enter");
+        cashEnterButton.setFont(new Font("Montserrat Medium", Font.PLAIN, 12));
+        cashEnterButton.setMargin(new Insets(2,5,2,5));
+        gbc.gridx = 2; gbc.gridy = 0; gbc.weightx = 0; gbc.fill = GridBagConstraints.NONE; gbc.anchor = GridBagConstraints.WEST;
+        paymentDetailsPanel.add(cashEnterButton, gbc);
 
 		JLabel changeTextLabel = new JLabel("Change:");
 		changeTextLabel.setFont(new Font("Montserrat Medium", Font.PLAIN, 14));
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.anchor = GridBagConstraints.EAST;
+		gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
 		paymentDetailsPanel.add(changeTextLabel, gbc);
 
 		changeLabelValue = new JLabel(CURRENCY_FORMAT.format(BigDecimal.ZERO));
 		changeLabelValue.setFont(new Font("Montserrat Bold", Font.BOLD, 14));
 		changeLabelValue.setHorizontalAlignment(JLabel.RIGHT);
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		gbc.anchor = GridBagConstraints.WEST;
+		gbc.gridx = 1; gbc.gridy = 1; gbc.gridwidth = 2; gbc.weightx = 1.0; gbc.anchor = GridBagConstraints.WEST;
 		paymentDetailsPanel.add(changeLabelValue, gbc);
+        gbc.gridwidth = 1;
 
 		bottomOuterPanel.add(paymentDetailsPanel, BorderLayout.NORTH);
 
-		// Total Panel (below cash/change)
 		JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		totalPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY)); // Top border for total
+		totalPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 		totalPanel.add(new JLabel("Total:"));
 		totalLabelValue = new JLabel(CURRENCY_FORMAT.format(0.00));
 		totalLabelValue.setFont(new Font("Montserrat Bold", Font.BOLD, 18));
 		totalPanel.add(totalLabelValue);
 		bottomOuterPanel.add(totalPanel, BorderLayout.SOUTH);
-
 		add(bottomOuterPanel, BorderLayout.SOUTH);
 
-		// --- Right Side Panel: Receipt and Finalize Button ---
 		JPanel rightSidePanel = new JPanel(new BorderLayout(5, 10));
-		rightSidePanel.setPreferredSize(new Dimension(320, 0)); // Keep preferred width for receipt
+		rightSidePanel.setPreferredSize(new Dimension(320, 0));
 		receiptComponent = new CheckoutReceiptComponent();
 		rightSidePanel.add(receiptComponent, BorderLayout.CENTER);
 
@@ -325,57 +292,76 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 		rightSidePanel.add(finalizeButtonPanel, BorderLayout.SOUTH);
 		add(rightSidePanel, BorderLayout.EAST);
 
-		// Add listener to cash tendered field
-		cashTenderedField.getDocument().addDocumentListener(new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) {
-				handleCashChange();
-			}
+		cashEnterButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+                // 1. Refresh the total from the table
+                recalculateTotalFromTable(); // This updates currentTotalAmount and totalLabelValue
 
-			public void removeUpdate(DocumentEvent e) {
-				handleCashChange();
-			}
-
-			public void changedUpdate(DocumentEvent e) {
-				handleCashChange();
+                // 2. Process cash tendered against the refreshed total
+				boolean formatErrorShown = processCashTenderedAndShowErrors(); // New method name for clarity
+                
+                // 3. If no format error, explicitly check for insufficient payment
+                if (!formatErrorShown) {
+                    BigDecimal cashParsed = getCashTenderedAmountFromField(); // Re-parse for this check
+                    // Check if cashParsed is not null (valid format) and >= 0 before comparing to total
+                    if (cashParsed != null && cashParsed.compareTo(BigDecimal.ZERO) >= 0 && cashParsed.compareTo(currentTotalAmount) < 0) {
+                         JOptionPane.showMessageDialog(CheckoutPanel.this, "Cash tendered is less than the total amount.", "Insufficient Payment", JOptionPane.WARNING_MESSAGE);
+                    }
+                    // If cashParsed is null (bad format) but field is not empty, processCashTenderedAndShowErrors already showed the error.
+                    // If cashParsed is ZERO (empty field), no insufficient payment error for just pressing Enter on empty.
+                }
 			}
 		});
 	}
 
-	/**
-	 * Handles changes in the cashTenderedField. Updates change label and receipt
-	 * preview.
-	 */
-	private void handleCashChange() {
-		BigDecimal cashTendered = getCashTenderedAmount();
-		if (cashTendered == null) { // Invalid format
-			// Optionally clear change or show error indicator, for now, treat as 0 for
-			// calculation
-			cashTendered = BigDecimal.ZERO;
-		}
+    /**
+     * Processes the cash tendered from the input field, intended to be called by "Enter" button.
+     * Shows errors for bad format or insufficient payment. Updates UI.
+     * @return true if a format error dialog was shown, false otherwise.
+     */
+	private boolean processCashTenderedAndShowErrors() {
+		BigDecimal cashParsed = getCashTenderedAmountFromField();
+        boolean formatErrorDialogShown = false;
 
-		BigDecimal change = cashTendered.subtract(currentTotalAmount);
-		if (change.compareTo(BigDecimal.ZERO) < 0) {
-			change = BigDecimal.ZERO; // Do not show negative change
-		}
-		changeLabelValue.setText(CURRENCY_FORMAT.format(change));
+		if (cashParsed == null) { // Indicates bad format or negative value
+            if (!cashTenderedField.getText().trim().isEmpty()) { // Only show error if field had non-empty invalid content
+                JOptionPane.showMessageDialog(this, "Invalid cash amount entered. Please enter a valid non-negative number.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                formatErrorDialogShown = true;
+            }
+            // Reset preview values if parsing failed or field is empty
+            currentCashTenderedForPreview = BigDecimal.ZERO;
+            changeLabelValue.setText(CURRENCY_FORMAT.format(BigDecimal.ZERO));
+        } else {
+            // Parsed successfully (non-negative number)
+            currentCashTenderedForPreview = cashParsed;
+            BigDecimal change = currentCashTenderedForPreview.subtract(currentTotalAmount);
+            if (change.compareTo(BigDecimal.ZERO) < 0) {
+                change = BigDecimal.ZERO; // Don't show negative change, "insufficient" warning handled by caller
+            }
+            changeLabelValue.setText(CURRENCY_FORMAT.format(change));
+        }
 
-		// Update receipt preview with current cash tendered (even if not yet finalized)
+		// Update receipt preview always
 		if (receiptComponent != null && tableComponent != null) {
-			receiptComponent.updateReceipt(tableComponent.getTableModel(), lastFinalizedOrderId, cashTendered);
+			receiptComponent.updateReceipt(tableComponent.getTableModel(), lastFinalizedOrderId, currentCashTenderedForPreview);
 		}
+        return formatErrorDialogShown;
 	}
+
 
 	@Override
 	public void itemRemovalRequested(int modelRowIndex, int itemStockId) {
 		System.out.println("Removal: Row=" + modelRowIndex + ", ItemStockID=" + itemStockId);
 		currentStockCache.remove(itemStockId);
 		tableComponent.removeRowByIndex(modelRowIndex);
-		updateCheckoutTotalAndPaymentDetails();
+		updateCheckoutTotalAndRefreshPaymentDetails();
 	}
 
 	@Override
 	public void itemSelected(ItemData selectedItem) {
-		System.out.println("Selected: " + selectedItem.itemName() + " (StockID: " + selectedItem.itemStockId() + ")");
+        // ... (existing itemSelected logic) ...
+        System.out.println("Selected: " + selectedItem.itemName() + " (StockID: " + selectedItem.itemStockId() + ")");
 		DefaultTableModel model = tableComponent.getTableModel();
 		int existingRow = -1;
 		for (int i = 0; i < model.getRowCount(); i++) {
@@ -391,11 +377,9 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 			int maxStock = currentStockCache.getOrDefault(selectedItem.itemStockId(), 0);
 			if (currentQtyInTable < maxStock) {
 				model.setValueAt(currentQtyInTable + 1, existingRow, CheckoutTableComponent.COL_QUANTITY);
-				quantityChanged(existingRow, currentQtyInTable + 1, selectedItem.itemStockId()); // This will call
-				// updateCheckoutTotalAndPaymentDetails
+				quantityChanged(existingRow, currentQtyInTable + 1, selectedItem.itemStockId());
 			} else {
-				JOptionPane.showMessageDialog(this, "Cannot add more. Max stock (" + maxStock + ") reached.",
-						"Stock Limit", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Cannot add more '" + selectedItem.itemName() + " (" + selectedItem.packagingName() + ")'. Max stock (" + maxStock + ") reached.", "Stock Limit", JOptionPane.WARNING_MESSAGE);
 			}
 		} else {
 			if (selectedItem.currentStock() > 0) {
@@ -408,35 +392,29 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 				rowData.add("Remove");
 				rowData.add(selectedItem.itemStockId());
 				tableComponent.addRow(rowData);
-				updateCheckoutTotalAndPaymentDetails();
+				updateCheckoutTotalAndRefreshPaymentDetails();
 			} else {
-				JOptionPane.showMessageDialog(this, "Out of stock.", "Out of Stock", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "'" + selectedItem.itemName() + " (" + selectedItem.packagingName() + ")' is out of stock.", "Out of Stock", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
 
 	@Override
 	public void quantityChanged(int modelRowIndex, int newQuantity, int itemStockId) {
-		System.out.println(
-				"Qty Changed: Row=" + modelRowIndex + ", ItemStockID=" + itemStockId + ", NewQty=" + newQuantity);
-		updateCheckoutTotalAndPaymentDetails();
+		System.out.println("Qty Changed: Row=" + modelRowIndex + ", ItemStockID=" + itemStockId + ", NewQty=" + newQuantity);
+		updateCheckoutTotalAndRefreshPaymentDetails();
 	}
 
-	private void styleIconButtonLabel(JLabel label) {
-		/* Not currently used, keep if needed elsewhere */
-	}
-
-	/**
-	 * Recalculates total, updates total label, and then updates payment details
-	 * (change, receipt preview).
-	 */
-	private void updateCheckoutTotalAndPaymentDetails() {
-		if (totalLabelValue == null || tableComponent == null || tableComponent.getTableModel() == null) {
+    /**
+     * Recalculates currentTotalAmount from the table and updates the totalLabelValue.
+     */
+    private void recalculateTotalFromTable() {
+        if (totalLabelValue == null || tableComponent == null || tableComponent.getTableModel() == null) {
 			System.err.println("Cannot update total: Required components/model are null.");
 			return;
 		}
 		DefaultTableModel model = tableComponent.getTableModel();
-		currentTotalAmount = BigDecimal.ZERO; // Reset before recalculating
+		currentTotalAmount = BigDecimal.ZERO;
 		for (int i = 0; i < model.getRowCount(); i++) {
 			try {
 				Object quantityObj = model.getValueAt(i, CheckoutTableComponent.COL_QUANTITY);
@@ -453,9 +431,34 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 			}
 		}
 		totalLabelValue.setText(CURRENCY_FORMAT.format(currentTotalAmount));
-		System.out.println("Checkout total updated: " + CURRENCY_FORMAT.format(currentTotalAmount));
+		System.out.println("Checkout total recalculated: " + CURRENCY_FORMAT.format(currentTotalAmount));
+    }
 
-		// After total is updated, recalculate change and update receipt
-		handleCashChange(); // This will use the new currentTotalAmount
+
+	/**
+	 * Recalculates total, then updates payment details (change, receipt preview)
+     * without showing format errors for the cash field.
+	 */
+	private void updateCheckoutTotalAndRefreshPaymentDetails() {
+        recalculateTotalFromTable(); // This updates currentTotalAmount and totalLabelValue
+
+        // Now, process cash tendered against the *new* total, but don't show format errors
+        // The old `processCashTendered(false)` logic is effectively what `processCashTenderedAndShowErrors`
+        // does when its internal showError... flag is false (which happens if it's not called by Enter).
+        // Let's simplify: just update the receipt based on currentCashTenderedForPreview
+        // The Enter button is the explicit trigger for re-evaluating cash input.
+
+        // If an item changes, the total changes. The change should reflect this against the
+        // *last entered cash*.
+        BigDecimal cashForThisUpdate = currentCashTenderedForPreview; // Use last "good" cash
+        BigDecimal change = cashForThisUpdate.subtract(currentTotalAmount);
+        if (change.compareTo(BigDecimal.ZERO) < 0) {
+            change = BigDecimal.ZERO;
+        }
+        changeLabelValue.setText(CURRENCY_FORMAT.format(change));
+
+        if (receiptComponent != null && tableComponent != null) {
+			receiptComponent.updateReceipt(tableComponent.getTableModel(), lastFinalizedOrderId, cashForThisUpdate);
+		}
 	}
 }

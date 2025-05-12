@@ -223,7 +223,7 @@ public class CheckoutReceiptComponent extends JPanel {
 		sb.append(itemHeader).append("\n");
 		sb.append("-".repeat(itemHeader.length())).append("\n");
 
-		BigDecimal subtotal = BigDecimal.ZERO;
+		BigDecimal itemsTotal = BigDecimal.ZERO;
 		int totalItemsCount = 0;
 
 		if (tableModel != null) {
@@ -235,7 +235,7 @@ public class CheckoutReceiptComponent extends JPanel {
 
 					if (name != null && quantity != null && price != null && quantity > 0) {
 						BigDecimal amount = price.multiply(BigDecimal.valueOf(quantity));
-						subtotal = subtotal.add(amount);
+						itemsTotal = itemsTotal.add(amount);
 						totalItemsCount += quantity;
 
 						sb.append(String.format("%-4d %-15.15s %-8s %-10s\n", // Truncate item name for preview
@@ -249,19 +249,18 @@ public class CheckoutReceiptComponent extends JPanel {
 		}
 		sb.append("-".repeat(itemHeader.length())).append("\n");
 
-		sb.append(String.format("%28s %s\n", "SUBTOTAL:", CURRENCY_FORMAT.format(subtotal)));
-		sb.append(String.format("%28s %s\n", "TOTAL:", CURRENCY_FORMAT.format(subtotal))); // Assuming subtotal is total
+		sb.append(String.format("%28s %s\n", "TOTAL:", CURRENCY_FORMAT.format(itemsTotal))); // Assuming subtotal is total
 		// for preview
 
-		BigDecimal change = cashTendered.subtract(subtotal);
+		BigDecimal change = cashTendered.subtract(itemsTotal);
 		if (change.compareTo(BigDecimal.ZERO) < 0)
 			change = BigDecimal.ZERO;
 		sb.append(String.format("%28s %s\n", "CASH:", CURRENCY_FORMAT.format(cashTendered)));
 		sb.append(String.format("%28s %s\n", "CHANGE:", CURRENCY_FORMAT.format(change)));
 		sb.append("\n");
 
-		BigDecimal netOfVat = subtotal.divide(BigDecimal.ONE.add(VAT_RATE), 2, RoundingMode.HALF_UP);
-		BigDecimal vatPayable = subtotal.subtract(netOfVat);
+		BigDecimal netOfVat = itemsTotal.divide(BigDecimal.ONE.add(VAT_RATE), 2, RoundingMode.HALF_UP);
+		BigDecimal vatPayable = itemsTotal.subtract(netOfVat);
 		sb.append(String.format("VAT Sales: %s\n", CURRENCY_FORMAT.format(netOfVat)));
 		sb.append(String.format("VAT (%s%%): %s\n",
 				VAT_RATE.multiply(BigDecimal.valueOf(100)).stripTrailingZeros().toPlainString(),
@@ -455,7 +454,7 @@ public class CheckoutReceiptComponent extends JPanel {
                 y -= LINE_SPACING_REGULAR;
 
 				// --- Items ---
-				BigDecimal subtotal = BigDecimal.ZERO;
+				BigDecimal orderTotalAmount = BigDecimal.ZERO;
 				int totalItemsCount = 0;
 				if (tableModel != null) {
 					for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -467,7 +466,7 @@ public class CheckoutReceiptComponent extends JPanel {
 							continue; // Skip invalid rows
 
 						BigDecimal itemTotalAmount = pricePerItem.multiply(BigDecimal.valueOf(quantity));
-						subtotal = subtotal.add(itemTotalAmount);
+						orderTotalAmount = orderTotalAmount.add(itemTotalAmount);
 						totalItemsCount += quantity;
 
 						String itemShortcut = generateItemShortcut(name);
@@ -482,17 +481,13 @@ public class CheckoutReceiptComponent extends JPanel {
 					}
 				}
 				y -= LINE_SPACING_SECTION_BREAK;
+				
+				String dottedLine = getDynamicDottedLine(fontRegular, FONT_SIZE_FINANCIAL_LABEL);
+				drawTextLeft(contentStream, fontRegular, FONT_SIZE_FINANCIAL_LABEL, SIDE_PADDING, y, dottedLine);
+				y -= LINE_SPACING_REGULAR;
 
 				// --- Financial Summary ---
-				BigDecimal totalDue = subtotal;
-
-				drawLabelValueLine(contentStream, fontRegular, FONT_SIZE_FINANCIAL_LABEL, y, "SUBTOTAL",
-						CURRENCY_FORMAT.format(subtotal));
-				y -= LINE_SPACING_REGULAR;
-				
-                String dottedLine = getDynamicDottedLine(fontRegular, FONT_SIZE_FINANCIAL_LABEL); // Get the full dotted line
-                drawTextLeft(contentStream, fontRegular, FONT_SIZE_FINANCIAL_LABEL, SIDE_PADDING, y, dottedLine); // Draw it
-                y -= LINE_SPACING_SECTION_BREAK;
+				BigDecimal totalDue = orderTotalAmount;
 				
 				drawLabelValueLine(contentStream, fontBold, FONT_SIZE_FINANCIAL_LABEL, y, "TOTAL",
 						CURRENCY_FORMAT.format(totalDue));
