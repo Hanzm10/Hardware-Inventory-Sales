@@ -1,4 +1,4 @@
-package com.github.hanzm_10.murico.swingapp.scenes.profile;
+package com.github.hanzm_10.murico.swingapp.scenes.home.profile;
 
 import java.sql.*;
 

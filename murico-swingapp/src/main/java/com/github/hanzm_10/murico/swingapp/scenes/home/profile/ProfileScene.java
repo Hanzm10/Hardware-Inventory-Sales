@@ -1,16 +1,19 @@
-package com.github.hanzm_10.murico.swingapp.scenes.profile;
+package com.github.hanzm_10.murico.swingapp.scenes.home.profile;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Image;
+import java.io.IOException;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
-import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -25,10 +28,12 @@ public class ProfileScene extends JPanel implements Scene{
 	private JButton editProfBtn;
 	private JLabel profileLbl;
 	private boolean uiInitialized = false;
+	private JPanel view;
+	private Image image;
 	
 	
 	public ProfileScene() {
-		setLayout(new MigLayout());
+		//setLayout(new MigLayout());
 		System.out.println("Profile Scene instance created.");
 		
 	}
@@ -40,14 +45,22 @@ public class ProfileScene extends JPanel implements Scene{
 
 	@Override
 	public JPanel getSceneView() {
-		// TODO Auto-generated method stub
-		return this;
+		return view == null ? (view = new JPanel()) : view;
+
 	}
 
 	@Override
 	public void onCreate() {
 		if(!uiInitialized) {
-			initializeProfileUI();
+			try {
+				initializeProfileUI();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			uiInitialized = true;
 		}
 		
@@ -71,33 +84,36 @@ public class ProfileScene extends JPanel implements Scene{
 		 uiInitialized = false;
 		return true;
 	 }
-	private void initializeProfileUI() {
+	private void initializeProfileUI() throws IOException, InterruptedException {
 		Profile profile = new Profile();
-		JPanel profilePnl = new JPanel();
-		profilePnl.setBackground(Color.WHITE);
+		view = new JPanel();
+		view.setBackground(Color.WHITE);
 		//profilePnl.setPreferredSize(screenSize);
-		profilePnl.setLayout(null);
-		this.add(profilePnl, "name_265538866079209");
+		this.add(view);
+		view.setLayout(new MigLayout("", "[742px][67px][371px]", "[71px][62px][45px][91px][12px][84px][36px][456px]"));
 		
 		displayRoleLbl = new JLabel();
 		displayRoleLbl.setForeground(Color.WHITE);
 		//displayRoleLbl.setText(profile.getRole(username));
 		displayRoleLbl.setFont(new Font("Montserrat", Font.BOLD, 20));
-		displayRoleLbl.setBounds(510, 439, 233, 30);
 		displayRoleLbl.setOpaque(false);
-		profilePnl.add(displayRoleLbl);
-		
+		view.add(displayRoleLbl);
+		view.add(displayRoleLbl, "cell 0 7,alignx right,aligny top");
+
 		roleLbl = new JLabel("");
-		roleLbl.setIcon(new ImageIcon(ProfileScene.class.getResource("/imageSource/roleBoarderLabel.png")));
+		image = AssetManager.getOrLoadImage("images/roleBoarderLabel.png");
+		roleLbl.setIcon(new ImageIcon(image));
 		roleLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 		roleLbl.setBounds(497, 425, 274, 56);
-		profilePnl.add(roleLbl);
+		view.add(roleLbl, "cell 0 7,alignx right,aligny top");
 		
 		profilepicLbl = new JLabel("");
 		profilepicLbl.setBackground(new Color(33, 64, 107));
-		profilepicLbl.setIcon(new ImageIcon(ProfileScene.class.getResource("/imageSource/profilepic.png")));
+		profilepicLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profilepic.png")));
+	
+
 		profilepicLbl.setBounds(497, 64, 233, 229);
-		profilePnl.add(profilepicLbl);
+		view.add(profilepicLbl, "cell 0 0 1 4,alignx right,aligny bottom");
 		
 		displaynameLbl = new JLabel();
 		displaynameLbl.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -106,30 +122,26 @@ public class ProfileScene extends JPanel implements Scene{
 		//displaynameLbl.setText(username.toUpperCase());
 		displaynameLbl.setFont(new Font("Montserrat", Font.BOLD, 64));
 		displaynameLbl.setOpaque(false);
-		displaynameLbl.setBounds(318, 305, 616, 84);
-		profilePnl.add(displaynameLbl);
+		view.add(displaynameLbl, "cell 0 5 3 1,alignx center,growy");
 	
 		
 		profileLogoLbl = new JLabel("");
-		profileLogoLbl.setIcon(new ImageIcon(ProfileScene.class.getResource("/imageSource/profileRectangle.png")));
-		profileLogoLbl.setBounds(29, 202, 1180, 679);
-		profilePnl.add(profileLogoLbl);
+		profileLogoLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profileRectangle.png")));
+		view.add(profileLogoLbl, "cell 0 3 3 5,grow");
 		//profilePnl.setLayout(null);
 		
 		editProfBtn = new JButton("");
 		editProfBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		editProfBtn.setBorderPainted(false);
-		editProfBtn.setIcon(new ImageIcon(ProfileScene.class.getResource("/imageSource/editProf.png")));
-		editProfBtn.setBounds(838, 95, 371, 62);
-		profilePnl.add(editProfBtn);
+		editProfBtn.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/editProf.png")));
+		view.add(editProfBtn, "cell 2 1,alignx left,growy");
 		
 		profileLbl = new JLabel();
 		//ProfileTxt.setEditable(false);
 		profileLbl.setFont(new Font("Montserrat", Font.BOLD | Font.ITALIC, 64));
 		profileLbl.setText("Profile");
-		profileLbl.setBounds(897, 24, 233, 71);
 		profileLbl.setForeground(new Color(72, 124, 141));
-		profilePnl.add(profileLbl);
+		view.add(profileLbl, "cell 2 0,alignx center,growy");
 	}
 
 }
