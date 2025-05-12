@@ -31,7 +31,7 @@ public class Header {
 
 	public Header() {
 		container = new JPanel();
-		container.setLayout(new MigLayout("", "[72px::96px,grow,left]push[]", "[72px::96px,grow,center]"));
+		container.setLayout(new MigLayout("", "[96px::96px,grow,left]push[]", "[grow,center]"));
 
 		loadImages();
 		initComponents();

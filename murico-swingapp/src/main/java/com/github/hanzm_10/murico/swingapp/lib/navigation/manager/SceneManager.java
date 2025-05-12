@@ -24,6 +24,8 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 public interface SceneManager {
 	void destroy();
 
+	Scene getCurrentScene();
+
 	String getCurrentSceneName();
 
 	JPanel getRootContainer();
