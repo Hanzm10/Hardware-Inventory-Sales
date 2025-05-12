@@ -36,8 +36,6 @@ public class ReportsScene implements Scene, SubSceneSupport {
 
 	private ReportsHeader header;
 
-	private Thread reportsThread;
-
 	private void createSceneManager() {
 		sceneManager = new StaticSceneManager();
 

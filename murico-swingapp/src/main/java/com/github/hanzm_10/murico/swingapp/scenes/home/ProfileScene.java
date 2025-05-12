@@ -33,8 +33,6 @@ public class ProfileScene implements Scene {
 
 	public ProfileScene() {
 		// setLayout(new MigLayout());
-		System.out.println("Profile Scene instance created.");
-
 	}
 
 	@Override

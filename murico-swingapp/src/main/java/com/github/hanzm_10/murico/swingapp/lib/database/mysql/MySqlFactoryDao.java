@@ -26,8 +26,10 @@ import com.github.hanzm_10.murico.swingapp.constants.PropertyKey;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySQLSalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlAccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlItemDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlSessionDao;
@@ -65,7 +67,6 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 			LOGGER.fine("DB User: " + DB_USER);
 			// Avoid logging password directly: LOGGER.fine("DB Password: " + DB_PASSWORD);
 			LOGGER.fine("DB Name: " + DB_NAME);
-
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Failed to load MySQL properties file from 'config.properties'", e);
 			// Throwing RuntimeException might be too harsh depending on app needs
@@ -151,6 +152,12 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	@Override
 	public ItemDao getItemDao() {
 		return new MySqlItemDao();
+	}
+
+	@Override
+	public SalesDao getSalesDao() {
+		// TODO Auto-generated method stub
+		return new MySQLSalesDao();
 	}
 
 	// --- Instance methods for DAO retrieval ---
