@@ -3,14 +3,13 @@ CREATE TABLE customer_orders (
     _customer_id INTEGER NULL,
     -- employee that handled this transaction
     _employee_id INTEGER NULL,
-    _customer_order_number CHAR(36) NOT NULL DEFAULT (UUID()), 
+    _customer_order_number CHAR(36) UNIQUE NOT NULL DEFAULT (UUID()), 
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     discount_type ENUM("none", "fixed", "percent") NOT NULL DEFAULT "none",
     discount_value DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     vat_percent DECIMAL(5,2) NOT NULL DEFAULT 12.00,
     remarks VARCHAR(255),
 
-	UNIQUE (_customer_order_number),
     -- set null to preserve sales records
     FOREIGN KEY (_customer_id)
         REFERENCES customers(_customer_id)
@@ -28,7 +27,7 @@ CREATE TABLE customer_orders_item_stocks (
     price_php DECIMAL(10,2) NOT NULL CHECK(price_php >= 0),
     quantity INTEGER NOT NULL CHECK(quantity > 0),
 
-    UNIQUE (_customer_order_id, _item_stock_id),
+	CONSTRAINT item_stock_per_customer_order_unique UNIQUE (_customer_order_id, _item_stock_id),
     FOREIGN KEY (_customer_order_id)
         REFERENCES customer_orders(_customer_order_id)
         ON DELETE SET NULL,

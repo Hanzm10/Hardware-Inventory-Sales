@@ -19,6 +19,12 @@ public class MySqlMigrator implements Migrator {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlMigrator.class);
 
 	protected void createMigrationTableIfNotExists() {
+		// TEMPORARY !! REMOVE AFTER EVERYONE CLEANSES THEIR DATABASES!
+		// Adding the DROP DATABASE defeats the purpose of migrations, but
+		// since i did not add a name for the UNIQUE composite key constraints I
+		// accidentally made,
+		// which should've been individual unique key constraints, we just remove the
+		// whol database
 		var query = """
 				CREATE TABLE IF NOT EXISTS migrations (
 					_migration_id INTEGER PRIMARY KEY AUTO_INCREMENT,

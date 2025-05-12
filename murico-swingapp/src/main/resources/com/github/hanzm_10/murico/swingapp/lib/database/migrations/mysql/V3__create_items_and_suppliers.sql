@@ -1,34 +1,28 @@
 CREATE TABLE item_categories (
     _item_category_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name VARCHAR(100) NOT NULL,
-
-    UNIQUE (name)
+    name VARCHAR(100) UNIQUE NOT NULL
 );
 
 CREATE TABLE packagings (
     _packaging_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name VARCHAR(100) NOT NULL,
-    description VARCHAR(255),
-
-    UNIQUE (name)
+    name VARCHAR(100) UNIQUE NOT NULL,
+    description VARCHAR(255)
 );
 
 CREATE TABLE items (
     _item_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    _item_uid CHAR(36) NOT NULL DEFAULT (UUID()),
+    _item_uid CHAR(36) UNIQUE NOT NULL DEFAULT (UUID()),
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(255),
-
-    UNIQUE (_item_uid, name)
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255)
 );
 
 CREATE TABLE item_categories_items (
     _item_category_id INTEGER,
     _item_id INTEGER,
-    PRIMARY KEY (_item_category_id, _item_id),
+    CONSTRAINT item_categories_pk PRIMARY KEY (_item_category_id, _item_id),
     FOREIGN KEY (_item_category_id)
         REFERENCES item_categories(_item_category_id)
         ON DELETE CASCADE,
@@ -46,7 +40,8 @@ CREATE TABLE item_stocks (
     minimum_quantity INTEGER NOT NULL DEFAULT 0,
     srp_php DECIMAL(10, 2) NOT NULL CHECK (srp_php >= 0),
     price_php DECIMAL(10, 2) NOT NULL CHECK(price_php >= 0),
-    UNIQUE (_item_id, _packaging_id),
+    
+    CONSTRAINT item_packaging_unique UNIQUE (_item_id, _packaging_id),
     FOREIGN KEY (_item_id)
         REFERENCES items(_item_id)
         ON DELETE CASCADE,
@@ -71,16 +66,14 @@ CREATE TABLE suppliers (
     _supplier_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     -- address
     street VARCHAR(255),
     city VARCHAR(100),
     state VARCHAR(100),
     postal_code VARCHAR(20),
-    country VARCHAR(100),
-
-    UNIQUE (name, email)
+    country VARCHAR(100)
 );
 
 CREATE TABLE suppliers_items (
@@ -93,7 +86,7 @@ CREATE TABLE suppliers_items (
     srp_php DECIMAL(10,2) NOT NULL CHECK (srp_php >= 0),
     wsp_php DECIMAL(10,2) NOT NULL CHECK (wsp_php >= 0),
 
-    UNIQUE (_supplier_id, _item_id),
+	CONSTRAINT supplier_item_unique UNIQUE (_supplier_id, _item_id),
     FOREIGN KEY (_supplier_id)
         REFERENCES suppliers(_supplier_id)
         ON DELETE CASCADE,
