@@ -68,7 +68,6 @@ public class HomeScene implements Scene, SubSceneSupport {
 	@Override
 	public void navigateTo(@NotNull String subSceneName) {
 		// perform checks here (?)
-		System.out.println("---- NAVIGATING! -----");
 		sceneManager.navigateTo(subSceneName);
 	}
 
