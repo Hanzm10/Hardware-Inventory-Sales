@@ -75,13 +75,20 @@ public class AuthScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
+	public void navigateToDefault() {
+		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "login");
+
+	}
+
+	@Override
 	public void onCreate() {
 		view.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
 
 		var rootContainer = sceneManager.getRootContainer();
 		view.add(rootContainer, "cell 0 0");
 
-		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "main");
+		if (sceneManager.getCurrentSceneName() == null) {
+		}
 	}
 
 	@Override

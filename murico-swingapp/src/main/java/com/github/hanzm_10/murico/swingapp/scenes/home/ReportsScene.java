@@ -71,15 +71,18 @@ public class ReportsScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
+	public void navigateToDefault() {
+		SceneNavigator.getInstance().navigateTo(
+				"home" + ParsedSceneName.SEPARATOR + getSceneName() + ParsedSceneName.SEPARATOR + "sales reports");
+	}
+
+	@Override
 	public void onCreate() {
 		view.setLayout(new MigLayout("", "[grow, left]", "[72px::72px, grow, top][grow, top]"));
 		header = new ReportsHeader();
 
 		view.add(header.getContainer(), "cell 0 0, grow");
 		view.add(sceneManager.getRootContainer(), "cell 0 1, grow");
-
-		SceneNavigator.getInstance().navigateTo(
-				"home" + ParsedSceneName.SEPARATOR + getSceneName() + ParsedSceneName.SEPARATOR + "sales reports");
 	}
 
 	@Override
