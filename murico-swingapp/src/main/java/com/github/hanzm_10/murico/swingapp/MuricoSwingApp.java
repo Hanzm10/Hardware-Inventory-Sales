@@ -62,6 +62,8 @@ public class MuricoSwingApp {
 				LOGGER.log(Level.SEVERE, "Failed to setup development environment");
 				return;
 			}
+		} else {
+			MuricoLogger.setLevel(Level.OFF);
 		}
 
 		Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());

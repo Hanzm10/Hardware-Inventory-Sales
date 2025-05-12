@@ -1,7 +1,6 @@
 package com.github.hanzm_10.murico.swingapp.ui.components;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.BorderLayout;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,6 +11,7 @@ import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
@@ -26,6 +26,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class Sidebar {
 	private static Logger LOGGER = MuricoLogger.getLogger(Sidebar.class);
+	private JPanel wrapper;
 	private GradientRoundedPanel container;
 	private ButtonSceneNavigatorListener navListener;
 
@@ -41,13 +42,16 @@ public class Sidebar {
 	private final Map<String, AbstractButton> sceneButtonMap;
 
 	public Sidebar() {
-		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.PRIMARY_COLOR, 22);
+		wrapper = new JPanel();
+		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.PRIMARY_COLOR, 24);
 		navListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
-        container.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
+		wrapper.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+		wrapper.setLayout(new BorderLayout());
 
-		container.setLayout(new MigLayout("insets 16", "[48px::50px,grow]",
-				"[48px::50px,grow][48px::50px,grow][48px::50px,grow][48px::50px,grow][48px::50px,grow][48px::50px,grow]96px:push[48px::50px,grow]"));
+		wrapper.add(container, BorderLayout.CENTER);
+		container.setLayout(new MigLayout("insets 16", "[50px::50px,grow]",
+				"[50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow]72px:push[50px::50px,grow]"));
 
 		initBtns();
 		initBtnGroup();
@@ -89,14 +93,16 @@ public class Sidebar {
 	}
 
 	private void checkIfContains(String currFullSceneName) {
-		for (Map.Entry<String, AbstractButton> entry : sceneButtonMap.entrySet()) {
-			if (currFullSceneName.contains(entry.getKey())) {
-				var btn = entry.getValue();
+		var entry = sceneButtonMap.entrySet();
 
-				btnGroup.setSelected(btn.getModel(), true);
-                btn.putClientProperty("JComponent.focusType", "strong");
-                btn.putClientProperty("JComponent.hoverType", "");
-				break;
+		for (var n : currFullSceneName.split(ParsedSceneName.SEPARATOR)) {
+			for (var e : entry) {
+				if (n.equals(e.getKey())) {
+					var btn = e.getValue();
+
+					btnGroup.setSelected(btn.getModel(), true);
+					break;
+				}
 			}
 		}
 	}
@@ -112,8 +118,8 @@ public class Sidebar {
 		settingsBtn.removeActionListener(navListener);
 	}
 
-	public GradientRoundedPanel getContainer() {
-		return container;
+	public JPanel getContainer() {
+		return wrapper;
 	}
 
 	private void handleNavigation(String currFullSceneName) {
@@ -123,8 +129,6 @@ public class Sidebar {
 
 		if (exactMatch != null) {
 			btnGroup.setSelected(exactMatch.getModel(), true);
-			exactMatch.putClientProperty("JComponent.focusType", "strong");
-			exactMatch.putClientProperty("JComponent.hoverType", "");
 		} else {
 			checkIfContains(currFullSceneName);
 		}

@@ -87,7 +87,7 @@ public class UsersScene extends JPanel implements Scene{
 		usersPnl.setBackground(Color.white);
 		this.add(usersPnl, BorderLayout.CENTER); 
 		
-		String[] columnNames = {"User ID", "Username","Email Address","Role"};
+		String[] columnNames = {"User ID", "Username","Email Address","Role", "Verification Status"};
 		usersTableModel = new DefaultTableModel(columnNames, 0) {
 		
 		@Override 
@@ -115,18 +115,19 @@ public class UsersScene extends JPanel implements Scene{
 		//var query = MySqlQueryLoader.getInstance().get("get_users_table", "users", SqlQueryType.SELECT);
 		try{
 			var conn = MySqlFactoryDao.createConnection();
-			var query = MySqlQueryLoader.getInstance().get("get_users_table", "users", SqlQueryType.SELECT);
+			var query = MySqlQueryLoader.getInstance().get("display_accounts", "accounts", SqlQueryType.SELECT);
 				
 			var statement = conn.prepareStatement(query);
 			var resultSet = statement.executeQuery();
 			
 			while(resultSet.next()) {
-				int id = resultSet.getInt("_user_id");
-				String username = resultSet.getString("user_display_name");
-				String emailAdd = resultSet.getString("user_email");
-                String role = resultSet.getString("user_role");
+				int id = resultSet.getInt("USER_ID");
+				String username = resultSet.getString("USERNAME");
+				String emailAdd = resultSet.getString("EMAIL_ADDRESS");
+                String role = resultSet.getString("ROLE");
+                String verificationStat = resultSet.getString("STATUS");
 
-                tableModel.addRow(new Object[]{id, username, emailAdd, role});
+                tableModel.addRow(new Object[]{id, username, emailAdd, role, verificationStat});
             }
 			resultSet.close();
 			statement.close();
@@ -146,7 +147,7 @@ public class UsersScene extends JPanel implements Scene{
 	
 	public static void saveUser(DefaultTableModel model) {
 	    try {
-	        String updateQuery = MySqlQueryLoader.getInstance().get("update_users_table", "users", SqlQueryType.UPDATE);
+	        String updateQuery = MySqlQueryLoader.getInstance().get("update_userScenes_table", "accounts", SqlQueryType.UPDATE);
 	        PreparedStatement updateStmt = MySqlFactoryDao.createConnection().prepareStatement(updateQuery);
 	        String userEmailAdd = null;
 
