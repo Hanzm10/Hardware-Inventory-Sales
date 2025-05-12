@@ -8,4 +8,6 @@ public interface SubSceneSupport {
 	SceneManager getSceneManager();
 
 	void navigateTo(@NotNull String subSceneName);
+
+	void navigateToDefault();
 }

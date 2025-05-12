@@ -12,7 +12,6 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSce
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
-import com.github.hanzm_10.murico.swingapp.scenes.home.profile.ProfileScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.components.Header;
 import com.github.hanzm_10.murico.swingapp.ui.components.Sidebar;
@@ -69,7 +68,13 @@ public class HomeScene implements Scene, SubSceneSupport {
 	@Override
 	public void navigateTo(@NotNull String subSceneName) {
 		// perform checks here (?)
+		System.out.println("---- NAVIGATING! -----");
 		sceneManager.navigateTo(subSceneName);
+	}
+
+	@Override
+	public void navigateToDefault() {
+		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "profile");
 	}
 
 	@Override
@@ -84,7 +89,8 @@ public class HomeScene implements Scene, SubSceneSupport {
 		view.add(sceneManager.getRootContainer(), "cell 1 1, grow");
 		view.add(sidebar.getContainer(), "cell 0 1, grow");
 
-		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "profile");
+		if (sceneManager.getCurrentSceneName() == null) {
+		}
 	}
 
 	@Override

@@ -88,6 +88,12 @@ class SecondChild implements Scene, SubSceneSupport {
 	}
 
 	@Override
+	public void navigateToDefault() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void onCreate() {
 
 		view.add(new JLabel("I am harboring the first child! "));
@@ -136,6 +142,12 @@ class TestDummySceneParent implements Scene, SubSceneSupport {
 	@Override
 	public void navigateTo(@NotNull String subSceneName) {
 		sceneManager.navigateTo(subSceneName);
+	}
+
+	@Override
+	public void navigateToDefault() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

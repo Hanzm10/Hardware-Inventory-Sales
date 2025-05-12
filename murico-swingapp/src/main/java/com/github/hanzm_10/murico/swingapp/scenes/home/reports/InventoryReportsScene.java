@@ -25,6 +25,5 @@ public final class InventoryReportsScene implements Scene {
 
 	@Override
 	public void onHide() {
-		System.out.println("\n\n===========HIDING! \n\n");
 	}
 }
