@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -88,8 +88,7 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	 * connection is already closed. Logs any SQLException that occurs during
 	 * closing.
 	 *
-	 * @param connection
-	 *            The Connection object to close.
+	 * @param connection The Connection object to close.
 	 */
 	public static void closeConnection(Connection connection) {
 		if (connection != null) {
@@ -115,13 +114,10 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	 * Creates a new database connection using the loaded properties.
 	 *
 	 * @return A new Connection object.
-	 * @throws SQLException
-	 *             If a database access error occurs.
-	 * @throws SQLTimeoutException
-	 *             If the driver has determined that the timeout value has been
-	 *             exceeded.
-	 * @throws RuntimeException
-	 *             If the JDBC driver class cannot be found.
+	 * @throws SQLException        If a database access error occurs.
+	 * @throws SQLTimeoutException If the driver has determined that the timeout
+	 *                             value has been exceeded.
+	 * @throws RuntimeException    If the JDBC driver class cannot be found.
 	 */
 	public static final Connection createConnection() throws SQLException, SQLTimeoutException {
 		// Ensure driver is loaded (optional for modern JDBC, but good practice)
@@ -134,7 +130,7 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 
 		// Check if properties were loaded successfully
 		if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
-			throw new SQLException("Database connection properties are not initialized. Check properties loading.");
+			throw new SQLException("Database connection properties are not initialized. Check config.properties.");
 		}
 
 		LOGGER.fine("Attempting to connect to database: " + DB_URL);
