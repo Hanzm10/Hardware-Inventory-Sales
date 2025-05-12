@@ -1,27 +1,110 @@
 package com.github.hanzm_10.murico.swingapp.ui.components.reports;
 
-import javax.swing.JLabel;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
+import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
+import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.GradientRoundedPanel;
 
 import net.miginfocom.swing.MigLayout;
 
 public final class ReportsHeader {
-    private JPanel container;
+	private JPanel wrapper;
+	private GradientRoundedPanel container;
 
-    public ReportsHeader() {
-        container = new JPanel();
-        container.setLayout(new MigLayout(""));
-        container.setBackground(Styles.SECONDARY_COLOR);
+	private ButtonSceneNavigatorListener navListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
-        container.add(new JLabel("HII"));
-    }
+	private JButton salesBtn;
+	private JButton inventoryBtn;
+	private ButtonGroup btnGroup;
 
-    public JPanel getContainer() {
-        return container;
-    }
+	private final Map<String, AbstractButton> sceneButtonMap;
 
-    public void destroy() {}
+	public ReportsHeader() {
+		createComponents();
+		initButtons();
+		initButtonGroup();
+		attachComponents();
+
+		sceneButtonMap = Map.of("sales reports", salesBtn, "inventory reports", inventoryBtn);
+	}
+
+	private void attachComponents() {
+		container.add(salesBtn, "grow");
+		container.add(inventoryBtn, "grow");
+
+		wrapper.add(container, "grow");
+	}
+
+	public void attachListeners() {
+		SceneNavigator.getInstance().subscribe(this::handleNavigation);
+
+		salesBtn.addActionListener(navListener);
+		inventoryBtn.addActionListener(navListener);
+	}
+
+	private void createComponents() {
+		wrapper = new JPanel();
+		wrapper.setLayout(new MigLayout("", "[grow]", "[grow]"));
+
+		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.SECONDARY_COLOR, 24);
+		container.setLayout(new MigLayout("", "[::96px,grow][::124px,grow]", "[grow, center]"));
+	}
+
+	public void destroy() {
+		destroyListeners();
+	}
+
+	public void destroyListeners() {
+		SceneNavigator.getInstance().unsubscribe(this::handleNavigation);
+
+		salesBtn.removeActionListener(navListener);
+		inventoryBtn.removeActionListener(navListener);
+	}
+
+	public JPanel getContainer() {
+		return wrapper;
+	}
+
+	private void handleNavigation(String currFullSceneName) {
+		var names = currFullSceneName.split(ParsedSceneName.SEPARATOR);
+
+		String lastName = names[names.length - 1];
+		AbstractButton exactMatch = sceneButtonMap.get(lastName);
+
+		if (exactMatch != null) {
+			btnGroup.setSelected(exactMatch.getModel(), true);
+		}
+	}
+
+	private void initButtonGroup() {
+		btnGroup = new ButtonGroup();
+
+		btnGroup.add(salesBtn);
+		btnGroup.add(inventoryBtn);
+	}
+
+	private void initButtons() {
+		salesBtn = StyledButtonFactory.createButtonButToggleStyle("Sales");
+		inventoryBtn = StyledButtonFactory.createButtonButToggleStyle("Inventory");
+
+		salesBtn.setActionCommand("home/reports/sales reports");
+		inventoryBtn.setActionCommand("home/reports/inventory reports");
+
+		salesBtn.setToolTipText("See the sales reports");
+		inventoryBtn.setToolTipText("See the inventory reports");
+
+		salesBtn.putClientProperty(FlatClientProperties.STYLE, "foreground:#ffffff");
+		inventoryBtn.putClientProperty(FlatClientProperties.STYLE, "foreground:#ffffff");
+	}
 }
-

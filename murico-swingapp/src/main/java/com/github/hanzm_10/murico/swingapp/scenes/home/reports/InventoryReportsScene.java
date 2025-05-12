@@ -1,15 +1,16 @@
-package com.github.hanzm_10.murico.swingapp.scenes.home;
+
+package com.github.hanzm_10.murico.swingapp.scenes.home.reports;
 
 import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 
-public class ProfileScene implements Scene {
+public final class InventoryReportsScene implements Scene {
 	private JPanel view;
 
 	@Override
 	public String getSceneName() {
-		return "profile";
+		return "inventory reports";
 	}
 
 	@Override
@@ -19,8 +20,11 @@ public class ProfileScene implements Scene {
 
 	@Override
 	public void onCreate() {
-		// TODO Auto-generated method stub
 
 	}
 
+	@Override
+	public void onHide() {
+		System.out.println("\n\n===========HIDING! \n\n");
+	}
 }

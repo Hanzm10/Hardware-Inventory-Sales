@@ -77,7 +77,7 @@ public class MuricoLogFormatter extends Formatter {
 		var suppresedExceptions = exception.getSuppressed();
 
 		if (suppresedExceptions.length != 0) {
-			stringBuilder.append("\t[SUPRESSED]: ");
+			stringBuilder.append("\t[SUPPRESSED]: ");
 			stringBuilder.append("\n");
 
 			for (Throwable suppressedException : suppresedExceptions) {

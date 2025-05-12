@@ -33,6 +33,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneEntry;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneWrapper;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 
 public class StaticSceneManager implements SceneManager {
@@ -101,6 +102,12 @@ public class StaticSceneManager implements SceneManager {
 	}
 
 	@Override
+	public Scene getCurrentScene() {
+		// TODO Auto-generated method stub
+		return getScene(currentSceneName);
+	}
+
+	@Override
 	public String getCurrentSceneName() {
 		return currentSceneName;
 	}
@@ -133,6 +140,8 @@ public class StaticSceneManager implements SceneManager {
 				LOGGER.severe(
 						"Scene name does not match the scene's name: " + sceneName + " != " + scene.getSceneName());
 			}
+
+			scene = new SceneWrapper(scene);
 
 			var view = scene.getSceneView();
 
