@@ -43,6 +43,22 @@ public class AuthScene implements Scene, SubSceneSupport {
 
 	protected JPanel view;
 
+	private void createSceneManager() {
+		sceneManager = new StaticSceneManager();
+		sceneManager.registerScene("main", () -> new MainAuthScene(), GUARD);
+		sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
+		sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
+	}
+
+	@Override
+	public SceneManager getSceneManager() {
+		if (sceneManager == null) {
+			createSceneManager();
+		}
+
+		return sceneManager;
+	}
+
 	@Override
 	public String getSceneName() {
 		return "auth";
@@ -60,11 +76,6 @@ public class AuthScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onCreate() {
-		sceneManager = new StaticSceneManager();
-		sceneManager.registerScene("main", () -> new MainAuthScene(), GUARD);
-		sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
-		sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
-
 		view.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
 
 		var rootContainer = sceneManager.getRootContainer();
@@ -75,8 +86,6 @@ public class AuthScene implements Scene, SubSceneSupport {
 
 	@Override
 	public boolean onDestroy() {
-		sceneManager.destroy();
-		sceneManager = null;
 		view.removeAll();
 		view.revalidate();
 		view.repaint();

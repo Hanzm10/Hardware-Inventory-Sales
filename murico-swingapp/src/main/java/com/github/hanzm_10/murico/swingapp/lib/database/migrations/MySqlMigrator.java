@@ -62,7 +62,7 @@ public class MySqlMigrator implements Migrator {
 			LOGGER.log(Level.SEVERE, "Failed to migrate", e);
 		}
 
-		System.out.println("=============================================\n");
+		System.out.println("\n=============================================\n");
 	}
 
 	protected boolean migrationExists(@NotNull final int migrationVersionNumber, @NotNull final String migrationName) {

@@ -42,6 +42,7 @@ public final class MuricoLogger {
 	public static Logger getLogger(final Class<?> c) {
 		var logger = Logger.getLogger(c.getName());
 		logger.setUseParentHandlers(true);
+		logger.setParent(PARENT_LOGGER);
 
 		return logger;
 	}

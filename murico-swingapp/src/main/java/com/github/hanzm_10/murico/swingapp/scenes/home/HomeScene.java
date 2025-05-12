@@ -34,6 +34,27 @@ public class HomeScene implements Scene, SubSceneSupport {
 	private Sidebar sidebar;
 	private Header header;
 
+	private void createSceneManager() {
+		sceneManager = new StaticSceneManager();
+
+		sceneManager.registerScene("profile", () -> new ProfileScene(), GUARD);
+		sceneManager.registerScene("dashboard", () -> new DashboardScene(), GUARD);
+		sceneManager.registerScene("reports", () -> new ReportsScene(), GUARD);
+		sceneManager.registerScene("inventory", () -> new InventoryScene(), GUARD);
+		sceneManager.registerScene("order menu", () -> new OrderMenuScene(), GUARD);
+		sceneManager.registerScene("contacts", () -> new ContactScene(), GUARD);
+		sceneManager.registerScene("settings", () -> new SettingsScene(), GUARD);
+	}
+
+	@Override
+	public SceneManager getSceneManager() {
+		if (sceneManager == null) {
+			createSceneManager();
+		}
+
+		return sceneManager;
+	}
+
 	@Override
 	public String getSceneName() {
 		return "home";
@@ -52,31 +73,21 @@ public class HomeScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onCreate() {
-		sceneManager = new StaticSceneManager();
-
-		sceneManager.registerScene("profile", () -> new ProfileScene(), GUARD);
-		sceneManager.registerScene("dashboard", () -> new DashboardScene(), GUARD);
-		sceneManager.registerScene("reports", () -> new ReportsScene(), GUARD);
-		sceneManager.registerScene("inventory", () -> new InventoryScene(), GUARD);
-		sceneManager.registerScene("order menu", () -> new OrderMenuScene(), GUARD);
-		sceneManager.registerScene("contacts", () -> new ContactScene(), GUARD);
-		sceneManager.registerScene("settings", () -> new SettingsScene(), GUARD);
-
 		sidebar = new Sidebar();
 		header = new Header();
 
-		view.setLayout(new MigLayout("", "[96px::96px,center]24px[200px::,grow,center]", "[72px::72px, grow, center][grow]"));
+		view.setLayout(
+				new MigLayout("", "[96px::96px,center]24px[200px::,grow,center]", "[72px::72px, grow, center][grow]"));
 
 		view.add(header.getContainer(), "cell 0 0 2, grow");
-        view.add(sceneManager.getRootContainer(), "cell 1 1, grow");
+		view.add(sceneManager.getRootContainer(), "cell 1 1, grow");
 		view.add(sidebar.getContainer(), "cell 0 1, grow");
 
-		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR +  "profile");
+		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "profile");
 	}
 
 	@Override
 	public boolean onDestroy() {
-		sceneManager.destroy();
 		header.destroy();
 		sidebar.destroy();
 

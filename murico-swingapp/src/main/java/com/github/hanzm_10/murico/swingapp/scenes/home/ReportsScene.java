@@ -32,14 +32,28 @@ import net.miginfocom.swing.MigLayout;
 public class ReportsScene implements Scene, SubSceneSupport {
 	private JPanel view;
 
-    private SceneManager sceneManager;
+	private SceneManager sceneManager;
 
 	private ReportsHeader header;
 
-    @Override
-    public void navigateTo(@NotNull String subSceneName) {
-        sceneManager.navigateTo(subSceneName);
-    }
+	private Thread reportsThread;
+
+	private void createSceneManager() {
+		sceneManager = new StaticSceneManager();
+
+		sceneManager.registerScene("sales reports", () -> new SalesReportsScene(), HomeScene.GUARD);
+		sceneManager.registerScene("inventory reports", () -> new InventoryReportsScene(), HomeScene.GUARD);
+
+	}
+
+	@Override
+	public SceneManager getSceneManager() {
+		if (sceneManager == null) {
+			createSceneManager();
+		}
+
+		return sceneManager;
+	}
 
 	@Override
 	public String getSceneName() {
@@ -52,37 +66,36 @@ public class ReportsScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
+	public void navigateTo(@NotNull String subSceneName) {
+		sceneManager.navigateTo(subSceneName);
+	}
+
+	@Override
 	public void onCreate() {
 		view.setLayout(new MigLayout("", "[grow, left]", "[72px::72px, grow, top][grow, top]"));
-
-        sceneManager = new StaticSceneManager();
-
-        sceneManager.registerScene("sales reports", () -> new SalesReportsScene(), HomeScene.GUARD);
-        sceneManager.registerScene("inventory reports", () -> new InventoryReportsScene(), HomeScene.GUARD);
-
 		header = new ReportsHeader();
 
 		view.add(header.getContainer(), "cell 0 0, grow");
 		view.add(sceneManager.getRootContainer(), "cell 0 1, grow");
 
-        SceneNavigator.getInstance().navigateTo("home" + ParsedSceneName.SEPARATOR + getSceneName() + ParsedSceneName.SEPARATOR + "sales reports");
+		SceneNavigator.getInstance().navigateTo(
+				"home" + ParsedSceneName.SEPARATOR + getSceneName() + ParsedSceneName.SEPARATOR + "sales reports");
 	}
-
-    @Override
-    public void onShow() {
-        header.attachListeners();
-    }
-
-    @Override
-    public void onHide() {
-        header.destroyListeners();
-    }
 
 	@Override
 	public boolean onDestroy() {
-        sceneManager.destroy();
 		header.destroy();
 
 		return true;
+	}
+
+	@Override
+	public void onHide() {
+		header.destroyListeners();
+	}
+
+	@Override
+	public void onShow() {
+		header.attachListeners();
 	}
 }

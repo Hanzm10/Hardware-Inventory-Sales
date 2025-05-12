@@ -32,15 +32,14 @@ public final class ReportsHeader {
 
 	public ReportsHeader() {
 		createComponents();
+		initButtons();
+		initButtonGroup();
 		attachComponents();
 
 		sceneButtonMap = Map.of("sales reports", salesBtn, "inventory reports", inventoryBtn);
 	}
 
 	private void attachComponents() {
-		btnGroup.add(salesBtn);
-		btnGroup.add(inventoryBtn);
-
 		container.add(salesBtn, "grow");
 		container.add(inventoryBtn, "grow");
 
@@ -60,17 +59,6 @@ public final class ReportsHeader {
 
 		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.SECONDARY_COLOR, 24);
 		container.setLayout(new MigLayout("", "[::96px,grow][::124px,grow]", "[grow, center]"));
-
-		btnGroup = new ButtonGroup();
-
-		salesBtn = StyledButtonFactory.createButtonButToggleStyle("Sales");
-		inventoryBtn = StyledButtonFactory.createButtonButToggleStyle("Inventory");
-
-		salesBtn.setActionCommand("home/reports/sales reports");
-		inventoryBtn.setActionCommand("home/reports/inventory reports");
-
-		salesBtn.putClientProperty(FlatClientProperties.STYLE, "foreground:#ffffff");
-		inventoryBtn.putClientProperty(FlatClientProperties.STYLE, "foreground:#ffffff");
 	}
 
 	public void destroy() {
@@ -97,5 +85,26 @@ public final class ReportsHeader {
 		if (exactMatch != null) {
 			btnGroup.setSelected(exactMatch.getModel(), true);
 		}
+	}
+
+	private void initButtonGroup() {
+		btnGroup = new ButtonGroup();
+
+		btnGroup.add(salesBtn);
+		btnGroup.add(inventoryBtn);
+	}
+
+	private void initButtons() {
+		salesBtn = StyledButtonFactory.createButtonButToggleStyle("Sales");
+		inventoryBtn = StyledButtonFactory.createButtonButToggleStyle("Inventory");
+
+		salesBtn.setActionCommand("home/reports/sales reports");
+		inventoryBtn.setActionCommand("home/reports/inventory reports");
+
+		salesBtn.setToolTipText("See the sales reports");
+		inventoryBtn.setToolTipText("See the inventory reports");
+
+		salesBtn.putClientProperty(FlatClientProperties.STYLE, "foreground:#ffffff");
+		inventoryBtn.putClientProperty(FlatClientProperties.STYLE, "foreground:#ffffff");
 	}
 }
