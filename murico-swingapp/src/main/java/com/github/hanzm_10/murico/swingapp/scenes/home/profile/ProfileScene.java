@@ -72,7 +72,6 @@ public class ProfileScene extends JPanel implements Scene{
 			onCreate();
 		}
 	}
-	
 	@Override
 	public void onHide() {
 	        System.out.println(getName() + ": onHide");
