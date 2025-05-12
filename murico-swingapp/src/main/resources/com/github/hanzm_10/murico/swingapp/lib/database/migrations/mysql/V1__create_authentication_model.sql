@@ -2,29 +2,26 @@ CREATE TABLE users (
     _user_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    display_name VARCHAR(50) NOT NULL,
+    display_name VARCHAR(50) UNIQUE NOT NULL,
     display_image text,
     gender ENUM("male", "female", "non_binary"),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
-    biography VARCHAR(255),
-
-    UNIQUE (display_name)
+    biography VARCHAR(255)
 );
 
 CREATE TABLE accounts (
     _account_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    _user_id INTEGER,
+    _user_id INTEGER UNIQUE,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     password_salt VARCHAR(255) NOT NULL,
     verification_status ENUM("unverified", "verified") NOT NULL DEFAULT "unverified",
     verified_at  TIMESTAMP NULL,
 
-    UNIQUE (_user_id, email),
     FOREIGN KEY (_user_id)
         REFERENCES users(_user_id)
         ON DELETE CASCADE
@@ -34,10 +31,8 @@ CREATE TABLE roles (
     _role_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    name VARCHAR(50) NOT NULL,
-    description VARCHAR(255),
-
-    UNIQUE (name)
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description VARCHAR(255)
 );
 
 CREATE TABLE users_roles (
@@ -56,7 +51,7 @@ CREATE TABLE users_roles (
 CREATE TABLE sessions (
     _session_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _user_id INTEGER,
-    _session_token CHAR(36) NOT NULL DEFAULT (UUID()),
+    _session_token CHAR(36) UNIQUE NOT NULL DEFAULT (UUID()),
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NOT NULL DEFAULT (DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 7 DAY)),
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -65,7 +60,6 @@ CREATE TABLE sessions (
     status ENUM("active", "inactive", "revoked") NOT NULL DEFAULT "active",
     status_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    UNIQUE (_session_token),
     FOREIGN KEY (_user_id)
         REFERENCES users(_user_id)
         ON DELETE CASCADE

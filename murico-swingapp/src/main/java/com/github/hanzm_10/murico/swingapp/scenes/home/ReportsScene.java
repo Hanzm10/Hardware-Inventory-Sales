@@ -43,7 +43,6 @@ public class ReportsScene implements Scene, SubSceneSupport {
 
 		sceneManager.registerScene("sales reports", () -> new SalesReportsScene(), HomeScene.GUARD);
 		sceneManager.registerScene("inventory reports", () -> new InventoryReportsScene(), HomeScene.GUARD);
-
 	}
 
 	@Override

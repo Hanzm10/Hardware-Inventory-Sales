@@ -1,7 +1,7 @@
 CREATE TABLE deliveries (
     _delivery_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    _delivery_number CHAR(36) NOT NULL DEFAULT (UUID()),
+    _delivery_number CHAR(36) UNIQUE NOT NULL DEFAULT (UUID()),
     expected_arrival_date TIMESTAMP NULL,
     actual_arrival_date TIMESTAMP NULL,
     status ENUM("pending", "in_transit", "delivered", "cancelled") NOT NULL DEFAULT "pending",
@@ -12,17 +12,15 @@ CREATE TABLE deliveries (
     city VARCHAR(100),
     state VARCHAR(100),
     postal_code VARCHAR(20),
-    country VARCHAR(100),
-
-    UNIQUE (_delivery_number)
+    country VARCHAR(100)
 );
 
 CREATE TABLE orders_deliveries (
     _order_delivery_id INTEGER PRIMARY KEY AUTO_INCREMENT,
     _order_id INTEGER,
     _delivery_id INTEGER,
-
-    UNIQUE (_order_id, _delivery_id),
+	
+	CONSTRAINT order_delivery_unique UNIQUE (_order_id, _delivery_id),
     FOREIGN KEY (_order_id)
         REFERENCES orders(_order_id)
         ON DELETE CASCADE,
@@ -37,7 +35,7 @@ CREATE TABLE customer_orders_deliveries (
     _customer_order_id INTEGER,
     _delivery_id INTEGER,
 
-    UNIQUE (_customer_order_id, _delivery_id),
+	CONSTRAINT customer_order_delivery_unique UNIQUE (_customer_order_id, _delivery_id),
     FOREIGN KEY (_customer_order_id)
         REFERENCES customer_orders(_customer_order_id)
         ON DELETE CASCADE,

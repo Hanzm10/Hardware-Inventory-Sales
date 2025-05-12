@@ -20,26 +20,105 @@ import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 
+public class UsersScene extends JPanel implements Scene {
 
-public class UsersScene extends JPanel implements Scene{
-	
+	static Set<Integer> editedRows = new HashSet<>();
+
+	public static void saveUser(DefaultTableModel model) {
+		try {
+			String updateQuery = MySqlQueryLoader.getInstance().get("update_userScenes_table", "accounts",
+					SqlQueryType.UPDATE);
+			PreparedStatement updateStmt = MySqlFactoryDao.createConnection().prepareStatement(updateQuery);
+			String userEmailAdd = null;
+
+			if (editedRows.isEmpty()) {
+				// Register.showMessage("No changes to save.");
+				return;
+			}
+
+			for (int row : editedRows) {
+				int id = (int) model.getValueAt(row, 0);
+				String newRole = (String) model.getValueAt(row, 3);
+				userEmailAdd = (String) model.getValueAt(row, 2);
+
+				if (userEmailAdd != null) {
+					// EmailSender.emailSender(userEmailAdd);
+				}
+
+				updateStmt.setString(1, newRole);
+				updateStmt.setInt(2, id);
+				updateStmt.addBatch();
+			}
+
+			updateStmt.executeBatch();
+			updateStmt.close();
+
+			editedRows.clear();
+			System.out.println("Changes saved successfully");
+			// Register.showMessage("Changes saved successfully\nThe Email has been sent to
+			// the respective users.");
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			System.out.println("Error saving changes");
+			// Register.showMessage("Error saving changes");
+		} catch (IOException er) {
+			er.printStackTrace();
+		}
+	}
+
 	private JTable usersTable;
 	private DefaultTableModel usersTableModel;
 	private JScrollPane usersScrollpane;
 	private JButton saveUsersBtn;
 	private boolean uiInitialized = false;
+
 	private JPanel usersPnl;
-	static Set<Integer> editedRows = new HashSet<>();
-	
+
 	public UsersScene() {
-		setLayout(new BorderLayout(0,0));
+		setLayout(new BorderLayout(0, 0));
 		System.out.println("UsersScene instance created.");
 	}
-	
+
+	private void displayUsersTable(DefaultTableModel tableModel) {
+		// var query = MySqlQueryLoader.getInstance().get("get_users_table", "users",
+		// SqlQueryType.SELECT);
+		try {
+			var conn = MySqlFactoryDao.createConnection();
+			var query = MySqlQueryLoader.getInstance().get("display_accounts", "accounts", SqlQueryType.SELECT);
+
+			var statement = conn.prepareStatement(query);
+			var resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				int id = resultSet.getInt("USER_ID");
+				String username = resultSet.getString("USERNAME");
+				String emailAdd = resultSet.getString("EMAIL_ADDRESS");
+				String role = resultSet.getString("ROLE");
+				String verificationStat = resultSet.getString("STATUS");
+
+				tableModel.addRow(new Object[] { id, username, emailAdd, role, verificationStat });
+			}
+			resultSet.close();
+			statement.close();
+			conn.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		tableModel.addTableModelListener(e -> {
+			if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == 3) {
+				editedRows.add(e.getFirstRow());
+			}
+		});
+	}
+
 	@Override
 	public String getSceneName() {
 		// TODO Auto-generated method stub
-		return "users";
+		return "contacts";
 	}
 
 	@Override
@@ -48,142 +127,67 @@ public class UsersScene extends JPanel implements Scene{
 		return this;
 	}
 
-	@Override
-	public void onCreate() {
-		if(!uiInitialized) {
-			initializeUsersUI();
-			uiInitialized = true;
-		}
-		
-	}
-	@Override
-	public void onShow() {
-		System.out.println(getName() + ": onShow");
-        // Ensure UI is built before loading data
-        if (!uiInitialized) {
-            onCreate(); // Call onCreate if not already initialized
-        }
-        
-	}
-	
-	
-	@Override
-	public void onHide() {
-	        System.out.println(getName() + ": onHide");
-	        // Pause activities if needed
-	    }
-	 @Override
-	    public boolean onDestroy() {
-		 usersTable = null;
-		 usersTableModel = null;
-		 usersScrollpane = null;
-		 removeAll();
-		 uiInitialized = false;
-		return true;
-	 }
-	 
 	private void initializeUsersUI() {
 		usersPnl = new JPanel();
 		usersPnl.setBackground(Color.white);
-		this.add(usersPnl, BorderLayout.CENTER); 
-		
-		String[] columnNames = {"User ID", "Username","Email Address","Role", "Verification Status"};
+		this.add(usersPnl, BorderLayout.CENTER);
+
+		String[] columnNames = { "User ID", "Username", "Email Address", "Role", "Verification Status" };
 		usersTableModel = new DefaultTableModel(columnNames, 0) {
-		
-		@Override 
-		public boolean isCellEditable(int row, int column) {
-			return column == 3;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column == 3;
 			}
 		};
-		
+
 		usersTable = new JTable(usersTableModel);
 		displayUsersTable(usersTableModel);
-		
+
 		usersScrollpane = new JScrollPane(usersTable);
-		usersScrollpane.setBounds(38,176,973,516);
+		usersScrollpane.setBounds(38, 176, 973, 516);
 		usersPnl.add(usersScrollpane);
-		
+
 		saveUsersBtn = new JButton("Save Changes");
-		//saveUsersBtn.setLocation(393, 735);
+		// saveUsersBtn.setLocation(393, 735);
 		saveUsersBtn.setSize(237, 43);
 		this.add(saveUsersBtn, BorderLayout.SOUTH);
-		
-		
+
 	}
-	
-	private void displayUsersTable(DefaultTableModel tableModel) {
-		//var query = MySqlQueryLoader.getInstance().get("get_users_table", "users", SqlQueryType.SELECT);
-		try{
-			var conn = MySqlFactoryDao.createConnection();
-			var query = MySqlQueryLoader.getInstance().get("display_accounts", "accounts", SqlQueryType.SELECT);
-				
-			var statement = conn.prepareStatement(query);
-			var resultSet = statement.executeQuery();
-			
-			while(resultSet.next()) {
-				int id = resultSet.getInt("USER_ID");
-				String username = resultSet.getString("USERNAME");
-				String emailAdd = resultSet.getString("EMAIL_ADDRESS");
-                String role = resultSet.getString("ROLE");
-                String verificationStat = resultSet.getString("STATUS");
 
-                tableModel.addRow(new Object[]{id, username, emailAdd, role, verificationStat});
-            }
-			resultSet.close();
-			statement.close();
-			conn.close();
-			
-		}catch(SQLException e) {
-			e.printStackTrace();
-			
-		}catch(IOException e1) {
-			e1.printStackTrace();	}
-		tableModel.addTableModelListener(e -> {
-			if(e.getType() == TableModelEvent.UPDATE && e.getColumn() == 3) {
-				editedRows.add(e.getFirstRow());
-			}
-		});
+	@Override
+	public void onCreate() {
+		if (!uiInitialized) {
+			initializeUsersUI();
+			uiInitialized = true;
+		}
+
 	}
-	
-	public static void saveUser(DefaultTableModel model) {
-	    try {
-	        String updateQuery = MySqlQueryLoader.getInstance().get("update_userScenes_table", "accounts", SqlQueryType.UPDATE);
-	        PreparedStatement updateStmt = MySqlFactoryDao.createConnection().prepareStatement(updateQuery);
-	        String userEmailAdd = null;
 
-	        if (editedRows.isEmpty()) {
-	            //Register.showMessage("No changes to save.");
-	            return;
-	        }
+	@Override
+	public boolean onDestroy() {
+		usersTable = null;
+		usersTableModel = null;
+		usersScrollpane = null;
+		removeAll();
+		uiInitialized = false;
+		return true;
+	}
 
-	        for (int row : editedRows) {
-	            int id = (int) model.getValueAt(row, 0);
-	            String newRole = (String) model.getValueAt(row, 3);
-	            userEmailAdd = (String) model.getValueAt(row, 2);
-	            
-	            if (userEmailAdd != null) {
-		            //EmailSender.emailSender(userEmailAdd);
-		        }
+	@Override
+	public void onHide() {
+		System.out.println(getName() + ": onHide");
+		// Pause activities if needed
+	}
 
-	            updateStmt.setString(1, newRole);
-	            updateStmt.setInt(2, id);
-	            updateStmt.addBatch();
-	        }
+	@Override
+	public void onShow() {
+		System.out.println(getName() + ": onShow");
+		// Ensure UI is built before loading data
+		if (!uiInitialized) {
+			onCreate(); // Call onCreate if not already initialized
+		}
 
-	        updateStmt.executeBatch();
-	        updateStmt.close();
-
-	        editedRows.clear();
-	        System.out.println("Changes saved successfully");
-	        //Register.showMessage("Changes saved successfully\nThe Email has been sent to the respective users.");
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	        System.out.println("Error saving changes");
-	        //Register.showMessage("Error saving changes");
-	    }catch(IOException er) {
-	    	er.printStackTrace();
-	    }
 	}
 
 }
-

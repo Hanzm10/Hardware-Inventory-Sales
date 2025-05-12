@@ -4,7 +4,5 @@ CREATE TABLE customers (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
-    email VARCHAR(255),
-
-    UNIQUE (email)
+    email VARCHAR(255) UNIQUE NOT NULL
 );
