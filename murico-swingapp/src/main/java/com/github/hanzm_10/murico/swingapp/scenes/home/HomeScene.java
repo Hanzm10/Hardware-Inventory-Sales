@@ -12,6 +12,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSce
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
+import com.github.hanzm_10.murico.swingapp.scenes.home.profile.ProfileScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.components.Header;
 import com.github.hanzm_10.murico.swingapp.ui.components.Sidebar;
