@@ -24,6 +24,30 @@ public class LabelFactory {
 		return label;
 	}
 
+	public static JLabel createBoldLabel() {
+		return createBoldLabel("");
+	}
+
+	public static JLabel createBoldLabel(@NotNull final String msg) {
+		return createBoldLabel(msg, 16, null);
+	}
+
+	public static JLabel createBoldLabel(@NotNull final String msg, @NotNull final int fontSize) {
+		return createBoldLabel(msg, fontSize, null);
+	}
+
+	public static JLabel createBoldLabel(@NotNull final String msg, @NotNull final int fontSize, final Color color) {
+		var label = new JLabel(msg);
+
+		label.setFont(label.getFont().deriveFont(Font.BOLD, fontSize));
+
+		if (color != null) {
+			label.setForeground(color);
+		}
+
+		return label;
+	}
+
 	public static JLabel createErrorLabel() {
 		return createErrorLabel("");
 	}

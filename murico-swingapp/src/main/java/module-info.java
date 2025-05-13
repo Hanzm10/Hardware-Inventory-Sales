@@ -10,4 +10,5 @@ open module murico.swingapp {
 	requires org.apache.pdfbox;
 	requires mysql.connector.j;
 	requires io.github.classgraph;
+	requires org.jfree.jfreechart;
 }

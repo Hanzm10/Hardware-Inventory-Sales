@@ -14,13 +14,12 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
-import com.github.hanzm_10.murico.swingapp.ui.components.panels.GradientRoundedPanel;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 
 import net.miginfocom.swing.MigLayout;
 
 public final class ReportsHeader {
-	private JPanel wrapper;
-	private GradientRoundedPanel container;
+	private RoundedPanel container;
 
 	private ButtonSceneNavigatorListener navListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
@@ -42,8 +41,6 @@ public final class ReportsHeader {
 	private void attachComponents() {
 		container.add(salesBtn, "grow");
 		container.add(inventoryBtn, "grow");
-
-		wrapper.add(container, "grow");
 	}
 
 	public void attachListeners() {
@@ -54,11 +51,10 @@ public final class ReportsHeader {
 	}
 
 	private void createComponents() {
-		wrapper = new JPanel();
-		wrapper.setLayout(new MigLayout("", "[grow]", "[grow]"));
+		container = new RoundedPanel(24);
+		container.setBackground(Styles.SECONDARY_COLOR);
 
-		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.SECONDARY_COLOR, 24);
-		container.setLayout(new MigLayout("", "[::96px,grow][::124px,grow]", "[grow, center]"));
+		container.setLayout(new MigLayout("insets 8", "[::130px,grow][::130px,grow]", "[48px::62px, grow]"));
 	}
 
 	public void destroy() {
@@ -73,7 +69,7 @@ public final class ReportsHeader {
 	}
 
 	public JPanel getContainer() {
-		return wrapper;
+		return container;
 	}
 
 	private void handleNavigation(String currFullSceneName) {

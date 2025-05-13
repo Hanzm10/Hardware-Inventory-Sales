@@ -75,7 +75,7 @@ public class ReportsScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onCreate() {
-		view.setLayout(new MigLayout("", "[grow, left]", "[72px::72px, grow, top][grow, top]"));
+		view.setLayout(new MigLayout("insets 0", "[grow, left]", "[48px::62px, grow]24px[grow]"));
 		header = new ReportsHeader();
 
 		view.add(header.getContainer(), "cell 0 0, grow");
