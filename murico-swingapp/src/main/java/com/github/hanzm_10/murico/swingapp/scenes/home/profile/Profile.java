@@ -3,14 +3,17 @@ package com.github.hanzm_10.murico.swingapp.scenes.home.profile;
 import java.sql.*;
 
 
+
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
+
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class Profile {
-    
+public class Profile{
+	
     public Integer getUserIdByDisplayName(String displayName) {
 
         try {
