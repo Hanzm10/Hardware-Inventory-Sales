@@ -192,6 +192,7 @@ public class ReportsSummarySales {
 
 	public void updateGraph(@NotNull final TotalItemCategorySoldInYear[] totalItemCategorySoldInYears) {
 		for (var itemCategorySoldInYear : totalItemCategorySoldInYears) {
+
 			graphDataset.addValue(itemCategorySoldInYear.totalQuanitySold(), itemCategorySoldInYear.itemCategory(),
 					itemCategorySoldInYear.year());
 		}
