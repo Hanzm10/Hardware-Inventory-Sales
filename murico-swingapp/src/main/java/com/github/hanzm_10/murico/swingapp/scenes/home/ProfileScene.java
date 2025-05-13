@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -15,6 +17,7 @@ import javax.swing.JPanel;
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
+import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -33,6 +36,7 @@ public class ProfileScene implements Scene {
 
 	public ProfileScene() {
 		// setLayout(new MigLayout());
+		//onCreate();
 	}
 
 	@Override
@@ -51,61 +55,77 @@ public class ProfileScene implements Scene {
 		Profile profile = new Profile();
 		view.setBackground(Color.WHITE);
 
-		view.setLayout(new MigLayout("", "[742px][67px][371px]", "[71px][62px][45px][91px][12px][84px][36px][456px]"));
+		view.setLayout(new MigLayout("fill", "[][413.00][][]", "[][66.00][88.00][]"));
 
 		displayRoleLbl = new JLabel();
 		displayRoleLbl.setForeground(Color.WHITE);
-		// displayRoleLbl.setText(profile.getRole(username));
+		String username = SessionManager.getInstance().getLoggedInUser().displayName();
+		displayRoleLbl.setText(profile.getRoleByUsername(username));
 		displayRoleLbl.setFont(new Font("Montserrat", Font.BOLD, 20));
 		displayRoleLbl.setOpaque(false);
 		view.add(displayRoleLbl);
-		view.add(displayRoleLbl, "cell 0 7,alignx right,aligny top");
+		view.add(displayRoleLbl,  "cell 2 3,alignx center,aligny top");
 
 		roleLbl = new JLabel("");
 		image = AssetManager.getOrLoadImage("images/roleBoarderLabel.png");
 		roleLbl.setIcon(new ImageIcon(image));
 		roleLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 		roleLbl.setBounds(497, 425, 274, 56);
-		view.add(roleLbl, "cell 0 7,alignx right,aligny top");
+		view.add(roleLbl, "cell 2 3,alignx center,aligny top");
 
 		profilepicLbl = new JLabel("");
 		profilepicLbl.setBackground(new Color(33, 64, 107));
 		profilepicLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profilepic.png")));
 
 		profilepicLbl.setBounds(497, 64, 233, 229);
-		view.add(profilepicLbl, "cell 0 0 1 4,alignx right,aligny bottom");
+		view.add(profilepicLbl, "cell 2 0, alignx center, aligny center");
 
 		displaynameLbl = new JLabel();
 		displaynameLbl.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		displaynameLbl.setForeground(Color.WHITE);
 		displaynameLbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		// displaynameLbl.setText(username.toUpperCase());
+		displaynameLbl.setText(username.toUpperCase());
 		displaynameLbl.setFont(new Font("Montserrat", Font.BOLD, 64));
 		displaynameLbl.setOpaque(false);
-		view.add(displaynameLbl, "cell 0 5 3 1,alignx center,growy");
+		view.add(displaynameLbl, "cell 2 2,alignx center,aligny top");
 
 		profileLogoLbl = new JLabel("");
 		profileLogoLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profileRectangle.png")));
-		view.add(profileLogoLbl, "cell 0 3 3 5,grow");
+		view.add(profileLogoLbl, "cell 1 1 4 4,alignx center,aligny top");
 		// profilePnl.setLayout(null);
 
 		editProfBtn = new JButton("");
 		editProfBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		editProfBtn.setBorderPainted(false);
 		editProfBtn.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/editProf.png")));
-		view.add(editProfBtn, "cell 2 1,alignx left,growy");
+		view.add(editProfBtn, "cell 3 0,alignx right,growy");
 
-		profileLbl = new JLabel();
-		// ProfileTxt.setEditable(false);
-		profileLbl.setFont(new Font("Montserrat", Font.BOLD | Font.ITALIC, 64));
-		profileLbl.setText("Profile");
-		profileLbl.setForeground(new Color(72, 124, 141));
-		view.add(profileLbl, "cell 2 0,alignx center,growy");
+		
+		editProfBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolean isAdmin = profile.isAdmin(username);
+				if(isAdmin) {
+					EditProfile scene = new EditProfile();
+					scene.onCreate();
+					scene.onShow();
+					
+				}else {
+					System.out.print("error");
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onCreate() {
-
+		if(!uiInitialized) {
+			try {
+				initializeProfileUI();
+				uiInitialized = true;
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
