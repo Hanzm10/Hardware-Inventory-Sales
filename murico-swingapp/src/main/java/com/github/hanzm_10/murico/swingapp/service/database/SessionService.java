@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -61,7 +61,7 @@ public class SessionService {
 		}
 
 		var userDao = factory.getUserDao();
-		var user = userDao.getUserById(session._userId());
+		var user = userDao.getUserMetadataById(session._userId());
 
 		if (user == null) {
 			removeStoredSessionUid();
@@ -78,7 +78,7 @@ public class SessionService {
 			throws MuricoError {
 		try {
 			var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
-			var user = factory.getUserDao().getUserByDisplayName(_userDisplayName);
+			var user = factory.getUserDao().getUserMetadataByDisplayName(_userDisplayName);
 
 			if (user == null) {
 				throw new MuricoError(MuricoErrorCodes.INVALID_CREDENTIALS);
@@ -108,7 +108,7 @@ public class SessionService {
 			Session session = sessionDao.getSessionByUserId(user._userId());
 
 			if (session == null) {
-				session = sessionDao.createSession(user);
+				session = sessionDao.createSession(user._userId());
 
 				if (session == null) {
 					throw new MuricoError(MuricoErrorCodes.DATABASE_FAILED_INSERT);

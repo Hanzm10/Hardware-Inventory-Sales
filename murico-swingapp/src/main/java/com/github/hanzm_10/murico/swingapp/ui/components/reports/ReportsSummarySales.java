@@ -10,12 +10,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.StackedBarRenderer;
+import org.jfree.chart.ui.HorizontalAlignment;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.formdev.flatlaf.ui.FlatRoundBorder;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalItemCategorySoldInYear;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.lib.utils.NumberUtils;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
@@ -28,7 +32,6 @@ public class ReportsSummarySales {
 
 	private JPanel summaryBoxesContainer;
 	private JPanel graphSummaryContainer;
-	private StackedBarRenderer stackedBarRenderer;
 
 	private RoundedPanel totalRevenueContainer;
 	private JLabel totalRevenueTitle;
@@ -46,31 +49,12 @@ public class ReportsSummarySales {
 	private JLabel totalItemsSoldTitle;
 	private JLabel totalItemsSoldInfo;
 
+	private DefaultCategoryDataset graphDataset;
+	private ChartPanel chartPanel;
+
 	public ReportsSummarySales() {
 		createComponents();
 		attachComponents();
-
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-		// Sample data: (ItemName, Year, QuantityBought)
-		dataset.addValue(100, "Rice", "2020");
-		dataset.addValue(150, "Beans", "2020");
-		dataset.addValue(200, "Rice", "2021");
-		dataset.addValue(120, "Beans", "2021");
-		dataset.addValue(90, "Sugar", "2021");
-		dataset.addValue(50, "Rice", "2022");
-		dataset.addValue(80, "Sugar", "2022");
-
-		JFreeChart chart = ChartFactory.createStackedBarChart("Items Bought Over Years", "Year", // domain axis label
-				"Quantity", // range axis label
-				dataset, PlotOrientation.VERTICAL, true, // legend
-				true, // tooltips
-				false // URLs
-		);
-
-		ChartPanel chartPanel = new ChartPanel(chart);
-		graphSummaryContainer.add(chartPanel, "grow");
-		chart.setBackgroundPaint(new Color(0x00, true));
 	}
 
 	private void attachComponents() {
@@ -90,6 +74,8 @@ public class ReportsSummarySales {
 		totalItemsSoldContainer.add(totalItemsSoldTitle, "grow");
 		totalItemsSoldContainer.add(totalItemsSoldInfo, "grow");
 
+		graphSummaryContainer.add(chartPanel, "grow");
+
 		container.add(summaryBoxesContainer, "grow");
 		container.add(graphSummaryContainer, "grow");
 	}
@@ -101,8 +87,7 @@ public class ReportsSummarySales {
 
 		container.setLayout(new MigLayout("insets 0, wrap 2", "[grow]", "[grow]"));
 		summaryBoxesContainer.setLayout(new MigLayout("insets 0, wrap 2", "[::250px,grow]", "[grow]"));
-		graphSummaryContainer.setLayout(new MigLayout("insets 0", "[grow]", "[::720px,grow]"));
-
+		graphSummaryContainer.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		totalRevenueContainer = new RoundedPanel(14);
 		totalRevenueTitle = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml("Total Revenue of All Time"), 16,
 				Styles.SECONDARY_FOREGROUND_COLOR);
@@ -148,6 +133,8 @@ public class ReportsSummarySales {
 		totalGrossContainer.setBorder(border);
 		totalNetSalesContainer.setBorder(border);
 		totalItemsSoldContainer.setBorder(border);
+
+		initGraph();
 	}
 
 	public void destroy() {
@@ -155,6 +142,36 @@ public class ReportsSummarySales {
 
 	public JPanel getContainer() {
 		return container;
+	}
+
+	private void initGraph() {
+		graphDataset = new DefaultCategoryDataset();
+
+		JFreeChart chart = ChartFactory.createStackedBarChart("Best Selling Products of All Time", "Year", "Quantity",
+				graphDataset, PlotOrientation.VERTICAL, true, // legend
+				true, // tooltips
+				false // URLs
+		);
+
+		chart.getTitle().setHorizontalAlignment(HorizontalAlignment.LEFT);
+		chart.setAntiAlias(true);
+		chart.setBackgroundPaint(new Color(0x00, true));
+		chart.getTitle().setPaint(Styles.SECONDARY_COLOR);
+
+		CategoryPlot plot = chart.getCategoryPlot();
+		StackedBarRenderer renderer = new StackedBarRenderer();
+
+		// Show value labels
+		renderer.setDefaultItemLabelsVisible(true);
+		renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+
+		// Optionally: adjust font, position, etc.
+		// renderer.setDefaultItemLabelFont(new Font("SansSerif", Font.BOLD, 12));
+
+		plot.setRenderer(renderer);
+
+		chartPanel = new ChartPanel(chart);
+		chartPanel.setBorder(new FlatRoundBorder());
 	}
 
 	public void setTotalGrossInfo(@NotNull final double totalGross) {
@@ -171,5 +188,12 @@ public class ReportsSummarySales {
 
 	public void setTotalRevenueInfo(@NotNull final double totalRevenue) {
 		totalRevenueInfo.setText(HtmlUtils.wrapInHtml("₱ " + NumberUtils.formatWithSuffix(totalRevenue)));
+	}
+
+	public void updateGraph(@NotNull final TotalItemCategorySoldInYear[] totalItemCategorySoldInYears) {
+		for (var itemCategorySoldInYear : totalItemCategorySoldInYears) {
+			graphDataset.addValue(itemCategorySoldInYear.totalQuanitySold(), itemCategorySoldInYear.itemCategory(),
+					itemCategorySoldInYear.year());
+		}
 	}
 }

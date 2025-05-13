@@ -20,6 +20,9 @@ import javax.swing.border.EmptyBorder;
 
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 // --- End Imports ---
+import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.CheckoutPanel;
+import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.OrderHistoryPanel;
+import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.TransactionHistoryPanel;
 
 public class OrderMenuScene extends JPanel implements Scene {
 

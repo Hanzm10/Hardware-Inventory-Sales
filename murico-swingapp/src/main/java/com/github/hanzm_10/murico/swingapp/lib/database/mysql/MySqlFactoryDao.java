@@ -26,12 +26,14 @@ import com.github.hanzm_10.murico.swingapp.constants.PropertyKey;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.RoleDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySQLSalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlAccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlRoleDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlSessionDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlUserDao;
 import com.github.hanzm_10.murico.swingapp.lib.io.PropertiesIO;
@@ -152,6 +154,11 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	@Override
 	public ItemDao getItemDao() {
 		return new MySqlItemDao();
+	}
+
+	@Override
+	public RoleDao getRoleDao() {
+		return new MySqlRoleDao();
 	}
 
 	@Override

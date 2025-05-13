@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.CustomerPayment;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalItemCategorySoldInYear;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalOfSales;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
@@ -26,8 +28,11 @@ public final class SalesReportsScene implements Scene {
 	private ReportsSalesTable salesTable;
 
 	private Thread getSummaryDataThread;
+	private Thread getGraphDataThread;
 	private Thread getTableDataThread;
 	private AtomicReference<TotalOfSales> totalOfSales;
+	private AtomicReference<TotalItemCategorySoldInYear[]> totalItemCategorySoldInYear;
+	private AtomicReference<CustomerPayment[]> customerPayments;
 
 	private void attachComponents() {
 		view.add(summarySales.getContainer(), "cell 0 0, grow");
@@ -37,6 +42,18 @@ public final class SalesReportsScene implements Scene {
 	private void createComponents() {
 		summarySales = new ReportsSummarySales();
 		salesTable = new ReportsSalesTable();
+	}
+
+	private void getGraphData() {
+		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
+		try {
+			var totalItemCategorySoldInYearOpened = factory.getSalesDao().getTotalItemCategorySoldInYear();
+			totalItemCategorySoldInYear.set(totalItemCategorySoldInYearOpened);
+
+			SwingUtilities.invokeLater(this::updateGraphView);
+		} catch (IOException | SQLException e) {
+			LOGGER.log(Level.SEVERE, "Failed to get graph data", e);
+		}
 	}
 
 	@Override
@@ -62,27 +79,41 @@ public final class SalesReportsScene implements Scene {
 	}
 
 	private void getTableData() {
+		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
+		try {
+			var customerPaymentsOpened = factory.getSalesDao().getCustomerPayments();
+			customerPayments.set(customerPaymentsOpened);
+
+			SwingUtilities.invokeLater(this::updateTableView);
+		} catch (IOException | SQLException e) {
+			LOGGER.log(Level.SEVERE, "Failed to get table data", e);
+		}
 	}
 
 	@Override
 	public void onBeforeShow() {
+		attachComponents();
+
 		terminateThreads();
 
 		getSummaryDataThread = new Thread(this::getSummaryData);
+		getGraphDataThread = new Thread(this::getGraphData);
 		getTableDataThread = new Thread(this::getTableData);
 
 		getSummaryDataThread.start();
+		getGraphDataThread.start();
 		getTableDataThread.start();
 	}
 
 	@Override
 	public void onCreate() {
-		view.setLayout(new MigLayout("insets 0", "[grow]", "[::375px, grow][grow]"));
+		view.setLayout(new MigLayout("insets 0", "[grow]", "[::375px, grow,top]16[grow,top]"));
 
 		totalOfSales = new AtomicReference<TotalOfSales>();
+		totalItemCategorySoldInYear = new AtomicReference<TotalItemCategorySoldInYear[]>();
+		customerPayments = new AtomicReference<CustomerPayment[]>();
 
 		createComponents();
-		attachComponents();
 	}
 
 	@Override
@@ -96,6 +127,8 @@ public final class SalesReportsScene implements Scene {
 	@Override
 	public void onHide() {
 		terminateThreads();
+
+		view.removeAll();
 	}
 
 	private void terminateThreads() {
@@ -104,10 +137,37 @@ public final class SalesReportsScene implements Scene {
 			getSummaryDataThread.interrupt();
 		}
 
+		if (getGraphDataThread != null) {
+			ConnectionManager.cancel(getGraphDataThread);
+			getGraphDataThread.interrupt();
+		}
+
 		if (getTableDataThread != null) {
 			ConnectionManager.cancel(getTableDataThread);
 			getTableDataThread.interrupt();
 		}
+	}
+
+	private void updateGraphView() {
+		var totalItemCategorySoldInYearOpened = totalItemCategorySoldInYear.get();
+
+		if (totalItemCategorySoldInYearOpened == null) {
+			LOGGER.warning("Total item category sold in year is null");
+			return;
+		}
+
+		summarySales.updateGraph(totalItemCategorySoldInYearOpened);
+	}
+
+	private void updateTableView() {
+		var customerPaymentsOpened = customerPayments.get();
+
+		if (customerPaymentsOpened == null) {
+			LOGGER.warning("Customer payments is null");
+			return;
+		}
+
+		salesTable.setTableData(customerPaymentsOpened);
 	}
 
 	private void updateTotalOfSalesView() {
