@@ -34,11 +34,14 @@ public class ProfileScene implements Scene {
 	private JPanel view;
 	private Image image;
 
+<<<<<<< HEAD
 	public ProfileScene() {
 		// setLayout(new MigLayout());
 		//onCreate();
 	}
 
+=======
+>>>>>>> branch 'main' of https://github.com/alyastanga/Hardware-Inventory-Sales.git
 	@Override
 	public String getSceneName() {
 		// TODO Auto-generated method stub
