@@ -15,16 +15,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
+import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 
 import net.miginfocom.swing.MigLayout;
 
 public class ProfileScene implements Scene {
 
 	private JLabel displayRoleLbl;
-	private JLabel roleLbl;
+	private RoundedPanel rolePnl;
 	private JLabel profilepicLbl;
 	private JLabel displaynameLbl;
 	private JLabel profileLogoLbl;
@@ -34,14 +36,11 @@ public class ProfileScene implements Scene {
 	private JPanel view;
 	private Image image;
 
-<<<<<<< HEAD
 	public ProfileScene() {
 		// setLayout(new MigLayout());
 		//onCreate();
 	}
 
-=======
->>>>>>> branch 'main' of https://github.com/alyastanga/Hardware-Inventory-Sales.git
 	@Override
 	public String getSceneName() {
 		// TODO Auto-generated method stub
@@ -59,7 +58,13 @@ public class ProfileScene implements Scene {
 		view.setBackground(Color.WHITE);
 
 		view.setLayout(new MigLayout("fill", "[][413.00][][]", "[][66.00][88.00][]"));
-
+		
+		rolePnl = new RoundedPanel(20);
+		rolePnl.setBackground(Styles.PRIMARY_COLOR);
+		rolePnl.setAlignmentX(Component.CENTER_ALIGNMENT);
+		rolePnl.setBounds(497, 425, 274, 56);
+		view.add(rolePnl, "cell 2 3,alignx center,aligny top");
+		
 		displayRoleLbl = new JLabel();
 		displayRoleLbl.setForeground(Color.WHITE);
 		String username = SessionManager.getInstance().getLoggedInUser().displayName();
@@ -67,14 +72,7 @@ public class ProfileScene implements Scene {
 		displayRoleLbl.setFont(new Font("Montserrat", Font.BOLD, 20));
 		displayRoleLbl.setOpaque(false);
 		view.add(displayRoleLbl);
-		view.add(displayRoleLbl,  "cell 2 3,alignx center,aligny top");
-
-		roleLbl = new JLabel("");
-		image = AssetManager.getOrLoadImage("images/roleBoarderLabel.png");
-		roleLbl.setIcon(new ImageIcon(image));
-		roleLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-		roleLbl.setBounds(497, 425, 274, 56);
-		view.add(roleLbl, "cell 2 3,alignx center,aligny top");
+		rolePnl.add(displayRoleLbl,  "cell 2 3,alignx center,aligny top");
 
 		profilepicLbl = new JLabel("");
 		profilepicLbl.setBackground(new Color(33, 64, 107));
