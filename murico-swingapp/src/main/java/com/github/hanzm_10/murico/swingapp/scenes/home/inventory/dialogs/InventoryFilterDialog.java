@@ -133,7 +133,8 @@ public class InventoryFilterDialog extends JDialog {
 		String supplier = (selectedSupplierItem != null) ? selectedSupplierItem.getValue() : "ALL";
 
 		// Pass filters back to InventoryScene
-		parentScene.applyTableFilters(category, supplier);
+		parentScene.setCurrentCategoryFilter(category);
+		parentScene.setCurrentSupplierFilter(supplier);
 		dispose(); // Close dialog after applying
 	}
 

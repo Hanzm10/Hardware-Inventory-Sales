@@ -2,7 +2,11 @@ package com.github.hanzm_10.murico.swingapp.scenes.home;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,6 +21,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,16 +31,22 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
+import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.dialogs.AddItemDialog;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.dialogs.EditItemStockDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.dialogs.InventoryFilterDialog;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.dialogs.RestockItemDialog;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.editors.ButtonEditor;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.ButtonRenderer;
@@ -45,7 +56,7 @@ import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.Produ
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.StockInfo;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.StockLevelRenderer;
 
-public class InventoryScene implements Scene {
+public class InventoryScene implements Scene, DocumentListener {
 	private static final Logger LOGGER = MuricoLogger.getLogger(InventoryScene.class);
 
 	// --- Constants for Columns ---
@@ -75,15 +86,14 @@ public class InventoryScene implements Scene {
 
 	private JScrollPane scrollPane;
 
-	public void applyTableFilters(String category, String supplier) {
+	private JPanel tealTopBar;
+	private JPanel tealTopBarRightActionPanel;
+
+	public void applyTableFilters() {
 		if (sorter == null) {
 			System.err.println("Sorter not initialized. Cannot apply filters.");
 			return;
 		}
-		this.activeCategoryFilter = (category == null || category.trim().isEmpty()) ? "ALL" : category;
-		this.activeSupplierFilter = (supplier == null || supplier.trim().isEmpty()) ? "ALL" : supplier;
-		System.out.println(
-				"Applying filters - Category: " + activeCategoryFilter + ", Supplier: " + activeSupplierFilter);
 
 		List<RowFilter<Object, Object>> combinedFilters = new ArrayList<>();
 		if (!"ALL".equalsIgnoreCase(activeCategoryFilter)) {
@@ -102,8 +112,7 @@ public class InventoryScene implements Scene {
 				List<RowFilter<Object, Object>> textSearchORFilters = new ArrayList<>();
 				textSearchORFilters.add(RowFilter.regexFilter(regex, COL_PRODUCT_NAME));
 				textSearchORFilters.add(RowFilter.regexFilter(regex, COL_ITEM_ID));
-				// Add other text-searchable columns as needed (e.g., pack type, category if not
-				// exact match)
+
 				combinedFilters.add(RowFilter.orFilter(textSearchORFilters));
 			} catch (PatternSyntaxException pse) {
 				System.err.println("Search text created invalid regex: " + pse.getMessage());
@@ -171,14 +180,46 @@ public class InventoryScene implements Scene {
 	}
 
 	private void attachComponents() {
+		tealTopBarRightActionPanel.add(filterButton);
+		tealTopBarRightActionPanel.add(searchField);
+
+		tealTopBar.add(addButton, BorderLayout.WEST);
+		tealTopBar.add(tealTopBarRightActionPanel, BorderLayout.EAST);
+
+		view.add(tealTopBar, BorderLayout.NORTH);
 		view.add(scrollPane);
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		SwingUtilities.invokeLater(this::performSearch);
 	}
 
 	private void createComponents() {
 		createTable();
+		createTealTopBar();
 
 		scrollPane = new JScrollPane(table);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	}
+
+	private JButton createStyledIconButton(String svgPath, String toolTip, int width, int height) {
+		JButton button = new JButton();
+		try {
+			ImageIcon icon = AssetManager.getOrLoadIcon(svgPath);
+			if (icon != null) {
+				button.setIcon(icon);
+			} else {
+				button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
+			}
+		} catch (Exception e) {
+			System.err.println("Error loading icon via AssetManager: " + svgPath + " - " + e.getMessage());
+			e.printStackTrace();
+			button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
+		}
+		button.setToolTipText(toolTip);
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		return button;
 	}
 
 	private void createTable() {
@@ -229,6 +270,31 @@ public class InventoryScene implements Scene {
 		table.setModel(tableModel);
 		sorter = new TableRowSorter<DefaultTableModel>(tableModel);
 		table.setRowSorter(sorter);
+	}
+
+	private void createTealTopBar() {
+		tealTopBar = new JPanel(new BorderLayout(10, 0));
+		tealTopBar.setBorder(new EmptyBorder(8, 10, 8, 10));
+
+		tealTopBar.setBackground(new Color(0x337E8F));
+
+		addButton = createStyledIconButton("icons/add_button.svg", "Add New Item", 24, 24);
+
+		addButton.setBackground(new Color(0x00, true));
+		addButton.setBorder(null);
+		addButton.addActionListener(this::openAddItemDialog);
+
+		tealTopBarRightActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		tealTopBarRightActionPanel.setOpaque(false);
+
+		filterButton = createStyledIconButton("icons/filter_icon.svg", "Filter Options", 22, 22);
+		filterButton.setBackground(new Color(0x00, true));
+		filterButton.setBorder(null);
+		filterButton.addActionListener(this::openFilterDialog); // Attach listener
+
+		searchField = new JTextField(20);
+		searchField.setPreferredSize(new Dimension(searchField.getPreferredSize().width, 28));
+		searchField.getDocument().addDocumentListener(this);
 	}
 
 	@Override
@@ -288,6 +354,11 @@ public class InventoryScene implements Scene {
 	}
 
 	@Override
+	public void insertUpdate(DocumentEvent e) {
+		SwingUtilities.invokeLater(this::performSearch);
+	}
+
+	@Override
 	public void onCreate() {
 		view.setLayout(new BorderLayout(0, 10));
 
@@ -313,6 +384,12 @@ public class InventoryScene implements Scene {
 		activeSupplierFilter = "ALL";
 
 		refreshTableData();
+	}
+
+	private void openAddItemDialog(ActionEvent ev) {
+		Window owner = SwingUtilities.getWindowAncestor(view);
+		AddItemDialog dialog = new AddItemDialog(owner, this);
+		dialog.setVisible(true);
 	}
 
 	public void openEditItemDialog(int viewRow) {
@@ -342,6 +419,43 @@ public class InventoryScene implements Scene {
 		}
 	}
 
+	public void openEditItemDialog1(int viewRow) {
+		if (table == null || tableModel == null) {
+			return;
+		}
+
+		int modelRow = table.convertRowIndexToModel(viewRow);
+
+		if (modelRow < 0 || modelRow >= tableModel.getRowCount()) {
+			System.err.println("EditItem: Invalid modelRow (" + modelRow + ") from viewRow: " + viewRow);
+			return;
+		}
+
+		try {
+			String productName = (String) tableModel.getValueAt(modelRow, COL_PRODUCT_NAME);
+			StockInfo stockInfo = (StockInfo) tableModel.getValueAt(modelRow, COL_STOCK_LEVEL);
+			BigDecimal unitPrice = (BigDecimal) tableModel.getValueAt(modelRow, COL_UNIT_PRICE);
+			int itemStockId = (Integer) tableModel.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
+			System.out.println("Opening Edit Dialog for Item Stock ID: " + itemStockId);
+			Window owner = SwingUtilities.getWindowAncestor(view);
+			EditItemStockDialog dialog = new EditItemStockDialog(owner, this, itemStockId, productName,
+					stockInfo.getMinimumQuantity(), unitPrice, stockInfo.getQuantity());
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+					"Error retrieving item data for editing: " + e.getMessage(), "Data Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void openFilterDialog(ActionEvent ev) {
+		Window owner = SwingUtilities.getWindowAncestor(view);
+		InventoryFilterDialog dialog = new InventoryFilterDialog(owner, this, activeCategoryFilter,
+				activeSupplierFilter);
+		dialog.setVisible(true);
+	}
+
 	public void openRestockDialog(int modelRow) {
 		if (table == null || table == null || modelRow < 0 || modelRow >= table.getRowCount()) {
 			System.err.println("RestockItem: Invalid modelRow: " + modelRow);
@@ -364,6 +478,10 @@ public class InventoryScene implements Scene {
 			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
 					"Error preparing for restock: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	private void performSearch() {
+		applyTableFilters();
 	}
 
 	private void populatetable() {
@@ -410,8 +528,6 @@ public class InventoryScene implements Scene {
 			}
 			System.out.println(getSceneName() + ": Table populated with " + tableModel.getRowCount()
 					+ " rows (excluding archived).");
-			// Do not call performSearch() here, refreshTableData will call
-			// applyTableFilters
 		} catch (SQLException e) {
 			System.err.println("SQL Error fetching inventory data: " + e.getMessage());
 			e.printStackTrace();
@@ -488,10 +604,25 @@ public class InventoryScene implements Scene {
 		System.out.println(getSceneName() + ": Refreshing table data...");
 		if (table != null && tableModel != null) { // Added null check for model
 			populatetable();
-			applyTableFilters(activeCategoryFilter, activeSupplierFilter);
+			applyTableFilters();
 		} else {
 			System.err.println("Inventory table or model is null, cannot refresh.");
 		}
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		SwingUtilities.invokeLater(this::performSearch);
+	}
+
+	public void setCurrentCategoryFilter(String category) {
+		this.activeCategoryFilter = category;
+		applyTableFilters();
+	}
+
+	public void setCurrentSupplierFilter(String supplier) {
+		this.activeSupplierFilter = supplier;
+		applyTableFilters();
 	}
 
 	private void setupTableRenderersAndEditors() {

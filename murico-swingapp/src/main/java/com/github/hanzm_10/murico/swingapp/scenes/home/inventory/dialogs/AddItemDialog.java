@@ -347,13 +347,15 @@ public class AddItemDialog extends JDialog {
 	// --- Save Logic (Updated to use current fields) ---
 	private void saveNewItem() {
 		// 1. Get values
+
+		int initialQty = ((Double) initialQuantitySpinner.getValue()).intValue();
+		int minQty = ((Double) minQuantitySpinner.getValue()).intValue();
+
 		String itemName = itemNameField.getText().trim();
 		String itemDescription = itemDescriptionArea.getText().trim();
 		ComboBoxItem selectedCategory = (ComboBoxItem) categoryComboBox.getSelectedItem();
 		ComboBoxItem selectedPackaging = (ComboBoxItem) packagingComboBox.getSelectedItem();
 		ComboBoxItem selectedSupplier = (ComboBoxItem) supplierComboBox.getSelectedItem();
-		int initialQty = (Integer) initialQuantitySpinner.getValue();
-		int minQty = (Integer) minQuantitySpinner.getValue();
 		BigDecimal sellingPrice = getSpinnerBigDecimal(sellingPriceSpinner);
 		BigDecimal srp = getSpinnerBigDecimal(srpSpinner);
 		BigDecimal costPrice = getSpinnerBigDecimal(costPriceSpinner);
