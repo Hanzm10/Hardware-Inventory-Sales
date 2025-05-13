@@ -1,6 +1,5 @@
 package com.github.hanzm_10.murico.swingapp.ui.components;
 
-import java.awt.BorderLayout;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,7 +25,6 @@ import net.miginfocom.swing.MigLayout;
 
 public class Sidebar {
 	private static Logger LOGGER = MuricoLogger.getLogger(Sidebar.class);
-	private JPanel wrapper;
 	private GradientRoundedPanel container;
 	private ButtonSceneNavigatorListener navListener;
 
@@ -42,14 +40,10 @@ public class Sidebar {
 	private final Map<String, AbstractButton> sceneButtonMap;
 
 	public Sidebar() {
-		wrapper = new JPanel();
 		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.PRIMARY_COLOR, 24);
 		navListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
-		wrapper.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-		wrapper.setLayout(new BorderLayout());
-
-		wrapper.add(container, BorderLayout.CENTER);
+		container.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 16));
 		container.setLayout(new MigLayout("insets 16", "[50px::50px,grow]",
 				"[50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow]72px:push[50px::50px,grow]"));
 
@@ -119,7 +113,7 @@ public class Sidebar {
 	}
 
 	public JPanel getContainer() {
-		return wrapper;
+		return container;
 	}
 
 	private void handleNavigation(String currFullSceneName) {

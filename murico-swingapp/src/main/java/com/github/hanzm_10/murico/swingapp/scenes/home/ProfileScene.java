@@ -31,10 +31,6 @@ public class ProfileScene implements Scene {
 	private JPanel view;
 	private Image image;
 
-	public ProfileScene() {
-		// setLayout(new MigLayout());
-	}
-
 	@Override
 	public String getSceneName() {
 		// TODO Auto-generated method stub
