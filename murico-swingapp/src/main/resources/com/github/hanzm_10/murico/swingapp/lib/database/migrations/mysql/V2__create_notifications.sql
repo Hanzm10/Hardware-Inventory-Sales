@@ -1,9 +1,7 @@
 CREATE TABLE notification_types (
     _notification_type_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    code VARCHAR(50) NOT NULL,
-    description VARCHAR(255),
-
-    UNIQUE (code)
+    code VARCHAR(50) UNIQUE NOT NULL,
+    description VARCHAR(255)
 );
 
 CREATE TABLE notifications (

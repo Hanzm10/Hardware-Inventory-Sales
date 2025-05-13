@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -26,8 +26,10 @@ import com.github.hanzm_10.murico.swingapp.constants.PropertyKey;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySQLSalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlAccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlItemDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlSessionDao;
@@ -65,7 +67,6 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 			LOGGER.fine("DB User: " + DB_USER);
 			// Avoid logging password directly: LOGGER.fine("DB Password: " + DB_PASSWORD);
 			LOGGER.fine("DB Name: " + DB_NAME);
-
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Failed to load MySQL properties file from 'config.properties'", e);
 			// Throwing RuntimeException might be too harsh depending on app needs
@@ -88,8 +89,7 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	 * connection is already closed. Logs any SQLException that occurs during
 	 * closing.
 	 *
-	 * @param connection
-	 *            The Connection object to close.
+	 * @param connection The Connection object to close.
 	 */
 	public static void closeConnection(Connection connection) {
 		if (connection != null) {
@@ -115,13 +115,10 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	 * Creates a new database connection using the loaded properties.
 	 *
 	 * @return A new Connection object.
-	 * @throws SQLException
-	 *             If a database access error occurs.
-	 * @throws SQLTimeoutException
-	 *             If the driver has determined that the timeout value has been
-	 *             exceeded.
-	 * @throws RuntimeException
-	 *             If the JDBC driver class cannot be found.
+	 * @throws SQLException        If a database access error occurs.
+	 * @throws SQLTimeoutException If the driver has determined that the timeout
+	 *                             value has been exceeded.
+	 * @throws RuntimeException    If the JDBC driver class cannot be found.
 	 */
 	public static final Connection createConnection() throws SQLException, SQLTimeoutException {
 		// Ensure driver is loaded (optional for modern JDBC, but good practice)
@@ -134,7 +131,7 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 
 		// Check if properties were loaded successfully
 		if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
-			throw new SQLException("Database connection properties are not initialized. Check properties loading.");
+			throw new SQLException("Database connection properties are not initialized. Check config.properties.");
 		}
 
 		LOGGER.fine("Attempting to connect to database: " + DB_URL);
@@ -155,6 +152,12 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	@Override
 	public ItemDao getItemDao() {
 		return new MySqlItemDao();
+	}
+
+	@Override
+	public SalesDao getSalesDao() {
+		// TODO Auto-generated method stub
+		return new MySQLSalesDao();
 	}
 
 	// --- Instance methods for DAO retrieval ---

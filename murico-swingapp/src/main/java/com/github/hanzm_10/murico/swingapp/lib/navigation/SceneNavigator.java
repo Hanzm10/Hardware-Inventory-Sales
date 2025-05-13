@@ -15,16 +15,19 @@ package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.observer.Observer;
 import com.github.hanzm_10.murico.swingapp.lib.observer.Subscriber;
 
 public class SceneNavigator implements Observer<String> {
+	private static final Logger LOGGER = MuricoLogger.getLogger(SceneNavigator.class);
 	private static SceneNavigator instance;
 
 	public static synchronized SceneNavigator getInstance() {
@@ -98,6 +101,8 @@ public class SceneNavigator implements Observer<String> {
 
 		SwingUtilities.invokeLater(() -> {
 			sceneManager.navigateTo(sceneName);
+
+			LOGGER.info("Navigated to scene: " + sceneName);
 
 			synchronized (sceneName) {
 				currentFullSceneName = sceneName;

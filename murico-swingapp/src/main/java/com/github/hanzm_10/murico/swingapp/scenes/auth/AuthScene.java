@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
@@ -42,6 +43,22 @@ public class AuthScene implements Scene, SubSceneSupport {
 
 	protected JPanel view;
 
+	private void createSceneManager() {
+		sceneManager = new StaticSceneManager();
+		sceneManager.registerScene("main", () -> new MainAuthScene(), GUARD);
+		sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
+		sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
+	}
+
+	@Override
+	public SceneManager getSceneManager() {
+		if (sceneManager == null) {
+			createSceneManager();
+		}
+
+		return sceneManager;
+	}
+
 	@Override
 	public String getSceneName() {
 		return "auth";
@@ -58,22 +75,24 @@ public class AuthScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
-	public void onCreate() {
-		sceneManager = new StaticSceneManager();
-		sceneManager.registerScene("main", () -> new MainAuthScene(), GUARD);
-		sceneManager.registerScene("login", () -> new LoginAuthScene(), GUARD);
-		sceneManager.registerScene("register", () -> new RegisterAuthScene(), GUARD);
+	public void navigateToDefault() {
+		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "login");
 
+	}
+
+	@Override
+	public void onCreate() {
 		view.setLayout(new MigLayout("", "[grow, center]", "[grow, center]"));
 
 		var rootContainer = sceneManager.getRootContainer();
 		view.add(rootContainer, "cell 0 0");
+
+		if (sceneManager.getCurrentSceneName() == null) {
+		}
 	}
 
 	@Override
 	public boolean onDestroy() {
-		sceneManager.destroy();
-		sceneManager = null;
 		view.removeAll();
 		view.revalidate();
 		view.repaint();
@@ -84,6 +103,5 @@ public class AuthScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onShow() {
-		SceneNavigator.getInstance().navigateTo(getSceneName() + "/main");
 	}
 }

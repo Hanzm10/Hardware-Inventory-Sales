@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -20,71 +20,147 @@ import javax.swing.JPanel;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 public class SceneWrapper implements Scene {
-    private static final Logger LOGGER = MuricoLogger.getLogger(Scene.class);
-    private final Scene scene;
+	private static final Logger LOGGER = MuricoLogger.getLogger(Scene.class);
+	private final Scene scene;
 
-    public SceneWrapper(Scene scene) {
-        this.scene = scene;
-    }
+	public SceneWrapper(Scene scene) {
+		this.scene = scene;
+	}
 
-    @Override
-    public Scene getSelf() {
-        return scene;
-    }
+	@Override
+	public boolean canHide() {
+		var currSubScene = getCurrentSubScene();
 
-    @Override
-    public boolean supportsSubScenes() {
-        return scene.supportsSubScenes();
-    }
+		if (currSubScene != null) {
+			return scene.canHide() && currSubScene.canHide();
+		}
 
-    @Override
-    public boolean onDestroy() {
-        LOGGER.info("onDestroy: " + scene.getSceneName());
+		return scene.canHide();
+	}
 
-        return scene.onDestroy();
-    }
+	@Override
+	public boolean canShow() {
+		var currSubScene = getCurrentSubScene();
 
-    @Override
-    public void onBeforeHide() {
-        LOGGER.info("onBeforeHide: " + scene.getSceneName());
+		if (currSubScene != null) {
+			return scene.canShow() && currSubScene.canShow();
+		}
 
-        scene.onBeforeHide();
-    }
+		return scene.canShow();
+	}
 
-    @Override
-    public void onBeforeShow() {
-        LOGGER.info("onBeforeShow: " + scene.getSceneName());
+	private Scene getCurrentSubScene() {
+		if (supportsSubScenes()) {
+			var sceneManager = ((SubSceneSupport) scene).getSceneManager();
 
-        scene.onBeforeShow();
-    }
+			if (sceneManager == null) {
+				return null;
+			}
 
-    @Override
-    public void onCreate() {
-        LOGGER.info("onCreate: " + scene.getSceneName());
-        scene.onCreate();
-    }
+			var currentSubScene = sceneManager.getCurrentScene();
 
-    @Override
-    public void onShow() {
-        LOGGER.info("onShow: " + scene.getSceneName());
+			return currentSubScene;
+		}
 
-        scene.onShow();
-    }
+		return null;
+	}
 
-    @Override
-    public void onHide() {
-        LOGGER.info("onHide: " + scene.getSceneName());
+	@Override
+	public String getSceneName() {
+		return scene.getSceneName();
+	}
 
-        scene.onHide();
-    }
+	@Override
+	public JPanel getSceneView() {
+		return scene.getSceneView();
+	}
 
-    @Override
-    public String getSceneName() {
-        return scene.getSceneName();
-    }
+	@Override
+	public Scene getSelf() {
+		return scene;
+	}
 
-    @Override
-    public JPanel getSceneView() {
-        return scene.getSceneView();
-    }
+	@Override
+	public void onBeforeHide() {
+		var currSubScene = getCurrentSubScene();
+
+		if (currSubScene != null) {
+			currSubScene.onBeforeHide();
+		}
+
+		scene.onBeforeHide();
+	}
+
+	@Override
+	public void onBeforeShow() {
+		var currSubScene = getCurrentSubScene();
+
+		if (currSubScene != null) {
+			currSubScene.onBeforeShow();
+		}
+
+		scene.onBeforeShow();
+	}
+
+	@Override
+	public void onCannotHide() {
+		var currSubScene = getCurrentSubScene();
+
+		if (currSubScene != null) {
+			currSubScene.onCannotHide();
+		}
+
+		scene.onCannotHide();
+	}
+
+	@Override
+	public void onCreate() {
+		var currSubScene = getCurrentSubScene();
+
+		if (currSubScene != null) {
+			currSubScene.onCreate();
+		}
+
+		scene.onCreate();
+	}
+
+	@Override
+	public boolean onDestroy() {
+		if (supportsSubScenes()) {
+			var sceneManager = ((SubSceneSupport) scene).getSceneManager();
+
+			if (sceneManager != null) {
+				sceneManager.destroy();
+			}
+		}
+
+		return scene.onDestroy();
+	}
+
+	@Override
+	public void onHide() {
+		var currSubScene = getCurrentSubScene();
+
+		if (currSubScene != null) {
+			currSubScene.onHide();
+		}
+
+		scene.onHide();
+	}
+
+	@Override
+	public void onShow() {
+		var currSubScene = getCurrentSubScene();
+
+		if (currSubScene != null) {
+			currSubScene.onShow();
+		}
+
+		scene.onShow();
+	}
+
+	@Override
+	public boolean supportsSubScenes() {
+		return scene.supportsSubScenes();
+	}
 }

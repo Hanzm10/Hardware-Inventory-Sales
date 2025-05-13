@@ -33,6 +33,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneEntry;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneWrapper;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 
 public class StaticSceneManager implements SceneManager {
@@ -101,6 +102,12 @@ public class StaticSceneManager implements SceneManager {
 	}
 
 	@Override
+	public Scene getCurrentScene() {
+		// TODO Auto-generated method stub
+		return getScene(currentSceneName);
+	}
+
+	@Override
 	public String getCurrentSceneName() {
 		return currentSceneName;
 	}
@@ -119,7 +126,9 @@ public class StaticSceneManager implements SceneManager {
 		SwingUtilities.invokeLater(() -> destroyScene(removedScene));
 	}
 
-	private Scene loadOrCreateScene(@NotNull final String sceneName, @NotNull final SceneEntry sceneEntry) {
+	private Scene loadOrCreateScene(@NotNull final ParsedSceneName parsedSceneName,
+			@NotNull final SceneEntry sceneEntry) {
+		var sceneName = parsedSceneName.parentSceneName();
 		var scene = getScene(sceneName);
 
 		if (scene == null) {
@@ -134,12 +143,20 @@ public class StaticSceneManager implements SceneManager {
 						"Scene name does not match the scene's name: " + sceneName + " != " + scene.getSceneName());
 			}
 
+			scene = new SceneWrapper(scene);
+
 			var view = scene.getSceneView();
 
 			rootContainer.add(view, sceneName);
 			cardLayout.addLayoutComponent(view, sceneName);
 
 			scene.onCreate();
+
+			if (parsedSceneName.subSceneName() == null || parsedSceneName.subSceneName().isBlank()) {
+				if (scene.supportsSubScenes()) {
+					((SubSceneSupport) scene.getSelf()).navigateToDefault();
+				}
+			}
 		}
 
 		sceneCache.update(sceneName, scene);
@@ -182,7 +199,7 @@ public class StaticSceneManager implements SceneManager {
 			return;
 		}
 
-		var scene = loadOrCreateScene(parsedSceneName.parentSceneName(), sceneEntry);
+		var scene = loadOrCreateScene(parsedSceneName, sceneEntry);
 
 		if (!scene.canShow()) {
 			return;
@@ -190,7 +207,9 @@ public class StaticSceneManager implements SceneManager {
 
 		switchScenes(scene, oldScene);
 
-		LOGGER.info("Navigated to scene: " + sceneName);
+		if (parsedSceneName.subSceneName() != null && !parsedSceneName.subSceneName().isBlank()) {
+			navigateToSubScenesIfPossible(parsedSceneName);
+		}
 	}
 
 	private void navigateToSubScenesIfPossible(@NotNull final ParsedSceneName parsedSceneName) {
@@ -202,7 +221,17 @@ public class StaticSceneManager implements SceneManager {
 		}
 
 		if (currentScene.supportsSubScenes()) {
-			((SubSceneSupport) currentScene.getSelf()).navigateTo(parsedSceneName.subSceneName());
+			var scene = (SubSceneSupport) currentScene.getSelf();
+			var sceneManager = scene.getSceneManager();
+
+			if (scene.getSceneManager() != null && sceneManager.getCurrentSceneName() != null
+					&& sceneManager.getCurrentSceneName().equals(parsedSceneName.subSceneName())) {
+				return;
+			}
+
+			SwingUtilities.invokeLater(() -> {
+				scene.navigateTo(parsedSceneName.subSceneName());
+			});
 		} else {
 			LOGGER.warning("Current scene does not support sub-scenes: " + currentSceneName);
 			return;

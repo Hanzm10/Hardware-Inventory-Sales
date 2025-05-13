@@ -19,6 +19,8 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatBorder;
 
@@ -45,7 +47,11 @@ public class StyledButtonFactory {
 	}
 
 	public static JButton createButtonButToggleStyle() {
-		var btn = new JButton();
+		return createButtonButToggleStyle("");
+	}
+
+    public static JButton createButtonButToggleStyle(@NotNull final String text) {
+		var btn = new JButton(text);
 
 		btn.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
 

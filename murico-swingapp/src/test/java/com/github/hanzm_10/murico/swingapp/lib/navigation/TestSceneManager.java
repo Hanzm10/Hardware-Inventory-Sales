@@ -14,12 +14,168 @@
 package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
+
+class FirstChild implements Scene {
+	JPanel view;
+
+	@Override
+	public String getSceneName() {
+		return "first-child";
+	}
+
+	@Override
+	public JPanel getSceneView() {
+		return view == null ? (view = new JPanel()) : view;
+	}
+
+	@Override
+	public void onCreate() {
+		view.add(new JLabel("I am the first child!"));
+	}
+
+	@Override
+	public void onHide() {
+		System.out.println("\n ==== First child is hiding! ==== \n");
+	}
+}
+
+class SecondChild implements Scene, SubSceneSupport {
+	SceneManager sceneManager;
+	JPanel view;
+
+	private void createSceneManager() {
+		sceneManager = new StaticSceneManager();
+
+		sceneManager.registerScene("first-child", () -> new FirstChild());
+	}
+
+	@Override
+	public SceneManager getSceneManager() {
+		if (sceneManager == null) {
+			createSceneManager();
+		}
+
+		return sceneManager;
+	}
+
+	@Override
+	public String getSceneName() {
+		return "second-child";
+	}
+
+	@Override
+	public JPanel getSceneView() {
+		return view == null ? (view = new JPanel()) : view;
+	}
+
+	@Override
+	public void navigateTo(@NotNull String subSceneName) {
+		sceneManager.navigateTo(subSceneName);
+	}
+
+	@Override
+	public void navigateToDefault() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onCreate() {
+
+		view.add(new JLabel("I am harboring the first child! "));
+		view.add(sceneManager.getRootContainer());
+		view.add(new JLabel("I am the second child!"));
+
+		SceneNavigator.getInstance().navigateTo("TestDummyScene/second-child/first-child");
+	}
+
+	@Override
+	public void onHide() {
+		System.out.println("\n ==== Second child is hiding! ==== \n");
+	}
+}
+
+class TestDummySceneParent implements Scene, SubSceneSupport {
+	SceneManager sceneManager;
+	JPanel view;
+
+	private void createSceneManager() {
+		sceneManager = new StaticSceneManager();
+
+		sceneManager.registerScene("first-child", () -> new FirstChild());
+		sceneManager.registerScene("second-child", () -> new SecondChild());
+	}
+
+	@Override
+	public SceneManager getSceneManager() {
+		if (sceneManager == null) {
+			createSceneManager();
+		}
+
+		return sceneManager;
+	}
+
+	@Override
+	public String getSceneName() {
+		return "TestDummyScene";
+	}
+
+	@Override
+	public JPanel getSceneView() {
+		return view == null ? (view = new JPanel()) : view;
+	}
+
+	@Override
+	public void navigateTo(@NotNull String subSceneName) {
+		sceneManager.navigateTo(subSceneName);
+	}
+
+	@Override
+	public void navigateToDefault() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onCreate() {
+		var container = new JPanel(new FlowLayout());
+
+		var btn1 = new JButton("Go to sub scene 1");
+		var btn2 = new JButton("Go to sub scene 2");
+
+		btn1.addActionListener(_ -> {
+			SceneNavigator.getInstance().navigateTo(getSceneName() + "/first-child");
+		});
+
+		btn2.addActionListener(_ -> {
+			SceneNavigator.getInstance().navigateTo(getSceneName() + "/second-child");
+		});
+
+		view.setLayout(new GridLayout());
+
+		container.add(btn1);
+		container.add(btn2);
+
+		view.add(new JLabel("I am the parent!"));
+		view.add(container);
+		view.add(sceneManager.getRootContainer());
+		SceneNavigator.getInstance().navigateTo("TestDummyScene/first-child");
+	}
+}
 
 public class TestSceneManager {
 
@@ -41,9 +197,6 @@ public class TestSceneManager {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-
-		SwingUtilities.invokeLater(() -> {
-			sceneManager.navigateTo("TestDummyScene");
-		});
+		SceneNavigator.getInstance().navigateTo("TestDummyScene");
 	}
 }
