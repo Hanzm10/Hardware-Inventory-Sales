@@ -11,22 +11,26 @@
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
  *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.hanzm_10.murico.swingapp.scenes.inventory;
+package com.github.hanzm_10.murico.swingapp.scenes.inventory.renderers;
 
-import javax.swing.JFrame;
+import java.awt.Component;
 
-import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 
-public class InventoryTest {
-	public static void main(String[] args) {
-		MuricoLightFlatLaf.setup();
-		JFrame frame = new JFrame();
-		InventoryScene scene = new InventoryScene();
-		frame.add(scene);
-		scene.onCreate();
-		frame.setDefaultCloseOperation(2);
-		frame.pack();
-		frame.setVisible(true);
-		scene.onShow();
+public class ItemIdRenderer extends DefaultTableCellRenderer {
+
+	public ItemIdRenderer() {
+		// Item ID usually looks better left-aligned unless purely numeric
+		setHorizontalAlignment(SwingConstants.LEFT);
+	}
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+			int row, int column) {
+		// The model should provide the value formatted as "#12345"
+		// Superclass handles text and selection
+		return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 	}
 }
