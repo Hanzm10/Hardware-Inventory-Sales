@@ -15,8 +15,11 @@ package com.github.hanzm_10.murico.swingapp.scenes.inventory;
 
 import javax.swing.JFrame;
 
+import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
+
 public class InventoryTest {
 	public static void main(String[] args) {
+		MuricoLightFlatLaf.setup();
 		JFrame frame = new JFrame();
 		InventoryScene scene = new InventoryScene();
 		frame.add(scene);

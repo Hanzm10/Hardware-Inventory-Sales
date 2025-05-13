@@ -36,5 +36,15 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Hanz Mapua/.m2/repository/com/github/weisj/jsvg/2.0.0/jsvg-2.0.0.jar" sourcepath="C:/Users/Hanz Mapua/.m2/repository/com/github/weisj/jsvg/2.0.0/jsvg-2.0.0-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="module" value="true"/>
+			<attribute name="maven.groupId" value="com.github.weisj"/>
+			<attribute name="maven.artifactId" value="jsvg"/>
+			<attribute name="maven.version" value="2.0.0"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
