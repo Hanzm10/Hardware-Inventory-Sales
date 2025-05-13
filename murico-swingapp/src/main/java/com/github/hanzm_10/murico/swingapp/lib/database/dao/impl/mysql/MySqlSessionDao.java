@@ -36,17 +36,17 @@ public class MySqlSessionDao implements SessionDao {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlSessionDao.class);
 
 	@Override
-	public @NotNull Session createSession(@NotNull User user) throws IOException, SQLException {
-		return createSession(user, "", "");
+	public @NotNull Session createSession(@NotNull int _userId) throws IOException, SQLException {
+		return createSession(_userId, "", "");
 	}
 
 	@Override
-	public @NotNull Session createSession(@NotNull User user, String ipAddress) throws IOException, SQLException {
-		return createSession(user, ipAddress, "");
+	public @NotNull Session createSession(@NotNull int _userId, String ipAddress) throws IOException, SQLException {
+		return createSession(_userId, ipAddress, "");
 	}
 
 	@Override
-	public @NotNull Session createSession(@NotNull User user, String ipAddress, String userAgent)
+	public @NotNull Session createSession(@NotNull int _userId, String ipAddress, String userAgent)
 			throws IOException, SQLException {
 		Session session = null;
 		String query = MySqlQueryLoader.getInstance().get("create_session", "sessions", SqlQueryType.INSERT);
@@ -55,7 +55,7 @@ public class MySqlSessionDao implements SessionDao {
 				var statement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
 			var _sessionId = -1;
 
-			statement.setInt(1, user._userId());
+			statement.setInt(1, _userId);
 			statement.setString(2, ipAddress);
 			statement.setString(3, userAgent);
 

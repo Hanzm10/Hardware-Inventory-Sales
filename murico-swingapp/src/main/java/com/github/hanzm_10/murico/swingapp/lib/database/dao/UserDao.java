@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 
 public interface UserDao {
 	public User getUserByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException;
@@ -27,6 +28,11 @@ public interface UserDao {
 	public User getUserByEmail(@NotNull String _userEmail) throws IOException, SQLException;
 
 	public User getUserById(@Range(from = 0, to = Integer.MAX_VALUE) int _userID) throws IOException, SQLException;
+
+	public UserMetadata getUserMetadataByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException;
+
+	public UserMetadata getUserMetadataById(@Range(from = 0, to = Integer.MAX_VALUE) int _userID)
+			throws IOException, SQLException;
 
 	public boolean isUsernameTaken(@NotNull final String name) throws IOException, SQLException;
 }

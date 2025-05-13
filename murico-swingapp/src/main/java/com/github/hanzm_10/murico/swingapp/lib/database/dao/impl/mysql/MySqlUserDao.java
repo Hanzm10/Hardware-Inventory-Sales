@@ -23,6 +23,7 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.S
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserGender;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 
@@ -93,6 +94,61 @@ public class MySqlUserDao implements UserDao {
 
 		}
 		return user;
+	}
+
+	@Override
+	public UserMetadata getUserMetadataByDisplayName(@NotNull String _userDisplayName)
+			throws IOException, SQLException {
+		UserMetadata userMetadata = null;
+		var query = MySqlQueryLoader.getInstance().get("get_user_metadata_by_display_name", "users",
+				SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setString(1, _userDisplayName);
+
+			var resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				userMetadata = new UserMetadata(resultSet.getInt("_user_id"), resultSet.getTimestamp("_created_at"),
+						resultSet.getTimestamp("updated_at"), resultSet.getString("display_name"),
+						resultSet.getString("display_image"), UserGender.fromString(resultSet.getString("gender")), // assuming
+																													// enum
+						resultSet.getString("first_name"), resultSet.getString("last_name"),
+						resultSet.getString("biography"), resultSet.getString("roles"), resultSet.getString("email"),
+						resultSet.getString("verification_status") == "verified",
+						resultSet.getTimestamp("verified_at"));
+			}
+
+		}
+
+		return userMetadata;
+	}
+
+	@Override
+	public UserMetadata getUserMetadataById(@Range(from = 0, to = 2147483647) int _userID)
+			throws IOException, SQLException {
+		UserMetadata userMetadata = null;
+		var query = MySqlQueryLoader.getInstance().get("get_user_metadata_by_id", "users", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setInt(1, _userID);
+
+			var resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				userMetadata = new UserMetadata(resultSet.getInt("_user_id"), resultSet.getTimestamp("_created_at"),
+						resultSet.getTimestamp("updated_at"), resultSet.getString("display_name"),
+						resultSet.getString("display_image"), UserGender.fromString(resultSet.getString("gender")), // assuming
+																													// enum
+						resultSet.getString("first_name"), resultSet.getString("last_name"),
+						resultSet.getString("biography"), resultSet.getString("roles"), resultSet.getString("email"),
+						resultSet.getString("verification_status") == "verified",
+						resultSet.getTimestamp("verified_at"));
+			}
+
+		}
+
+		return userMetadata;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
-import com.github.hanzm_10.murico.swingapp.scenes.ordermenu.InsufficientStockException; // Import custom exception
+import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.InsufficientStockException;
 
 /**
  * Service class containing business logic related to the checkout process,

@@ -1,0 +1,1 @@
+SELECT * FROM customer_payments ORDER BY _created_at DESC;
