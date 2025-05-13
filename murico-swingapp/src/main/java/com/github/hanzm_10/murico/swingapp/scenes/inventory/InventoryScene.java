@@ -1,6 +1,5 @@
 package com.github.hanzm_10.murico.swingapp.scenes.inventory;
 
-// --- Imports ---
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -11,6 +10,7 @@ import java.awt.Window;
 // import java.awt.event.ActionEvent; // Not strictly needed if using lambdas
 // import java.awt.event.ActionListener; // Not strictly needed if using lambdas
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 // import java.net.URL; // No longer needed directly here for icon loading
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,6 +20,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.regex.Pattern; // Import for Pattern.quote
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.*;
@@ -38,11 +39,26 @@ import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 // Local imports for renderers and editors
 import com.github.hanzm_10.murico.swingapp.scenes.inventory.renderers.*;
 import com.github.hanzm_10.murico.swingapp.scenes.inventory.editors.ButtonEditor;
-// import com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.*;
+// Import your new dialogs
+import com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.AddItemDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.EditItemStockDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.InventoryFilterDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.RestockItemDialog;
+
 
 // Other imports
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+
+// Custom exception for stock issues (ensure this is defined or imported correctly)
+// For example, if it's in the same package or a subpackage of service.database:
+// import com.github.hanzm_10.murico.swingapp.service.database.InsufficientStockException;
+class InsufficientStockException extends Exception { // Placeholder if not already defined
+    public InsufficientStockException(String message) {
+        super(message);
+    }
+}
+
 
 public class InventoryScene extends JPanel implements Scene {
 
@@ -67,12 +83,16 @@ public class InventoryScene extends JPanel implements Scene {
 
     private boolean uiInitialized = false;
 
+    // Fields to store current filter state
+    private String activeCategoryFilter = "ALL";
+    private String activeSupplierFilter = "ALL";
+
     public InventoryScene() {
         super(new BorderLayout(0, 10)); // Main layout with vertical gap
         System.out.println("InventoryScene instance created.");
     }
 
-    // --- Scene Interface Implementation --- (Keep as is)
+    // --- Scene Interface Implementation ---
     @Override public String getSceneName() { return "inventory"; }
     @Override public JPanel getSceneView() { return this; }
     @Override public void onBeforeHide() {}
@@ -92,9 +112,11 @@ public class InventoryScene extends JPanel implements Scene {
         if (!uiInitialized) {
             onCreate();
         }
-        refreshTableData();
-        if (searchField != null) searchField.setText("");
-        if (sorter != null) sorter.setRowFilter(null);
+        // On show, clear search and reset filters to "ALL" then refresh
+        if (searchField != null) searchField.setText(""); // Clears search text
+        this.activeCategoryFilter = "ALL"; // Reset active filters
+        this.activeSupplierFilter = "ALL";
+        refreshTableData(); // This will populate and then apply the (now cleared) filters
     }
 
      @Override
@@ -116,48 +138,33 @@ public class InventoryScene extends JPanel implements Scene {
     }
     // --- End Scene Interface Implementation ---
 
- // Inside InventoryScene.java
-
     private void initializeInventoryUI() {
         System.out.println(getSceneName() + ": Initializing UI components...");
-        this.setBackground(Color.WHITE); // Background for the entire scene panel
+        this.setBackground(Color.WHITE);
 
-        // --- 1. Create the Scene Header Panel (Title and Bell grouped to the right) ---
-        JPanel sceneHeaderPanel = new JPanel(new BorderLayout(10, 0)); // Main layout for this header strip
-        sceneHeaderPanel.setBorder(new EmptyBorder(10, 15, 5, 15)); // Padding for this header
+        // --- 1. Scene Header Panel (Bell and Title) ---
+        JPanel sceneHeaderPanel = new JPanel(new BorderLayout(10, 0));
+        sceneHeaderPanel.setBorder(new EmptyBorder(10, 15, 5, 15));
         sceneHeaderPanel.setOpaque(false);
 
-        // Create a panel to hold the title and bell, aligned to the right
-        JPanel titleAndBellPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0)); // Align components to the right, 5px horizontal gap
-        titleAndBellPanel.setOpaque(false); // Make this inner panel transparent
-
+        JPanel titleAndBellPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        titleAndBellPanel.setOpaque(false);
         JLabel bellLabel = createIconLabelWithAssetManager("/icons/bell_icon.svg", "Notifications", 26, 26);
-        // Add some left margin to the bell icon if needed for spacing from title
-        // bellLabel.setBorder(new EmptyBorder(0, 5, 0, 0)); // e.g., 5px left margin
-        titleAndBellPanel.add(bellLabel); // Add bell icon next to the title
-        
+        bellLabel.setBorder(new EmptyBorder(0, 0, 0, 5)); // Add right margin to bell
+        titleAndBellPanel.add(bellLabel);
         JLabel lblInventoryTitle = new JLabel("INVENTORY");
         lblInventoryTitle.setFont(new Font("Montserrat ExtraBold", Font.BOLD, 28));
-        // lblInventoryTitle.setForeground(Color.DARK_GRAY); // Optional: set color
-        titleAndBellPanel.add(lblInventoryTitle); // Add title first
-
-        // Add the titleAndBellPanel to the EAST (right side) of the sceneHeaderPanel
+        titleAndBellPanel.add(lblInventoryTitle);
         sceneHeaderPanel.add(titleAndBellPanel, BorderLayout.EAST);
-        // If you want something on the far left of this sceneHeaderPanel (e.g., a logo), add it to BorderLayout.WEST
-
-        // Add this new sceneHeaderPanel to the NORTH of the InventoryScene itself
         this.add(sceneHeaderPanel, BorderLayout.NORTH);
 
-
-        // --- 2. Create the Main Content Panel (will hold teal bar and table) ---
+        // --- 2. Main Content Panel ---
         JPanel mainContentPanel = new JPanel(new BorderLayout(0,0));
         mainContentPanel.setOpaque(false);
 
-        // --- 2a. Create the Teal Top Bar (Add, Filter, Search) ---
         JPanel tealTopBarPanel = createTealTopBar();
         mainContentPanel.add(tealTopBarPanel, BorderLayout.NORTH);
 
-        // --- 2b. Create the Table with ScrollPane ---
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
         scrollPane.setBackground(Color.WHITE);
@@ -165,32 +172,32 @@ public class InventoryScene extends JPanel implements Scene {
 
         inventoryTable = createInventoryTable();
         scrollPane.setViewportView(inventoryTable);
-
         setupTableRenderersAndEditors();
-
-        // Add the mainContentPanel to the CENTER of the InventoryScene
         this.add(mainContentPanel, BorderLayout.CENTER);
     }
 
-    // ... (rest of InventoryScene.java remains the same: createTealTopBar, createInventoryTable, etc.)
     private JPanel createTealTopBar() {
-        JPanel colorTopBarPanel = new JPanel(new BorderLayout(10, 0));
-        colorTopBarPanel.setBorder(new EmptyBorder(8, 10, 8, 10));
-        colorTopBarPanel.setBackground(new Color(0x337E8F)); // Darker Teal, adjust as needed
+        JPanel tealTopBarPanel = new JPanel(new BorderLayout(10, 0));
+        tealTopBarPanel.setBorder(new EmptyBorder(8, 10, 8, 10));
+        tealTopBarPanel.setBackground(new Color(0x337E8F));
+        
 
-        // Use the version of createIconButtonWithAssetManager that takes width & height
-        // and applies transparency/no border
         addButton = createStyledIconButton("/icons/add_button.svg", "Add New Item", 24, 24);
+
+        addButton.setBackground(new Color(0x00,true));
+        addButton.setBorder(null);
         addButton.addActionListener(e -> openAddItemDialog());
         JPanel addBtnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         addBtnPanel.setOpaque(false);
         addBtnPanel.add(addButton);
-        colorTopBarPanel.add(addBtnPanel, BorderLayout.WEST);
+        tealTopBarPanel.add(addBtnPanel, BorderLayout.WEST);
 
         JPanel rightActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rightActionPanel.setOpaque(false);
         filterButton = createStyledIconButton("/icons/filter_icon.svg", "Filter Options", 22, 22);
-        // TODO: Add ActionListener for filterButton
+        filterButton.setBackground(new Color(0x00,true));
+        filterButton.setBorder(null);
+        filterButton.addActionListener(e -> openFilterDialog()); // Attach listener
         rightActionPanel.add(filterButton);
         searchField = new JTextField(20);
         searchField.setFont(new Font("Montserrat Medium", Font.PLAIN, 12));
@@ -201,16 +208,14 @@ public class InventoryScene extends JPanel implements Scene {
             public void changedUpdate(DocumentEvent e) { performSearch(); }
         });
         rightActionPanel.add(searchField);
-        // Optional: Keep search icon label if you like the look
         // JLabel searchIconLabel = createIconLabelWithAssetManager("/icons/search_icon.svg", "Search", 20, 20);
-        // rightActionPanel.add(searchIconLabel);
-        colorTopBarPanel.add(rightActionPanel, BorderLayout.EAST);
+        // rightActionPanel.add(searchIconLabel); // Optional search icon next to field
+        tealTopBarPanel.add(rightActionPanel, BorderLayout.EAST);
 
-        return colorTopBarPanel;
+        return tealTopBarPanel;
     }
 
     private JTable createInventoryTable() {
-        // ... (This method remains the same as in the previous "full revised InventoryScene" response) ...
         JTable table = new JTable();
         table.setRowHeight(40);
         table.setFont(new Font("Montserrat", Font.PLAIN, 12));
@@ -243,14 +248,12 @@ public class InventoryScene extends JPanel implements Scene {
             }
         };
         table.setModel(inventoryTableModel);
-
         sorter = new TableRowSorter<>(inventoryTableModel);
         table.setRowSorter(sorter);
         return table;
     }
 
      private void setupTableRenderersAndEditors() {
-        // ... (This method remains the same as in the previous "full revised InventoryScene" response) ...
         if (inventoryTable == null) return;
         TableColumnModel columnModel = inventoryTable.getColumnModel();
 
@@ -269,16 +272,13 @@ public class InventoryScene extends JPanel implements Scene {
         columnModel.getColumn(COL_ITEM_ID).setCellRenderer(new ItemIdRenderer());
         columnModel.getColumn(COL_STOCK_LEVEL).setCellRenderer(new StockLevelRenderer());
         columnModel.getColumn(COL_UNIT_PRICE).setCellRenderer(new CurrencyRenderer());
-
         TableCellRenderer buttonRenderer = new ButtonRenderer();
         columnModel.getColumn(COL_ACTION).setCellRenderer(buttonRenderer);
         columnModel.getColumn(COL_ACTION).setCellEditor(new ButtonEditor(this, buttonRenderer));
-
         hideColumn(inventoryTable, HIDDEN_COL_ITEM_STOCK_ID);
     }
 
     private void hideColumn(JTable table, int columnIndex) {
-        // ... (This method remains the same) ...
          if (table != null && table.getColumnCount() > columnIndex && columnIndex >= 0) {
              TableColumnModel tcm = table.getColumnModel();
              tcm.getColumn(columnIndex).setMinWidth(0);
@@ -286,84 +286,151 @@ public class InventoryScene extends JPanel implements Scene {
              tcm.getColumn(columnIndex).setWidth(0);
              tcm.getColumn(columnIndex).setPreferredWidth(0);
          } else {
-             System.err.println("Warning: Could not hide column at index " + columnIndex + ". Table column count: " + (table != null ? table.getColumnCount() : "null table"));
+             System.err.println("Warning: Could not hide column at index " + columnIndex);
          }
      }
 
     public void refreshTableData() {
-        // ... (This method remains the same) ...
         System.out.println(getSceneName() + ": Refreshing table data...");
-        if (inventoryTable != null) {
+        if (inventoryTable != null && inventoryTableModel != null) { // Added null check for model
             populateInventoryTable();
+            applyTableFilters(activeCategoryFilter, activeSupplierFilter);
         } else {
-            System.err.println("Inventory table is null, cannot refresh.");
+            System.err.println("Inventory table or model is null, cannot refresh.");
         }
     }
 
     private void performSearch() {
-        // ... (This method remains the same) ...
-        if (searchField == null || sorter == null) return;
-        String searchText = searchField.getText();
-        try {
-             List<RowFilter<Object, Object>> filters = new ArrayList<>();
-             if (!searchText.trim().isEmpty()) {
-                 String regex = "(?i)" + searchText;
-                 filters.add(RowFilter.regexFilter(regex, COL_PRODUCT_NAME));
-                 filters.add(RowFilter.regexFilter(regex, COL_ITEM_ID));
-                 filters.add(RowFilter.regexFilter(regex, COL_CATEGORY));
-                 filters.add(RowFilter.regexFilter(regex, COL_PACK_TYPE));
-                 filters.add(RowFilter.regexFilter(regex, COL_SUPPLIER));
-                 sorter.setRowFilter(RowFilter.orFilter(filters));
-             } else {
-                 sorter.setRowFilter(null);
-             }
-        } catch (PatternSyntaxException e) {
-            System.err.println("Invalid regex pattern: " + e.getMessage());
+        applyTableFilters(activeCategoryFilter, activeSupplierFilter);
+    }
+
+    private void openFilterDialog() {
+        Window owner = SwingUtilities.getWindowAncestor(this);
+        InventoryFilterDialog dialog = new InventoryFilterDialog(owner, this, activeCategoryFilter, activeSupplierFilter);
+        dialog.setVisible(true);
+    }
+
+    public void applyTableFilters(String category, String supplier) {
+        if (sorter == null) {
+            System.err.println("Sorter not initialized. Cannot apply filters.");
+            return;
+        }
+        this.activeCategoryFilter = (category == null || category.trim().isEmpty()) ? "ALL" : category;
+        this.activeSupplierFilter = (supplier == null || supplier.trim().isEmpty()) ? "ALL" : supplier;
+        System.out.println("Applying filters - Category: " + activeCategoryFilter + ", Supplier: " + activeSupplierFilter);
+
+        List<RowFilter<Object, Object>> combinedFilters = new ArrayList<>();
+        if (!"ALL".equalsIgnoreCase(activeCategoryFilter)) {
+            combinedFilters.add(RowFilter.regexFilter("(?i)^" + Pattern.quote(activeCategoryFilter) + "$", COL_CATEGORY));
+        }
+        if (!"ALL".equalsIgnoreCase(activeSupplierFilter)) {
+            combinedFilters.add(RowFilter.regexFilter("(?i)^" + Pattern.quote(activeSupplierFilter) + "$", COL_SUPPLIER));
+        }
+
+        String searchText = (searchField != null) ? searchField.getText().trim() : "";
+        if (!searchText.isEmpty()) {
+            try {
+                String regex = "(?i)" + Pattern.quote(searchText);
+                List<RowFilter<Object,Object>> textSearchORFilters = new ArrayList<>();
+                textSearchORFilters.add(RowFilter.regexFilter(regex, COL_PRODUCT_NAME));
+                textSearchORFilters.add(RowFilter.regexFilter(regex, COL_ITEM_ID));
+                // Add other text-searchable columns as needed (e.g., pack type, category if not exact match)
+                combinedFilters.add(RowFilter.orFilter(textSearchORFilters));
+            } catch (PatternSyntaxException pse) {
+                System.err.println("Search text created invalid regex: " + pse.getMessage());
+            }
+        }
+
+        if (combinedFilters.isEmpty()) {
             sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.andFilter(combinedFilters));
         }
     }
 
     private void openAddItemDialog() {
-        // ... (This method remains the same) ...
         Window owner = SwingUtilities.getWindowAncestor(this);
-        com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.AddItemDialog dialog =
-            new com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.AddItemDialog(owner, this);
+        AddItemDialog dialog = new AddItemDialog(owner, this);
         dialog.setVisible(true);
     }
 
     public void openEditItemDialog(int viewRow) {
-        // ... (This method remains the same) ...
-        if (inventoryTable == null) return;
+        if (inventoryTable == null || inventoryTableModel == null) return;
         int modelRow = inventoryTable.convertRowIndexToModel(viewRow);
-        TableModel model = inventoryTable.getModel();
-
+        if (modelRow < 0 || modelRow >= inventoryTableModel.getRowCount()) {
+             System.err.println("EditItem: Invalid modelRow ("+modelRow+") from viewRow: " + viewRow);
+             return;
+        }
         try {
-            String productName = (String) model.getValueAt(modelRow, COL_PRODUCT_NAME);
-            StockInfo stockInfo = (StockInfo) model.getValueAt(modelRow, COL_STOCK_LEVEL);
-            BigDecimal unitPrice = (BigDecimal) model.getValueAt(modelRow, COL_UNIT_PRICE);
-            int itemStockId = (Integer) model.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
-
-            System.out.println("Editing Item Stock ID: " + itemStockId + ", Product: " + productName);
-
-             Window owner = SwingUtilities.getWindowAncestor(this);
-             com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.EditItemStockDialog dialog =
-                 new com.github.hanzm_10.murico.swingapp.scenes.inventory.dialogs.EditItemStockDialog(
-                     owner, this, itemStockId, productName,
+            String productName = (String) inventoryTableModel.getValueAt(modelRow, COL_PRODUCT_NAME);
+            StockInfo stockInfo = (StockInfo) inventoryTableModel.getValueAt(modelRow, COL_STOCK_LEVEL);
+            BigDecimal unitPrice = (BigDecimal) inventoryTableModel.getValueAt(modelRow, COL_UNIT_PRICE);
+            int itemStockId = (Integer) inventoryTableModel.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
+            System.out.println("Opening Edit Dialog for Item Stock ID: " + itemStockId);
+            Window owner = SwingUtilities.getWindowAncestor(this);
+            EditItemStockDialog dialog = new EditItemStockDialog(owner, this, itemStockId, productName,
                      stockInfo.getMinimumQuantity(), unitPrice, stockInfo.getQuantity());
-             dialog.setVisible(true);
-
-        } catch (ClassCastException | ArrayIndexOutOfBoundsException e) {
+            dialog.setVisible(true);
+        } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error retrieving item data for editing.\n" + e.getMessage(), "Data Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error retrieving item data for editing: " + e.getMessage(), "Data Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void openRestockDialog(int modelRow) {
+        if (inventoryTable == null || inventoryTableModel == null || modelRow < 0 || modelRow >= inventoryTableModel.getRowCount()) {
+            System.err.println("RestockItem: Invalid modelRow: " + modelRow);
+            return;
+        }
+        try {
+            int itemStockId = (Integer) inventoryTableModel.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
+            String productName = (String) inventoryTableModel.getValueAt(modelRow, COL_PRODUCT_NAME);
+            StockInfo stockInfo = (StockInfo) inventoryTableModel.getValueAt(modelRow, COL_STOCK_LEVEL);
+            int currentQuantity = stockInfo.getQuantity();
+            int coreItemId = stockInfo.getItemId();
+            System.out.println("Opening Restock Dialog for Item Stock ID: " + itemStockId + ", Core Item ID: " + coreItemId);
+            Window owner = SwingUtilities.getWindowAncestor(this);
+            RestockItemDialog dialog = new RestockItemDialog(owner, this, itemStockId, coreItemId, productName, currentQuantity);
+            dialog.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error preparing for restock: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void handleDeleteItem(int modelRow) {
+         if (inventoryTable == null || inventoryTableModel == null || modelRow < 0 || modelRow >= inventoryTableModel.getRowCount()) {
+            System.err.println("ArchiveItem: Invalid modelRow: " + modelRow);
+            return;
+        }
+        try {
+            StockInfo stockInfo = (StockInfo) inventoryTableModel.getValueAt(modelRow, COL_STOCK_LEVEL);
+            int itemIdToArchive = stockInfo.getItemId();
+            String productName = (String) inventoryTableModel.getValueAt(modelRow, COL_PRODUCT_NAME);
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to archive the item '" + productName + "' (Item ID: " + itemIdToArchive + ")?\n" +
+                    "This will hide the item and all its stock variants from active views.\n" +
+                    "It can usually be recovered by an administrator.",
+                    "Confirm Archive Item", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (confirm == JOptionPane.YES_OPTION) {
+                System.out.println("Attempting to archive core Item ID: " + itemIdToArchive);
+                boolean success = archiveCoreItem(itemIdToArchive);
+                if (success) {
+                   JOptionPane.showMessageDialog(this, "Item '" + productName + "' and its stock have been archived.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                   refreshTableData();
+                } else {
+                   System.err.println("Archiving failed for core item ID: " + itemIdToArchive + " (parent notification)");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error preparing for item archival: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void populateInventoryTable() {
-        // ... (This method remains the same as in the previous "full revised InventoryScene" response, with the corrected SQL JOIN) ...
         if (inventoryTable == null || inventoryTableModel == null) return;
-
         inventoryTableModel.setRowCount(0);
-
         String sql = """
             SELECT
                 i.name AS product_name,
@@ -377,18 +444,17 @@ public class InventoryScene extends JPanel implements Scene {
                 ist._item_stock_id
             FROM item_stocks ist
             JOIN items i ON ist._item_id = i._item_id
-            LEFT JOIN packagings p ON ist._packaging_id = p._packaging_id -- Corrected JOIN
+            LEFT JOIN packagings p ON ist._packaging_id = p._packaging_id
             LEFT JOIN item_categories_items ici ON i._item_id = ici._item_id
             LEFT JOIN item_categories ic ON ici._item_category_id = ic._item_category_id
             LEFT JOIN suppliers_items si ON i._item_id = si._item_id
             LEFT JOIN suppliers s ON si._supplier_id = s._supplier_id
+            WHERE i.is_deleted = FALSE AND ist.is_deleted = FALSE
             ORDER BY i.name
             """;
-
         try (Connection conn = MySqlFactoryDao.createConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
                 row.add(rs.getString("product_name"));
@@ -396,19 +462,18 @@ public class InventoryScene extends JPanel implements Scene {
                 row.add(rs.getString("category_name") != null ? rs.getString("category_name") : "N/A");
                 row.add(rs.getString("pack_type_name") != null ? rs.getString("pack_type_name") : "N/A");
                 row.add(rs.getString("supplier_name") != null ? rs.getString("supplier_name") : "N/A");
-                row.add(new StockInfo(rs.getInt("quantity"), rs.getInt("minimum_quantity")));
+                row.add(new StockInfo(rs.getInt("_item_id"), rs.getInt("quantity"), rs.getInt("minimum_quantity")));
                 row.add(rs.getBigDecimal("unit_price"));
                 row.add("...");
                 row.add(rs.getInt("_item_stock_id"));
                 inventoryTableModel.addRow(row);
             }
-            System.out.println(getSceneName() + ": Table populated with " + inventoryTableModel.getRowCount() + " rows.");
-            performSearch();
+            System.out.println(getSceneName() + ": Table populated with " + inventoryTableModel.getRowCount() + " rows (excluding archived).");
+            // Do not call performSearch() here, refreshTableData will call applyTableFilters
         } catch (SQLException e) {
              System.err.println("SQL Error fetching inventory data: " + e.getMessage());
              e.printStackTrace();
-             JOptionPane.showMessageDialog(this, "An error occurred while fetching inventory data:\n" + e.getMessage(),
-                    "Database Query Error", JOptionPane.ERROR_MESSAGE);
+             JOptionPane.showMessageDialog(this, "An error occurred while fetching inventory data:\n" + e.getMessage(), "Database Query Error", JOptionPane.ERROR_MESSAGE);
              inventoryTableModel.setRowCount(0);
              Vector<Object> errorRow = new Vector<>();
              for (int i = 0; i < inventoryTableModel.getColumnCount(); i++) {
@@ -418,16 +483,13 @@ public class InventoryScene extends JPanel implements Scene {
         }
     }
 
-    // Renamed to createStyledIconButton to distinguish from a generic one
     private JButton createStyledIconButton(String svgPath, String toolTip, int width, int height) {
         JButton button = new JButton();
         try {
-            // Assuming AssetManager.getOrLoadIcon is updated to take width and height
             ImageIcon icon = AssetManager.getOrLoadIcon(svgPath);
             if (icon != null) {
                 button.setIcon(icon);
             } else {
-                System.err.println("AssetManager: Icon not found or failed to load: " + svgPath + ". Using text fallback.");
                 button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
             }
         } catch (Exception e) {
@@ -436,15 +498,10 @@ public class InventoryScene extends JPanel implements Scene {
             button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
         }
         button.setToolTipText(toolTip);
-        button.setBorderPainted(false);     // Your preference: no border
-        button.setContentAreaFilled(false); // Your preference: transparent background
-        button.setFocusPainted(false);
-        button.setOpaque(false);            // Also helps with transparency
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return button;
     }
 
-    // Renamed to createStyledIconLabel for consistency if needed
     private JLabel createIconLabelWithAssetManager(String svgPath, String toolTip, int width, int height) {
         JLabel label = new JLabel();
         try {
@@ -452,7 +509,7 @@ public class InventoryScene extends JPanel implements Scene {
             if (icon != null) {
                 label.setIcon(icon);
             } else {
-                System.err.println("AssetManager: Icon not found or failed to load for label: " + svgPath);
+                System.err.println("AssetManager: Icon not found for label: " + svgPath);
             }
         } catch (Exception e) {
             System.err.println("Error loading icon for label via AssetManager: " + svgPath + " - " + e.getMessage());
@@ -463,10 +520,8 @@ public class InventoryScene extends JPanel implements Scene {
         return label;
     }
 
-    // Database modification method (example)
     public boolean updateItemStockDetails(int itemStockId, BigDecimal newPrice, int newMinQuantity) {
-         // ... (This method remains the same) ...
-         String sql = "UPDATE item_stocks SET price_php = ?, minimum_quantity = ? WHERE _item_stock_id = ?";
+         String sql = "UPDATE item_stocks SET price_php = ?, minimum_quantity = ?, updated_at = CURRENT_TIMESTAMP WHERE _item_stock_id = ? AND is_deleted = FALSE";
          try (Connection conn = MySqlFactoryDao.createConnection();
               PreparedStatement pstmt = conn.prepareStatement(sql)) {
              pstmt.setBigDecimal(1, newPrice);
@@ -480,4 +535,81 @@ public class InventoryScene extends JPanel implements Scene {
              return false;
          }
      }
+
+    public boolean processRestock(int itemStockId, int quantityToAdd, int quantityBefore) {
+        if (quantityToAdd <= 0) {
+            JOptionPane.showMessageDialog(this, "Quantity to add must be positive.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        Connection conn = null;
+        boolean success = false;
+        int quantityAfter = quantityBefore + quantityToAdd;
+        try {
+            conn = MySqlFactoryDao.createConnection();
+            conn.setAutoCommit(false);
+            String updateStockSql = "UPDATE item_stocks SET quantity = ? WHERE _item_stock_id = ? AND is_deleted = FALSE";
+            try (PreparedStatement pstmtStock = conn.prepareStatement(updateStockSql)) {
+                pstmtStock.setInt(1, quantityAfter);
+                pstmtStock.setInt(2, itemStockId);
+                int rowsAffected = pstmtStock.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new SQLException("Restock failed: Item stock record not found, not updated, or already deleted. Stock ID: " + itemStockId);
+                }
+            }
+            String insertRestockSql = "INSERT INTO item_restocks (_item_stock_id, quantity_before, quantity_after, quantity_added) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement pstmtRestock = conn.prepareStatement(insertRestockSql)) {
+                pstmtRestock.setInt(1, itemStockId);
+                pstmtRestock.setInt(2, quantityBefore);
+                pstmtRestock.setInt(3, quantityAfter);
+                pstmtRestock.setInt(4, quantityToAdd);
+                pstmtRestock.executeUpdate();
+            }
+            conn.commit();
+            success = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) { try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); } }
+            JOptionPane.showMessageDialog(this, "Error processing restock: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (conn != null) { try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ex) { ex.printStackTrace(); } }
+        }
+        return success;
+    }
+
+    public boolean archiveCoreItem(int itemId) {
+        String updateItemSql = "UPDATE items SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE _item_id = ? AND is_deleted = FALSE";
+        String updateItemStocksSql = "UPDATE item_stocks SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE _item_id = ? AND is_deleted = FALSE";
+        Connection conn = null;
+        boolean success = false;
+        try {
+            conn = MySqlFactoryDao.createConnection();
+            conn.setAutoCommit(false);
+            int itemRowsAffected = 0;
+            try (PreparedStatement pstmtItem = conn.prepareStatement(updateItemSql)) {
+                pstmtItem.setInt(1, itemId);
+                itemRowsAffected = pstmtItem.executeUpdate();
+            }
+            if (itemRowsAffected > 0) {
+                try (PreparedStatement pstmtStocks = conn.prepareStatement(updateItemStocksSql)) {
+                    pstmtStocks.setInt(1, itemId);
+                    int stockRowsAffected = pstmtStocks.executeUpdate();
+                    System.out.println("Archived " + stockRowsAffected + " stock variants for item ID: " + itemId);
+                }
+                conn.commit();
+                success = true;
+                System.out.println("Successfully archived item ID: " + itemId + " and its stock.");
+            } else {
+                conn.rollback();
+                JOptionPane.showMessageDialog(this, "Item not found or already archived.", "Archive Not Performed", JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("Item ID: " + itemId + " not found or already archived. No changes made.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) { try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); } }
+            JOptionPane.showMessageDialog(this, "Error archiving item: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (conn != null) { try { conn.setAutoCommit(true); conn.close(); } catch (SQLException e) { e.printStackTrace(); } }
+        }
+        return success;
+    }
 }
