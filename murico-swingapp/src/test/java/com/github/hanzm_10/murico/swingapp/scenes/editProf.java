@@ -2,12 +2,12 @@ package com.github.hanzm_10.murico.swingapp.scenes;
 
 import javax.swing.JFrame;
 
-import com.github.hanzm_10.murico.swingapp.scenes.home.EditProfile;
+import com.github.hanzm_10.murico.swingapp.scenes.home.EditProfileScene;
 
 public class editProf {
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
-		EditProfile scene = new EditProfile();
+		EditProfileScene scene = new EditProfileScene();
 		frame.add(scene.getSceneView());
 		scene.onCreate();
 		frame.setDefaultCloseOperation(2);

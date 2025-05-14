@@ -168,5 +168,8 @@ public class EditProfile extends Profile {
 	            pop.setBorder(new LineBorder(new Color(40,120,120), 1, true));
 	            return pop;
 	        }
+	        
+	        
 	    }
+	    
 }

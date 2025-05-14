@@ -43,7 +43,7 @@ public class Profile{
 		return null;
     }
     
-    public void profile(int userId, String userFirstName, String userLastName, String email, String role) {
+    public void profile(int userId, String userFirstName, String userLastName, String gender) {
   
     
     try{var conn = MySqlFactoryDao.createConnection();
@@ -51,8 +51,7 @@ public class Profile{
     	var pstmtQuery = conn.prepareStatement(query);
     	pstmtQuery.setString(1, userFirstName );
     	pstmtQuery.setString(2, userLastName );
-    	pstmtQuery.setString(3, email);
-    	pstmtQuery.setString(4, role);
+    	pstmtQuery.setString(3, gender);
     	pstmtQuery.setInt(5, userId );
     	int rows = pstmtQuery.executeUpdate();
     	System.out.println(rows + "updated");
