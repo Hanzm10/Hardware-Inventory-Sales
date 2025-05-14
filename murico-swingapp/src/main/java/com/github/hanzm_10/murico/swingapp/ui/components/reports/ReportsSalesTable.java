@@ -92,7 +92,12 @@ public class ReportsSalesTable {
 
 		labelTitle = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml("Sales Breakdown"), 24, Styles.PRIMARY_COLOR);
 
-		tableModel = new DefaultTableModel();
+		tableModel = new DefaultTableModel() {
+			@Override
+			public boolean isCellEditable(int r, int c) {
+				return false;
+			}
+		};
 		table = new JTable(tableModel);
 		scrollPane = new JScrollPane(table);
 

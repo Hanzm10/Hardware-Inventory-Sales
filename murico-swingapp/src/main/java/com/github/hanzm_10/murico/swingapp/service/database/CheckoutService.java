@@ -29,7 +29,7 @@ public class CheckoutService {
 			// BigDecimal paymentAmount, BigDecimal pureTotal,
 			// BigDecimal totalWithVat, BigDecimal vatAmount,
 			BigDecimal calculatedTotal, // Keep the calculated total for potential use in 'sales' table
-			Integer customerId, int employeeId)
+			Integer customerId, int employeeId, BigDecimal payment)
 			throws SQLException, InsufficientStockException, IllegalArgumentException {
 
 		if (items == null || items.isEmpty()) {
@@ -98,9 +98,11 @@ public class CheckoutService {
 			// --- (This part remains largely the same as before) ---
 			String sqlItemInsert = "INSERT INTO customer_orders_item_stocks (_customer_order_id, _item_stock_id, price_php, quantity) VALUES (?, ?, ?, ?)";
 			String sqlStockUpdate = "UPDATE item_stocks SET quantity = quantity - ? WHERE _item_stock_id = ? AND quantity >= ?";
-
+			String sqlPayment = "INSERT INTO customer_payments (_customer_order_id, amount_php, payment_method) VALUES (?, ?, 'cash');";
+			
 			try (PreparedStatement pstmtItemInsert = conn.prepareStatement(sqlItemInsert);
-					PreparedStatement pstmtStockUpdate = conn.prepareStatement(sqlStockUpdate)) {
+					PreparedStatement pstmtStockUpdate = conn.prepareStatement(sqlStockUpdate);
+					var pstmtPayment = conn.prepareStatement(sqlPayment)) {
 
 				for (OrderLineItemData item : items) {
 					if (item.quantity() <= 0) {
@@ -143,6 +145,9 @@ public class CheckoutService {
 						throw new InsufficientStockException(errorMsg);
 					}
 				}
+				pstmtPayment.setInt(1, generatedOrderId);
+				pstmtPayment.setBigDecimal(2, payment);
+				pstmtPayment.executeUpdate();
 
 			} // Closes item/stock statements
 
