@@ -55,6 +55,9 @@ import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.ItemI
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.ProductNameRenderer;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.StockInfo;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.StockLevelRenderer;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
+
+import net.miginfocom.swing.MigLayout;
 
 public class InventoryScene implements Scene, DocumentListener {
 	private static final Logger LOGGER = MuricoLogger.getLogger(InventoryScene.class);
@@ -86,7 +89,7 @@ public class InventoryScene implements Scene, DocumentListener {
 
 	private JScrollPane scrollPane;
 
-	private JPanel tealTopBar;
+	private RoundedPanel tealTopBar;
 	private JPanel tealTopBarRightActionPanel;
 
 	public void applyTableFilters() {
@@ -183,8 +186,8 @@ public class InventoryScene implements Scene, DocumentListener {
 		tealTopBarRightActionPanel.add(filterButton);
 		tealTopBarRightActionPanel.add(searchField);
 
-		tealTopBar.add(addButton, BorderLayout.WEST);
-		tealTopBar.add(tealTopBarRightActionPanel, BorderLayout.EAST);
+		tealTopBar.add(addButton, "cell 0 0");
+		tealTopBar.add(tealTopBarRightActionPanel, "cell 1 0");
 
 		view.add(tealTopBar, BorderLayout.NORTH);
 		view.add(scrollPane);
@@ -273,8 +276,8 @@ public class InventoryScene implements Scene, DocumentListener {
 	}
 
 	private void createTealTopBar() {
-		tealTopBar = new JPanel(new BorderLayout(10, 0));
-		tealTopBar.setBorder(new EmptyBorder(8, 10, 8, 10));
+		tealTopBar = new RoundedPanel(20);
+		tealTopBar.setLayout(new MigLayout("insets 8, filly", "[]push[]", "[grow]"));
 
 		tealTopBar.setBackground(new Color(0x337E8F));
 
