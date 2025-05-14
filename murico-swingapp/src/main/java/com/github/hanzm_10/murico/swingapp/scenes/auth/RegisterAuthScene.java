@@ -122,7 +122,9 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		registerThread = new Thread(() -> {
 			try {
 				SessionService.register(name, email, password);
-				;
+				SwingUtilities.invokeLater(() -> {
+					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view), "You have been successfully registered! Kindly login");
+				});
 			} catch (MuricoError e) {
 				switch (e.getErrorCode()) {
 				case INVALID_CREDENTIALS:
