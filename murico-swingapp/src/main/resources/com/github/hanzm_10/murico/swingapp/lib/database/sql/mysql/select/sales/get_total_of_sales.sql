@@ -8,4 +8,4 @@ LEFT JOIN (
     FROM customer_orders_item_stocks oits
 
 	GROUP BY _customer_order_id
-) coits ON coits._customer_order_id = s._customer_order_id;
+) coits ON coits._customer_order_id = s._customer_order_id LIMIT 1000;
