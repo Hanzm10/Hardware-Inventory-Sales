@@ -148,23 +148,24 @@ public class CheckoutService {
 
 			// 3. Insert into 'sales' table (assuming this is where totals go now)
 			// -----------------------------------------------------------------
-			String sqlSales = "INSERT INTO sales (_customer_order_id, total_price_php, total_amount_paid_php, change_php) VALUES (?, ?, ?, ?)";
-			try (PreparedStatement pstmtSales = conn.prepareStatement(sqlSales)) {
-				// TODO: Get actual payment amount and calculate change
-				BigDecimal paymentAmount = calculatedTotal; // Placeholder - assuming exact payment
-				BigDecimal changeAmount = paymentAmount.subtract(calculatedTotal); // Placeholder change calc
-
-				pstmtSales.setInt(1, generatedOrderId);
-				pstmtSales.setBigDecimal(2, calculatedTotal); // The final total cost
-				pstmtSales.setBigDecimal(3, paymentAmount);
-				pstmtSales.setBigDecimal(4, changeAmount);
-
-				int rowsAffected = pstmtSales.executeUpdate();
-				if (rowsAffected == 0) {
-					throw new SQLException("Failed to insert record into sales table.");
-				}
-				LOGGER.log(Level.INFO, "Sales record created for Order ID: {0}", generatedOrderId);
-			}
+			/*
+			 * String sqlSales =
+			 * "INSERT INTO sales (_customer_order_id, total_price_php, total_amount_paid_php, change_php) VALUES (?, ?, ?, ?)"
+			 * ; try (PreparedStatement pstmtSales = conn.prepareStatement(sqlSales)) { //
+			 * TODO: Get actual payment amount and calculate change BigDecimal paymentAmount
+			 * = calculatedTotal; // Placeholder - assuming exact payment BigDecimal
+			 * changeAmount = paymentAmount.subtract(calculatedTotal); // Placeholder change
+			 * calc
+			 * 
+			 * pstmtSales.setInt(1, generatedOrderId); pstmtSales.setBigDecimal(2,
+			 * calculatedTotal); // The final total cost pstmtSales.setBigDecimal(3,
+			 * paymentAmount); pstmtSales.setBigDecimal(4, changeAmount);
+			 * 
+			 * int rowsAffected = pstmtSales.executeUpdate(); if (rowsAffected == 0) { throw
+			 * new SQLException("Failed to insert record into sales table."); }
+			 * LOGGER.log(Level.INFO, "Sales record created for Order ID: {0}",
+			 * generatedOrderId); }
+			 */
 
 			// 4. Commit Transaction
 			// ---------------------

@@ -47,6 +47,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
+import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
+
 /**
  * A component responsible for displaying the receipt preview (using Monospaced
  * font) and handling the generation and saving of the receipt as a PDF (using
@@ -402,8 +404,8 @@ public class CheckoutReceiptComponent extends JPanel {
 
 			try (PDDocument document = new PDDocument()) {
 				// --- Load Custom Fonts ---
-				try (InputStream fontStream = getClass().getResourceAsStream("/fonts/DejaVuSansMono.ttf");
-						InputStream fontBoldStream = getClass().getResourceAsStream("/fonts/DejaVuSansMono-Bold.ttf")) {
+				try (InputStream fontStream = AssetManager.class.getResourceAsStream("fonts/DejaVuSansMono.ttf");
+						InputStream fontBoldStream = AssetManager.class.getResourceAsStream("fonts/DejaVuSansMono-Bold.ttf")) {
 
 					if (fontStream == null) {
 						throw new IOException(
