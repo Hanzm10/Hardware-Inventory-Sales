@@ -166,7 +166,7 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener,
 		CheckoutService checkoutService = new CheckoutService();
 		try {
 			// Pass the definitively correct currentTotalAmount
-			int generatedOrderId = checkoutService.finalizeOrder(orderItems, currentTotalAmount, customerId, employeeId);
+			int generatedOrderId = checkoutService.finalizeOrder(orderItems, currentTotalAmount, customerId, employeeId, currentCashTenderedForPreview);
 			this.lastFinalizedOrderId = generatedOrderId;
 
 			JOptionPane.showMessageDialog(this, "Order #" + generatedOrderId + " finalized!", "Complete", JOptionPane.INFORMATION_MESSAGE);
