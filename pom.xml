@@ -3,15 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.hanzm_10.murico</groupId>
     <artifactId>Hardware-Inventory-Sales</artifactId>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Murico - Hardware Inventory and Sales System</name>
     <description>Murico is a hardware inventory and sales system designed to help users manage their hardware assets efficiently made by students of Technological Institute of the Philippines - Quezon City.</description>
     <scm>
         <url>https://github.com/Hanzm10/Hardware-Inventory-Sales</url>
         <connection>scm:git:https://github.com/Hanzm10/Hardware-Inventory-Sales.git</connection>
-      <tag>Hardware-Inventory-Sales-1.0</tag>
-  </scm>
+    </scm>
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
