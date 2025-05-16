@@ -14,6 +14,7 @@
 package com.github.hanzm_10.murico.swingapp.ui.inputs;
 
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,14 +33,28 @@ public class TextFieldFactory {
 		return textField;
 	}
 
+	public static JTextArea createTextArea(int fontSize) {
+		var textArea = new JTextArea();
+
+		textArea.setFont(textArea.getFont().deriveFont((float) fontSize));
+
+		return textArea;
+	}
+
 	public static JTextField createTextField() {
 		return createTextField("");
 	}
 
 	public static JTextField createTextField(@NotNull final String placeholder) {
+		return createTextField(placeholder, 16);
+	}
+
+	public static JTextField createTextField(@NotNull final String placeholder, int fontSize) {
 		var textField = new JTextField();
 		textField.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
 		textField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, placeholder);
+
+		textField.setFont(textField.getFont().deriveFont((float) fontSize));
 
 		return textField;
 	}

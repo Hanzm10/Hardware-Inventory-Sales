@@ -14,7 +14,9 @@
 package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +31,101 @@ import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 public class MySqlItemDao implements ItemDao {
+
+	@Override
+	public void addItem(int initQty, int minQty, String itemName, String itemDescription, int selectedCategory,
+			int selectedPackaging, int selectedSupplier, BigDecimal sellingPrice, BigDecimal srp, BigDecimal costPrice)
+			throws IOException, SQLException {
+		var insertItemQuery = MySqlQueryLoader.getInstance().get("insert_item", "items", SqlQueryType.INSERT);
+		var insertItemStockQuery = MySqlQueryLoader.getInstance().get("insert_item_stock", "items",
+				SqlQueryType.INSERT);
+		var insertItemCategoryQuery = MySqlQueryLoader.getInstance().get("insert_item_category", "items",
+				SqlQueryType.INSERT);
+		var insertSupplierItemQuery = MySqlQueryLoader.getInstance().get("insert_supplier_item", "items",
+				SqlQueryType.INSERT);
+
+		try (var conn = MySqlFactoryDao.createConnection();
+				var statement = conn.prepareStatement(insertItemQuery, Statement.RETURN_GENERATED_KEYS);
+				var statement2 = conn.prepareStatement(insertItemStockQuery);
+				var statement3 = conn.prepareStatement(insertItemCategoryQuery);
+				var statement4 = conn.prepareStatement(insertSupplierItemQuery);) {
+			conn.setAutoCommit(false);
+
+			ConnectionManager.register(Thread.currentThread(), statement);
+
+			int generatedItemItemId = -1;
+
+			try {
+				statement.setString(1, itemName);
+				statement.setString(2, itemDescription);
+				statement.executeUpdate();
+
+				var generatedKeys = statement.getGeneratedKeys();
+
+				if (generatedKeys.next()) {
+					generatedItemItemId = generatedKeys.getInt(1);
+				}
+			} catch (SQLException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				ConnectionManager.unregister(Thread.currentThread());
+			}
+
+			if (generatedItemItemId == -1) {
+				throw new SQLException("Failed to retrieve generated item ID.");
+			}
+
+			ConnectionManager.register(Thread.currentThread(), statement2);
+
+			statement2.setInt(1, generatedItemItemId);
+			statement2.setInt(2, selectedPackaging);
+			statement2.setInt(3, initQty);
+			statement2.setInt(4, minQty);
+			statement2.setBigDecimal(5, srp);
+			statement2.setBigDecimal(6, sellingPrice);
+
+			try {
+				statement2.executeUpdate();
+			} catch (SQLException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				ConnectionManager.unregister(Thread.currentThread());
+			}
+
+			ConnectionManager.register(Thread.currentThread(), statement3);
+
+			statement3.setInt(1, selectedCategory);
+			statement3.setInt(2, generatedItemItemId);
+
+			try {
+				statement3.executeUpdate();
+			} catch (SQLException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				ConnectionManager.unregister(Thread.currentThread());
+			}
+
+			ConnectionManager.register(Thread.currentThread(), statement4);
+			statement4.setInt(1, selectedSupplier);
+			statement4.setInt(2, generatedItemItemId);
+			statement4.setBigDecimal(3, srp);
+			statement4.setBigDecimal(4, costPrice);
+
+			try {
+				statement4.executeUpdate();
+			} catch (SQLException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				ConnectionManager.unregister(Thread.currentThread());
+			}
+
+			conn.commit();
+		}
+	}
 
 	@Override
 	public Item getItemById(@Range(from = 0, to = 2147483647) int itemID) throws IOException, SQLException {

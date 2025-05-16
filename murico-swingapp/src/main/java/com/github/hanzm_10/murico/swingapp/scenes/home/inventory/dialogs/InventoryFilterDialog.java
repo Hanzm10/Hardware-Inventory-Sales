@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventoryScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
 
 // Helper class for ComboBox items (can be shared or defined here)
 class FilterComboBoxItem {
@@ -47,7 +47,7 @@ class FilterComboBoxItem {
 
 public class InventoryFilterDialog extends JDialog {
 
-	private final InventoryScene parentScene;
+	private final InventorySceneNew parentScene;
 	private JComboBox<FilterComboBoxItem> categoryFilterCombo;
 	private JComboBox<FilterComboBoxItem> supplierFilterCombo;
 	// Add more JComboBoxes or JSpinners for other filter criteria (e.g., stock
@@ -56,7 +56,8 @@ public class InventoryFilterDialog extends JDialog {
 	private String currentCategoryFilter = "ALL"; // Store current selections
 	private String currentSupplierFilter = "ALL";
 
-	public InventoryFilterDialog(Window owner, InventoryScene parent, String initialCategory, String initialSupplier) {
+	public InventoryFilterDialog(Window owner, InventorySceneNew parent, String initialCategory,
+			String initialSupplier) {
 		super(owner, "Filter Inventory", Dialog.ModalityType.APPLICATION_MODAL);
 		this.parentScene = parent;
 		this.currentCategoryFilter = initialCategory != null ? initialCategory : "ALL";

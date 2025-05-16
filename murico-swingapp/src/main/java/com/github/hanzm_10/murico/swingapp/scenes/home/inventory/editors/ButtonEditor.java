@@ -16,7 +16,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventoryScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
 
 public class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 	// Action commands for menu items
@@ -24,13 +25,13 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor,
 	public static final String ACTION_RESTOCK = "ACTION_RESTOCK_ITEM";
 	public static final String ACTION_DELETE = "ACTION_DELETE_ITEM";
 	private final JButton ellipsisButton;
-	private final InventoryScene parentScene;
+	private final InventorySceneNew parentScene;
 
 	private int currentRowInTable; // View row index
 	private int currentModelRow; // Model row index
 	private JTable currentTableRef; // Reference to the table
 
-	public ButtonEditor(InventoryScene parentScene, TableCellRenderer renderer) {
+	public ButtonEditor(InventorySceneNew parentScene, TableCellRenderer renderer) {
 		this.parentScene = parentScene;
 		this.ellipsisButton = new JButton();
 
@@ -150,7 +151,7 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor,
 		// Determine position carefully if the table scrolls
 		if (currentTableRef != null) {
 			java.awt.Rectangle cellRect = currentTableRef.getCellRect(currentRowInTable,
-					currentTableRef.convertColumnIndexToView(InventoryScene.COL_ACTION), false);
+					currentTableRef.convertColumnIndexToView(InventoryTable.COL_ACTION), false);
 			popupMenu.show(currentTableRef, cellRect.x, cellRect.y + cellRect.height);
 		} else {
 			popupMenu.show(invoker, 0, invoker.getHeight()); // Fallback position

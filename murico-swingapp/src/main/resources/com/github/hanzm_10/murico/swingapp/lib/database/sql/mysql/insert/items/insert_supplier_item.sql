@@ -1,0 +1,1 @@
+INSERT INTO suppliers_items (_supplier_id, _item_id, srp_php, wsp_php) VALUES (?, ?, ?, ?);

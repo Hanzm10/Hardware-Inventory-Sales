@@ -16,10 +16,13 @@ package com.github.hanzm_10.murico.swingapp.lib.database;
 import java.util.logging.Logger;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.CategoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.PackagingDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.RoleDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.SupplierDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
@@ -75,13 +78,19 @@ public abstract class AbstractSqlFactoryDao {
 
 	public abstract AccountDao getAccountDao();
 
+	public abstract CategoryDao getCategoryDao();
+
 	public abstract ItemDao getItemDao();
+
+	public abstract PackagingDao getPackagingDao();
 
 	public abstract RoleDao getRoleDao();
 
 	public abstract SalesDao getSalesDao();
 
 	public abstract SessionDao getSessionDao();
+
+	public abstract SupplierDao getSupplierDao();
 
 	public abstract UserDao getUserDao();
 }
