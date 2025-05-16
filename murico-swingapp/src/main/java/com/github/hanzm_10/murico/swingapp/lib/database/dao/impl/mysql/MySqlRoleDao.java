@@ -26,13 +26,13 @@ public class MySqlRoleDao implements RoleDao {
 			var resultSet = statement.executeQuery();
 
 			while (resultSet.next()) {
-				roles.add(new Role(_userId, resultSet.getTimestamp("_createdAt"), resultSet.getTimestamp("updated_at"),
+				roles.add(new Role(_userId, resultSet.getTimestamp("_created_at"), resultSet.getTimestamp("updated_at"),
 						resultSet.getString("name"), resultSet.getString("description")));
 			}
 
 		}
 
-		return (Role[]) roles.toArray();
+		return roles.toArray(new Role[roles.size()]);
 	}
 
 }

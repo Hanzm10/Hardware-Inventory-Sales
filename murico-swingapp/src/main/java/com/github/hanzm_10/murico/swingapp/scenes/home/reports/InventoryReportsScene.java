@@ -1,6 +1,7 @@
 
 package com.github.hanzm_10.murico.swingapp.scenes.home.reports;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
@@ -20,7 +21,7 @@ public final class InventoryReportsScene implements Scene {
 
 	@Override
 	public void onCreate() {
-
+		view.add(new JLabel("To be implemented"));
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
+import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -66,11 +67,11 @@ public class ReadOnlyScene implements Scene {
 
 	private void initializeProfileUI() throws IOException, InterruptedException {
 		Profile profile = new Profile();
-		view.setBackground(new Color(0x00, true));
 
-		view.setLayout(new MigLayout("fill", "[340.00][413.00][]", "[][66.00][88.00][]"));
+		view.setLayout(new MigLayout("fill", "[grow][grow][grow]", "[grow][grow][grow][grow]"));
 		
 		rolePnl = new RoundedPanel(20);
+		view.setBackground(Styles.SECONDARY_COLOR);
 		rolePnl.setBackground(Styles.PRIMARY_COLOR);
 		rolePnl.setAlignmentX(Component.CENTER_ALIGNMENT);
 		rolePnl.setBounds(497, 425, 274, 56);
@@ -80,32 +81,25 @@ public class ReadOnlyScene implements Scene {
 		displayRoleLbl.setForeground(Color.WHITE);
 		username = SessionManager.getInstance().getLoggedInUser().displayName();
 		displayRoleLbl.setText(profile.getRoleByUsername(username));
-		displayRoleLbl.setFont(new Font("Montserrat", Font.BOLD, 20));
-		displayRoleLbl.setOpaque(false);
 		view.add(displayRoleLbl);
 		rolePnl.add(displayRoleLbl,  "cell 1 3, alignx right,aligny top");
 
 		profilepicLbl = new JLabel("");
-		profilepicLbl.setBackground(new Color(33, 64, 107));
 		profilepicLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profilepic.png")));
 
 		//profilepicLbl.setBounds(497, 64, 233, 229);
-		view.add(profilepicLbl, "cell 1 0,alignx center,growy");
+		view.add(profilepicLbl, "cell 1 1,alignx center,growy");
 
-		displaynameLbl = new JLabel();
+		displaynameLbl = LabelFactory.createBoldLabel(username.toUpperCase(), 64, Color.WHITE);
 		displaynameLbl.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		displaynameLbl.setForeground(Color.WHITE);
-		displaynameLbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		displaynameLbl.setText(username.toUpperCase());
-		displaynameLbl.setFont(new Font("Montserrat", Font.BOLD, 64));
-		displaynameLbl.setOpaque(false);
+	
 		view.add(displaynameLbl, "cell 1 2,alignx center,aligny top");
-
-		profileLogoLbl = new JLabel();
-		//profileLogoLbl.setBackground(new Color));
-		profileLogoLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profileRectangle.png")));
-		view.add(profileLogoLbl, "cell 0 1 4 4,alignx center,aligny top");
-		// profilePnl.setLayout(null);
+//
+//		profileLogoLbl = new JLabel();
+//		//profileLogoLbl.setBackground(new Color));
+//		profileLogoLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profileRectangle.png")));
+//		view.add(profileLogoLbl, "cell 0 1 4 4,alignx center,aligny top");
+//		// profilePnl.setLayout(null);
 
 		editProfBtn = new JButton("Edit Profile");
 		editProfBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -118,26 +112,6 @@ public class ReadOnlyScene implements Scene {
 			SceneNavigator.getInstance().navigateTo("home/profile/edit");
 					
 				
-			}
-		});
-		
-		editProfBtn.getModel().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                // Always keep background transparent
-                editProfBtn.setBackground(new Color(0x00, true));
-            }
-        });
-
-    		editProfBtn.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				editProfBtn.setBackground(new Color(0x00, true));
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				editProfBtn.setBackground(new Color(0x00, true));
 			}
 		});
 		

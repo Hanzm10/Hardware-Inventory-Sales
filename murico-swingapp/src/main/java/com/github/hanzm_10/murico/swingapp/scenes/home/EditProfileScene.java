@@ -100,7 +100,7 @@ private void initializeEditProfileUI() throws IOException, InterruptedException 
 	
 	JPanel profilePnl = new JPanel(new MigLayout("wrap, insets 20 50 20 50", "[grow,center]", "[]20[]20[]20[]20[]30[][]"));
     profilePnl.setBackground(new Color(33, 64, 107));
-	view.add(profilePnl, "growx, align center");
+	view.add(profilePnl, "growx,growy, align center");
 	
     JLabel pfpName = new JLabel();
 	pfpName.setBounds(420, 302, 365, 79);

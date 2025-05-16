@@ -1,64 +1,39 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
-import com.github.hanzm_10.murico.swingapp.constants.Styles;
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
-import com.github.hanzm_10.murico.swingapp.lib.navigation.guard.SceneGuard;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
-import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
-import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
-import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 
 import net.miginfocom.swing.MigLayout;
 
 public class ProfileScene implements Scene, SubSceneSupport {
-	public static class ProfileSceneGuard implements SceneGuard {
-		@Override
-		public boolean canAccess() {
-			return SessionManager.getInstance().getSession() != null
-					&& !SessionUtils.isSessionExpired(SessionManager.getInstance().getSession());
-		}
-	}
-	public static final SceneGuard GUARD = new ProfileSceneGuard();
-	
-	private SceneManager sceneManager;
+	private static final Logger LOGGER = MuricoLogger.getLogger(ProfileScene.class);
 	private JPanel view;
-	
+
+	private SceneManager sceneManager;
+
 	private void createSceneManager() {
 		sceneManager = new StaticSceneManager();
-		
-		sceneManager.registerScene("readonly", () -> new ReadOnlyScene(), GUARD);
-		sceneManager.registerScene("edit", () -> new EditProfileScene(), GUARD);
-	}
-	
-	@Override
-	public SceneManager getSceneManager() {
-		if (sceneManager == null) {
-			createSceneManager();
-		}
-		
-		return sceneManager;
+
+		sceneManager.registerScene("readonly", () -> new ReadOnlyScene(), HomeScene.GUARD);
+		sceneManager.registerScene("edit", () -> new EditProfileScene(), () -> {
+			if (!HomeScene.GUARD.canAccess()) {
+				return false;
+			}
+
+			return SessionManager.getInstance().getLoggedInUser().roles().contains("admin");
+		});
 	}
 
 	@Override
@@ -66,11 +41,17 @@ public class ProfileScene implements Scene, SubSceneSupport {
 		sceneManager.navigateTo(subSceneName);
 		
 	}
+	@Override
+	public SceneManager getSceneManager() {
+		if (sceneManager == null) {
+			createSceneManager();
+		}
+		return sceneManager;
+	}
 
 	@Override
 	public void navigateToDefault() {
-		SceneNavigator.getInstance().navigateTo(getSceneName() + ParsedSceneName.SEPARATOR + "readonly");
-		
+		SceneNavigator.getInstance().navigateTo("home" + ParsedSceneName.SEPARATOR + getSceneName() + ParsedSceneName.SEPARATOR + "readonly");
 	}
 
 	@Override
@@ -85,18 +66,16 @@ public class ProfileScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onCreate() {
-		view.add(sceneManager.getRootContainer());
-		if (sceneManager.getCurrentScene() == null) {
-			sceneManager.navigateTo("readonly");
-		}
-		
+		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
+		view.add(sceneManager.getRootContainer(), "grow");
 	}
+
 	@Override
 	public boolean onDestroy() {
 		sceneManager.destroy();
 		return true;
-		
 	}
+
 	@Override
 	public void onShow() {}
 		

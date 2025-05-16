@@ -64,4 +64,25 @@ public class LabelFactory {
 
 		return label;
 	}
+
+	public static JLabel createLabel() {
+		return createLabel("");
+	}
+
+	public static JLabel createLabel(@NotNull final String msg) {
+		return createLabel(msg, 16);
+	}
+
+	public static JLabel createLabel(@NotNull final String msg, @NotNull final int fontSize) {
+		return createLabel(msg, fontSize, UIManager.getColor("foreground"));
+	}
+
+	public static JLabel createLabel(@NotNull final String msg, @NotNull final int fontSize, @NotNull Color color) {
+		var label = new JLabel(msg);
+
+		label.setFont(label.getFont().deriveFont(fontSize));
+		label.setForeground(color);
+
+		return label;
+	}
 }

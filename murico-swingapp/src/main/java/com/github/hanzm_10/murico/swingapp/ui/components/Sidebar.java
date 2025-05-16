@@ -45,7 +45,7 @@ public class Sidebar {
 
 		container.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 16));
 		container.setLayout(new MigLayout("insets 16", "[50px::50px,grow]",
-				"[50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow]72px:push[50px::50px,grow]"));
+				"[50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow]72px:push[50px::50px,grow]"));
 
 		initBtns();
 		initBtnGroup();
@@ -60,12 +60,12 @@ public class Sidebar {
 
 	private void attachBtns() {
 		container.add(profileBtn, "cell 0 0,grow");
-		container.add(dashboardBtn, "cell 0 1,grow");
-		container.add(reportsBtn, "cell 0 2,grow");
-		container.add(inventoryBtn, "cell 0 3,grow");
-		container.add(orderMenuBtn, "cell 0 4,grow");
-		container.add(contactsBtn, "cell 0 5,grow");
-		container.add(settingsBtn, "cell 0 6, grow");
+		// container.add(dashboardBtn, "cell 0 1,grow");
+		container.add(reportsBtn, "cell 0 1,grow");
+		container.add(inventoryBtn, "cell 0 2,grow");
+		container.add(orderMenuBtn, "cell 0 3,grow");
+		container.add(contactsBtn, "cell 0 4,grow");
+		container.add(settingsBtn, "cell 0 5, grow");
 	}
 
 	private void attachListeners() {

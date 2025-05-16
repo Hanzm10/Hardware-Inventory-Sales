@@ -16,7 +16,7 @@ package com.github.hanzm_10.murico.swingapp.state;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.session.Session;
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
 
 public final class SessionManager {
@@ -30,13 +30,13 @@ public final class SessionManager {
 	}
 
 	private Session session;
-	private User loggedInUser;
+	private UserMetadata loggedInUser;
 
 	private SessionManager() {
 		// Private constructor to prevent instantiation
 	}
 
-	public User getLoggedInUser() {
+	public UserMetadata getLoggedInUser() {
 		return loggedInUser;
 	}
 
@@ -56,7 +56,7 @@ public final class SessionManager {
 	 * @throws IllegalArgumentException if session is null.
 	 * @throws IllegalStateException    if session already exists.
 	 */
-	public void setSession(@NotNull Session session, @NotNull User user)
+	public void setSession(@NotNull Session session, @NotNull UserMetadata user)
 			throws IllegalArgumentException, IllegalStateException {
 		if (session == null) {
 			throw new IllegalArgumentException("Session cannot be null.");
