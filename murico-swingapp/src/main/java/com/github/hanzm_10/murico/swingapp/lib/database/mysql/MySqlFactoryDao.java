@@ -25,16 +25,22 @@ import java.util.logging.Logger;
 import com.github.hanzm_10.murico.swingapp.constants.PropertyKey;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.CategoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.PackagingDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.RoleDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SessionDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.SupplierDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySQLSalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlAccountDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlCategoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlPackagingDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlRoleDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlSessionDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlSupplierDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql.MySqlUserDao;
 import com.github.hanzm_10.murico.swingapp.lib.io.PropertiesIO;
 
@@ -152,8 +158,18 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	}
 
 	@Override
+	public CategoryDao getCategoryDao() {
+		return new MySqlCategoryDao();
+	}
+
+	@Override
 	public ItemDao getItemDao() {
 		return new MySqlItemDao();
+	}
+
+	@Override
+	public PackagingDao getPackagingDao() {
+		return new MySqlPackagingDao();
 	}
 
 	@Override
@@ -171,6 +187,12 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	@Override
 	public SessionDao getSessionDao() {
 		return new MySqlSessionDao();
+	}
+
+	@Override
+	public SupplierDao getSupplierDao() {
+		// TODO Auto-generated method stub
+		return new MySqlSupplierDao();
 	}
 
 	@Override

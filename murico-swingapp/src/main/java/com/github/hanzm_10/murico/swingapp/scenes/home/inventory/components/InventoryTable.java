@@ -25,6 +25,9 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.CurrencyRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.IdRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer;
+import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.editors.ButtonEditor;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.ButtonRenderer;
 import com.github.hanzm_10.murico.swingapp.ui.ErrorDialog;
 
 import net.miginfocom.swing.MigLayout;
@@ -43,6 +46,7 @@ public class InventoryTable implements SceneComponent {
 	public static final int COL_STOCK_QUANTITY = 7;
 
 	public static final int COL_MINIMUM_QUANTITY = 8;
+	public static final int COL_ACTION = 9;
 
 	private JPanel view;
 	private JTable table;
@@ -52,6 +56,13 @@ public class InventoryTable implements SceneComponent {
 
 	private AtomicReference<ItemStock[]> itemStocks = new AtomicReference<>(new ItemStock[0]);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
+
+	private InventorySceneNew parentScene;
+
+	public InventoryTable(InventorySceneNew parentScene) {
+		// Constructor
+		this.parentScene = parentScene;
+	}
 
 	private void attachComponents() {
 		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
@@ -63,7 +74,7 @@ public class InventoryTable implements SceneComponent {
 		tableModel = new DefaultTableModel() {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return column == COL_MINIMUM_QUANTITY;
+				return column == COL_ACTION;
 			}
 		};
 		table = new JTable(tableModel);
@@ -78,12 +89,15 @@ public class InventoryTable implements SceneComponent {
 
 		rowSorter = new TableRowSorter<>(tableModel);
 
+		header.setReorderingAllowed(false);
 		header.setBackground(Styles.SECONDARY_COLOR);
 		header.setForeground(Styles.SECONDARY_FOREGROUND_COLOR);
 
 		for (var columnName : columnNames) {
 			tableModel.addColumn(columnName);
 		}
+
+		tableModel.addColumn("Action");
 
 		rowSorter.setComparator(COL_ITEM_STOCK_ID, comparator);
 		rowSorter.setComparator(COL_ITEM_ID, comparator);
@@ -98,6 +112,18 @@ public class InventoryTable implements SceneComponent {
 	@Override
 	public void destroy() {
 
+	}
+
+	public TableRowSorter<TableModel> getRowSorter() {
+		return rowSorter;
+	}
+
+	public JTable getTable() {
+		return table;
+	}
+
+	public TableModel getTableModel() {
+		return tableModel;
 	}
 
 	@Override
@@ -131,6 +157,8 @@ public class InventoryTable implements SceneComponent {
 			var iStocks = factory.getItemDao().getItemStocks();
 			itemStocks.set(iStocks);
 
+			System.out.println("Item stocks: " + itemStocks.get().length);
+
 			SwingUtilities.invokeLater(this::updateTableModel);
 		} catch (SQLException | IOException e) {
 			LOGGER.log(Level.SEVERE, "Error while fetching item stocks", e);
@@ -140,11 +168,22 @@ public class InventoryTable implements SceneComponent {
 		}
 	}
 
+	public void refresh() {
+		if (table != null && tableModel != null) { // Added null check for model
+			performBackgroundTask();
+		} else {
+			LOGGER.severe("Inventory table or model is null, cannot refresh.");
+		}
+	}
+
 	private void setTableRenderers() {
 		var columnModel = table.getColumnModel();
 		var cellRenderer = new DefaultTableCellRenderer();
 
 		cellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
+		columnModel.getColumn(COL_ACTION).setPreferredWidth(48);
+		columnModel.getColumn(COL_ACTION).setMaxWidth(48);
+		columnModel.getColumn(COL_ACTION).setMinWidth(48);
 
 		columnModel.getColumn(COL_ITEM_STOCK_ID).setPreferredWidth(120);
 		columnModel.getColumn(COL_ITEM_ID).setPreferredWidth(120);
@@ -165,6 +204,9 @@ public class InventoryTable implements SceneComponent {
 		columnModel.getColumn(COL_UNIT_PRICE).setCellRenderer(new CurrencyRenderer());
 		columnModel.getColumn(COL_STOCK_QUANTITY).setCellRenderer(new ProgressLevelRenderer());
 		columnModel.getColumn(COL_MINIMUM_QUANTITY).setCellRenderer(cellRenderer);
+		var buttonRenderer = new ButtonRenderer();
+		columnModel.getColumn(COL_ACTION).setCellRenderer(buttonRenderer);
+		columnModel.getColumn(COL_ACTION).setCellEditor(new ButtonEditor(parentScene, buttonRenderer));
 	}
 
 	private void updateTableModel() {
@@ -176,13 +218,15 @@ public class InventoryTable implements SceneComponent {
 		tableModel.setRowCount(0);
 
 		for (var itemStock : itemStocks) {
-			tableModel.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
-					itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(), itemStock.unitPrice(),
-					new ProgressLevelRenderer.ProgressLevel(itemStock.stockQuantity(), itemStock.minimumQuantity(),
-							"unit(s)"),
-					itemStock.minimumQuantity() });
+			tableModel
+					.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
+							itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
+							itemStock.unitPrice(), new ProgressLevelRenderer.StockInfo(itemStock._itemId(),
+									itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
+							itemStock.minimumQuantity() });
 		}
 
+		table.revalidate();
 		view.revalidate();
 		view.repaint();
 	}

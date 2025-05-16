@@ -1,8 +1,12 @@
 package com.github.hanzm_10.murico.swingapp.lib.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+
+import javax.swing.JSpinner;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -29,4 +33,14 @@ public class NumberUtils {
 		return shortFormatter.format(shortenedValue) + suffix;
 	}
 
+	public static BigDecimal getSpinnerBigDecimal(JSpinner spinner) {
+		// ... (same as before) ...
+		Object value = spinner.getValue();
+		if (value instanceof BigDecimal) {
+			return ((BigDecimal) value).setScale(2, RoundingMode.HALF_UP);
+		} else if (value instanceof Number) {
+			return BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP);
+		}
+		return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+	}
 }

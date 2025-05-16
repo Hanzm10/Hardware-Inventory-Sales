@@ -14,8 +14,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Stroke;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,6 +35,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -44,7 +43,7 @@ import javax.swing.border.TitledBorder;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventoryScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
 
 public class RestockItemDialog extends JDialog {
 
@@ -69,7 +68,7 @@ public class RestockItemDialog extends JDialog {
 	}
 
 	private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("₱ #,##0.00");
-	private final InventoryScene parentScene;
+	private final InventorySceneNew parentScene;
 	private final int itemStockIdToRestock;
 	private final int coreItemId; // Needed to fetch supplier and WSP
 	private final String productNameToRestock;
@@ -85,7 +84,7 @@ public class RestockItemDialog extends JDialog {
 
 	private BigDecimal wholesalePrice = BigDecimal.ZERO; // WSP fetched from DB
 
-	public RestockItemDialog(Window owner, InventoryScene parent, int itemStockId, int itemId, String productName,
+	public RestockItemDialog(Window owner, InventorySceneNew parent, int itemStockId, int itemId, String productName,
 			int currentQuantity) {
 		super(owner, "Restock Item (Simulate Supplier Order)", Dialog.ModalityType.APPLICATION_MODAL);
 		this.parentScene = parent;
@@ -168,26 +167,18 @@ public class RestockItemDialog extends JDialog {
 		// 2. Close this dialog
 		dispose();
 
-		// 3. Schedule stock update after a delay
-		int delayMilliseconds = 60 * 1000; // 1 minute
-		Timer stockUpdateTimer = new Timer(delayMilliseconds, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Timer fired: Processing restock for Item Stock ID: " + itemStockIdToRestock);
-				boolean success = parentScene.processRestock(itemStockIdToRestock, quantityToOrder,
-						currentQuantityBeforeRestock);
-				if (success) {
-					System.out.println("Restock successful, refreshing parent table.");
-					parentScene.refreshTableData();
-					// Optionally, show a small system tray notification or log it.
-				} else {
-					System.err.println("Delayed restock processing failed for Item Stock ID: " + itemStockIdToRestock);
-					// Maybe show an error to the user if this is critical and they are still around
-				}
-			}
-		});
-		stockUpdateTimer.setRepeats(false); // Only fire once
-		stockUpdateTimer.start();
+		boolean success = parentScene.processRestock(itemStockIdToRestock, quantityToOrder,
+				currentQuantityBeforeRestock);
+		if (success) {
+			System.out.println("Restock successful, refreshing parent table.");
+			SwingUtilities.invokeLater(() -> {
+				parentScene.refreshTableData();
+			});
+			// Optionally, show a small system tray notification or log it.
+		} else {
+			System.err.println("Delayed restock processing failed for Item Stock ID: " + itemStockIdToRestock);
+			// Maybe show an error to the user if this is critical and they are still around
+		}
 
 		System.out.println("Order confirmed for " + quantityToOrder + " units. Stock update scheduled in 1 minute.");
 	}

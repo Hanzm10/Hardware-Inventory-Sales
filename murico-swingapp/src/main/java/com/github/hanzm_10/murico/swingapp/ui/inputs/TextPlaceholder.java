@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -59,6 +59,7 @@ public class TextPlaceholder extends JLabel implements FocusListener, DocumentLi
 
 		textComponent.setLayout(new BorderLayout());
 		textComponent.add(this);
+		setAlignmentY(TOP_ALIGNMENT);
 		displayIfPossible();
 	}
 
@@ -108,7 +109,8 @@ public class TextPlaceholder extends JLabel implements FocusListener, DocumentLi
 			return;
 		}
 
-		setVisible(true);;
+		setVisible(true);
+		;
 	}
 
 	@Override
