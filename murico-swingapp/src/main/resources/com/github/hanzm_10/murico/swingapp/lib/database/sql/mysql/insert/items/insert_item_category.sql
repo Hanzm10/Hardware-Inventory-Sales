@@ -1,0 +1,1 @@
+INSERT INTO item_categories_items (_item_category_id, _item_id) VALUES (?, ?);

@@ -8,12 +8,15 @@ import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
+import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
+import com.github.hanzm_10.murico.swingapp.ui.inputs.TextFieldFactory;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -33,18 +36,26 @@ public class InventoryHeader implements SceneComponent {
 
 	private ActionListener btnListener;
 
-	public InventoryHeader(ActionListener btnListener) {
+	private InventorySceneNew parentScene;
+	private JTextField searchField;
+
+	public InventoryHeader(ActionListener btnListener, InventorySceneNew parentScene) {
 		this.btnListener = btnListener;
+
+		this.parentScene = parentScene;
 	}
 
 	private void attachComponents() {
-		view.setLayout(new MigLayout("insets 12", "[grow]", "[grow]"));
+		view.setLayout(new MigLayout("insets 12", "[]", "[grow]"));
 		view.setBackground(Styles.SECONDARY_COLOR);
 		view.setForeground(Styles.SECONDARY_FOREGROUND_COLOR);
 
 		view.add(addButton, "width 32!, height 32!");
-		view.add(Box.createHorizontalGlue(), "growx, pushx, span");
-		view.add(filterButton, "width 32!, height 32!");
+		view.add(Box.createHorizontalGlue(), "growx, pushx");
+
+		view.add(filterButton, "width 32!, height 32!, alignx right");
+		view.add(searchField, "width 250!, height 32!, alignx right");
+
 	}
 
 	private void createComponents() {
@@ -52,6 +63,9 @@ public class InventoryHeader implements SceneComponent {
 		filterButton = new JButton("");
 
 		filterButton.setBackground(Styles.TERTIARY_COLOR);
+		searchField = TextFieldFactory.createTextField("Search", 20);
+
+		searchField.getDocument().addDocumentListener(parentScene);
 
 		try {
 			addButton.setIcon(AssetManager.getOrLoadIcon("icons/plus.svg"));
@@ -83,8 +97,14 @@ public class InventoryHeader implements SceneComponent {
 		addButton = null;
 		filterButton = null;
 
+		searchField.getDocument().removeDocumentListener(parentScene);
+
 		initialized.set(false);
 		LOGGER.info("InventoryHeader destroyed");
+	}
+
+	public JTextField getSearchField() {
+		return searchField;
 	}
 
 	@Override

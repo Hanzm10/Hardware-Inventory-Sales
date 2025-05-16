@@ -35,11 +35,11 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventoryScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
 
 public class EditItemStockDialog extends JDialog {
 
-	private final InventoryScene parentScene;
+	private final InventorySceneNew parentScene;
 	private final int editingItemStockId;
 
 	// UI Components
@@ -51,7 +51,7 @@ public class EditItemStockDialog extends JDialog {
 	// Optional: Add SRP spinner if needed
 	// private JSpinner srpSpinner;
 
-	public EditItemStockDialog(Window owner, InventoryScene parent, int itemStockId, String productName, int minQty,
+	public EditItemStockDialog(Window owner, InventorySceneNew parent, int itemStockId, String productName, int minQty,
 			BigDecimal unitPrice, int currentStock) {
 		super(owner, "Edit Stock Details", Dialog.ModalityType.APPLICATION_MODAL);
 		this.parentScene = parent;

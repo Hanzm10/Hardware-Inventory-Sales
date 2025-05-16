@@ -44,7 +44,7 @@ import javax.swing.border.TitledBorder;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventoryScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
 
 public class RestockItemDialog extends JDialog {
 
@@ -69,7 +69,7 @@ public class RestockItemDialog extends JDialog {
 	}
 
 	private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("₱ #,##0.00");
-	private final InventoryScene parentScene;
+	private final InventorySceneNew parentScene;
 	private final int itemStockIdToRestock;
 	private final int coreItemId; // Needed to fetch supplier and WSP
 	private final String productNameToRestock;
@@ -85,7 +85,7 @@ public class RestockItemDialog extends JDialog {
 
 	private BigDecimal wholesalePrice = BigDecimal.ZERO; // WSP fetched from DB
 
-	public RestockItemDialog(Window owner, InventoryScene parent, int itemStockId, int itemId, String productName,
+	public RestockItemDialog(Window owner, InventorySceneNew parent, int itemStockId, int itemId, String productName,
 			int currentQuantity) {
 		super(owner, "Restock Item (Simulate Supplier Order)", Dialog.ModalityType.APPLICATION_MODAL);
 		this.parentScene = parent;

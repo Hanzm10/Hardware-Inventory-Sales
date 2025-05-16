@@ -1,0 +1,1 @@
+INSERT INTO item_stocks (_item_id, _packaging_id, quantity, minimum_quantity, srp_php, price_php) VALUES (?, ?, ?, ?, ?, ?);

@@ -14,6 +14,7 @@
 package com.github.hanzm_10.murico.swingapp.lib.database.dao;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,10 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 
 public interface ItemDao {
+	public void addItem(int initQty, int minQty, String itemName, String itemDescription, int selectedCategory,
+			int selectedPackaging, int selectedSupplier, BigDecimal sellingPrice, BigDecimal srp, BigDecimal costPrice)
+			throws IOException, SQLException;
+
 	public Item getItemById(@Range(from = 0, to = Integer.MAX_VALUE) int itemID) throws IOException, SQLException;
 
 	public Item getItemByItemName(@NotNull String itemName) throws IOException, SQLException;
