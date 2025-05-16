@@ -1,12 +1,9 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home;
 
-import java.util.logging.Logger;
-
 import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
@@ -20,7 +17,6 @@ import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import net.miginfocom.swing.MigLayout;
 
 public class ProfileScene implements Scene, SubSceneSupport {
-	private static final Logger LOGGER = MuricoLogger.getLogger(ProfileScene.class);
 	private JPanel view;
 
 	private SceneManager sceneManager;

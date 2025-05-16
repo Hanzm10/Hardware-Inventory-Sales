@@ -17,6 +17,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.SwingUtilities;
+
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 
 public class ButtonSceneNavigatorListener implements ActionListener {
@@ -28,10 +30,12 @@ public class ButtonSceneNavigatorListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (disableNavigation != null && disableNavigation.get()) {
-			return;
-		}
+		SwingUtilities.invokeLater(() -> {
+			if (disableNavigation != null && disableNavigation.get()) {
+				return;
+			}
 
-		SceneNavigator.getInstance().navigateTo(e.getActionCommand());
+			SceneNavigator.getInstance().navigateTo(e.getActionCommand());
+		});
 	}
 }

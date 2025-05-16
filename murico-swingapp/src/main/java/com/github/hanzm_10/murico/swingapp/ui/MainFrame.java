@@ -13,7 +13,6 @@
  */
 package com.github.hanzm_10.murico.swingapp.ui;
 
-import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Logger;
@@ -30,6 +29,8 @@ import com.github.hanzm_10.murico.swingapp.scenes.auth.AuthScene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.HomeScene;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
+
+import net.miginfocom.swing.MigLayout;
 
 public class MainFrame extends JFrame {
 	private class MainFrameWindowListener extends WindowAdapter {
@@ -79,11 +80,11 @@ public class MainFrame extends JFrame {
 		var rootContainer = sceneManager.getRootContainer();
 		var wrapper = new JPanel();
 
-		wrapper.setLayout(new BorderLayout());
+		wrapper.setLayout(new MigLayout("insets 16", "[grow]", "[grow]"));
 		wrapper.setPreferredSize(Styles.DEFAULT_DIMENSIONS);
 		wrapper.setSize(Styles.DEFAULT_DIMENSIONS);
 
-		wrapper.add(rootContainer, BorderLayout.CENTER);
+		wrapper.add(rootContainer, "grow");
 
 		add(wrapper);
 	}
