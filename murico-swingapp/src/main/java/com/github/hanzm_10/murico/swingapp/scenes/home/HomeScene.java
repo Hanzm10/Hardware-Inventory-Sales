@@ -12,9 +12,9 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSce
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 import com.github.hanzm_10.murico.swingapp.lib.utils.SessionUtils;
+import com.github.hanzm_10.murico.swingapp.scenes.home.components.Header;
+import com.github.hanzm_10.murico.swingapp.scenes.home.components.Sidebar;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
-import com.github.hanzm_10.murico.swingapp.ui.components.Header;
-import com.github.hanzm_10.murico.swingapp.ui.components.Sidebar;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -40,7 +40,7 @@ public class HomeScene implements Scene, SubSceneSupport {
 		sceneManager.registerScene("profile", () -> new ProfileScene(), GUARD);
 		sceneManager.registerScene("dashboard", () -> new DashboardScene(), GUARD);
 		sceneManager.registerScene("reports", () -> new ReportsScene(), GUARD);
-		sceneManager.registerScene("inventory", () -> new InventoryScene(), GUARD);
+		sceneManager.registerScene("inventory", () -> new InventorySceneNew(), GUARD);
 		sceneManager.registerScene("order menu", () -> new OrderMenuScene(), GUARD);
 		sceneManager.registerScene("contacts", () -> new ContactScene(), GUARD);
 		sceneManager.registerScene("settings", () -> new SettingsScene(), GUARD);
@@ -81,15 +81,11 @@ public class HomeScene implements Scene, SubSceneSupport {
 		sidebar = new Sidebar();
 		header = new Header();
 
-		view.setLayout(
-				new MigLayout("", "[96px::96px,center]24px[200px::,grow,center]", "[72px::72px, grow, center][grow]"));
+		view.setLayout(new MigLayout("insets 0", "[]16px[grow]", "[shrink 0]16px[grow]"));
 
-		view.add(header.getContainer(), "cell 0 0 2, grow");
+		view.add(header.getContainer(), "cell 0 0 2, growx");
+		view.add(sidebar.getContainer(), "cell 0 1, growy");
 		view.add(sceneManager.getRootContainer(), "cell 1 1, grow");
-		view.add(sidebar.getContainer(), "cell 0 1, grow");
-
-		if (sceneManager.getCurrentSceneName() == null) {
-		}
 	}
 
 	@Override

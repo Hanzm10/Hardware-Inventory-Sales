@@ -1,4 +1,4 @@
-package com.github.hanzm_10.murico.swingapp.ui.components;
+package com.github.hanzm_10.murico.swingapp.scenes.home.components;
 
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -35,6 +35,7 @@ public class Sidebar {
 	private JButton orderMenuBtn;
 	private JButton contactsBtn;
 	private JButton settingsBtn;
+
 	private ButtonGroup btnGroup;
 
 	private final Map<String, AbstractButton> sceneButtonMap;
@@ -43,9 +44,7 @@ public class Sidebar {
 		container = new GradientRoundedPanel(Styles.SECONDARY_COLOR, Styles.PRIMARY_COLOR, 24);
 		navListener = new ButtonSceneNavigatorListener(new AtomicBoolean(false));
 
-		container.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 16));
-		container.setLayout(new MigLayout("insets 16", "[50px::50px,grow]",
-				"[50px::50px,grow][50px::50px,grow][50px::50px,grow][50px::50px,grow]72px:push[50px::50px,grow]"));
+		container.setLayout(new MigLayout("insets 16, flowy"));
 
 		initBtns();
 		initBtnGroup();
@@ -59,13 +58,14 @@ public class Sidebar {
 	}
 
 	private void attachBtns() {
-		container.add(profileBtn, "cell 0 0,grow");
+		container.add(profileBtn, "width 40!, height 40!");
 		// container.add(dashboardBtn, "cell 0 1,grow");
-		container.add(reportsBtn, "cell 0 1,grow");
-		container.add(inventoryBtn, "cell 0 2,grow");
-		container.add(orderMenuBtn, "cell 0 3,grow");
+		container.add(reportsBtn, "width 40!, height 40!");
+		container.add(inventoryBtn, "width 40!, height 40!");
+		container.add(orderMenuBtn, "width 40!, height 40!");
 		// container.add(contactsBtn, "cell 0 5,grow");
-		container.add(settingsBtn, "cell 0 4, grow");
+		container.add(Box.createVerticalGlue(), "pushy, growy, span");
+		container.add(settingsBtn, "width 40!, height 40!, aligny bottom");
 	}
 
 	private void attachListeners() {
@@ -155,7 +155,6 @@ public class Sidebar {
 		orderMenuBtn.setToolTipText("Go to order menu");
 		contactsBtn.setToolTipText("Go to contacts");
 		settingsBtn.setToolTipText("Go to settings");
-
 	}
 
 	private void initIcons() {

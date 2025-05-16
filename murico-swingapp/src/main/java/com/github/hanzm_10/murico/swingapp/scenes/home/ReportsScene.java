@@ -25,7 +25,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 import com.github.hanzm_10.murico.swingapp.scenes.home.reports.InventoryReportsScene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.reports.SalesReportsScene;
-import com.github.hanzm_10.murico.swingapp.ui.components.reports.ReportsHeader;
+import com.github.hanzm_10.murico.swingapp.scenes.home.reports.components.ReportsHeader;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -33,7 +33,6 @@ public class ReportsScene implements Scene, SubSceneSupport {
 	private JPanel view;
 
 	private SceneManager sceneManager;
-
 	private ReportsHeader header;
 
 	private void createSceneManager() {
@@ -75,11 +74,13 @@ public class ReportsScene implements Scene, SubSceneSupport {
 
 	@Override
 	public void onCreate() {
-		view.setLayout(new MigLayout("insets 0", "[grow, left]", "[48px::62px, grow]24px[grow]"));
+		view.setLayout(new MigLayout("insets 0, flowy", "[grow]"));
 		header = new ReportsHeader();
 
-		view.add(header.getContainer(), "cell 0 0, grow");
-		view.add(sceneManager.getRootContainer(), "cell 0 1, grow");
+		header.initializeComponents();
+
+		view.add(header.getView(), "grow");
+		view.add(sceneManager.getRootContainer(), "grow");
 	}
 
 	@Override
@@ -87,15 +88,5 @@ public class ReportsScene implements Scene, SubSceneSupport {
 		header.destroy();
 
 		return true;
-	}
-
-	@Override
-	public void onHide() {
-		header.destroyListeners();
-	}
-
-	@Override
-	public void onShow() {
-		header.attachListeners();
 	}
 }
