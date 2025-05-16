@@ -1,3 +1,16 @@
+/** 
+ *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
+ *  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.github.hanzm_10.murico.swingapp.scenes.home;
 
 import javax.swing.JPanel;
@@ -12,6 +25,109 @@ public class InventoryScene implements Scene, DocumentListener {
 	public void changedUpdate(DocumentEvent e) {
 		// TODO Auto-generated method stub
 
+<<<<<<< HEAD
+=======
+	private void createComponents() {
+		createTable();
+		createTealTopBar();
+
+		scrollPane = new JScrollPane(table);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	}
+
+	private JButton createStyledIconButton(String svgPath, String toolTip, int width, int height) {
+		JButton button = new JButton();
+		try {
+			ImageIcon icon = AssetManager.getOrLoadIcon(svgPath);
+			if (icon != null) {
+				button.setIcon(icon);
+			} else {
+				button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
+			}
+		} catch (Exception e) {
+			LOGGER.severe("Error loading icon via AssetManager: " + svgPath + " - " + e.getMessage());
+			e.printStackTrace();
+			button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
+		}
+		button.setToolTipText(toolTip);
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		return button;
+	}
+
+	private void createTable() {
+		table = new JTable();
+		table.setRowHeight(40);
+		table.setGridColor(new Color(220, 220, 220));
+		table.setShowGrid(true);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setRowSelectionAllowed(true);
+		table.setColumnSelectionAllowed(false);
+
+		var header = table.getTableHeader();
+
+		header.setBackground(Styles.SECONDARY_COLOR);
+		header.setForeground(Styles.SECONDARY_FOREGROUND_COLOR);
+
+		header.setReorderingAllowed(false);
+		table.setFillsViewportHeight(true);
+
+		String[] columnNames = {"Product Name", "Item ID", "Category", "Pack Type", "Supplier", "Stock Level",
+				"Unit Price", "", "_ItemStockID"};
+		tableModel = new DefaultTableModel(null, columnNames) {
+			@Override
+			public Class<?> getColumnClass(int i) {
+				switch (i) {
+					case COL_ITEM_ID :
+						return String.class;
+					case COL_PACK_TYPE :
+						return String.class;
+					case COL_STOCK_LEVEL :
+						return StockInfo.class;
+					case COL_UNIT_PRICE :
+						return BigDecimal.class;
+					case COL_ACTION :
+						return JButton.class;
+					case HIDDEN_COL_ITEM_STOCK_ID :
+						return Integer.class;
+					default :
+						return String.class;
+				}
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column == COL_ACTION;
+			}
+		};
+		table.setModel(tableModel);
+		sorter = new TableRowSorter<DefaultTableModel>(tableModel);
+		table.setRowSorter(sorter);
+	}
+
+	private void createTealTopBar() {
+		tealTopBar = new RoundedPanel(20);
+		tealTopBar.setLayout(new MigLayout("insets 8, filly", "[]push[]", "[grow]"));
+
+		tealTopBar.setBackground(new Color(0x337E8F));
+
+		addButton = createStyledIconButton("icons/add_button.svg", "Add New Item", 24, 24);
+
+		addButton.setBackground(new Color(0x00, true));
+		addButton.setBorder(null);
+		addButton.addActionListener(this::openAddItemDialog);
+
+		tealTopBarRightActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		tealTopBarRightActionPanel.setOpaque(false);
+
+		filterButton = createStyledIconButton("icons/filter_icon.svg", "Filter Options", 22, 22);
+		filterButton.setBackground(new Color(0x00, true));
+		filterButton.setBorder(null);
+		filterButton.addActionListener(this::openFilterDialog); // Attach listener
+
+		searchField = new JTextField(20);
+		searchField.setPreferredSize(new Dimension(searchField.getPreferredSize().width, 28));
+		searchField.getDocument().addDocumentListener(this);
+>>>>>>> branch 'main' of https://github.com/tip-aaron/Hardware-Inventory-Sales.git
 	}
 
 	@Override
@@ -37,6 +153,7 @@ public class InventoryScene implements Scene, DocumentListener {
 		// TODO Auto-generated method stub
 
 	}
+<<<<<<< HEAD
 	/*
 	 * private static final Logger LOGGER =
 	 * MuricoLogger.getLogger(InventoryScene.class);
@@ -432,11 +549,255 @@ public class InventoryScene implements Scene, DocumentListener {
 	 * "Error updating stock details: " + e.getMessage(), "Database Error",
 	 * JOptionPane.ERROR_MESSAGE); return false; } }
 	 */
+=======
+
+	@Override
+	public void onHide() {
+		view.removeAll();
+	}
+
+	@Override
+	public void onShow() {
+		attachComponents();
+
+		if (searchField != null) {
+			searchField.setText("");
+		}
+
+		activeCategoryFilter = "ALL";
+		activeSupplierFilter = "ALL";
+
+		refreshTableData();
+	}
+
+	private void openAddItemDialog(ActionEvent ev) {
+		Window owner = SwingUtilities.getWindowAncestor(view);
+		AddItemDialog dialog = new AddItemDialog(owner, this);
+		dialog.setVisible(true);
+	}
+
+	public void openEditItemDialog(int viewRow) {
+		if (table == null || table == null) {
+			return;
+		}
+		int modelRow = table.convertRowIndexToModel(viewRow);
+		if (modelRow < 0 || modelRow >= table.getRowCount()) {
+			LOGGER.severe("EditItem: Invalid modelRow (" + modelRow + ") from viewRow: " + viewRow);
+			return;
+		}
+		try {
+			String productName = (String) table.getValueAt(modelRow, COL_PRODUCT_NAME);
+			StockInfo stockInfo = (StockInfo) table.getValueAt(modelRow, COL_STOCK_LEVEL);
+			BigDecimal unitPrice = (BigDecimal) table.getValueAt(modelRow, COL_UNIT_PRICE);
+			int itemStockId = (Integer) table.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
+			LOGGER.info("Opening Edit Dialog for Item Stock ID: " + itemStockId);
+			Window owner = SwingUtilities.getWindowAncestor(view);
+			EditItemStockDialog dialog = new EditItemStockDialog(owner, this, itemStockId, productName,
+					stockInfo.getMinimumQuantity(), unitPrice, stockInfo.getQuantity());
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+					"Error retrieving item data for editing: " + e.getMessage(), "Data Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	public void openEditItemDialog1(int viewRow) {
+		if (table == null || tableModel == null) {
+			return;
+		}
+
+		int modelRow = table.convertRowIndexToModel(viewRow);
+
+		if (modelRow < 0 || modelRow >= tableModel.getRowCount()) {
+			LOGGER.severe("EditItem: Invalid modelRow (" + modelRow + ") from viewRow: " + viewRow);
+			return;
+		}
+
+		try {
+			String productName = (String) tableModel.getValueAt(modelRow, COL_PRODUCT_NAME);
+			StockInfo stockInfo = (StockInfo) tableModel.getValueAt(modelRow, COL_STOCK_LEVEL);
+			BigDecimal unitPrice = (BigDecimal) tableModel.getValueAt(modelRow, COL_UNIT_PRICE);
+			int itemStockId = (Integer) tableModel.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
+			LOGGER.info("Opening Edit Dialog for Item Stock ID: " + itemStockId);
+			Window owner = SwingUtilities.getWindowAncestor(view);
+			EditItemStockDialog dialog = new EditItemStockDialog(owner, this, itemStockId, productName,
+					stockInfo.getMinimumQuantity(), unitPrice, stockInfo.getQuantity());
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+					"Error retrieving item data for editing: " + e.getMessage(), "Data Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void openFilterDialog(ActionEvent ev) {
+		Window owner = SwingUtilities.getWindowAncestor(view);
+		InventoryFilterDialog dialog = new InventoryFilterDialog(owner, this, activeCategoryFilter,
+				activeSupplierFilter);
+		dialog.setVisible(true);
+	}
+
+	public void openRestockDialog(int modelRow) {
+		if (table == null || table == null || modelRow < 0 || modelRow >= table.getRowCount()) {
+			LOGGER.severe("RestockItem: Invalid modelRow: " + modelRow);
+			return;
+		}
+		try {
+			int itemStockId = (Integer) table.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
+			String productName = (String) table.getValueAt(modelRow, COL_PRODUCT_NAME);
+			StockInfo stockInfo = (StockInfo) table.getValueAt(modelRow, COL_STOCK_LEVEL);
+			int currentQuantity = stockInfo.getQuantity();
+			int coreItemId = stockInfo.getItemId();
+			LOGGER.info("Opening Restock Dialog for Item Stock ID: " + itemStockId + ", Core Item ID: " + coreItemId);
+			Window owner = SwingUtilities.getWindowAncestor(view);
+			RestockItemDialog dialog = new RestockItemDialog(owner, this, itemStockId, coreItemId, productName,
+					currentQuantity);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+					"Error preparing for restock: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void performSearch() {
+		applyTableFilters();
+	}
+
+	private void populatetable() {
+		if (table == null || tableModel == null) {
+			return;
+		}
+		tableModel.setRowCount(0);
+		String sql = """
+				SELECT
+				    i.name AS product_name,
+				    i._item_id,
+				    ic.name AS category_name,
+				    p.name AS pack_type_name,
+				    s.name AS supplier_name,
+				    ist.quantity,
+				    ist.minimum_quantity,
+				    ist.price_php AS unit_price,
+				    ist._item_stock_id
+				FROM item_stocks ist
+				JOIN items i ON ist._item_id = i._item_id
+				LEFT JOIN packagings p ON ist._packaging_id = p._packaging_id
+				LEFT JOIN item_categories_items ici ON i._item_id = ici._item_id
+				LEFT JOIN item_categories ic ON ici._item_category_id = ic._item_category_id
+				LEFT JOIN suppliers_items si ON i._item_id = si._item_id
+				LEFT JOIN suppliers s ON si._supplier_id = s._supplier_id
+				WHERE i.is_deleted = FALSE AND ist.is_deleted = FALSE
+				ORDER BY i.name
+				""";
+		try (Connection conn = MySqlFactoryDao.createConnection();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql)) {
+			while (rs.next()) {
+				Vector<Object> row = new Vector<>();
+				row.add(rs.getString("product_name"));
+				row.add("#" + rs.getInt("_item_id"));
+				row.add(rs.getString("category_name") != null ? rs.getString("category_name") : "N/A");
+				row.add(rs.getString("pack_type_name") != null ? rs.getString("pack_type_name") : "N/A");
+				row.add(rs.getString("supplier_name") != null ? rs.getString("supplier_name") : "N/A");
+				row.add(new StockInfo(rs.getInt("_item_id"), rs.getInt("quantity"), rs.getInt("minimum_quantity")));
+				row.add(rs.getBigDecimal("unit_price"));
+				row.add("...");
+				row.add(rs.getInt("_item_stock_id"));
+				tableModel.addRow(row);
+			}
+			LOGGER.info(getSceneName() + ": Table populated with " + tableModel.getRowCount()
+					+ " rows (excluding archived).");
+		} catch (SQLException e) {
+			LOGGER.severe("SQL Error fetching inventory data: " + e.getMessage());
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+					"An error occurred while fetching inventory data:\n" + e.getMessage(), "Database Query Error",
+					JOptionPane.ERROR_MESSAGE);
+			tableModel.setRowCount(0);
+			Vector<Object> errorRow = new Vector<>();
+			for (int i = 0; i < tableModel.getColumnCount(); i++) {
+				errorRow.add((i == 0) ? "Error Loading Data" : (i == HIDDEN_COL_ITEM_STOCK_ID ? -1 : ""));
+			}
+			tableModel.addRow(errorRow);
+		}
+	}
+
+	public boolean processRestock(int itemStockId, int quantityToAdd, int quantityBefore) {
+		if (quantityToAdd <= 0) {
+			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view), "Quantity to add must be positive.",
+					"Invalid Input", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		Connection conn = null;
+		boolean success = false;
+		int quantityAfter = quantityBefore + quantityToAdd;
+		try {
+			conn = MySqlFactoryDao.createConnection();
+			conn.setAutoCommit(false);
+			String updateStockSql = "UPDATE item_stocks SET quantity = ? WHERE _item_stock_id = ? AND is_deleted = FALSE";
+			try (PreparedStatement pstmtStock = conn.prepareStatement(updateStockSql)) {
+				pstmtStock.setInt(1, quantityAfter);
+				pstmtStock.setInt(2, itemStockId);
+				int rowsAffected = pstmtStock.executeUpdate();
+				if (rowsAffected == 0) {
+					throw new SQLException(
+							"Restock failed: Item stock record not found, not updated, or already deleted. Stock"
+									+ " ID: " + itemStockId);
+				}
+			}
+			String insertRestockSql = "INSERT INTO item_restocks (_item_stock_id, quantity_before, quantity_after,"
+					+ " quantity_added) VALUES (?, ?, ?, ?)";
+			try (PreparedStatement pstmtRestock = conn.prepareStatement(insertRestockSql)) {
+				pstmtRestock.setInt(1, itemStockId);
+				pstmtRestock.setInt(2, quantityBefore);
+				pstmtRestock.setInt(3, quantityAfter);
+				pstmtRestock.setInt(4, quantityToAdd);
+				pstmtRestock.executeUpdate();
+			}
+			conn.commit();
+			success = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+					"Error processing restock: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.setAutoCommit(true);
+					conn.close();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return success;
+	}
+
+	public void refreshTableData() {
+		LOGGER.info(getSceneName() + ": Refreshing table data...");
+		if (table != null && tableModel != null) { // Added null check for model
+			populatetable();
+			applyTableFilters();
+		} else {
+			LOGGER.severe("Inventory table or model is null, cannot refresh.");
+		}
+	}
+>>>>>>> branch 'main' of https://github.com/tip-aaron/Hardware-Inventory-Sales.git
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
 		// TODO Auto-generated method stub
 
 	}
-
 }

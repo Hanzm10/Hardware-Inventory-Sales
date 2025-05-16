@@ -1,3 +1,16 @@
+/** 
+ *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
+ *  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.github.hanzm_10.murico.swingapp.service.database; // Adjust package if needed
 
 import java.math.BigDecimal;
@@ -18,7 +31,7 @@ import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.InsufficientSt
  * Service class containing business logic related to the checkout process,
  * primarily handling order finalization and database interaction.
  */
-//Inside CheckoutService.java
+// Inside CheckoutService.java
 
 public class CheckoutService {
 
@@ -37,7 +50,7 @@ public class CheckoutService {
 		}
 
 		LOGGER.log(Level.INFO, "Attempting to finalize order for employee {0} with {1} item types.",
-				new Object[] { employeeId, items.size() });
+				new Object[]{employeeId, items.size()});
 
 		Connection conn = null;
 		int generatedOrderId = -1;
@@ -96,17 +109,20 @@ public class CheckoutService {
 
 			// 2. Insert into customer_orders_item_stocks and Update item_stocks quantity
 			// --- (This part remains largely the same as before) ---
-			String sqlItemInsert = "INSERT INTO customer_orders_item_stocks (_customer_order_id, _item_stock_id, price_php, quantity) VALUES (?, ?, ?, ?)";
-			String sqlStockUpdate = "UPDATE item_stocks SET quantity = quantity - ? WHERE _item_stock_id = ? AND quantity >= ?";
-			String sqlPayment = "INSERT INTO customer_payments (_customer_order_id, amount_php, payment_method) VALUES (?, ?, 'cash');";
-			
+			String sqlItemInsert = "INSERT INTO customer_orders_item_stocks (_customer_order_id, _item_stock_id, price_php,"
+					+ " quantity) VALUES (?, ?, ?, ?)";
+			String sqlStockUpdate = "UPDATE item_stocks SET quantity = quantity - ? WHERE _item_stock_id = ? AND quantity >="
+					+ " ?";
+			String sqlPayment = "INSERT INTO customer_payments (_customer_order_id, amount_php, payment_method) VALUES"
+					+ " (?, ?, 'cash');";
+
 			try (PreparedStatement pstmtItemInsert = conn.prepareStatement(sqlItemInsert);
 					PreparedStatement pstmtStockUpdate = conn.prepareStatement(sqlStockUpdate);
 					var pstmtPayment = conn.prepareStatement(sqlPayment)) {
 
 				for (OrderLineItemData item : items) {
 					if (item.quantity() <= 0) {
-						throw new SQLException(/* ... */);
+						throw new SQLException(/* ... */ );
 					}
 					// Add to item insert batch
 					pstmtItemInsert.setInt(1, generatedOrderId);
@@ -148,7 +164,6 @@ public class CheckoutService {
 				pstmtPayment.setInt(1, generatedOrderId);
 				pstmtPayment.setBigDecimal(2, payment);
 				pstmtPayment.executeUpdate();
-
 			} // Closes item/stock statements
 
 			// 3. Insert into 'sales' table (assuming this is where totals go now)
@@ -161,11 +176,11 @@ public class CheckoutService {
 			 * = calculatedTotal; // Placeholder - assuming exact payment BigDecimal
 			 * changeAmount = paymentAmount.subtract(calculatedTotal); // Placeholder change
 			 * calc
-			 * 
+			 *
 			 * pstmtSales.setInt(1, generatedOrderId); pstmtSales.setBigDecimal(2,
 			 * calculatedTotal); // The final total cost pstmtSales.setBigDecimal(3,
 			 * paymentAmount); pstmtSales.setBigDecimal(4, changeAmount);
-			 * 
+			 *
 			 * int rowsAffected = pstmtSales.executeUpdate(); if (rowsAffected == 0) { throw
 			 * new SQLException("Failed to insert record into sales table."); }
 			 * LOGGER.log(Level.INFO, "Sales record created for Order ID: {0}",
