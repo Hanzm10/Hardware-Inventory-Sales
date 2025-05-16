@@ -1,11 +1,11 @@
-package com.github.hanzm_10.murico.swingapp.ui.components;
+package com.github.hanzm_10.murico.swingapp.scenes.home.components;
 
-import java.awt.FlowLayout;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -24,14 +24,13 @@ public class Header {
 	private JPanel container;
 
 	private ImagePanel logoIcon;
-	private JPanel rightPanel;
 	private JLabel headerText;
 
 	private String[] sceneNames;
 
 	public Header() {
 		container = new JPanel();
-		container.setLayout(new MigLayout("", "[96px::96px,grow,left]push[]", "[grow,center]"));
+		container.setLayout(new MigLayout("insets 0"));
 
 		loadImages();
 		initComponents();
@@ -45,12 +44,12 @@ public class Header {
 
 	private void attachComponents() {
 		if (logoIcon != null) {
-			container.add(logoIcon, "cell 0 0");
+			container.add(logoIcon, "width 72!, height 72!");
 		}
 
-		rightPanel.add(headerText);
+		container.add(Box.createVerticalGlue(), "pushx, grow");
+		container.add(headerText);
 
-		container.add(rightPanel, "cell 1 0");
 	}
 
 	public void destroy() {
@@ -83,8 +82,6 @@ public class Header {
 	}
 
 	private void initComponents() {
-		rightPanel = new JPanel();
-		rightPanel.setLayout(new FlowLayout());
 
 		headerText = LabelFactory.createBoldItalicLabel(36, Styles.PRIMARY_COLOR);
 	}

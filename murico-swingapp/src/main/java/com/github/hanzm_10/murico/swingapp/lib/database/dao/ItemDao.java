@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -20,9 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 
 public interface ItemDao {
+	public Item getItemById(@Range(from = 0, to = Integer.MAX_VALUE) int itemID) throws IOException, SQLException;
+
 	public Item getItemByItemName(@NotNull String itemName) throws IOException, SQLException;
 
-	public Item getItemById(@Range(from = 0, to = Integer.MAX_VALUE) int itemID) throws IOException, SQLException;
+	public ItemStock[] getItemStocks() throws IOException, SQLException;
 }
