@@ -35,7 +35,7 @@ public class ReportsHeader implements SceneComponent {
 
 	private void attachComponents() {
 		view.add(salesBtn, "width 120!, height 36!");
-		view.add(inventoryBtn, "width 120!, height 36!");
+		//view.add(inventoryBtn, "width 120!, height 36!");
 	}
 
 	private void attachListeners() {
