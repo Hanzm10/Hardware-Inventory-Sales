@@ -15,6 +15,7 @@ package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -22,8 +23,10 @@ import org.jetbrains.annotations.Range;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
+import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 public class MySqlItemDao implements ItemDao {
 
@@ -73,5 +76,36 @@ public class MySqlItemDao implements ItemDao {
 
 		}
 		return item;
+	}
+
+	@Override
+	public ItemStock[] getItemStocks() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_item_stocks", "items", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			ConnectionManager.register(Thread.currentThread(), stmt);
+
+			try (var resultSet = stmt.executeQuery(query)) {
+				var result = new ArrayList<ItemStock>();
+
+				while (resultSet.next()) {
+					result.add(new ItemStock(resultSet.getInt("_item_stock_id"), resultSet.getInt("_item_id"),
+							stringOrNA(resultSet.getString("category_type_name")),
+							stringOrNA(resultSet.getString("packaging_type_name")),
+							stringOrNA(resultSet.getString("supplier_name")),
+							stringOrNA(resultSet.getString("item_name")), resultSet.getInt("stock_quantity"),
+							resultSet.getBigDecimal("unit_price_php"), resultSet.getInt("minimum_quantity")));
+
+				}
+
+				return result.toArray(new ItemStock[result.size()]);
+			} finally {
+				ConnectionManager.unregister(Thread.currentThread());
+			}
+		}
+	}
+
+	private String stringOrNA(String name) {
+		return name == null ? "N/A" : name;
 	}
 }

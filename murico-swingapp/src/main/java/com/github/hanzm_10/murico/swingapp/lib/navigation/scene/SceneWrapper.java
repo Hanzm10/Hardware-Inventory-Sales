@@ -13,14 +13,9 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.navigation.scene;
 
-import java.util.logging.Logger;
-
 import javax.swing.JPanel;
 
-import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
-
 public class SceneWrapper implements Scene {
-	private static final Logger LOGGER = MuricoLogger.getLogger(Scene.class);
 	private final Scene scene;
 
 	public SceneWrapper(Scene scene) {

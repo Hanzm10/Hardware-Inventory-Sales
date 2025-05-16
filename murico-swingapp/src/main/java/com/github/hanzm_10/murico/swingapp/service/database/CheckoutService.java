@@ -29,7 +29,7 @@ public class CheckoutService {
 			// BigDecimal paymentAmount, BigDecimal pureTotal,
 			// BigDecimal totalWithVat, BigDecimal vatAmount,
 			BigDecimal calculatedTotal, // Keep the calculated total for potential use in 'sales' table
-			Integer customerId, int employeeId)
+			Integer customerId, int employeeId, BigDecimal payment)
 			throws SQLException, InsufficientStockException, IllegalArgumentException {
 
 		if (items == null || items.isEmpty()) {
@@ -98,9 +98,11 @@ public class CheckoutService {
 			// --- (This part remains largely the same as before) ---
 			String sqlItemInsert = "INSERT INTO customer_orders_item_stocks (_customer_order_id, _item_stock_id, price_php, quantity) VALUES (?, ?, ?, ?)";
 			String sqlStockUpdate = "UPDATE item_stocks SET quantity = quantity - ? WHERE _item_stock_id = ? AND quantity >= ?";
-
+			String sqlPayment = "INSERT INTO customer_payments (_customer_order_id, amount_php, payment_method) VALUES (?, ?, 'cash');";
+			
 			try (PreparedStatement pstmtItemInsert = conn.prepareStatement(sqlItemInsert);
-					PreparedStatement pstmtStockUpdate = conn.prepareStatement(sqlStockUpdate)) {
+					PreparedStatement pstmtStockUpdate = conn.prepareStatement(sqlStockUpdate);
+					var pstmtPayment = conn.prepareStatement(sqlPayment)) {
 
 				for (OrderLineItemData item : items) {
 					if (item.quantity() <= 0) {
@@ -143,28 +145,32 @@ public class CheckoutService {
 						throw new InsufficientStockException(errorMsg);
 					}
 				}
+				pstmtPayment.setInt(1, generatedOrderId);
+				pstmtPayment.setBigDecimal(2, payment);
+				pstmtPayment.executeUpdate();
 
 			} // Closes item/stock statements
 
 			// 3. Insert into 'sales' table (assuming this is where totals go now)
 			// -----------------------------------------------------------------
-			String sqlSales = "INSERT INTO sales (_customer_order_id, total_price_php, total_amount_paid_php, change_php) VALUES (?, ?, ?, ?)";
-			try (PreparedStatement pstmtSales = conn.prepareStatement(sqlSales)) {
-				// TODO: Get actual payment amount and calculate change
-				BigDecimal paymentAmount = calculatedTotal; // Placeholder - assuming exact payment
-				BigDecimal changeAmount = paymentAmount.subtract(calculatedTotal); // Placeholder change calc
-
-				pstmtSales.setInt(1, generatedOrderId);
-				pstmtSales.setBigDecimal(2, calculatedTotal); // The final total cost
-				pstmtSales.setBigDecimal(3, paymentAmount);
-				pstmtSales.setBigDecimal(4, changeAmount);
-
-				int rowsAffected = pstmtSales.executeUpdate();
-				if (rowsAffected == 0) {
-					throw new SQLException("Failed to insert record into sales table.");
-				}
-				LOGGER.log(Level.INFO, "Sales record created for Order ID: {0}", generatedOrderId);
-			}
+			/*
+			 * String sqlSales =
+			 * "INSERT INTO sales (_customer_order_id, total_price_php, total_amount_paid_php, change_php) VALUES (?, ?, ?, ?)"
+			 * ; try (PreparedStatement pstmtSales = conn.prepareStatement(sqlSales)) { //
+			 * TODO: Get actual payment amount and calculate change BigDecimal paymentAmount
+			 * = calculatedTotal; // Placeholder - assuming exact payment BigDecimal
+			 * changeAmount = paymentAmount.subtract(calculatedTotal); // Placeholder change
+			 * calc
+			 * 
+			 * pstmtSales.setInt(1, generatedOrderId); pstmtSales.setBigDecimal(2,
+			 * calculatedTotal); // The final total cost pstmtSales.setBigDecimal(3,
+			 * paymentAmount); pstmtSales.setBigDecimal(4, changeAmount);
+			 * 
+			 * int rowsAffected = pstmtSales.executeUpdate(); if (rowsAffected == 0) { throw
+			 * new SQLException("Failed to insert record into sales table."); }
+			 * LOGGER.log(Level.INFO, "Sales record created for Order ID: {0}",
+			 * generatedOrderId); }
+			 */
 
 			// 4. Commit Transaction
 			// ---------------------

@@ -31,7 +31,6 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -94,7 +93,7 @@ public class InventoryScene implements Scene, DocumentListener {
 
 	public void applyTableFilters() {
 		if (sorter == null) {
-			System.err.println("Sorter not initialized. Cannot apply filters.");
+			LOGGER.severe("Sorter not initialized. Cannot apply filters.");
 			return;
 		}
 
@@ -118,7 +117,7 @@ public class InventoryScene implements Scene, DocumentListener {
 
 				combinedFilters.add(RowFilter.orFilter(textSearchORFilters));
 			} catch (PatternSyntaxException pse) {
-				System.err.println("Search text created invalid regex: " + pse.getMessage());
+				LOGGER.severe("Search text created invalid regex: " + pse.getMessage());
 			}
 		}
 
@@ -146,7 +145,7 @@ public class InventoryScene implements Scene, DocumentListener {
 				try (PreparedStatement pstmtStocks = conn.prepareStatement(updateItemStocksSql)) {
 					pstmtStocks.setInt(1, itemId);
 					int stockRowsAffected = pstmtStocks.executeUpdate();
-					System.out.println("Archived " + stockRowsAffected + " stock variants for item ID: " + itemId);
+					LOGGER.info("Archived " + stockRowsAffected + " stock variants for item ID: " + itemId);
 				}
 				conn.commit();
 				success = true;
@@ -216,7 +215,7 @@ public class InventoryScene implements Scene, DocumentListener {
 				button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
 			}
 		} catch (Exception e) {
-			System.err.println("Error loading icon via AssetManager: " + svgPath + " - " + e.getMessage());
+			LOGGER.severe("Error loading icon via AssetManager: " + svgPath + " - " + e.getMessage());
 			e.printStackTrace();
 			button.setText(toolTip.length() > 1 ? toolTip.substring(0, 1) : toolTip);
 		}
@@ -325,7 +324,7 @@ public class InventoryScene implements Scene, DocumentListener {
 							+ "It can usually be recovered by an administrator.",
 					"Confirm Archive Item", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (confirm == JOptionPane.YES_OPTION) {
-				System.out.println("Attempting to archive core Item ID: " + itemIdToArchive);
+				LOGGER.info("Attempting to archive core Item ID: " + itemIdToArchive);
 				boolean success = archiveCoreItem(itemIdToArchive);
 				if (success) {
 					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
@@ -333,8 +332,7 @@ public class InventoryScene implements Scene, DocumentListener {
 							JOptionPane.INFORMATION_MESSAGE);
 					refreshTableData();
 				} else {
-					System.err.println(
-							"Archiving failed for core item ID: " + itemIdToArchive + " (parent notification)");
+					LOGGER.severe("Archiving failed for core item ID: " + itemIdToArchive + " (parent notification)");
 				}
 			}
 		} catch (Exception e) {
@@ -401,7 +399,7 @@ public class InventoryScene implements Scene, DocumentListener {
 		}
 		int modelRow = table.convertRowIndexToModel(viewRow);
 		if (modelRow < 0 || modelRow >= table.getRowCount()) {
-			System.err.println("EditItem: Invalid modelRow (" + modelRow + ") from viewRow: " + viewRow);
+			LOGGER.severe("EditItem: Invalid modelRow (" + modelRow + ") from viewRow: " + viewRow);
 			return;
 		}
 		try {
@@ -409,7 +407,7 @@ public class InventoryScene implements Scene, DocumentListener {
 			StockInfo stockInfo = (StockInfo) table.getValueAt(modelRow, COL_STOCK_LEVEL);
 			BigDecimal unitPrice = (BigDecimal) table.getValueAt(modelRow, COL_UNIT_PRICE);
 			int itemStockId = (Integer) table.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
-			System.out.println("Opening Edit Dialog for Item Stock ID: " + itemStockId);
+			LOGGER.info("Opening Edit Dialog for Item Stock ID: " + itemStockId);
 			Window owner = SwingUtilities.getWindowAncestor(view);
 			EditItemStockDialog dialog = new EditItemStockDialog(owner, this, itemStockId, productName,
 					stockInfo.getMinimumQuantity(), unitPrice, stockInfo.getQuantity());
@@ -430,7 +428,7 @@ public class InventoryScene implements Scene, DocumentListener {
 		int modelRow = table.convertRowIndexToModel(viewRow);
 
 		if (modelRow < 0 || modelRow >= tableModel.getRowCount()) {
-			System.err.println("EditItem: Invalid modelRow (" + modelRow + ") from viewRow: " + viewRow);
+			LOGGER.severe("EditItem: Invalid modelRow (" + modelRow + ") from viewRow: " + viewRow);
 			return;
 		}
 
@@ -439,7 +437,7 @@ public class InventoryScene implements Scene, DocumentListener {
 			StockInfo stockInfo = (StockInfo) tableModel.getValueAt(modelRow, COL_STOCK_LEVEL);
 			BigDecimal unitPrice = (BigDecimal) tableModel.getValueAt(modelRow, COL_UNIT_PRICE);
 			int itemStockId = (Integer) tableModel.getValueAt(modelRow, HIDDEN_COL_ITEM_STOCK_ID);
-			System.out.println("Opening Edit Dialog for Item Stock ID: " + itemStockId);
+			LOGGER.info("Opening Edit Dialog for Item Stock ID: " + itemStockId);
 			Window owner = SwingUtilities.getWindowAncestor(view);
 			EditItemStockDialog dialog = new EditItemStockDialog(owner, this, itemStockId, productName,
 					stockInfo.getMinimumQuantity(), unitPrice, stockInfo.getQuantity());
@@ -461,7 +459,7 @@ public class InventoryScene implements Scene, DocumentListener {
 
 	public void openRestockDialog(int modelRow) {
 		if (table == null || table == null || modelRow < 0 || modelRow >= table.getRowCount()) {
-			System.err.println("RestockItem: Invalid modelRow: " + modelRow);
+			LOGGER.severe("RestockItem: Invalid modelRow: " + modelRow);
 			return;
 		}
 		try {
@@ -470,8 +468,7 @@ public class InventoryScene implements Scene, DocumentListener {
 			StockInfo stockInfo = (StockInfo) table.getValueAt(modelRow, COL_STOCK_LEVEL);
 			int currentQuantity = stockInfo.getQuantity();
 			int coreItemId = stockInfo.getItemId();
-			System.out.println(
-					"Opening Restock Dialog for Item Stock ID: " + itemStockId + ", Core Item ID: " + coreItemId);
+			LOGGER.info("Opening Restock Dialog for Item Stock ID: " + itemStockId + ", Core Item ID: " + coreItemId);
 			Window owner = SwingUtilities.getWindowAncestor(view);
 			RestockItemDialog dialog = new RestockItemDialog(owner, this, itemStockId, coreItemId, productName,
 					currentQuantity);
@@ -529,10 +526,10 @@ public class InventoryScene implements Scene, DocumentListener {
 				row.add(rs.getInt("_item_stock_id"));
 				tableModel.addRow(row);
 			}
-			System.out.println(getSceneName() + ": Table populated with " + tableModel.getRowCount()
+			LOGGER.info(getSceneName() + ": Table populated with " + tableModel.getRowCount()
 					+ " rows (excluding archived).");
 		} catch (SQLException e) {
-			System.err.println("SQL Error fetching inventory data: " + e.getMessage());
+			LOGGER.severe("SQL Error fetching inventory data: " + e.getMessage());
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
 					"An error occurred while fetching inventory data:\n" + e.getMessage(), "Database Query Error",
@@ -604,12 +601,12 @@ public class InventoryScene implements Scene, DocumentListener {
 	}
 
 	public void refreshTableData() {
-		System.out.println(getSceneName() + ": Refreshing table data...");
+		LOGGER.info(getSceneName() + ": Refreshing table data...");
 		if (table != null && tableModel != null) { // Added null check for model
 			populatetable();
 			applyTableFilters();
 		} else {
-			System.err.println("Inventory table or model is null, cannot refresh.");
+			LOGGER.severe("Inventory table or model is null, cannot refresh.");
 		}
 	}
 

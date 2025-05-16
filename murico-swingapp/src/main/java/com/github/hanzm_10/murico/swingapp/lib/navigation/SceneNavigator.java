@@ -15,6 +15,7 @@ package com.github.hanzm_10.murico.swingapp.lib.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
@@ -43,7 +44,7 @@ public class SceneNavigator implements Observer<String> {
 	private String currentFullSceneName = null;
 	private SceneManager sceneManager;
 
-	private boolean isInitialized = false;
+	private AtomicBoolean isInitialized = new AtomicBoolean(false);
 
 	private SceneNavigator() {
 	}
@@ -51,7 +52,6 @@ public class SceneNavigator implements Observer<String> {
 	public void destroy() {
 		sceneManager.destroy();
 		sceneManager = null;
-		isInitialized = false;
 	}
 
 	public String getCurrentFullSceneName() {
@@ -59,7 +59,7 @@ public class SceneNavigator implements Observer<String> {
 	}
 
 	public SceneManager getSceneManager() {
-		if (!isInitialized) {
+		if (!isInitialized.get()) {
 			throw new IllegalStateException("SceneNavigator is not initialized.");
 		}
 
@@ -67,12 +67,12 @@ public class SceneNavigator implements Observer<String> {
 	}
 
 	public void initialize(@NotNull final SceneManager manager) {
-		if (isInitialized) {
+		if (isInitialized.get()) {
 			throw new IllegalStateException("SceneNavigator is already initialized.");
 		}
 
 		sceneManager = manager;
-		isInitialized = true;
+		isInitialized.set(true);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class SceneNavigator implements Observer<String> {
 	 *                                  than the Event Dispatch Thread.
 	 */
 	public void navigateTo(@NotNull final String sceneName) {
-		if (!isInitialized) {
+		if (!isInitialized.get()) {
 			throw new IllegalStateException("SceneNavigator is not initialized.");
 		}
 
