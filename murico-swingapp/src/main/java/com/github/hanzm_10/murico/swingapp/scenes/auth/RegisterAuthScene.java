@@ -1,4 +1,4 @@
-/**
+/** 
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -123,25 +123,26 @@ public class RegisterAuthScene implements Scene, ActionListener {
 			try {
 				SessionService.register(name, email, password);
 				SwingUtilities.invokeLater(() -> {
-					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view), "You have been successfully registered! Kindly login");
+					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+							"You have been successfully registered! Kindly login");
 				});
 			} catch (MuricoError e) {
 				switch (e.getErrorCode()) {
-				case INVALID_CREDENTIALS:
-				case ACCOUNT_EXISTS: {
-					SwingUtilities.invokeLater(() -> {
-						errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-						errorMessageEmail.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-						errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
-					});
-				}
-					break;
-				default: {
-					SwingUtilities
-							.invokeLater(() -> JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
-									e.toString(), "Failed to register", JOptionPane.ERROR_MESSAGE));
-					LOGGER.log(Level.SEVERE, "Failed to register", e);
-				}
+					case INVALID_CREDENTIALS :
+					case ACCOUNT_EXISTS : {
+						SwingUtilities.invokeLater(() -> {
+							errorMessageName.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+							errorMessageEmail.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+							errorMessagePassword.setText(HtmlUtils.wrapInHtml(e.getErrorCode().getDefaultMessage()));
+						});
+					}
+						break;
+					default : {
+						SwingUtilities
+								.invokeLater(() -> JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+										e.toString(), "Failed to register", JOptionPane.ERROR_MESSAGE));
+						LOGGER.log(Level.SEVERE, "Failed to register", e);
+					}
 				}
 			} finally {
 				SwingUtilities.invokeLater(() -> {
@@ -230,10 +231,10 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		registerBtn = StyledButtonFactory.createButton("Create account", ButtonStyles.SECONDARY);
 
 		btnSeparator = new JPanel();
-		var fractions = new float[] { 0f, 1f };
-		leftLine = Line.builder().setColors(new Color[] { new Color(0x00, true), Color.BLACK }).setFractions(fractions)
+		var fractions = new float[]{0f, 1f};
+		leftLine = Line.builder().setColors(new Color[]{new Color(0x00, true), Color.BLACK}).setFractions(fractions)
 				.build();
-		rightLine = Line.builder().setColors(new Color[] { Color.BLACK, new Color(0x00, true) }).setFractions(fractions)
+		rightLine = Line.builder().setColors(new Color[]{Color.BLACK, new Color(0x00, true)}).setFractions(fractions)
 				.build();
 		orText = new JLabel("or");
 

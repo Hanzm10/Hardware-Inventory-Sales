@@ -242,12 +242,8 @@ public class AddItemDialog extends JDialog {
 		button.setFont(new Font("Montserrat", Font.BOLD, 14));
 		button.setBackground(bgColor);
 		button.setForeground(fgColor);
-		button.setFocusPainted(false);
 		button.setPreferredSize(new Dimension(160, 40));
 		// Basic border, true rounded needs custom painting or L&F
-		button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(bgColor.darker(), 1),
-				new EmptyBorder(8, 20, 8, 20) // More padding for button text
-		));
 		return button;
 	}
 

@@ -1,3 +1,16 @@
+/** 
+ *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
+ *  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.github.hanzm_10.murico.swingapp.scenes.home;
 
 import java.awt.BorderLayout;
@@ -31,7 +44,6 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -242,26 +254,26 @@ public class InventoryScene implements Scene, DocumentListener {
 		header.setReorderingAllowed(false);
 		table.setFillsViewportHeight(true);
 
-		String[] columnNames = { "Product Name", "Item ID", "Category", "Pack Type", "Supplier", "Stock Level",
-				"Unit Price", "", "_ItemStockID" };
+		String[] columnNames = {"Product Name", "Item ID", "Category", "Pack Type", "Supplier", "Stock Level",
+				"Unit Price", "", "_ItemStockID"};
 		tableModel = new DefaultTableModel(null, columnNames) {
 			@Override
 			public Class<?> getColumnClass(int i) {
 				switch (i) {
-				case COL_ITEM_ID:
-					return String.class;
-				case COL_PACK_TYPE:
-					return String.class;
-				case COL_STOCK_LEVEL:
-					return StockInfo.class;
-				case COL_UNIT_PRICE:
-					return BigDecimal.class;
-				case COL_ACTION:
-					return JButton.class;
-				case HIDDEN_COL_ITEM_STOCK_ID:
-					return Integer.class;
-				default:
-					return String.class;
+					case COL_ITEM_ID :
+						return String.class;
+					case COL_PACK_TYPE :
+						return String.class;
+					case COL_STOCK_LEVEL :
+						return StockInfo.class;
+					case COL_UNIT_PRICE :
+						return BigDecimal.class;
+					case COL_ACTION :
+						return JButton.class;
+					case HIDDEN_COL_ITEM_STOCK_ID :
+						return Integer.class;
+					default :
+						return String.class;
 				}
 			}
 
@@ -565,11 +577,12 @@ public class InventoryScene implements Scene, DocumentListener {
 				int rowsAffected = pstmtStock.executeUpdate();
 				if (rowsAffected == 0) {
 					throw new SQLException(
-							"Restock failed: Item stock record not found, not updated, or already deleted. Stock ID: "
-									+ itemStockId);
+							"Restock failed: Item stock record not found, not updated, or already deleted. Stock"
+									+ " ID: " + itemStockId);
 				}
 			}
-			String insertRestockSql = "INSERT INTO item_restocks (_item_stock_id, quantity_before, quantity_after, quantity_added) VALUES (?, ?, ?, ?)";
+			String insertRestockSql = "INSERT INTO item_restocks (_item_stock_id, quantity_before, quantity_after,"
+					+ " quantity_added) VALUES (?, ?, ?, ?)";
 			try (PreparedStatement pstmtRestock = conn.prepareStatement(insertRestockSql)) {
 				pstmtRestock.setInt(1, itemStockId);
 				pstmtRestock.setInt(2, quantityBefore);
@@ -673,5 +686,4 @@ public class InventoryScene implements Scene, DocumentListener {
 			return false;
 		}
 	}
-
 }
