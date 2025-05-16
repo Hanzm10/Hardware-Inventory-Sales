@@ -134,7 +134,7 @@ public class EditProfile extends Profile {
 
 	public void editProfile(String username, String userRole) {
 		int id = getUserIdByDisplayName(username);
-		selectRole(id, userRole);
+		selectGender(id, userRole);
 
 	}
 
@@ -149,7 +149,7 @@ public class EditProfile extends Profile {
 		combo.setFocusable(false);
 	}
 
-	public void selectRole(int userId, String userRole) {
+	public void selectGender (int userId, String userRole) {
 		String query = """
 				UPDATE users
 				SET gender = ?

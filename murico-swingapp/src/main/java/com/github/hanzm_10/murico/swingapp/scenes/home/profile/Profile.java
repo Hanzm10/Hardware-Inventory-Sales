@@ -52,7 +52,7 @@ public class Profile{
     	pstmtQuery.setString(1, userFirstName );
     	pstmtQuery.setString(2, userLastName );
     	pstmtQuery.setString(3, gender);
-    	pstmtQuery.setInt(5, userId );
+    	pstmtQuery.setInt(4, userId );
     	int rows = pstmtQuery.executeUpdate();
     	System.out.println(rows + "updated");
     }catch(SQLException e) {
@@ -67,7 +67,40 @@ public class Profile{
 	}
     }
     
-    
+    /*public String getUsers(String userdisplayName) {
+    	
+    	 try {
+             var conn = MySqlFactoryDao.createConnection();
+             var query = MySqlQueryLoader.getInstance().get("get_user_by_display_name", "users", SqlQueryType.SELECT);
+          
+             var statement = conn.prepareStatement(query);
+             statement.setString(1, userdisplayName);
+
+             ResultSet rs = statement.executeQuery(); 
+                 if (rs.next()) {
+                     String firstnameString = rs.getString("first_name");
+                     String lastnameString = rs.getString("last_name");
+                     String genderString = rs.getString("gender");
+                     
+                     return firstnameString + " " + lastnameString + " " + genderString;
+                 } else {
+                    
+                 }
+             
+         } catch (SQLException e) {
+             e.printStackTrace();
+             throw new RuntimeException("Error finding user_id for display name " + userdisplayName, e);
+         } catch (FileNotFoundException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		} catch (IOException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+		return userdisplayName;
+    	 
+    }
+   */
     public boolean isAdmin(String username){
     	boolean isAdmin = false;
 

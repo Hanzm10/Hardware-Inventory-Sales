@@ -23,15 +23,9 @@ public class ProfileScene implements Scene, SubSceneSupport {
 		sceneManager = new StaticSceneManager();
 
 		sceneManager.registerScene("readonly", () -> new ReadOnlyScene(), HomeScene.GUARD);
-		sceneManager.registerScene("edit", () -> new EditProfileScene(), () -> {
-			if (!HomeScene.GUARD.canAccess()) {
-				return false;
-			}
-
-			return SessionManager.getInstance().getLoggedInUser().roles().contains("admin");
-		});
+		sceneManager.registerScene("edit", () -> new EditProfileScene(), HomeScene.GUARD);
+			
 	}
-
 	@Override
 	public void navigateTo(@NotNull String subSceneName) {
 		sceneManager.navigateTo(subSceneName);
@@ -70,6 +64,7 @@ public class ProfileScene implements Scene, SubSceneSupport {
 	public boolean onDestroy() {
 		sceneManager.destroy();
 		return true;
+		
 	}
 
 	@Override

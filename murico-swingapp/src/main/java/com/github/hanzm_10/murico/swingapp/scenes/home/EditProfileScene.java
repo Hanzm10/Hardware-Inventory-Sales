@@ -20,24 +20,26 @@ import javax.swing.JTextField;
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextPlaceholder;
 
 import net.miginfocom.swing.MigLayout;
-
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 public class EditProfileScene implements Scene {
 	
 	private JTextField textField;
 	private JTextField textField_1;
-	private JTextField textField_2;
 	private JPanel view;
-	private String username;
 	private boolean uiInitialized = false;
-	private JLabel profilepic_1;
-	private JLabel profileLbl_1;
 	private JButton btnSave;
 	private JButton cancelBtn;
+	private Integer userID;
+	private String fullName;
+
+	
 	
 	
 	@Override
@@ -47,7 +49,7 @@ public class EditProfileScene implements Scene {
 
 	@Override
 	public JPanel getSceneView() {
-		return view == null ? (view = new JPanel()) : view;
+		return view == null ? (view = new RoundedPanel(20) ) : view;
 	}
 
 	@Override
@@ -76,6 +78,9 @@ public class EditProfileScene implements Scene {
 	@Override
 	public void onShow() {
 		System.out.println(getSceneName() + ": onShow");
+		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
+		fullName = loggedInUser.firstName() + " " + loggedInUser.lastName();
+
 		if (!uiInitialized) {
 			onCreate();
 		}
@@ -86,21 +91,14 @@ public class EditProfileScene implements Scene {
 private void initializeEditProfileUI() throws IOException, InterruptedException {
 	Profile pfp = new Profile();
 	//view.setBackground(new Color(3));
-	view.setLayout(new MigLayout("insets 0, fillx", "[grow]","[][grow]"));
+	userID = null;
+	view.setLayout(new MigLayout("insets 0, fillx", "[grow]","[grow]"));
 	
-	/*JPanel profilepicPnl = new JPanel(new MigLayout("wrap, insets 20 50 20 50", "[grow,center]", "[]20[]"));
-	view.add(profilepicPnl, "growx, align center, wrap");
-	
-	profilepic_1 = new JLabel("");
-	//profilepic_1.setBounds(445, 38, 245, 246);
-	profilepic_1.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profilepic.png")));
-	profilepic_1.setBackground(new Color(33, 64, 107));
-	profilepicPnl.add(profilepic_1, "growx, align center ");
-	*/
+	var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 	
 	JPanel profilePnl = new JPanel(new MigLayout("wrap, insets 20 50 20 50", "[grow,center]", "[]20[]20[]20[]20[]30[][]"));
     profilePnl.setBackground(new Color(33, 64, 107));
-	view.add(profilePnl, "growx,growy, align center");
+	view.add(profilePnl, "cell 0 0 , growx,growy, aligny center, alignx center");
 	
     JLabel pfpName = new JLabel();
 	pfpName.setBounds(420, 302, 365, 79);
@@ -123,15 +121,19 @@ private void initializeEditProfileUI() throws IOException, InterruptedException 
     textField = new JTextField();
     profilePnl.add(textField, "cell 0 1,growx,width 257!,alignx center");
 	textField.setColumns(10);
-	TextPlaceholder firstnameHoldr = new TextPlaceholder("First Name", textField);
-	//LoginWindows.defText(textField, "First Name");
 	
 	textField_1 = new JTextField();
 	textField_1.setBounds(432, 476, 257, 52);
 	profilePnl.add(textField_1, "cell 0 2,growx,width 257!,alignx center");
 	textField_1.setColumns(10);
-	TextPlaceholder lastnameHoldr = new TextPlaceholder("Lastname", textField_1);
-	
+	if(fullName != null) {
+		TextPlaceholder lastnameHoldr = new TextPlaceholder(loggedInUser.lastName(), textField_1);
+		TextPlaceholder firstnameHoldr = new TextPlaceholder(loggedInUser.firstName(), textField);
+	}
+	else {
+		TextPlaceholder lastnameHoldr = new TextPlaceholder("Last Name", textField_1);
+		TextPlaceholder firstnameHoldr = new TextPlaceholder("First Name", textField);
+		}
 	
     // 2) Create your combo from that model:
     JComboBox<String> combo = new JComboBox<>(model);
@@ -164,18 +166,21 @@ private void initializeEditProfileUI() throws IOException, InterruptedException 
 		public void actionPerformed(ActionEvent e) {
 			String displayName = SessionManager.getInstance().getLoggedInUser().displayName();
 			String newGender = (String) combo.getSelectedItem();
-		    Integer userId = pfp.getUserIdByDisplayName(displayName);
-		    if (userId != null) {
-		        	pfp.profile(userId, textField.getText(), textField_1.getText(), newGender);
+		     userID = pfp.getUserIdByDisplayName(displayName);
+		    if (userID != null) {
+		        	pfp.profile(userID, textField.getText(), textField_1.getText(), newGender);
 		    } else {
 		        JOptionPane.showMessageDialog(view, "User not found: " + displayName);
 		    }
+       	 	JOptionPane.showMessageDialog(view, "Changes saved successfully: " + displayName);
+		    SceneNavigator.getInstance().navigateTo("home/profile/readonly");
 		}
 	});
 	
 	cancelBtn.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			SceneNavigator.getInstance().navigateTo("home/profile/readonly");
+			
 			
 		}
 	});
