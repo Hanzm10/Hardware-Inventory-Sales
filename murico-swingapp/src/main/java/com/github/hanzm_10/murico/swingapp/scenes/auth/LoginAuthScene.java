@@ -272,6 +272,15 @@ public class LoginAuthScene implements Scene, ActionListener {
 	@Override
 	public void onHide() {
 		loginDebouncer.cancel();
+
+		clearErrorMessage();
+		nameInput.setText("");
+		passwordInput.setText("");
+
+		if (loginThread != null && loginThread.isAlive()) {
+			loginThread.interrupt();
+			isLoggingIn.set(false);
+		}
 	}
 
 	private void setLayouts() {
