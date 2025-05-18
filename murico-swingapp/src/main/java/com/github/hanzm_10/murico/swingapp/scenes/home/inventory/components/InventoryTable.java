@@ -20,14 +20,14 @@ import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.comparators.NumberWithSymbolsComparator;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
+import com.github.hanzm_10.murico.swingapp.lib.filter.TableFilter;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
+import com.github.hanzm_10.murico.swingapp.lib.table_models.NonEditableTableModel;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.CurrencyRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.IdRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer;
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
-import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.editors.ButtonEditor;
-import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.renderers.ButtonRenderer;
+import com.github.hanzm_10.murico.swingapp.listeners.TableSearchListener;
 import com.github.hanzm_10.murico.swingapp.ui.ErrorDialog;
 
 import net.miginfocom.swing.MigLayout;
@@ -36,33 +36,26 @@ public class InventoryTable implements SceneComponent {
 
 	private static final Logger LOGGER = MuricoLogger.getLogger(InventoryTable.class);
 
+	// Constants for column indices
 	public static final int COL_ITEM_STOCK_ID = 0;
 	public static final int COL_ITEM_ID = 1;
-	public static final int COL_PACKAGING_TYPE = 2;
-	public static final int COL_CATEGORY_TYPE = 3;
+	public static final int COL_CATEGORY_TYPE = 2;
+	public static final int COL_PACKAGING_TYPE = 3;
 	public static final int COL_SUPPLIER_NAME = 4;
 	public static final int COL_ITEM_NAME = 5;
 	public static final int COL_UNIT_PRICE = 6;
 	public static final int COL_STOCK_QUANTITY = 7;
-
 	public static final int COL_MINIMUM_QUANTITY = 8;
-	public static final int COL_ACTION = 9;
 
 	private JPanel view;
 	private JTable table;
 	private DefaultTableModel tableModel;
 	private JScrollPane scrollPane;
+	private TableSearchListener<ItemStock> tableSearchListener;
 	private TableRowSorter<TableModel> rowSorter;
 
 	private AtomicReference<ItemStock[]> itemStocks = new AtomicReference<>(new ItemStock[0]);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
-
-	private InventorySceneNew parentScene;
-
-	public InventoryTable(InventorySceneNew parentScene) {
-		// Constructor
-		this.parentScene = parentScene;
-	}
 
 	private void attachComponents() {
 		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
@@ -71,51 +64,52 @@ public class InventoryTable implements SceneComponent {
 	}
 
 	private void createComponents() {
-		tableModel = new DefaultTableModel() {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return column == COL_ACTION;
-			}
-		};
-		table = new JTable(tableModel);
-		table.setGridColor(Styles.TERTIARY_COLOR);
-		table.setShowGrid(true);
-		table.setRowHeight(40);
-		table.setFillsViewportHeight(true);
+		createTableModel();
+		createTable();
+		createSorter();
 
-		var header = table.getTableHeader();
+		tableSearchListener = new TableSearchListener<ItemStock>(new TableFilter<ItemStock>(rowSorter));
+
+		scrollPane = new JScrollPane(table);
+	}
+
+	private void createSorter() {
 		var comparator = new NumberWithSymbolsComparator();
-		var columnNames = ItemStock.getColumnNames();
 
-		rowSorter = new TableRowSorter<>(tableModel);
-
-		header.setReorderingAllowed(false);
-		header.setBackground(Styles.SECONDARY_COLOR);
-		header.setForeground(Styles.SECONDARY_FOREGROUND_COLOR);
-
-		for (var columnName : columnNames) {
-			tableModel.addColumn(columnName);
-		}
-
-		tableModel.addColumn("Action");
-
+		rowSorter = new TableRowSorter<TableModel>(tableModel);
 		rowSorter.setComparator(COL_ITEM_STOCK_ID, comparator);
 		rowSorter.setComparator(COL_ITEM_ID, comparator);
 		rowSorter.setComparator(COL_UNIT_PRICE, comparator);
 		rowSorter.setComparator(COL_MINIMUM_QUANTITY, comparator);
 		rowSorter.setComparator(COL_STOCK_QUANTITY, comparator);
 		table.setRowSorter(rowSorter);
+	}
 
-		scrollPane = new JScrollPane(table);
+	private void createTable() {
+		table = new JTable(tableModel);
+		table.setGridColor(Styles.TERTIARY_COLOR);
+		table.setShowGrid(true);
+		table.setRowHeight(40);
+		table.setBackground(view.getBackground());
+
+		var header = table.getTableHeader();
+		header.setBackground(Styles.SECONDARY_COLOR);
+		header.setForeground(Styles.SECONDARY_FOREGROUND_COLOR);
+	}
+
+	private void createTableModel() {
+		tableModel = new NonEditableTableModel();
+		tableModel.setColumnCount(9);
+		tableModel.setRowCount(0);
+		tableModel.setColumnIdentifiers(ItemStock.getColumnNames());
 	}
 
 	@Override
 	public void destroy() {
-
 	}
 
-	public TableRowSorter<TableModel> getRowSorter() {
-		return rowSorter;
+	public int[] getSelectedRows() {
+		return table.getSelectedRows();
 	}
 
 	public JTable getTable() {
@@ -124,6 +118,10 @@ public class InventoryTable implements SceneComponent {
 
 	public TableModel getTableModel() {
 		return tableModel;
+	}
+
+	public TableSearchListener<ItemStock> getTableSearchListener() {
+		return tableSearchListener;
 	}
 
 	@Override
@@ -157,8 +155,6 @@ public class InventoryTable implements SceneComponent {
 			var iStocks = factory.getItemDao().getItemStocks();
 			itemStocks.set(iStocks);
 
-			System.out.println("Item stocks: " + itemStocks.get().length);
-
 			SwingUtilities.invokeLater(this::updateTableModel);
 		} catch (SQLException | IOException e) {
 			LOGGER.log(Level.SEVERE, "Error while fetching item stocks", e);
@@ -181,9 +177,6 @@ public class InventoryTable implements SceneComponent {
 		var cellRenderer = new DefaultTableCellRenderer();
 
 		cellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
-		columnModel.getColumn(COL_ACTION).setPreferredWidth(48);
-		columnModel.getColumn(COL_ACTION).setMaxWidth(48);
-		columnModel.getColumn(COL_ACTION).setMinWidth(48);
 
 		columnModel.getColumn(COL_ITEM_STOCK_ID).setPreferredWidth(120);
 		columnModel.getColumn(COL_ITEM_ID).setPreferredWidth(120);
@@ -204,9 +197,6 @@ public class InventoryTable implements SceneComponent {
 		columnModel.getColumn(COL_UNIT_PRICE).setCellRenderer(new CurrencyRenderer());
 		columnModel.getColumn(COL_STOCK_QUANTITY).setCellRenderer(new ProgressLevelRenderer());
 		columnModel.getColumn(COL_MINIMUM_QUANTITY).setCellRenderer(cellRenderer);
-		var buttonRenderer = new ButtonRenderer();
-		columnModel.getColumn(COL_ACTION).setCellRenderer(buttonRenderer);
-		columnModel.getColumn(COL_ACTION).setCellEditor(new ButtonEditor(parentScene, buttonRenderer));
 	}
 
 	private void updateTableModel() {
@@ -221,7 +211,7 @@ public class InventoryTable implements SceneComponent {
 			tableModel
 					.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
 							itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
-							itemStock.unitPrice(), new ProgressLevelRenderer.StockInfo(itemStock._itemId(),
+							itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
 									itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
 							itemStock.minimumQuantity() });
 		}

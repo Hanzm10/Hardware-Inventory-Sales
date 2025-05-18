@@ -2,7 +2,9 @@ package com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dia
 
 import java.awt.Color;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -14,6 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -27,12 +31,13 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.github.hanzm_10.murico.swingapp.lib.combobox_renderers.PlaceholderRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.lib.utils.NumberUtils;
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
 import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
@@ -43,20 +48,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class AddItemDialog extends JDialog {
 
-	private static class ComboBoxItem {
-		// ... (same as before) ...
-		private final int id;
-		private final String name;
-
-		public ComboBoxItem(int id, String name) {
-			this.id = id;
-			this.name = name;
-		}
-
-		public int getId() {
-			return id;
-		}
-
+	private static record ComboBoxItem(@NotNull int id, @NotNull String name) {
 		@Override
 		public String toString() {
 			return name;
@@ -68,10 +60,6 @@ public class AddItemDialog extends JDialog {
 	private JScrollPane formScrollPane;
 
 	private AtomicBoolean isUpdating = new AtomicBoolean(false);
-
-	private JPanel headerPanel;
-	private JLabel title;
-	private JLabel subtitle;
 
 	private JPanel formPanel;
 
@@ -123,22 +111,22 @@ public class AddItemDialog extends JDialog {
 	private Thread fetchThread;
 	private Thread updateThread;
 
-	private InventorySceneNew parent;
+	private WindowAdapter windowListener;
 
-	public AddItemDialog(Window owner, InventorySceneNew parent) {
+	private Runnable onUpdate;
+
+	public AddItemDialog(Window owner, Runnable onUpdate) {
 		super(owner, "Add New Item", Dialog.ModalityType.APPLICATION_MODAL);
 
-		this.parent = parent;
+		this.onUpdate = onUpdate;
+
 		setLayout(new MigLayout("insets 16, flowy", "[grow]", "[grow]"));
+		setFont(new Font("Montserrat", Font.BOLD, 16));
 
 		createComponents();
 		attachComponents();
 
-		pack();
-		setLocationRelativeTo(owner);
-
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter() {
+		this.windowListener = new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
 				if (fetchThread != null && fetchThread.isAlive()) {
@@ -146,65 +134,79 @@ public class AddItemDialog extends JDialog {
 					ConnectionManager.cancel(fetchThread);
 				}
 
-				if (isUpdating.get()) {
-					var confirm = JOptionPane.showConfirmDialog(AddItemDialog.this,
-							"Are you sure you want to cancel the operation?", "Confirm Cancel",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-					if (confirm != JOptionPane.YES_OPTION) {
-						return;
-					}
-				}
-
 				if (updateThread != null && updateThread.isAlive()) {
 					updateThread.interrupt();
 					ConnectionManager.cancel(updateThread);
 				}
 
+				clearErrorMessages();
+				clearFields();
+
 				dispose();
 			}
-		});
+		};
+
+		pack();
+		setSize(new Dimension(500, 500));
+
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		addWindowListener(windowListener);
 	}
 
 	private void attachComponents() {
-		headerPanel.add(title, "grow");
-		headerPanel.add(subtitle, "grow");
-
 		formPanel.add(itemNameLabel, "grow");
 		formPanel.add(itemName, "grow");
 		formPanel.add(itemNameError, "grow");
+
+		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(itemDescriptionLabel, "grow");
 		formPanel.add(itemDescription, "grow");
 		formPanel.add(itemDescriptionError, "grow");
 
+		formPanel.add(Box.createVerticalStrut(2));
+
 		formPanel.add(categoryLabel, "grow");
 		formPanel.add(category, "grow");
 		formPanel.add(categoryError, "grow");
+
+		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(packagingLabel, "grow");
 		formPanel.add(packaging, "grow");
 		formPanel.add(packagingError, "grow");
 
+		formPanel.add(Box.createVerticalStrut(2));
+
 		formPanel.add(initialQuantityLabel, "grow");
 		formPanel.add(initialQuantity, "grow");
 		formPanel.add(initialQuantityError, "grow");
+
+		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(minQuantityLabel, "grow");
 		formPanel.add(minQuantity, "grow");
 		formPanel.add(minQuantityError, "grow");
 
+		formPanel.add(Box.createVerticalStrut(2));
+
 		formPanel.add(sellingPriceLabel, "grow");
 		formPanel.add(sellingPrice, "grow");
 		formPanel.add(sellingPriceError, "grow");
+
+		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(srpLabel, "grow");
 		formPanel.add(srp, "grow");
 		formPanel.add(srpError, "grow");
 
+		formPanel.add(Box.createVerticalStrut(2));
+
 		formPanel.add(supplierLabel, "grow");
 		formPanel.add(supplier, "grow");
 		formPanel.add(supplierNameError, "grow");
+
+		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(costPriceLabel, "grow");
 		formPanel.add(costPrice, "grow");
@@ -213,7 +215,6 @@ public class AddItemDialog extends JDialog {
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(confirmButton);
 
-		add(headerPanel, "grow");
 		add(formScrollPane, "grow");
 		add(buttonPanel, "grow");
 	}
@@ -231,10 +232,27 @@ public class AddItemDialog extends JDialog {
 		costPriceError.setText("");
 	}
 
+	private void clearFields() {
+		itemName.setText("");
+		itemDescription.setText("");
+		category.setSelectedIndex(0);
+		packaging.setSelectedIndex(0);
+		initialQuantity.setValue(1);
+		minQuantity.setValue(0);
+		sellingPrice.setValue(0.00);
+		srp.setValue(0.00);
+		supplier.setSelectedIndex(0);
+		costPrice.setValue(0.00);
+	}
+
 	private void createButtonPanel() {
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 0));
 
-		cancelButton = StyledButtonFactory.createButton("Cancel", ButtonStyles.DANGER);
+		buttonPanel.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, getForeground()),
+						BorderFactory.createEmptyBorder(16, 0, 0, 0)));
+
+		cancelButton = StyledButtonFactory.createButton("Cancel", ButtonStyles.SECONDARY);
 		confirmButton = StyledButtonFactory.createButton("Save Item", ButtonStyles.PRIMARY);
 
 		cancelButton.addActionListener(this::handleCancelButton);
@@ -242,7 +260,6 @@ public class AddItemDialog extends JDialog {
 	}
 
 	private void createComponents() {
-		createHeaderPanel();
 		createFormPanel();
 		createButtonPanel();
 	}
@@ -250,49 +267,58 @@ public class AddItemDialog extends JDialog {
 	private void createFormPanel() {
 		formPanel = new JPanel(new MigLayout("insets 0, flowy", "[grow]", "[grow]"));
 
-		itemNameLabel = LabelFactory.createLabel("Item Name*", 12, Color.GRAY);
+		itemNameLabel = LabelFactory.createBoldLabel("Item Name*", 12, Color.GRAY);
 		itemName = TextFieldFactory.createTextField("Item Name", 14);
-		itemNameError = LabelFactory.createErrorLabel("Item Name is required.", 10);
+		itemNameError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Item Name is required."), 9);
 
-		itemDescriptionLabel = LabelFactory.createLabel("Description", 12, Color.GRAY);
+		itemDescriptionLabel = LabelFactory.createBoldLabel("Description", 12, Color.GRAY);
 		itemDescription = TextFieldFactory.createTextArea(14);
 		itemDescription.setRows(3);
-		itemDescriptionError = LabelFactory.createErrorLabel("Description is required.", 10);
+		itemDescriptionError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Description is required."), 9);
 
-		categoryLabel = LabelFactory.createLabel("Category*", 12, Color.GRAY);
+		categoryLabel = LabelFactory.createBoldLabel("Category*", 12, Color.GRAY);
 		category = new JComboBox<>();
-		categoryError = LabelFactory.createErrorLabel("Category is required.", 10);
+		category.setFont(category.getFont().deriveFont(14f));
+		categoryError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Category is required."), 9);
 
-		packagingLabel = LabelFactory.createLabel("Packaging*", 12, Color.GRAY);
+		packagingLabel = LabelFactory.createBoldLabel("Packaging*", 12, Color.GRAY);
 		packaging = new JComboBox<>();
-		packagingError = LabelFactory.createErrorLabel("Packaging is required.", 10);
+		packaging.setFont(packaging.getFont().deriveFont(14f));
+		packagingError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Packaging is required."), 9);
 
-		initialQuantityLabel = LabelFactory.createLabel("Initial Quantity*", 12, Color.GRAY);
+		initialQuantityLabel = LabelFactory.createBoldLabel("Initial Quantity*", 12, Color.GRAY);
 		initialQuantity = new JSpinner(new SpinnerNumberModel(1, 0, 1_000_000, 1));
-		initialQuantityError = LabelFactory.createErrorLabel("Initial Quantity is required.", 10);
+		initialQuantity.setFont(initialQuantity.getFont().deriveFont(14f));
+		initialQuantityError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Initial Quantity is required."), 9);
 
-		minQuantityLabel = LabelFactory.createLabel("Min. Stock Qty*", 12, Color.GRAY);
+		minQuantityLabel = LabelFactory.createBoldLabel("Min. Stock Qty*", 12, Color.GRAY);
 		minQuantity = new JSpinner(new SpinnerNumberModel(0, 0, 100_000, 1));
-		minQuantityError = LabelFactory.createErrorLabel("Min. Stock Qty is required.", 10);
+		minQuantity.setFont(minQuantity.getFont().deriveFont(14f));
+		minQuantityError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Min. Stock Qty is required."), 9);
 
-		sellingPriceLabel = LabelFactory.createLabel("Selling Price (₱)*", 12, Color.GRAY);
-		sellingPrice = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 0.01));
-		sellingPriceError = LabelFactory.createErrorLabel("Selling Price is required.", 10);
+		sellingPriceLabel = LabelFactory.createBoldLabel("Selling Price (₱)*", 12, Color.GRAY);
+		sellingPrice = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 10));
+		sellingPrice.setFont(sellingPrice.getFont().deriveFont(14f));
+		sellingPriceError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Selling Price is required."), 9);
 
-		srpLabel = LabelFactory.createLabel("SRP (₱)*", 12, Color.GRAY);
-		srp = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 0.01));
-		srpError = LabelFactory.createErrorLabel("SRP is required.", 10);
+		srpLabel = LabelFactory.createBoldLabel("SRP (₱)*", 12, Color.GRAY);
+		srp = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 10));
+		srp.setFont(srp.getFont().deriveFont(14f));
+		srpError = LabelFactory.createErrorLabel("SRP is required.", 9);
 
-		supplierLabel = LabelFactory.createLabel("Supplier*", 12, Color.GRAY);
+		supplierLabel = LabelFactory.createBoldLabel("Supplier*", 12, Color.GRAY);
 		supplier = new JComboBox<>();
-		supplierNameError = LabelFactory.createErrorLabel("Supplier Name is required.", 10);
+		supplier.setFont(supplier.getFont().deriveFont(14f));
+		supplierNameError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Supplier Name is required."), 9);
 
-		costPriceLabel = LabelFactory.createLabel("Cost Price (₱ from Supplier)", 12, Color.GRAY);
-		costPrice = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 0.01));
-		costPriceError = LabelFactory.createErrorLabel("Cost Price is required.", 10);
+		costPriceLabel = LabelFactory.createBoldLabel("Cost Price (₱ from Supplier)", 12, Color.GRAY);
+		costPrice = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 10));
+		costPrice.setFont(costPrice.getFont().deriveFont(14f));
+		costPriceError = LabelFactory.createErrorLabel(HtmlUtils.wrapInHtml("Cost Price is required."), 9);
 
 		formScrollPane = new JScrollPane(formPanel);
 		formScrollPane.setBorder(null);
+		formScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
 		category.setRenderer(new PlaceholderRenderer(category));
 		packaging.setRenderer(new PlaceholderRenderer(packaging));
@@ -307,12 +333,10 @@ public class AddItemDialog extends JDialog {
 		populateSupplierComboBox();
 	}
 
-	private void createHeaderPanel() {
-		headerPanel = new JPanel();
-		headerPanel.setLayout(new MigLayout("insets 0, flowy", "[grow, center]", "[]16[grow]"));
-
-		title = LabelFactory.createBoldLabel("Add New Item", 26);
-		subtitle = LabelFactory.createLabel("Input all required information for the new item.", 12, Color.GRAY);
+	public void destroy() {
+		removeWindowListener(windowListener);
+		cancelButton.removeActionListener(this::handleCancelButton);
+		confirmButton.removeActionListener(this::handleSaveButton);
 	}
 
 	private void disableButtons() {
@@ -326,11 +350,13 @@ public class AddItemDialog extends JDialog {
 	}
 
 	private void handleCancelButton(ActionEvent ev) {
-		dispose();
+		SwingUtilities.invokeLater(() -> {
+			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		});
 	}
 
 	private void handleSaveButton(ActionEvent ev) {
-		saveNewItem();
+		SwingUtilities.invokeLater(this::saveNewItem);
 	}
 
 	private boolean isValid(int initQty, int minQty, String itemName, String itemDescription,
@@ -349,28 +375,22 @@ public class AddItemDialog extends JDialog {
 			isValid = false;
 		}
 
-		if (itemDescription.isEmpty()) {
-			itemDescriptionError.setText(HtmlUtils.wrapInHtml("Description is required."));
-			isValid = false;
-		} else if (itemDescription.length() < 10) {
-			itemDescriptionError.setText(HtmlUtils.wrapInHtml("Description must be at least 10 characters."));
-			isValid = false;
-		} else if (itemDescription.length() > 255) {
+		if (itemDescription.length() > 255) {
 			itemDescriptionError.setText(HtmlUtils.wrapInHtml("Description must be less than 255 characters."));
 			isValid = false;
 		}
 
-		if (selectedCategory == null || selectedCategory.getId() == -1) {
+		if (selectedCategory == null || selectedCategory.id() == -1) {
 			categoryError.setText(HtmlUtils.wrapInHtml("Category is required."));
 			isValid = false;
 		}
 
-		if (selectedPackaging == null || selectedPackaging.getId() == -1) {
+		if (selectedPackaging == null || selectedPackaging.id() == -1) {
 			packagingError.setText(HtmlUtils.wrapInHtml("Packaging is required."));
 			isValid = false;
 		}
 
-		if (selectedSupplier == null || selectedSupplier.getId() == -1) {
+		if (selectedSupplier == null || selectedSupplier.id() == -1) {
 			supplierNameError.setText(HtmlUtils.wrapInHtml("Supplier is required."));
 			isValid = false;
 		}
@@ -411,13 +431,18 @@ public class AddItemDialog extends JDialog {
 			var categories = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL).getCategoryDao()
 					.getAllCategories();
 
-			for (var category : categories) {
-				this.category.addItem(new ComboBoxItem(category._itemCategoryId(), category.name()));
-			}
+			SwingUtilities.invokeLater(() -> {
+				for (var category : categories) {
+					this.category.addItem(new ComboBoxItem(category._itemCategoryId(), category.name()));
+				}
+			});
 		} catch (SQLException | IOException e) {
 			LOGGER.severe("Error fetching categories: " + e.getMessage());
-			JOptionPane.showMessageDialog(this, "Error loading categories: " + e.getMessage(), "Database Error",
-					JOptionPane.ERROR_MESSAGE);
+
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(this, "Error loading categories: " + e.getMessage(), "Database Error",
+						JOptionPane.ERROR_MESSAGE);
+			});
 		}
 	}
 
@@ -426,13 +451,18 @@ public class AddItemDialog extends JDialog {
 			var packagings = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL).getPackagingDao()
 					.getAllPackagings();
 
-			for (var packaging : packagings) {
-				this.packaging.addItem(new ComboBoxItem(packaging._packagingId(), packaging.name()));
-			}
+			SwingUtilities.invokeLater(() -> {
+				for (var packaging : packagings) {
+					this.packaging.addItem(new ComboBoxItem(packaging._packagingId(), packaging.name()));
+				}
+			});
 		} catch (SQLException | IOException e) {
 			LOGGER.severe("Error fetching packagings: " + e.getMessage());
-			JOptionPane.showMessageDialog(this, "Error loading packagings: " + e.getMessage(), "Database Error",
-					JOptionPane.ERROR_MESSAGE);
+
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(this, "Error loading packagings: " + e.getMessage(), "Database Error",
+						JOptionPane.ERROR_MESSAGE);
+			});
 		}
 	}
 
@@ -441,13 +471,18 @@ public class AddItemDialog extends JDialog {
 			var suppliers = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL).getSupplierDao()
 					.getAllSuppliers();
 
-			for (var supplier : suppliers) {
-				this.supplier.addItem(new ComboBoxItem(supplier._supplierId(), supplier.name()));
-			}
+			SwingUtilities.invokeLater(() -> {
+				for (var supplier : suppliers) {
+					this.supplier.addItem(new ComboBoxItem(supplier._supplierId(), supplier.name()));
+				}
+			});
 		} catch (SQLException | IOException e) {
 			LOGGER.severe("Error fetching packagings: " + e.getMessage());
-			JOptionPane.showMessageDialog(this, "Error loading packagings: " + e.getMessage(), "Database Error",
-					JOptionPane.ERROR_MESSAGE);
+
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(this, "Error loading suppliers: " + e.getMessage(), "Database Error",
+						JOptionPane.ERROR_MESSAGE);
+			});
 		}
 	}
 
@@ -475,23 +510,30 @@ public class AddItemDialog extends JDialog {
 		disableButtons();
 
 		updateThread = new Thread(() -> {
+			isUpdating.set(true);
+
 			try {
-				factory.getItemDao().addItem(initialQty, minQty, itemName, itemDescription, selectedCategory.getId(),
-						selectedPackaging.getId(), selectedSupplier.getId(), sellingPrice, srp, costPrice);
+				factory.getItemDao().addItem(initialQty, minQty, itemName, itemDescription, selectedCategory.id(),
+						selectedPackaging.id(), selectedSupplier.id(), sellingPrice, srp, costPrice);
+
 				SwingUtilities.invokeLater(() -> {
-					enableButtons();
 					JOptionPane.showMessageDialog(this, "Item '" + itemName + "' added successfully!", "Success",
 							JOptionPane.INFORMATION_MESSAGE);
-					dispose();
-					parent.refreshTableData();
+					onUpdate.run();
+					dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				});
 			} catch (SQLException | IOException e) {
 				LOGGER.log(Level.SEVERE, "Error adding item: ", e);
+
+				SwingUtilities.invokeLater(() -> {
+					LOGGER.severe("Error adding item: " + e.getMessage());
+					JOptionPane.showMessageDialog(this, "Error adding item: " + e.getMessage(), "Error",
+							JOptionPane.ERROR_MESSAGE);
+				});
+			} finally {
 				SwingUtilities.invokeLater(() -> {
 					enableButtons();
-					LOGGER.severe("Error adding item: " + e.getMessage());
-					JOptionPane.showMessageDialog(this, "Error adding item: " + e.getMessage(), "Database Error",
-							JOptionPane.ERROR_MESSAGE);
+					isUpdating.set(false);
 				});
 			}
 		});

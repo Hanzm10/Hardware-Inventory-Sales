@@ -18,10 +18,10 @@ public class Line extends JComponent {
 		private float[] fractions;
 
 		public LineBuilder() {
-			colors = new Color[] { Color.BLACK };
+			colors = new Color[] { Color.BLACK, Color.BLACK };
 			orientation = Orientation.HORIZONTAL;
 			strokeSize = 1;
-			fractions = new float[] { 1f };
+			fractions = new float[] { 0.4f, 0.6f };
 		}
 
 		public Line build() {

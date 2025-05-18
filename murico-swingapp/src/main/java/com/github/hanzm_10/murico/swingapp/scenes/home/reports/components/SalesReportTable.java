@@ -25,19 +25,13 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.CustomerPayment;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
+import com.github.hanzm_10.murico.swingapp.lib.table_models.NonEditableTableModel;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.CurrencyRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.IdRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
 import net.miginfocom.swing.MigLayout;
-
-class NonEditableTableModel extends DefaultTableModel {
-	@Override
-	public boolean isCellEditable(int row, int column) {
-		return false;
-	}
-}
 
 public class SalesReportTable implements SceneComponent {
 
