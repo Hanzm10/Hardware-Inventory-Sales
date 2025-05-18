@@ -9,12 +9,12 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
 
 import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
-import com.github.hanzm_10.murico.swingapp.scenes.home.InventorySceneNew;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextFieldFactory;
 
@@ -26,24 +26,24 @@ public class InventoryHeader implements SceneComponent {
 
 	public static final String ADD_COMMAND = "add";
 	public static final String FILTER_COMMAND = "filter";
+	public static final String DELETE_COMMAND = "delete";
+	public static final String EDIT_COMMAND = "edit";
+	public static final String RESTOCK_COMMAND = "restock";
 
 	private RoundedPanel view;
 
 	private JButton addButton;
+	private JButton restockButton;
+	private JButton editButton;
+	private JButton deleteButton;
 	private JButton filterButton;
 
 	private AtomicBoolean initialized = new AtomicBoolean(false);
 
 	private ActionListener btnListener;
+	private DocumentListener searchListener;
 
-	private InventorySceneNew parentScene;
 	private JTextField searchField;
-
-	public InventoryHeader(ActionListener btnListener, InventorySceneNew parentScene) {
-		this.btnListener = btnListener;
-
-		this.parentScene = parentScene;
-	}
 
 	private void attachComponents() {
 		view.setLayout(new MigLayout("insets 12", "[]", "[grow]"));
@@ -51,37 +51,49 @@ public class InventoryHeader implements SceneComponent {
 		view.setForeground(Styles.SECONDARY_FOREGROUND_COLOR);
 
 		view.add(addButton, "width 32!, height 32!");
+		view.add(restockButton, "width 32!, height 32!");
+		view.add(editButton, "width 32!,height 32!");
+		view.add(deleteButton, "width 32!,height 32!");
+
 		view.add(Box.createHorizontalGlue(), "growx, pushx");
 
 		view.add(filterButton, "width 32!, height 32!, alignx right");
 		view.add(searchField, "width 250!, height 32!, alignx right");
-
 	}
 
 	private void createComponents() {
 		addButton = new JButton("");
+		restockButton = new JButton("");
+		editButton = new JButton("");
+		deleteButton = new JButton("");
 		filterButton = new JButton("");
+
+		deleteButton.setBackground(Styles.DANGER_COLOR);
 
 		filterButton.setBackground(Styles.TERTIARY_COLOR);
 		searchField = TextFieldFactory.createTextField("Search", 20);
 
-		searchField.getDocument().addDocumentListener(parentScene);
-
 		try {
 			addButton.setIcon(AssetManager.getOrLoadIcon("icons/plus.svg"));
 			filterButton.setIcon(AssetManager.getOrLoadIcon("icons/funnel.svg"));
+			deleteButton.setIcon(AssetManager.getOrLoadIcon("icons/trash.svg"));
+			editButton.setIcon(AssetManager.getOrLoadIcon("icons/pencil.svg"));
+			restockButton.setIcon(AssetManager.getOrLoadIcon("icons/repeat-2.svg"));
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Failed to load icon", e);
 		}
 
 		addButton.setToolTipText("Add");
 		filterButton.setToolTipText("Filter");
+		deleteButton.setToolTipText("Delete");
+		editButton.setToolTipText("Edit");
+		restockButton.setToolTipText("Restock");
 
 		addButton.setActionCommand(ADD_COMMAND);
 		filterButton.setActionCommand(FILTER_COMMAND);
-
-		addButton.addActionListener(btnListener);
-		filterButton.addActionListener(btnListener);
+		deleteButton.setActionCommand(DELETE_COMMAND);
+		editButton.setActionCommand(EDIT_COMMAND);
+		restockButton.setActionCommand(RESTOCK_COMMAND);
 	}
 
 	@Override
@@ -91,13 +103,25 @@ public class InventoryHeader implements SceneComponent {
 			view = null;
 		}
 
-		addButton.removeActionListener(btnListener);
-		filterButton.removeActionListener(btnListener);
+		if (btnListener != null) {
+			addButton.removeActionListener(btnListener);
+			filterButton.removeActionListener(btnListener);
+			editButton.removeActionListener(btnListener);
+			deleteButton.removeActionListener(btnListener);
+			restockButton.removeActionListener(btnListener);
+		}
 
 		addButton = null;
 		filterButton = null;
+		deleteButton = null;
+		editButton = null;
+		restockButton = null;
 
-		searchField.getDocument().removeDocumentListener(parentScene);
+		if (searchListener != null) {
+			searchField.getDocument().removeDocumentListener(searchListener);
+		}
+
+		searchField = null;
 
 		initialized.set(false);
 		LOGGER.info("InventoryHeader destroyed");
@@ -127,6 +151,35 @@ public class InventoryHeader implements SceneComponent {
 	@Override
 	public boolean isInitialized() {
 		return initialized.get();
+	}
+
+	public void setBtnListener(ActionListener btnListener) {
+		if (this.btnListener != null) {
+			addButton.removeActionListener(this.btnListener);
+			filterButton.removeActionListener(this.btnListener);
+			editButton.removeActionListener(this.btnListener);
+			deleteButton.removeActionListener(this.btnListener);
+			restockButton.removeActionListener(this.btnListener);
+		}
+
+		this.btnListener = btnListener;
+
+		addButton.addActionListener(btnListener);
+		filterButton.addActionListener(btnListener);
+		editButton.addActionListener(btnListener);
+		deleteButton.addActionListener(btnListener);
+		restockButton.addActionListener(btnListener);
+	}
+
+	public void setSearchListener(DocumentListener searchListener) {
+		if (this.searchListener != null) {
+			searchField.getDocument().removeDocumentListener(this.searchListener);
+		}
+
+		this.searchListener = searchListener;
+
+		searchField.getDocument().addDocumentListener(searchListener);
+		System.out.println(searchListener);
 	}
 
 }

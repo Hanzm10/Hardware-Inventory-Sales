@@ -70,20 +70,20 @@ public class EditProfile implements Scene {
 		textField.setBounds(432, 410, 257, 52);
 		view.add(textField);
 		textField.setColumns(10);
-		TextPlaceholder firstnameHoldr = new TextPlaceholder("First Name", textField);
+		new TextPlaceholder("First Name", textField);
 		// LoginWindows.defText(textField, "First Name");
 
 		textField_1 = new JTextField();
 		textField_1.setBounds(432, 476, 257, 52);
 		view.add(textField_1);
 		textField_1.setColumns(10);
-		TextPlaceholder lastnameHoldr = new TextPlaceholder("Lastname", textField_1);
+		new TextPlaceholder("Lastname", textField_1);
 		textField_2 = new JTextField();
 		textField_2.setBounds(432, 568, 257, 52);
 		view.add(textField_2);
 		textField_2.setColumns(10);
 		// LoginWindows.defText(textField_1, "Last Name");
-		TextPlaceholder emailHoldr = new TextPlaceholder("Email Address", textField_2);
+		new TextPlaceholder("Email Address", textField_2);
 		// LoginWindows.defText(textField_2, "Email Address");
 
 		btnSave = new JButton("Save");

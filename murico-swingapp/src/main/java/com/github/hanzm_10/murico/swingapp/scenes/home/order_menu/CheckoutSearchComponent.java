@@ -295,7 +295,7 @@ public class CheckoutSearchComponent extends JPanel {
 		itemSearchField.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				Timer timer = new Timer(200, ae -> {
+				Timer timer = new Timer(200, _ -> {
 					boolean popupHasFocus = false;
 					if (suggestionsPopup.isVisible()) {
 						Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
@@ -382,6 +382,20 @@ public class CheckoutSearchComponent extends JPanel {
 		}
 	}
 
+	private void handleSearch(ActionEvent ev) {
+		final String searchText = itemSearchField.getText().trim();
+		if (searchText.length() >= SEARCH_TRIGGER_LENGTH && searchText.equals(itemSearchField.getText().trim())) {
+			System.out.println("Starting search worker for: " + searchText);
+			currentSearchWorker = new SearchWorker(searchText);
+			currentSearchWorker.execute();
+		} else {
+			if (suggestionsPopup != null) {
+				suggestionsPopup.setVisible(false);
+			}
+		}
+
+	}
+
 	// --- Helper: Style Icon Button / Label ---
 	private void styleIconButtonLabel(JLabel label) {
 		label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -397,18 +411,7 @@ public class CheckoutSearchComponent extends JPanel {
 			currentSearchWorker.cancel(true);
 			currentSearchWorker = null;
 		}
-		final String searchText = itemSearchField.getText().trim();
-		Timer searchTimer = new Timer(300, (ActionEvent e) -> {
-			if (searchText.length() >= SEARCH_TRIGGER_LENGTH && searchText.equals(itemSearchField.getText().trim())) {
-				System.out.println("Starting search worker for: " + searchText);
-				currentSearchWorker = new SearchWorker(searchText);
-				currentSearchWorker.execute();
-			} else {
-				if (suggestionsPopup != null) {
-					suggestionsPopup.setVisible(false);
-				}
-			}
-		});
+		Timer searchTimer = new Timer(300, this::handleSearch);
 		searchTimer.setRepeats(false);
 		searchTimer.start();
 	}

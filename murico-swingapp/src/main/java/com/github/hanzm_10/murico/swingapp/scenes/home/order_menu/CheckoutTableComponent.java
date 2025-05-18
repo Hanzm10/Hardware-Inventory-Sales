@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.sql.Connection; // Needed for stock lookup
 import java.sql.PreparedStatement; // Needed for stock lookup
@@ -53,12 +54,16 @@ public class CheckoutTableComponent extends JPanel {
 			button.setOpaque(true);
 			button.setFocusPainted(false);
 			button.setBorderPainted(false);
-			button.addActionListener(e -> fireEditingStopped());
+			button.addActionListener(this::fireEditingStopped);
 		}
 
 		@Override
 		protected void fireEditingStopped() {
 			super.fireEditingStopped();
+		}
+
+		private void fireEditingStopped(ActionEvent e) {
+			fireEditingStopped();
 		}
 
 		@Override

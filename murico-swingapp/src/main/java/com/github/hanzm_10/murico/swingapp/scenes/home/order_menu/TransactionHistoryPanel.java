@@ -33,13 +33,13 @@ public class TransactionHistoryPanel extends JPanel {
 	// Column indices constants (optional) - adjust if needed
 	private static final int TRANS_COL_DATE = 0;
 
-	private static final int TRANS_COL_TYPE = 1;
+	// private static final int TRANS_COL_TYPE = 1;
 
 	private static final int TRANS_COL_REF_ID = 2;
 	private static final int TRANS_COL_DETAILS = 3;
 	private static final int TRANS_COL_AMOUNT = 4;
 	private static final int TRANS_COL_PARTY = 5;
-	private static final int TRANS_COL_EMPLOYEE = 6;
+	// private static final int TRANS_COL_EMPLOYEE = 6;
 	// Removed Branch column index
 	private static final int TRANS_COL_STATUS = 7;
 	private JTable transactionHistoryTable;
@@ -99,7 +99,7 @@ public class TransactionHistoryPanel extends JPanel {
 
 		// Optional Refresh Button
 		JButton refreshButton = new JButton("Refresh History");
-		refreshButton.addActionListener(e -> loadData());
+		refreshButton.addActionListener(this::loadData); // Call loadData on click
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		bottomPanel.add(refreshButton);
 		add(bottomPanel, BorderLayout.SOUTH);
@@ -108,6 +108,10 @@ public class TransactionHistoryPanel extends JPanel {
 	/** Called by OrderMenuScene when this panel is shown */
 	public void loadData() {
 		System.out.println("TransactionHistoryPanel: Loading data...");
+		loadTransactionHistoryData();
+	}
+
+	private void loadData(java.awt.event.ActionEvent e) {
 		loadTransactionHistoryData();
 	}
 

@@ -35,8 +35,8 @@ public class OrderHistoryPanel extends JPanel {
 
 	private static final int HISTORY_COL_ORDER_ID = 1;
 
-	private static final int HISTORY_COL_CUSTOMER = 2;
-	private static final int HISTORY_COL_EMPLOYEE = 3;
+//	private static final int HISTORY_COL_CUSTOMER = 2;
+	// srivate static final int HISTORY_COL_EMPLOYEE = 3;
 	private static final int HISTORY_COL_TOTAL = 4;
 	// Removed Branch column index
 	private JTable orderHistoryTable;
@@ -96,7 +96,7 @@ public class OrderHistoryPanel extends JPanel {
 
 		// Optional Refresh Button
 		JButton refreshButton = new JButton("Refresh History");
-		refreshButton.addActionListener(e -> loadData()); // Call loadData on click
+		refreshButton.addActionListener(this::loadData); // Call loadData on click
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		bottomPanel.add(refreshButton);
 		add(bottomPanel, BorderLayout.SOUTH);
@@ -105,6 +105,10 @@ public class OrderHistoryPanel extends JPanel {
 	/** Called by OrderMenuScene when this panel is shown */
 	public void loadData() {
 		System.out.println("OrderHistoryPanel: Loading data...");
+		loadOrderHistoryData();
+	}
+
+	private void loadData(java.awt.event.ActionEvent e) {
 		loadOrderHistoryData();
 	}
 

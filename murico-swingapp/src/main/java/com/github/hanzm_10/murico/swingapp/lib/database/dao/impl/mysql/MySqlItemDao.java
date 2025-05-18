@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -28,6 +29,7 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.DeleteItemsDialog.ItemToBeDeleted;
 import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 public class MySqlItemDao implements ItemDao {
@@ -128,6 +130,47 @@ public class MySqlItemDao implements ItemDao {
 	}
 
 	@Override
+	public void archiveItems(@NotNull ItemToBeDeleted[] itemsToBeDeleted, Consumer<Integer> onDelete)
+			throws SQLException, IOException {
+		var delItemQuery = MySqlQueryLoader.getInstance().get("archive_item", "items", SqlQueryType.DELETE);
+		var delItemStockQuery = MySqlQueryLoader.getInstance().get("archive_item_stock", "items", SqlQueryType.DELETE);
+
+		try (var conn = MySqlFactoryDao.createConnection();
+				var statement = conn.prepareStatement(delItemQuery);
+				var statement2 = conn.prepareStatement(delItemStockQuery);) {
+			conn.setAutoCommit(false);
+
+			ConnectionManager.register(Thread.currentThread(), statement);
+
+			for (int i = 0; i < itemsToBeDeleted.length; i++) {
+				try {
+					statement.setInt(1, itemsToBeDeleted[i].itemId());
+					statement.executeUpdate();
+
+					ConnectionManager.unregister(Thread.currentThread());
+					ConnectionManager.register(Thread.currentThread(), statement2);
+
+					statement2.setInt(1, itemsToBeDeleted[i].itemStockId());
+					statement2.executeUpdate();
+
+					if (onDelete != null) {
+						onDelete.accept(i);
+					}
+				} catch (SQLException e) {
+					conn.rollback();
+					throw e;
+				} finally {
+					ConnectionManager.unregister(Thread.currentThread());
+				}
+			}
+
+			conn.commit();
+		} finally {
+			ConnectionManager.unregister(Thread.currentThread());
+		}
+	}
+
+	@Override
 	public Item getItemById(@Range(from = 0, to = 2147483647) int itemID) throws IOException, SQLException {
 		Item item = null;
 		var query = MySqlQueryLoader.getInstance().get("get_item_by_itemId", "items", SqlQueryType.SELECT);
@@ -182,27 +225,44 @@ public class MySqlItemDao implements ItemDao {
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
 			ConnectionManager.register(Thread.currentThread(), stmt);
 
-			try (var resultSet = stmt.executeQuery(query)) {
-				var result = new ArrayList<ItemStock>();
+			var resultSet = stmt.executeQuery(query);
+			var result = new ArrayList<ItemStock>();
 
-				while (resultSet.next()) {
-					result.add(new ItemStock(resultSet.getInt("_item_stock_id"), resultSet.getInt("_item_id"),
-							stringOrNA(resultSet.getString("category_type_name")),
-							stringOrNA(resultSet.getString("packaging_type_name")),
-							stringOrNA(resultSet.getString("supplier_name")),
-							stringOrNA(resultSet.getString("item_name")), resultSet.getInt("stock_quantity"),
-							resultSet.getBigDecimal("unit_price_php"), resultSet.getInt("minimum_quantity")));
+			while (resultSet.next()) {
+				result.add(new ItemStock(resultSet.getInt("_item_stock_id"), resultSet.getInt("_item_id"),
+						stringOrNA(resultSet.getString("category_type_name")),
+						stringOrNA(resultSet.getString("packaging_type_name")),
+						stringOrNA(resultSet.getString("supplier_name")), stringOrNA(resultSet.getString("item_name")),
+						resultSet.getInt("stock_quantity"), resultSet.getBigDecimal("unit_price_php"),
+						resultSet.getInt("minimum_quantity")));
 
-				}
-
-				return result.toArray(new ItemStock[result.size()]);
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
+
+			return result.toArray(new ItemStock[result.size()]);
+		} finally {
+			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 
 	private String stringOrNA(String name) {
 		return name == null ? "N/A" : name;
+	}
+
+	@Override
+	public void updateItemStock(@Range(from = 0, to = 2147483647) int itemStockId, @NotNull BigDecimal unitPrice,
+			@Range(from = 0, to = 2147483647) int minQty) throws SQLException, IOException {
+		var query = MySqlQueryLoader.getInstance().get("update_item_stock", "items", SqlQueryType.UPDATE);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			ConnectionManager.register(Thread.currentThread(), statement);
+
+			statement.setBigDecimal(1, unitPrice);
+			statement.setInt(2, minQty);
+			statement.setInt(3, itemStockId);
+
+			statement.executeUpdate();
+		} finally {
+			ConnectionManager.unregister(Thread.currentThread());
+		}
 	}
 }

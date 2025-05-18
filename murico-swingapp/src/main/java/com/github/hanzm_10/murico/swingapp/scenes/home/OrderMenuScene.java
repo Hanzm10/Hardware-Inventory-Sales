@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -19,8 +20,6 @@ public class OrderMenuScene implements Scene {
 	private static final String CARD_ORDER_HISTORY = "OrderHistory";
 	private static final String CARD_TRANSACTION_HISTORY = "TransactionHistory";
 	private static final String CARD_CHECKOUT = "Checkout";
-	private static final Color NAV_BUTTON_HOVER_COLOR = new Color(210, 230, 255);
-
 	private JPanel view;
 
 	// UI Components
@@ -44,11 +43,11 @@ public class OrderMenuScene implements Scene {
 		viewSwitchPanel.add(orderHistoryPanel, CARD_ORDER_HISTORY);
 		viewSwitchPanel.add(transactionHistoryPanel, CARD_TRANSACTION_HISTORY);
 
-		checkoutButton.addActionListener(e -> showCard(CARD_CHECKOUT)); // Use helper
+		checkoutButton.addActionListener(this::showCheckout); // Use helper
 
-		orderHistoryButton.addActionListener(e -> showCard(CARD_ORDER_HISTORY)); // Use helper
+		orderHistoryButton.addActionListener(this::showOrderHistory); // Use helper
 
-		transactionHistoryButton.addActionListener(e -> showCard(CARD_TRANSACTION_HISTORY)); // Use helper
+		transactionHistoryButton.addActionListener(this::showTransactionHistory); // Use helper
 
 		navigationPanel.add(orderHistoryButton);
 		navigationPanel.add(transactionHistoryButton);
@@ -117,6 +116,18 @@ public class OrderMenuScene implements Scene {
 			// if (checkoutPanel != null) checkoutPanel.clearCheckoutState();
 			break;
 		}
+	}
+
+	private void showCheckout(ActionEvent e) {
+		showCard(CARD_CHECKOUT);
+	}
+
+	private void showOrderHistory(ActionEvent e) {
+		showCard(CARD_ORDER_HISTORY);
+	}
+
+	private void showTransactionHistory(ActionEvent e) {
+		showCard(CARD_TRANSACTION_HISTORY);
 	}
 
 }

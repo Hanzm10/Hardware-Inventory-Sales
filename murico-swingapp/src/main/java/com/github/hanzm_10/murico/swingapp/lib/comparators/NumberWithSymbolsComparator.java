@@ -47,9 +47,9 @@ public class NumberWithSymbolsComparator implements Comparator<Object> {
 			}
 		}
 
-		if (obj instanceof ProgressLevelRenderer.StockInfo) {
+		if (obj instanceof ProgressLevelRenderer.ProgressLevel) {
 
-			ProgressLevelRenderer.StockInfo progressLevel = (ProgressLevelRenderer.StockInfo) obj;
+			ProgressLevelRenderer.ProgressLevel progressLevel = (ProgressLevelRenderer.ProgressLevel) obj;
 			return new BigDecimal(progressLevel.currentProgressLevel());
 		}
 

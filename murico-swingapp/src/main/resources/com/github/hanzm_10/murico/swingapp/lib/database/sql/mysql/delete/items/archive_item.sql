@@ -1,0 +1,1 @@
+UPDATE items SET is_deleted = TRUE WHERE _item_id = ?;

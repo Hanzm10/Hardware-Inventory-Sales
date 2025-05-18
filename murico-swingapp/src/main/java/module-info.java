@@ -11,4 +11,5 @@ open module murico.swingapp {
 	requires mysql.connector.j;
 	requires io.github.classgraph;
 	requires org.jfree.jfreechart;
+	requires org.apache.commons.text;
 }
