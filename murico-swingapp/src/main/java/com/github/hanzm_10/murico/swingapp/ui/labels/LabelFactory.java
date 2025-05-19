@@ -12,14 +12,30 @@ import com.github.hanzm_10.murico.swingapp.constants.Styles;
 
 public class LabelFactory {
 	public static JLabel createBoldItalicLabel(@NotNull final int fontSize) {
-		return createBoldItalicLabel(fontSize, UIManager.getColor("foreground"));
+		return createBoldItalicLabel("", fontSize, UIManager.getColor("foreground"));
 	}
 
-	public static JLabel createBoldItalicLabel(@NotNull final int fontSize, @NotNull Color color) {
-		var label = new JLabel();
+	public static JLabel createBoldItalicLabel(@NotNull final int fontSize, @NotNull final Color color) {
+		return createBoldItalicLabel("", fontSize, color);
+	}
+
+	public static JLabel createBoldItalicLabel(@NotNull final String msg) {
+		return createBoldItalicLabel(msg, 16, null);
+	}
+
+	public static JLabel createBoldItalicLabel(@NotNull final String msg, @NotNull final int fontSize) {
+		return createBoldItalicLabel(msg, fontSize, null);
+	}
+
+	public static JLabel createBoldItalicLabel(@NotNull final String msg, @NotNull final int fontSize,
+			@NotNull Color color) {
+		var label = new JLabel(msg);
 
 		label.setFont(label.getFont().deriveFont(Font.BOLD | Font.ITALIC, fontSize));
-		label.setForeground(color);
+
+		if (color != null) {
+			label.setForeground(color);
+		}
 
 		return label;
 	}
@@ -74,14 +90,17 @@ public class LabelFactory {
 	}
 
 	public static JLabel createLabel(@NotNull final String msg, @NotNull final int fontSize) {
-		return createLabel(msg, fontSize, UIManager.getColor("foreground"));
+		return createLabel(msg, fontSize, null);
 	}
 
 	public static JLabel createLabel(@NotNull final String msg, @NotNull final int fontSize, @NotNull Color color) {
 		var label = new JLabel(msg);
 
-		label.setFont(label.getFont().deriveFont(fontSize));
-		label.setForeground(color);
+		label.setFont(label.getFont().deriveFont((float) fontSize));
+
+		if (color != null) {
+			label.setForeground(color);
+		}
 
 		return label;
 	}

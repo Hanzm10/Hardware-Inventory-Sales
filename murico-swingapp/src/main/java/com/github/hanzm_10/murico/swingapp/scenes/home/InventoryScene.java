@@ -1,0 +1,315 @@
+package com.github.hanzm_10.murico.swingapp.scenes.home;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer.ProgressLevel;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryHeader;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.AddItemDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.DeleteItemsDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.EditItemDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.EditItemDialog.UpdateResult;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.InventoryFilterDialog;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.InventoryFilterDialog.FilterResult;
+import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.RestockItemDialog;
+import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
+
+import net.miginfocom.swing.MigLayout;
+
+public class InventoryScene implements Scene {
+
+	private JPanel view;
+
+	private InventoryTable inventoryTable;
+	private InventoryHeader inventoryHeader;
+
+	private AddItemDialog addItemDialog;
+	private InventoryFilterDialog filterDialog;
+	private EditItemDialog editItemDialog;
+	private DeleteItemsDialog deleteItemsDialog;
+
+	private Thread inventoryTableThread;
+
+	private void attachComponents() {
+		view.setLayout(new MigLayout("insets 0, flowy", "[grow]", "[]16[grow]"));
+
+		view.add(inventoryHeader.getView(), "growx");
+		view.add(inventoryTable.getView(), "grow");
+
+		inventoryHeader.initializeComponents();
+	}
+
+	private void createComponents() {
+		inventoryHeader = new InventoryHeader();
+		inventoryTable = new InventoryTable();
+	}
+
+	@Override
+	public String getSceneName() {
+		return "inventory";
+	}
+
+	@Override
+	public JPanel getSceneView() {
+		return view == null ? (view = new JPanel()) : view;
+	}
+
+	private void handleAddCommand() {
+		SwingUtilities.invokeLater(() -> {
+			var owner = SwingUtilities.getWindowAncestor(view);
+
+			if (addItemDialog == null) {
+				addItemDialog = new AddItemDialog(owner, this::refreshTableData);
+			}
+
+			addItemDialog.setLocationRelativeTo(owner);
+			addItemDialog.setVisible(true);
+		});
+	}
+
+	private void handleDeleteCommand() {
+		var selectedRows = inventoryTable.getSelectedRows();
+
+		if (selectedRows.length == 0) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+						"Please choose a row to be deleted.", "Unsupported Operation", JOptionPane.ERROR_MESSAGE);
+			});
+
+			return;
+		}
+
+		SwingUtilities.invokeLater(() -> {
+			var owner = SwingUtilities.getWindowAncestor(view);
+
+			if (deleteItemsDialog == null) {
+				deleteItemsDialog = new DeleteItemsDialog(owner, inventoryTable.getTable(), this::refreshTableData);
+			}
+
+			deleteItemsDialog.setLocationRelativeTo(owner);
+			deleteItemsDialog.setRowsToDelete(selectedRows);
+			deleteItemsDialog.setVisible(true);
+		});
+	}
+
+	private void handleEditCommand() {
+		var selectedRows = inventoryTable.getSelectedRows();
+
+		if (selectedRows.length == 0) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+						"Please choose a row to be edited.", "Unsupported Operation", JOptionPane.ERROR_MESSAGE);
+			});
+
+			return;
+		} else if (selectedRows.length > 1) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+						"Editing multiple items is not yet supported.", "Unsupported Operation",
+						JOptionPane.ERROR_MESSAGE);
+			});
+
+			return;
+		}
+
+		SwingUtilities.invokeLater(() -> {
+			var owner = SwingUtilities.getWindowAncestor(view);
+
+			if (editItemDialog == null) {
+				editItemDialog = new EditItemDialog(owner, inventoryTable.getTable(), this::onItemUpdate);
+			}
+
+			editItemDialog.setLocationRelativeTo(owner);
+			editItemDialog.setRowtoBeEdited(selectedRows[0]);
+			editItemDialog.setVisible(true);
+		});
+	}
+
+	private void handleFilter(FilterResult filterResult) {
+		var tableFilter = inventoryTable.getTableSearchListener().getTableFilter();
+		var realCategoryIndex = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_CATEGORY_TYPE);
+		var realSupplierIndex = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_SUPPLIER_NAME);
+
+		tableFilter.setColumnFilter(realCategoryIndex, filterResult.category());
+		tableFilter.setColumnFilter(realSupplierIndex, filterResult.supplier());
+	}
+
+	private void handleFilterCommand() {
+		SwingUtilities.invokeLater(() -> {
+			var owner = SwingUtilities.getWindowAncestor(view);
+
+			if (filterDialog == null) {
+				filterDialog = new InventoryFilterDialog(SwingUtilities.getWindowAncestor(view), this::handleFilter);
+			}
+
+			filterDialog.setLocationRelativeTo(owner);
+			filterDialog.setVisible(true);
+		});
+	}
+
+	// A hacky way to initialize the listeners
+	// since the components are only initialized
+	// once the table has gotten its data on first render.
+	private void handleInitialInventoryTableThread() {
+		inventoryTable.performBackgroundTask();
+
+		// we do this because the components of inventory table will only be initialized
+		// inside
+		// the EDT. Besides, we're manipulating the UI as well by attaching listeners,
+		// so this is
+		// a good practice.
+		SwingUtilities.invokeLater(() -> {
+			// doesnt necessarily need to be here, but might as well to centralize where
+			// listeners are added
+			inventoryHeader.setBtnListener(this::listenToHeaderButtonEvents);
+			inventoryHeader.setSearchListener(inventoryTable.getTableSearchListener());
+		});
+	}
+
+	private void handleRestockCommand() {
+		var selectedRows = inventoryTable.getSelectedRows();
+
+		if (selectedRows.length == 0) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+						"Please choose a row to be restocked.", "Unsupported Operation", JOptionPane.ERROR_MESSAGE);
+			});
+
+			return;
+		} else if (selectedRows.length > 1) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
+						"Restocking multiple items is not yet supported.", "Unsupported Operation",
+						JOptionPane.ERROR_MESSAGE);
+			});
+
+			return;
+		}
+
+		var selectedRow = selectedRows[0];
+		var realItemStockIdCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_STOCK_ID);
+		var realItemNameCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_NAME);
+		var realQtyCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_STOCK_QUANTITY);
+		var realItemIdCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_ID);
+
+		var itemStockId = (int) inventoryTable.getTable().getValueAt(selectedRow, realItemStockIdCol);
+		var itemName = (String) inventoryTable.getTable().getValueAt(selectedRow, realItemNameCol);
+		var itemId = (int) inventoryTable.getTable().getValueAt(selectedRow, realItemIdCol);
+		var currentQty = ((ProgressLevel) inventoryTable.getTable().getValueAt(selectedRow, realQtyCol))
+				.currentProgressLevel();
+
+		var owner = SwingUtilities.getWindowAncestor(view);
+		var dialog = new RestockItemDialog(owner, itemStockId, itemId, itemName, currentQty, this::refreshTableData);
+
+		dialog.setLocationRelativeTo(owner);
+		dialog.setVisible(true);
+	}
+
+	private void listenToHeaderButtonEvents(ActionEvent ev) {
+		var command = ev.getActionCommand();
+
+		switch (command) {
+		case InventoryHeader.ADD_COMMAND:
+			handleAddCommand();
+			break;
+		case InventoryHeader.FILTER_COMMAND:
+			handleFilterCommand();
+			break;
+		case InventoryHeader.DELETE_COMMAND:
+			handleDeleteCommand();
+			break;
+		case InventoryHeader.EDIT_COMMAND:
+			handleEditCommand();
+			break;
+		case InventoryHeader.RESTOCK_COMMAND:
+			handleRestockCommand();
+			break;
+		}
+	}
+
+	@Override
+	public void onBeforeShow() {
+		terminateThreads();
+
+		inventoryTableThread = new Thread(this::handleInitialInventoryTableThread);
+
+		inventoryTableThread.start();
+	}
+
+	@Override
+	public void onCreate() {
+		createComponents();
+		attachComponents();
+	}
+
+	@Override
+	public boolean onDestroy() {
+		terminateThreads();
+
+		if (inventoryTable != null) {
+			inventoryTable.destroy();
+		}
+
+		inventoryHeader.destroy();
+		inventoryTable.destroy();
+
+		if (addItemDialog != null) {
+			addItemDialog.destroy();
+		}
+
+		if (filterDialog != null) {
+			filterDialog.destroy();
+		}
+
+		if (editItemDialog != null) {
+			editItemDialog.destroy();
+		}
+
+		if (deleteItemsDialog != null) {
+			deleteItemsDialog.destroy();
+		}
+
+		return true;
+	}
+
+	@Override
+	public void onHide() {
+		terminateThreads();
+	}
+
+	private void onItemUpdate(UpdateResult result) {
+		var model = inventoryTable.getTableModel();
+		var realUnitPriceCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_UNIT_PRICE);
+		var realMinQtyCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_MINIMUM_QUANTITY);
+
+		model.setValueAt(result.sellingPrice(), result.row(), realUnitPriceCol);
+		model.setValueAt(result.minQty(), result.row(), realMinQtyCol);
+	}
+
+	public void refreshTableData() {
+		if (inventoryTableThread != null && inventoryTableThread.isAlive()) {
+			inventoryTableThread.interrupt();
+			ConnectionManager.cancel(inventoryTableThread);
+		}
+
+		inventoryTableThread = new Thread(() -> {
+			inventoryTable.refresh();
+		});
+
+		inventoryTableThread.start();
+	}
+
+	private void terminateThreads() {
+		if (inventoryTableThread != null && inventoryTableThread.isAlive()) {
+			inventoryTableThread.interrupt();
+			ConnectionManager.cancel(inventoryTableThread);
+		}
+
+	}
+
+}

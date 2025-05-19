@@ -21,15 +21,15 @@ import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
 public class ProgressLevelRenderer extends JPanel implements TableCellRenderer {
 
-	public static record StockInfo(@NotNull int getItemId, @NotNull int currentProgressLevel,
+	public static record ProgressLevel(@NotNull int getItemId, @NotNull int currentProgressLevel,
 			@NotNull int minimumProgressLevel, @NotNull String unitOfMeasure) {
 
 		public static final int MAX_BOUND_PROGRESS_LEVEL = 100;
 
 		public static boolean isValid(Object progressLevel) {
-			return (progressLevel != null && progressLevel instanceof StockInfo)
-					&& ((StockInfo) progressLevel).currentProgressLevel >= 0
-					&& ((StockInfo) progressLevel).minimumProgressLevel >= 0;
+			return (progressLevel != null && progressLevel instanceof ProgressLevel)
+					&& ((ProgressLevel) progressLevel).currentProgressLevel >= 0
+					&& ((ProgressLevel) progressLevel).minimumProgressLevel >= 0;
 		}
 	}
 
@@ -46,7 +46,7 @@ public class ProgressLevelRenderer extends JPanel implements TableCellRenderer {
 		setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
 
 		label = LabelFactory.createBoldLabel("", 9);
-		progressBar = new JProgressBar(0, StockInfo.MAX_BOUND_PROGRESS_LEVEL);
+		progressBar = new JProgressBar(0, ProgressLevel.MAX_BOUND_PROGRESS_LEVEL);
 
 		label.setAlignmentX(0.5f);
 		label.setAlignmentY(0.5f);
@@ -56,7 +56,6 @@ public class ProgressLevelRenderer extends JPanel implements TableCellRenderer {
 		var panel = new JPanel(new BorderLayout());
 
 		panel.setOpaque(false);
-
 		panel.add(progressBar, BorderLayout.CENTER);
 
 		add(panel);
@@ -69,23 +68,21 @@ public class ProgressLevelRenderer extends JPanel implements TableCellRenderer {
 			setOpaque(true);
 			setBackground(table.getSelectionBackground());
 			label.setForeground(table.getSelectionForeground());
-			// For JProgressBar, selection color is usually not applied to the bar itself,
-			// but the panel background will cover it.
 		} else {
 			setOpaque(false);
 			setBackground(table.getBackground());
 			label.setForeground(table.getForeground());
 		}
 
-		if (!StockInfo.isValid(value)) {
+		if (!ProgressLevel.isValid(value)) {
 			LOGGER.warning("Invalid progress level value: " + value);
 			return this;
 		}
 
-		StockInfo progressLevel = (StockInfo) value;
+		ProgressLevel progressLevel = (ProgressLevel) value;
 
 		var percentage = ((float) progressLevel.currentProgressLevel - (float) progressLevel.minimumProgressLevel)
-				/ (Math.max(StockInfo.MAX_BOUND_PROGRESS_LEVEL, progressLevel.minimumProgressLevel)
+				/ (Math.max(ProgressLevel.MAX_BOUND_PROGRESS_LEVEL, progressLevel.minimumProgressLevel)
 						- progressLevel.minimumProgressLevel);
 		var txt = progressLevel.currentProgressLevel + " " + progressLevel.unitOfMeasure;
 		Color barColor;

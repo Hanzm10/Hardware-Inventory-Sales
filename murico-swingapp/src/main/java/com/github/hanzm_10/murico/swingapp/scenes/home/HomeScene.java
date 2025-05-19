@@ -40,7 +40,7 @@ public class HomeScene implements Scene, SubSceneSupport {
 		sceneManager.registerScene("profile", () -> new ProfileScene(), GUARD);
 		sceneManager.registerScene("dashboard", () -> new DashboardScene(), GUARD);
 		sceneManager.registerScene("reports", () -> new ReportsScene(), GUARD);
-		sceneManager.registerScene("inventory", () -> new InventorySceneNew(), GUARD);
+		sceneManager.registerScene("inventory", () -> new InventoryScene(), GUARD);
 		sceneManager.registerScene("order menu", () -> new OrderMenuScene(), GUARD);
 		sceneManager.registerScene("contacts", () -> new ContactScene(), GUARD);
 		sceneManager.registerScene("settings", () -> new SettingsScene(), GUARD);

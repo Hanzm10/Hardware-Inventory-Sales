@@ -1,0 +1,1 @@
+UPDATE item_stocks SET price_php = ?, minimum_quantity = ? WHERE _item_stock_id = ?;

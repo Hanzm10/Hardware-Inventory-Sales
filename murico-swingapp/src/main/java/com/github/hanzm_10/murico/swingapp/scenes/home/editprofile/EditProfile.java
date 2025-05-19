@@ -138,7 +138,7 @@ public class EditProfile extends Profile {
 
 	}
 
-	public void editRole(JComboBox combo) {
+	public void editRole(JComboBox<String> combo) {
 		combo.setSelectedIndex(0);
 		combo.setRenderer(new PlaceholderRenderer(new RoleRenderer()));
 		combo.setUI(new RoundedComboUI());

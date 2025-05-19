@@ -14,12 +14,16 @@ public class ConnectionManager {
 
 	public static void cancel(Thread thread) {
 		Statement stmt = activeStatements.get(thread);
-		if (stmt != null) {
-			try {
-				stmt.cancel(); // non-blocking cancel
-			} catch (SQLException e) {
-				LOGGER.log(Level.SEVERE, "Failed to cancel database operation", e);
+		try {
+			if (stmt != null && !stmt.isClosed()) {
+				try {
+					stmt.cancel(); // non-blocking cancel
+				} catch (SQLException e) {
+					LOGGER.log(Level.SEVERE, "Failed to cancel database operation", e);
+				}
 			}
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Failed to cancel database operation", e);
 		}
 	}
 

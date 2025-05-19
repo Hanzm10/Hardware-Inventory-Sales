@@ -29,6 +29,8 @@ public final class HtmlUtils {
 	 * Wraps a {@code String} in {@code <html>} tags
 	 */
 	public static @NotNull String wrapInHtml(@NotNull final String input) {
-		return "<html>" + escapeHtml(input) + "</html>";
+		// dont escape the input since input
+		// is from us
+		return "<html>" + input + "</html>";
 	}
 }

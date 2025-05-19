@@ -82,7 +82,6 @@ public class Header {
 	}
 
 	private void initComponents() {
-
 		headerText = LabelFactory.createBoldItalicLabel(36, Styles.PRIMARY_COLOR);
 	}
 
