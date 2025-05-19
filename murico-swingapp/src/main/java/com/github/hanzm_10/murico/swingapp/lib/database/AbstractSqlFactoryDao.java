@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.CategoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.OrdersDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.PackagingDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.RoleDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
@@ -81,6 +82,8 @@ public abstract class AbstractSqlFactoryDao {
 	public abstract CategoryDao getCategoryDao();
 
 	public abstract ItemDao getItemDao();
+
+	public abstract OrdersDao getOrdersDao();
 
 	public abstract PackagingDao getPackagingDao();
 

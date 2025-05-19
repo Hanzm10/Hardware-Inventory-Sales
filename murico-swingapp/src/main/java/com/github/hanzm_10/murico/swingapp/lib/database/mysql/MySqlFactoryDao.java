@@ -27,6 +27,7 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.AccountDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.CategoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.dao.OrdersDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.PackagingDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.RoleDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
@@ -165,6 +166,11 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 	@Override
 	public ItemDao getItemDao() {
 		return new MySqlItemDao();
+	}
+
+	@Override
+	public OrdersDao getOrdersDao() {
+		return new MySqlOrdersDao();
 	}
 
 	@Override

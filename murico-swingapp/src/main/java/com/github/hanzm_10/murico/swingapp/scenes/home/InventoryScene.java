@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
-import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer.ProgressLevel;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryHeader;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.AddItemDialog;
@@ -32,6 +31,7 @@ public class InventoryScene implements Scene {
 	private InventoryFilterDialog filterDialog;
 	private EditItemDialog editItemDialog;
 	private DeleteItemsDialog deleteItemsDialog;
+	private RestockItemDialog restockItemDialog;
 
 	private Thread inventoryTableThread;
 
@@ -191,23 +191,17 @@ public class InventoryScene implements Scene {
 			return;
 		}
 
-		var selectedRow = selectedRows[0];
-		var realItemStockIdCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_STOCK_ID);
-		var realItemNameCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_NAME);
-		var realQtyCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_STOCK_QUANTITY);
-		var realItemIdCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_ID);
+		SwingUtilities.invokeLater(() -> {
+			var owner = SwingUtilities.getWindowAncestor(view);
 
-		var itemStockId = (int) inventoryTable.getTable().getValueAt(selectedRow, realItemStockIdCol);
-		var itemName = (String) inventoryTable.getTable().getValueAt(selectedRow, realItemNameCol);
-		var itemId = (int) inventoryTable.getTable().getValueAt(selectedRow, realItemIdCol);
-		var currentQty = ((ProgressLevel) inventoryTable.getTable().getValueAt(selectedRow, realQtyCol))
-				.currentProgressLevel();
+			if (restockItemDialog == null) {
+				restockItemDialog = new RestockItemDialog(owner, inventoryTable.getTable(), this::refreshTableData);
+			}
 
-		var owner = SwingUtilities.getWindowAncestor(view);
-		var dialog = new RestockItemDialog(owner, itemStockId, itemId, itemName, currentQty, this::refreshTableData);
-
-		dialog.setLocationRelativeTo(owner);
-		dialog.setVisible(true);
+			restockItemDialog.setLocationRelativeTo(owner);
+			restockItemDialog.setRowToBeRestocked(selectedRows[0]);
+			restockItemDialog.setVisible(true);
+		});
 	}
 
 	private void listenToHeaderButtonEvents(ActionEvent ev) {
@@ -272,6 +266,10 @@ public class InventoryScene implements Scene {
 
 		if (deleteItemsDialog != null) {
 			deleteItemsDialog.destroy();
+		}
+
+		if (restockItemDialog != null) {
+			restockItemDialog.destroy();
 		}
 
 		return true;

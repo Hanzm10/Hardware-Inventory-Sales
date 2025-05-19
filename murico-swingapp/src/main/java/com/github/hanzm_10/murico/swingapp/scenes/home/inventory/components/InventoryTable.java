@@ -178,15 +178,15 @@ public class InventoryTable implements SceneComponent {
 
 		cellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
 
-		columnModel.getColumn(COL_ITEM_STOCK_ID).setPreferredWidth(120);
-		columnModel.getColumn(COL_ITEM_ID).setPreferredWidth(120);
-		columnModel.getColumn(COL_PACKAGING_TYPE).setPreferredWidth(120);
-		columnModel.getColumn(COL_CATEGORY_TYPE).setPreferredWidth(120);
-		columnModel.getColumn(COL_SUPPLIER_NAME).setPreferredWidth(120);
+		columnModel.getColumn(COL_ITEM_STOCK_ID).setPreferredWidth(48);
+		columnModel.getColumn(COL_ITEM_ID).setPreferredWidth(48);
+		columnModel.getColumn(COL_PACKAGING_TYPE).setPreferredWidth(80);
+		columnModel.getColumn(COL_CATEGORY_TYPE).setPreferredWidth(100);
 		columnModel.getColumn(COL_ITEM_NAME).setPreferredWidth(120);
-		columnModel.getColumn(COL_UNIT_PRICE).setPreferredWidth(120);
+		columnModel.getColumn(COL_SUPPLIER_NAME).setPreferredWidth(280);
+		columnModel.getColumn(COL_UNIT_PRICE).setPreferredWidth(80);
 		columnModel.getColumn(COL_STOCK_QUANTITY).setPreferredWidth(120);
-		columnModel.getColumn(COL_MINIMUM_QUANTITY).setPreferredWidth(120);
+		columnModel.getColumn(COL_MINIMUM_QUANTITY).setPreferredWidth(48);
 
 		columnModel.getColumn(COL_ITEM_STOCK_ID).setCellRenderer(new IdRenderer());
 		columnModel.getColumn(COL_ITEM_ID).setCellRenderer(new IdRenderer());

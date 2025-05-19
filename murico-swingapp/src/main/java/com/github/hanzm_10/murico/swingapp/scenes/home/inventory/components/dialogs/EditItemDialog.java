@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +43,7 @@ import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.Inve
 import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
+import com.github.hanzm_10.murico.swingapp.ui.components.dialogs.SuccessDialog;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
 import net.miginfocom.swing.MigLayout;
@@ -56,29 +58,28 @@ public class EditItemDialog extends JDialog {
 
 	private @NotNull final ComponentAdapter componentListener;
 	private @NotNull final Window owner;
-	private @Range(from = -1, to = Integer.MAX_VALUE) int rowToBeEdited;
+	private @NotNull AtomicInteger rowToBeEdited = new AtomicInteger(-1);
 
 	private @NotNull JTable table;
 	private JPanel headerPanel;
 	private JLabel title;
 	private JLabel subTitle;
-
 	private JLabel description;
 
 	private JPanel formPanel;
+
 	private JLabel sellingPriceLabel;
 	private JSpinner sellingPrice;
-
 	private JLabel sellingPriceError;
+
 	private JLabel minQtyLabel;
 	private JSpinner minQty;
-
 	private JLabel minQtyError;
 
 	private JScrollPane scrollPane;
+
 	private JPanel buttonPanel;
 	private JButton cancelButton;
-
 	private JButton saveButton;
 
 	private Thread updateThread;
@@ -86,17 +87,11 @@ public class EditItemDialog extends JDialog {
 	private Consumer<UpdateResult> onUpdate;
 
 	public EditItemDialog(@NotNull Window owner, JTable table, Consumer<UpdateResult> onUpdate) {
-		super(owner, "", Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, "Edit Item", Dialog.ModalityType.APPLICATION_MODAL);
 
 		this.owner = owner;
 		this.table = table;
 		this.onUpdate = onUpdate;
-
-		setLayout(new MigLayout("insets 16, flowy", "[grow]", "[grow]"));
-
-		createComponents();
-		attachComponents();
-
 		this.windowListener = new WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent e) {
@@ -107,13 +102,14 @@ public class EditItemDialog extends JDialog {
 
 				clearErrorMessages();
 				clearFields();
+				validate();
 
-				rowToBeEdited = -1;
+				rowToBeEdited.set(-1);
+				;
 
 				dispose();
 			};
 		};
-
 		this.componentListener = new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
@@ -122,6 +118,11 @@ public class EditItemDialog extends JDialog {
 
 			}
 		};
+
+		setLayout(new MigLayout("insets 16, flowy, gap 2 16", "[grow]", "[grow]"));
+
+		createComponents();
+		attachComponents();
 
 		pack();
 		setSize(new Dimension(500, 450));
@@ -165,11 +166,11 @@ public class EditItemDialog extends JDialog {
 	}
 
 	private void createButtonPanel() {
-		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 0));
+		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
 
 		buttonPanel.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, getForeground()),
-						BorderFactory.createEmptyBorder(16, 0, 0, 0)));
+						BorderFactory.createEmptyBorder(8, 0, 0, 0)));
 
 		saveButton = StyledButtonFactory.createButton("Save", ButtonStyles.PRIMARY);
 		cancelButton = StyledButtonFactory.createButton("Cancel", ButtonStyles.SECONDARY);
@@ -191,12 +192,12 @@ public class EditItemDialog extends JDialog {
 		formPanel = new JPanel(new MigLayout("insets 0, flowy", "[grow]", "[top]"));
 
 		sellingPriceLabel = LabelFactory.createBoldLabel("Selling Price(₱)*", 12, Color.GRAY);
-		sellingPrice = new JSpinner(new SpinnerNumberModel(getItemUnitPrice(), 0.00, 1_000_000.00, 10.00));
+		sellingPrice = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 10.00));
 		sellingPrice.setFont(sellingPrice.getFont().deriveFont(14f));
 		sellingPriceError = LabelFactory.createLabel("", 9, Styles.DANGER_COLOR);
 
 		minQtyLabel = LabelFactory.createBoldLabel("Minimum Quantity*", 12, Color.GRAY);
-		minQty = new JSpinner(new SpinnerNumberModel(getItemMinQty(), 0, 100_000, 1));
+		minQty = new JSpinner(new SpinnerNumberModel(0, 0, 100_000, 1));
 		minQty.setFont(minQty.getFont().deriveFont(14f));
 		minQtyError = LabelFactory.createLabel("", 9, Styles.DANGER_COLOR);
 
@@ -207,10 +208,9 @@ public class EditItemDialog extends JDialog {
 
 	private void createHeaderPanel() {
 		headerPanel = new JPanel(new MigLayout("insets 0, flowy", "[grow]", "[top]4[top]2[top]"));
-		title = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml("Edit " + getItemName()), 24);
-		subTitle = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml("Stock ID: " + getStockId()), 16);
-		description = LabelFactory.createBoldItalicLabel(
-				HtmlUtils.wrapInHtml("Current stock: " + getItemQuantity() + " unit(s)"), 14, Color.GRAY);
+		title = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml(""), 24);
+		subTitle = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml(""), 16);
+		description = LabelFactory.createBoldItalicLabel(HtmlUtils.wrapInHtml(""), 14, Color.GRAY);
 	}
 
 	public void destroy() {
@@ -238,7 +238,7 @@ public class EditItemDialog extends JDialog {
 
 	private int getItemMinQty() {
 		var realItemMinQtyColumn = table.convertColumnIndexToView(InventoryTable.COL_MINIMUM_QUANTITY);
-		var val = table.getValueAt(rowToBeEdited, realItemMinQtyColumn);
+		var val = table.getValueAt(rowToBeEdited.get(), realItemMinQtyColumn);
 
 		if (val instanceof Integer) {
 			return (int) val;
@@ -250,12 +250,12 @@ public class EditItemDialog extends JDialog {
 	private String getItemName() {
 		var realItemNameColumn = table.convertColumnIndexToView(InventoryTable.COL_ITEM_NAME);
 
-		return table.getValueAt(rowToBeEdited, realItemNameColumn).toString();
+		return table.getValueAt(rowToBeEdited.get(), realItemNameColumn).toString();
 	}
 
 	private int getItemQuantity() {
 		var realItemQuantityColumn = table.convertColumnIndexToView(InventoryTable.COL_STOCK_QUANTITY);
-		var val = table.getValueAt(rowToBeEdited, realItemQuantityColumn);
+		var val = table.getValueAt(rowToBeEdited.get(), realItemQuantityColumn);
 
 		if (val instanceof ProgressLevel) {
 			return ((ProgressLevel) val).currentProgressLevel();
@@ -266,7 +266,7 @@ public class EditItemDialog extends JDialog {
 
 	private double getItemUnitPrice() {
 		var realItemUnitPriceColumn = table.convertColumnIndexToView(InventoryTable.COL_UNIT_PRICE);
-		var val = table.getValueAt(rowToBeEdited, realItemUnitPriceColumn);
+		var val = table.getValueAt(rowToBeEdited.get(), realItemUnitPriceColumn);
 
 		if (val instanceof BigDecimal) {
 			return ((BigDecimal) val).doubleValue();
@@ -283,7 +283,7 @@ public class EditItemDialog extends JDialog {
 
 	public int getStockId() {
 		var realStockIdColumn = table.convertColumnIndexToView(InventoryTable.COL_ITEM_STOCK_ID);
-		var val = table.getValueAt(rowToBeEdited, realStockIdColumn);
+		var val = table.getValueAt(rowToBeEdited.get(), realStockIdColumn);
 
 		if (val instanceof Integer) {
 			return (int) val;
@@ -303,7 +303,7 @@ public class EditItemDialog extends JDialog {
 	}
 
 	private void handleSave(ActionEvent ev) {
-		clearErrorMessages();
+		SwingUtilities.invokeLater(this::clearErrorMessages);
 
 		if (!isValidInput()) {
 			return;
@@ -311,7 +311,7 @@ public class EditItemDialog extends JDialog {
 
 		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
 
-		disableButtons();
+		SwingUtilities.invokeLater(this::disableButtons);
 
 		updateThread = new Thread(() -> {
 			try {
@@ -319,9 +319,8 @@ public class EditItemDialog extends JDialog {
 						(int) minQty.getValue());
 
 				SwingUtilities.invokeLater(() -> {
-					JOptionPane.showMessageDialog(this, "Item updated successfully", "Success",
-							JOptionPane.INFORMATION_MESSAGE);
-					onUpdate.accept(new UpdateResult(rowToBeEdited,
+					new SuccessDialog(this, "Item has been edited!").setVisible(true);
+					onUpdate.accept(new UpdateResult(rowToBeEdited.get(),
 							BigDecimal.valueOf((double) sellingPrice.getValue()), (int) minQty.getValue()));
 					dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				});
@@ -345,12 +344,17 @@ public class EditItemDialog extends JDialog {
 		var minQtyValue = (int) minQty.getValue();
 
 		if (sellingPriceValue.compareTo(BigDecimal.ZERO) < 0) {
-			sellingPriceError.setText(HtmlUtils.wrapInHtml("Selling Price cannot be negative"));
+			SwingUtilities.invokeLater(() -> {
+				sellingPriceError.setText(HtmlUtils.wrapInHtml("Selling Price cannot be negative"));
+			});
+
 			return false;
 		}
 
 		if (minQtyValue < 0) {
-			minQtyError.setText(HtmlUtils.wrapInHtml("Minimum Quantity cannot be negative"));
+			SwingUtilities.invokeLater(() -> {
+				minQtyError.setText(HtmlUtils.wrapInHtml("Minimum Quantity cannot be negative"));
+			});
 			return false;
 		}
 
@@ -358,7 +362,7 @@ public class EditItemDialog extends JDialog {
 	}
 
 	public void setRowtoBeEdited(@Range(from = 0, to = Integer.MAX_VALUE) int newRow) {
-		this.rowToBeEdited = newRow;
+		this.rowToBeEdited.set(newRow);
 	}
 
 	private void updateDisplay() {
@@ -367,5 +371,7 @@ public class EditItemDialog extends JDialog {
 		description.setText(HtmlUtils.wrapInHtml("Current stock: " + getItemQuantity() + " unit(s)"));
 		minQty.setValue(getItemMinQty());
 		sellingPrice.setValue(getItemUnitPrice());
+
+		validate();
 	}
 }

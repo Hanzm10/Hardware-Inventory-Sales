@@ -235,10 +235,59 @@ public class MySqlItemDao implements ItemDao {
 						stringOrNA(resultSet.getString("supplier_name")), stringOrNA(resultSet.getString("item_name")),
 						resultSet.getInt("stock_quantity"), resultSet.getBigDecimal("unit_price_php"),
 						resultSet.getInt("minimum_quantity")));
-
 			}
 
 			return result.toArray(new ItemStock[result.size()]);
+		} finally {
+			ConnectionManager.unregister(Thread.currentThread());
+		}
+	}
+
+	@Override
+	public void restockItem(@Range(from = 0, to = 2147483647) int itemStockId,
+			@Range(from = 0, to = 2147483647) int quantityToAdd, @Range(from = 0, to = 2147483647) int currentQuantity)
+			throws SQLException, IOException {
+		var restockItemQuery = MySqlQueryLoader.getInstance().get("restock_item_stocks", "items", SqlQueryType.UPDATE);
+		var insertItemRestocksQuery = MySqlQueryLoader.getInstance().get("insert_item_restock", "items",
+				SqlQueryType.INSERT);
+		var newQuantity = currentQuantity + quantityToAdd;
+
+		try (var conn = MySqlFactoryDao.createConnection();
+				var statement = conn.prepareStatement(restockItemQuery);
+				var statement2 = conn.prepareStatement(insertItemRestocksQuery);) {
+			conn.setAutoCommit(false);
+
+			ConnectionManager.register(Thread.currentThread(), statement);
+
+			statement.setInt(1, newQuantity);
+			statement.setInt(2, itemStockId);
+
+			try {
+				statement.executeUpdate();
+			} catch (SQLException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				ConnectionManager.unregister(Thread.currentThread());
+			}
+
+			ConnectionManager.register(Thread.currentThread(), statement2);
+
+			statement2.setInt(1, itemStockId);
+			statement2.setInt(2, currentQuantity);
+			statement2.setInt(3, newQuantity);
+			statement2.setInt(4, quantityToAdd);
+
+			try {
+				statement2.executeUpdate();
+			} catch (SQLException e) {
+				conn.rollback();
+				throw e;
+			} finally {
+				ConnectionManager.unregister(Thread.currentThread());
+			}
+
+			conn.commit();
 		} finally {
 			ConnectionManager.unregister(Thread.currentThread());
 		}

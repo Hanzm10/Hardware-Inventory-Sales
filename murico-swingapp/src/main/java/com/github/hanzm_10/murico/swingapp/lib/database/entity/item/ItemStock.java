@@ -27,7 +27,7 @@ public record ItemStock(@NotNull int _itemStockId, @NotNull int _itemId, @NotNul
 		@NotNull int stockQuantity, @NotNull BigDecimal unitPrice, @NotNull int minimumQuantity) {
 
 	public static String[] getColumnNames() {
-		return new String[] { "Item Stock ID", "Item ID", "Category Type", "Packaging Type", "Supplier Name",
+		return new String[] { "Item Stock ID", "Item ID", "Category Type", "Packaging Type", "Suppliers Names",
 				"Item Name", "Unit Price (PHP)", "Stock Quantity", "Minimum Quantity" };
 	}
 }
