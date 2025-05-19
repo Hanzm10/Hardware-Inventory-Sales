@@ -37,12 +37,6 @@ public class ReadProfileScene implements Scene {
 	private JLabel displayName;
 	private JLabel realName;
 
-	private JLabel role;
-	private JLabel nameJLabel;
-	private JLabel biography;
-
-	private JPanel container;
-
 	private void attachComponents() {
 		backgroundPanel.add(Box.createVerticalGlue(), "cell 0 0, grow");
 		backgroundPanel.add(backgroundPanelColor, "cell 0 1, grow");
@@ -143,7 +137,6 @@ public class ReadProfileScene implements Scene {
 
 	@Override
 	public void onShow() {
-		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
 		/*
 		 * role.setText(HtmlUtils.wrapInHtml("Role: " + loggedInUser.roles()));
