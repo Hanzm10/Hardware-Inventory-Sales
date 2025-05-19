@@ -89,7 +89,10 @@ public class DeleteItemsDialog extends JDialog {
 				terminateThread();
 
 				rowsToDelete = null;
+				itemsToBeDeleted = null;
+
 				contentPanel.removeAll();
+				validate();
 
 				dispose();
 			}
@@ -101,9 +104,6 @@ public class DeleteItemsDialog extends JDialog {
 				super.componentShown(e);
 				updateDisplay();
 
-				SwingUtilities.invokeLater(() -> {
-					scrollPane.getVerticalScrollBar().setValue(0);
-				});
 			}
 		};
 
@@ -295,6 +295,7 @@ public class DeleteItemsDialog extends JDialog {
 		}
 
 		this.itemsToBeDeleted = itemsToBeDeleted.toArray(new ItemToBeDeleted[itemsToBeDeleted.size()]);
+		validate();
 	}
 
 	private void updateDisplay() {
