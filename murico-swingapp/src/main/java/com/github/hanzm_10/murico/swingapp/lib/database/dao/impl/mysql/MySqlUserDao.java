@@ -15,6 +15,7 @@ package com.github.hanzm_10.murico.swingapp.lib.database.dao.impl.mysql;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -95,6 +96,8 @@ public class MySqlUserDao implements UserDao {
 		}
 		return user;
 	}
+	
+	
 
 	@Override
 	public UserMetadata getUserMetadataByDisplayName(@NotNull String _userDisplayName)
@@ -115,7 +118,7 @@ public class MySqlUserDao implements UserDao {
 																													// enum
 						resultSet.getString("first_name"), resultSet.getString("last_name"),
 						resultSet.getString("biography"), resultSet.getString("roles"), resultSet.getString("email"),
-						resultSet.getString("verification_status") == "verified",
+						resultSet.getString("verification_status").equals("verified"),
 						resultSet.getTimestamp("verified_at"));
 			}
 
@@ -142,7 +145,7 @@ public class MySqlUserDao implements UserDao {
 																													// enum
 						resultSet.getString("first_name"), resultSet.getString("last_name"),
 						resultSet.getString("biography"), resultSet.getString("roles"), resultSet.getString("email"),
-						resultSet.getString("verification_status") == "verified",
+						resultSet.getString("verification_status").equals("verified"),
 						resultSet.getTimestamp("verified_at"));
 			}
 
@@ -167,5 +170,29 @@ public class MySqlUserDao implements UserDao {
 		}
 
 		return usernameTaken;
+	}
+
+	@Override
+	public UserMetadata[] getAllUsers() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_all_user_metadata", "users", SqlQueryType.SELECT);
+	
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			var users = new ArrayList<UserMetadata>();
+			var resultSet = stmt.executeQuery(query);
+			
+			while (resultSet.next()) {
+				users.add(new UserMetadata(resultSet.getInt("_user_id"), resultSet.getTimestamp("_created_at"),
+						resultSet.getTimestamp("updated_at"), resultSet.getString("display_name"),
+						resultSet.getString("display_image"), UserGender.fromString(resultSet.getString("gender")), // assuming
+																													// enum
+						resultSet.getString("first_name"), resultSet.getString("last_name"),
+						resultSet.getString("biography"), resultSet.getString("roles"), resultSet.getString("email"),
+						resultSet.getString("verification_status").equals("verified"),
+						resultSet.getTimestamp("verified_at")));
+			}
+			
+			return users.toArray(new UserMetadata[users.size()]);
+		}
+		
 	}
 }

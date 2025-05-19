@@ -43,7 +43,7 @@ public class Profile{
 		return null;
     }
     
-    public void profile(int userId, String userFirstName, String userLastName, String email, String role) {
+    public void profile(int userId, String userFirstName, String userLastName, String gender) {
   
     
     try{var conn = MySqlFactoryDao.createConnection();
@@ -51,9 +51,8 @@ public class Profile{
     	var pstmtQuery = conn.prepareStatement(query);
     	pstmtQuery.setString(1, userFirstName );
     	pstmtQuery.setString(2, userLastName );
-    	pstmtQuery.setString(3, email);
-    	pstmtQuery.setString(4, role);
-    	pstmtQuery.setInt(5, userId );
+    	pstmtQuery.setString(3, gender);
+    	pstmtQuery.setInt(4, userId );
     	int rows = pstmtQuery.executeUpdate();
     	System.out.println(rows + "updated");
     }catch(SQLException e) {
@@ -68,7 +67,105 @@ public class Profile{
 	}
     }
     
+    public String getFirstname(String userdisplayName) {
+    	String firstnameString = null;
+    	 try {
+             var conn = MySqlFactoryDao.createConnection();
+             var query = MySqlQueryLoader.getInstance().get("get_user_by_display_name", "users", SqlQueryType.SELECT);
+          
+             var statement = conn.prepareStatement(query);
+             statement.setString(1, userdisplayName);
+
+             ResultSet rs = statement.executeQuery(); 
+                 if (rs.next()) {
+                     firstnameString = rs.getString("first_name");
+                     
+                     
+                     return firstnameString;
+                 } else {
+                    
+                 }
+             
+         } catch (SQLException e) {
+             e.printStackTrace();
+             throw new RuntimeException("Error finding user_id for display name " + userdisplayName, e);
+         } catch (FileNotFoundException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		} catch (IOException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+		return firstnameString;
+    	 
+    }
     
+    public String getLastname(String userdisplayName) {
+    	String firstnameString = null;
+    	 try {
+             var conn = MySqlFactoryDao.createConnection();
+             var query = MySqlQueryLoader.getInstance().get("get_user_by_display_name", "users", SqlQueryType.SELECT);
+          
+             var statement = conn.prepareStatement(query);
+             statement.setString(1, userdisplayName);
+
+             ResultSet rs = statement.executeQuery(); 
+                 if (rs.next()) {
+                     firstnameString = rs.getString("last_name");
+                     
+                     
+                     return firstnameString;
+                 } else {
+                    
+                 }
+             
+         } catch (SQLException e) {
+             e.printStackTrace();
+             throw new RuntimeException("Error finding user_id for display name " + userdisplayName, e);
+         } catch (FileNotFoundException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		} catch (IOException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+		return firstnameString;
+    	 
+    }
+    
+    public String getGender(String userdisplayName) {
+    	String firstnameString = null;
+    	 try {
+             var conn = MySqlFactoryDao.createConnection();
+             var query = MySqlQueryLoader.getInstance().get("get_user_by_display_name", "users", SqlQueryType.SELECT);
+          
+             var statement = conn.prepareStatement(query);
+             statement.setString(1, userdisplayName);
+
+             ResultSet rs = statement.executeQuery(); 
+                 if (rs.next()) {
+                     firstnameString = rs.getString("gender");
+                     
+                     
+                     return firstnameString;
+                 } else {
+                    
+                 }
+             
+         } catch (SQLException e) {
+             e.printStackTrace();
+             throw new RuntimeException("Error finding user_id for display name " + userdisplayName, e);
+         } catch (FileNotFoundException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		} catch (IOException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+		return firstnameString;
+    	 
+    }
+   
     public boolean isAdmin(String username){
     	boolean isAdmin = false;
 

@@ -34,5 +34,7 @@ public interface UserDao {
 	public UserMetadata getUserMetadataById(@Range(from = 0, to = Integer.MAX_VALUE) int _userID)
 			throws IOException, SQLException;
 
+	public UserMetadata[] getAllUsers() throws IOException, SQLException;
+	
 	public boolean isUsernameTaken(@NotNull final String name) throws IOException, SQLException;
 }

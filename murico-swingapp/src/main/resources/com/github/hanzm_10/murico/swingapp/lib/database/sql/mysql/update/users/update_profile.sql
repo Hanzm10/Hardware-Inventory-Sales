@@ -7,7 +7,6 @@ UPDATE
 SET
 	u.first_name = ?,
 	u.last_name = ?,
-	a.email = ?,
 	u.gender = ?
 WHERE
 	u._user_id = ?;
