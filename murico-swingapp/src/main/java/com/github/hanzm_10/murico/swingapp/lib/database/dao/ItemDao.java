@@ -39,6 +39,10 @@ public interface ItemDao {
 
 	public ItemStock[] getItemStocks() throws IOException, SQLException;
 
+	public void restockItem(@Range(from = 0, to = Integer.MAX_VALUE) final int itemStockId,
+			@Range(from = 0, to = Integer.MAX_VALUE) final int quantityToAdd,
+			@Range(from = 0, to = Integer.MAX_VALUE) final int currentQuantity) throws SQLException, IOException;
+
 	public void updateItemStock(@Range(from = 0, to = Integer.MAX_VALUE) final int itemStockId,
 			@NotNull final BigDecimal unitPrice, @Range(from = 0, to = Integer.MAX_VALUE) final int minQty)
 			throws SQLException, IOException;

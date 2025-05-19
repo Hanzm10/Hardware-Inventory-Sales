@@ -31,12 +31,12 @@ public class ImagePanel extends JPanel {
 
 		this.image = image;
 
-		var width = image.getWidth(null);
-		var height = image.getHeight(null);
+		if (image != null) {
+			setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
+			setSize(new Dimension(image.getWidth(this), image.getHeight(this)));
+		}
 
 		setOpaque(false);
-		setPreferredSize(new Dimension(width, height));
-		setSize(new Dimension(width, height));
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class ImagePanel extends JPanel {
 		super.paintComponent(g);
 
 		if (image != null) {
-            Insets insets = getInsets(); // Get the border insets
-            var panelX = insets.left;
-            var panelY = insets.top;
+			Insets insets = getInsets(); // Get the border insets
+			var panelX = insets.left;
+			var panelY = insets.top;
 			var panelWidth = getWidth() - insets.left - insets.right;
 			var panelHeight = getHeight() - insets.top - insets.bottom;
 			var imgWidth = image.getWidth(null);

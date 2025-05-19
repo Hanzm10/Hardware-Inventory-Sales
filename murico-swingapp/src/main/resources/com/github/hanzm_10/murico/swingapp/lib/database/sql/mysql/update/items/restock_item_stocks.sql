@@ -1,0 +1,1 @@
+UPDATE item_stocks SET quantity = ? WHERE _item_stock_id = ?;

@@ -7,8 +7,8 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 
-public class PlaceholderRenderer extends DefaultListCellRenderer {
-	public PlaceholderRenderer(JComboBox<?> comboBox) {
+public class PlaceholderRenderer<T> extends DefaultListCellRenderer {
+	public PlaceholderRenderer(JComboBox<T> comboBox) {
 		super();
 	}
 
