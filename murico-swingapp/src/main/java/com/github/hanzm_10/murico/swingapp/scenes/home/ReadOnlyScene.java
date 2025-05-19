@@ -70,7 +70,7 @@ public class ReadOnlyScene implements Scene {
 	}
 
 	private void initializeProfileUI() throws IOException, InterruptedException {
-		refreshUI();
+		refreshUI(); 
 		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 		fullName = loggedInUser.firstName() + " " + loggedInUser.lastName();
 		gender = loggedInUser.gender().toString();
