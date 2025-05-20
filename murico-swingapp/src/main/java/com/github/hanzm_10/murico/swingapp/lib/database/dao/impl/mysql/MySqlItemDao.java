@@ -26,6 +26,9 @@ import org.jetbrains.annotations.Range;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.InventoryBreakdown;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.InventorySummary;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemQuantityPerPackaging;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
@@ -185,6 +188,53 @@ public class MySqlItemDao implements ItemDao {
 	}
 
 	@Override
+	public InventoryBreakdown[] getInventoryBreakdowns() throws SQLException, IOException {
+		var query = MySqlQueryLoader.getInstance().get("get_inventory_breakdown", "items", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			ConnectionManager.register(Thread.currentThread(), stmt);
+
+			var resultSet = stmt.executeQuery(query);
+			var result = new ArrayList<InventoryBreakdown>();
+
+			while (resultSet.next()) {
+				result.add(new InventoryBreakdown(resultSet.getInt("_item_id"), resultSet.getString("item_name"),
+						resultSet.getString("category_type"), resultSet.getString("packaging_name"),
+						resultSet.getInt("initial_item_quantity"), resultSet.getInt("amount_of_items_sold"),
+						resultSet.getInt("amount_of_items_restocked"), resultSet.getInt("current_item_quantity"),
+						InventoryBreakdown.InventoryBreakdownRemarks.fromCurrAndMin(
+								resultSet.getInt("current_item_quantity"), resultSet.getInt("minimum_quantity"))));
+			}
+
+			return result.toArray(new InventoryBreakdown[result.size()]);
+		} finally {
+			ConnectionManager.unregister(Thread.currentThread());
+		}
+	}
+
+	@Override
+	public InventorySummary getInventorySummary() throws SQLException, IOException {
+		var query = MySqlQueryLoader.getInstance().get("get_inventory_summary", "items", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			ConnectionManager.register(Thread.currentThread(), stmt);
+
+			var resultSet = stmt.executeQuery(query);
+			InventorySummary inventorySummary = null;
+
+			if (resultSet.next()) {
+				inventorySummary = new InventorySummary(resultSet.getInt("total_inventory_value"),
+						resultSet.getInt("total_items_in_stock"), resultSet.getInt("total_items_below_critical_level"),
+						resultSet.getBigDecimal("average_stock_per_item"));
+			}
+
+			return inventorySummary;
+		} finally {
+			ConnectionManager.unregister(Thread.currentThread());
+		}
+	}
+
+	@Override
 	public Item getItemById(@Range(from = 0, to = 2147483647) int itemID) throws IOException, SQLException {
 		Item item = null;
 		var query = MySqlQueryLoader.getInstance().get("get_item_by_itemId", "items", SqlQueryType.SELECT);
@@ -230,6 +280,52 @@ public class MySqlItemDao implements ItemDao {
 
 		}
 		return item;
+	}
+
+	@Override
+	public ItemQuantityPerPackaging[] getItemsQuantityPerPackaging() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_items_quantity_per_packaging", "items",
+				SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			ConnectionManager.register(Thread.currentThread(), stmt);
+
+			var resultSet = stmt.executeQuery(query);
+			var result = new ArrayList<ItemQuantityPerPackaging>();
+
+			int currentItemId = -1;
+			String currentItemNameString = null;
+			var packagingQuantities = new ArrayList<ItemQuantityPerPackaging.PackagingQuantity>();
+
+			while (resultSet.next()) {
+				var itemId = resultSet.getInt("_item_id");
+
+				if (itemId != currentItemId) {
+					if (packagingQuantities.size() != 0) {
+						result.add(new ItemQuantityPerPackaging(currentItemId, currentItemNameString,
+								packagingQuantities.toArray(
+										new ItemQuantityPerPackaging.PackagingQuantity[packagingQuantities.size()])));
+					}
+
+					currentItemId = itemId;
+					currentItemNameString = resultSet.getString("item_name");
+					packagingQuantities.clear();
+				}
+
+				packagingQuantities
+						.add(new ItemQuantityPerPackaging.PackagingQuantity(resultSet.getInt("_packaging_id"),
+								resultSet.getString("packaging_name"), resultSet.getInt("packaging_quantity")));
+			}
+
+			if (packagingQuantities.size() != 0) {
+				result.add(new ItemQuantityPerPackaging(currentItemId, currentItemNameString, packagingQuantities
+						.toArray(new ItemQuantityPerPackaging.PackagingQuantity[packagingQuantities.size()])));
+			}
+
+			return result.toArray(new ItemQuantityPerPackaging[result.size()]);
+		} finally {
+			ConnectionManager.unregister(Thread.currentThread());
+		}
 	}
 
 	@Override

@@ -66,17 +66,11 @@ public final class SalesReportsScene implements Scene {
 
 	@Override
 	public boolean onDestroy() {
-		if (salesReportSummary != null) {
-			salesReportSummary.destroy();
-		}
+		terminateThreads();
 
-		if (salesReportTable != null) {
-			salesReportTable.destroy();
-		}
-
-		if (salesReportGraph != null) {
-			salesReportGraph.destroy();
-		}
+		salesReportSummary.destroy();
+		salesReportTable.destroy();
+		salesReportGraph.destroy();
 
 		return true;
 	}

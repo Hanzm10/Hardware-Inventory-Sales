@@ -22,6 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.InventoryBreakdown;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.InventorySummary;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemQuantityPerPackaging;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.DeleteItemsDialog.ItemToBeDeleted;
 
@@ -37,9 +40,15 @@ public interface ItemDao {
 	public void archiveItems(@NotNull final ItemToBeDeleted[] itemsToBeDeleted, Consumer<Integer> onDelete)
 			throws SQLException, IOException;
 
+	public InventoryBreakdown[] getInventoryBreakdowns() throws SQLException, IOException;
+
+	public InventorySummary getInventorySummary() throws SQLException, IOException;
+
 	public Item getItemById(@Range(from = 0, to = Integer.MAX_VALUE) int itemID) throws IOException, SQLException;
 
 	public Item getItemByItemName(@NotNull String itemName) throws IOException, SQLException;
+
+	public ItemQuantityPerPackaging[] getItemsQuantityPerPackaging() throws IOException, SQLException;
 
 	public ItemStock[] getItemStocks() throws IOException, SQLException;
 

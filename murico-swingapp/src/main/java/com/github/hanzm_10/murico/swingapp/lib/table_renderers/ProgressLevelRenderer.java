@@ -90,7 +90,7 @@ public class ProgressLevelRenderer extends JPanel implements TableCellRenderer {
 		if (percentage <= 0.1f) {
 			txt += " Low";
 			barColor = Styles.DANGER_COLOR;
-		} else if (percentage <= 0.2f) {
+		} else if (percentage <= 0.49f) {
 			txt += " Mild";
 			barColor = Styles.WARNING_COLOR;
 		} else if (percentage >= 0.9f) {
