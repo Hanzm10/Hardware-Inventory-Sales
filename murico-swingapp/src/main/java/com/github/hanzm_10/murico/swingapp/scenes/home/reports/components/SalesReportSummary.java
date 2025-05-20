@@ -179,17 +179,19 @@ public class SalesReportSummary implements SceneComponent {
 
 	private void updateTotalOfSalesView() {
 		if (!initialized.get()) {
-			initializeComponents();
+			SwingUtilities.invokeLater(this::initializeComponents);
 		}
 
-		totalRevenueInfo
-				.setText(HtmlUtils.wrapInHtml("₱ " + NumberUtils.formatWithSuffix(totalOfSales.get().totalRevenue())));
-		totalGrossInfo
-				.setText(HtmlUtils.wrapInHtml("₱ " + NumberUtils.formatWithSuffix(totalOfSales.get().totalGross())));
-		totalNetSalesInfo
-				.setText(HtmlUtils.wrapInHtml("₱ " + NumberUtils.formatWithSuffix(totalOfSales.get().totalNetSales())));
-		totalItemsSoldInfo
-				.setText(HtmlUtils.wrapInHtml(NumberUtils.intFormatter.format(totalOfSales.get().totalItemsSold())));
+		SwingUtilities.invokeLater(() -> {
+			totalRevenueInfo.setText(
+					HtmlUtils.wrapInHtml("₱ " + NumberUtils.formatWithSuffix(totalOfSales.get().totalRevenue())));
+			totalGrossInfo.setText(
+					HtmlUtils.wrapInHtml("₱ " + NumberUtils.formatWithSuffix(totalOfSales.get().totalGross())));
+			totalNetSalesInfo.setText(
+					HtmlUtils.wrapInHtml("₱ " + NumberUtils.formatWithSuffix(totalOfSales.get().totalNetSales())));
+			totalItemsSoldInfo.setText(
+					HtmlUtils.wrapInHtml(NumberUtils.intFormatter.format(totalOfSales.get().totalItemsSold())));
+		});
 	}
 
 }

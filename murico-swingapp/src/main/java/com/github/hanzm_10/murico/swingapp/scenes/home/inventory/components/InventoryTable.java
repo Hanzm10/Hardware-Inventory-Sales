@@ -140,6 +140,7 @@ public class InventoryTable implements SceneComponent {
 		attachComponents();
 
 		initialized.set(true);
+		view.revalidate();
 	}
 
 	@Override
@@ -201,23 +202,21 @@ public class InventoryTable implements SceneComponent {
 
 	private void updateTableModel() {
 		if (!initialized.get()) {
-			initializeComponents();
+			SwingUtilities.invokeLater(this::initializeComponents);
 		}
 
-		var itemStocks = this.itemStocks.get();
-		tableModel.setRowCount(0);
+		SwingUtilities.invokeLater(() -> {
+			var itemStocks = this.itemStocks.get();
+			tableModel.setRowCount(0);
 
-		for (var itemStock : itemStocks) {
-			tableModel
-					.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
-							itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
-							itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
-									itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
-							itemStock.minimumQuantity() });
-		}
-
-		table.revalidate();
-		view.revalidate();
-		view.repaint();
+			for (var itemStock : itemStocks) {
+				tableModel
+						.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
+								itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
+								itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
+										itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
+								itemStock.minimumQuantity() });
+			}
+		});
 	}
 }

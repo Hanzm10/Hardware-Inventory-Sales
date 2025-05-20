@@ -1,4 +1,4 @@
-package com.github.hanzm_10.murico.swingapp.scenes.home;
+package com.github.hanzm_10.murico.swingapp.scenes.home.profile;
 
 import java.awt.Color;
 import java.awt.Component;

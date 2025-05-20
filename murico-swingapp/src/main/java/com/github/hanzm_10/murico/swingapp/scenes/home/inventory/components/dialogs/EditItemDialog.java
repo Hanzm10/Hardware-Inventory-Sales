@@ -34,7 +34,6 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer.ProgressLevel;
@@ -194,12 +193,12 @@ public class EditItemDialog extends JDialog {
 		sellingPriceLabel = LabelFactory.createBoldLabel("Selling Price(₱)*", 12, Color.GRAY);
 		sellingPrice = new JSpinner(new SpinnerNumberModel(0.00, 0.00, 1_000_000.00, 10.00));
 		sellingPrice.setFont(sellingPrice.getFont().deriveFont(14f));
-		sellingPriceError = LabelFactory.createLabel("", 9, Styles.DANGER_COLOR);
+		sellingPriceError = LabelFactory.createErrorLabel("", 9);
 
 		minQtyLabel = LabelFactory.createBoldLabel("Minimum Quantity*", 12, Color.GRAY);
 		minQty = new JSpinner(new SpinnerNumberModel(0, 0, 100_000, 1));
 		minQty.setFont(minQty.getFont().deriveFont(14f));
-		minQtyError = LabelFactory.createLabel("", 9, Styles.DANGER_COLOR);
+		minQtyError = LabelFactory.createErrorLabel("", 9);
 
 		scrollPane = new JScrollPane(formPanel);
 		scrollPane.setBorder(null);

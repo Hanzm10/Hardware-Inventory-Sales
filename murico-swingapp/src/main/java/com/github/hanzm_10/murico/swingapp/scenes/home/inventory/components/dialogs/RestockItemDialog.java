@@ -34,7 +34,6 @@ import javax.swing.event.ChangeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.combobox_renderers.PlaceholderRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
@@ -224,12 +223,12 @@ public class RestockItemDialog extends JDialog {
 		supplierLabel = LabelFactory.createBoldLabel("Order from supplier*", 12, Color.GRAY);
 		supplier = new JComboBox<>();
 		supplier.setFont(supplier.getFont().deriveFont(14f));
-		supplierErrorMsg = LabelFactory.createLabel("", 9, Styles.DANGER_COLOR);
+		supplierErrorMsg = LabelFactory.createErrorLabel("", 9);
 
 		quantityLabel = LabelFactory.createBoldLabel("Restock quantity", 12, Color.GRAY);
 		quantity = new JSpinner(new SpinnerNumberModel(1, 1, 1_000_000, 1));
 		quantity.setFont(quantity.getFont().deriveFont(14f));
-		quantityErrorMsg = LabelFactory.createLabel("", 9, Styles.DANGER_COLOR);
+		quantityErrorMsg = LabelFactory.createErrorLabel("", 9);
 
 		orderDetailsPanel = new JPanel(new MigLayout("insets 0, fillx", "[grow]push[grow]"));
 

@@ -1,4 +1,4 @@
-package com.github.hanzm_10.murico.swingapp.scenes.home;
+package com.github.hanzm_10.murico.swingapp.scenes.home.profile;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -19,7 +19,6 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
-import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
