@@ -434,6 +434,16 @@ public class RestockItemDialog extends JDialog {
 			});
 
 			isValid = false;
+		} else if (supplier.getSelectedItem() instanceof RestockSupplierComboBoxItem) {
+			var selectedItem = (RestockSupplierComboBoxItem) supplier.getSelectedItem();
+
+			if (selectedItem.wspPhp() == null) {
+				SwingUtilities.invokeLater(() -> {
+					supplierErrorMsg.setText(HtmlUtils.wrapInHtml("Please select a valid supplier"));
+				});
+
+				isValid = false;
+			}
 		}
 
 		if (quantity.getValue() == null) {
