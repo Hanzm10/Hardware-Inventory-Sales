@@ -35,9 +35,9 @@ import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 public class MySqlItemDao implements ItemDao {
 
 	@Override
-	public void addItem(int initQty, int minQty, String itemName, String itemDescription, int selectedCategory,
-			int selectedPackaging, int selectedSupplier, BigDecimal sellingPrice, BigDecimal srp, BigDecimal costPrice)
-			throws IOException, SQLException {
+	public GeneratedItemStockIds addItem(int initQty, int minQty, String itemName, String itemDescription,
+			int selectedCategory, int selectedPackaging, int selectedSupplier, BigDecimal sellingPrice, BigDecimal srp,
+			BigDecimal costPrice) throws IOException, SQLException {
 		var insertItemQuery = MySqlQueryLoader.getInstance().get("insert_item", "items", SqlQueryType.INSERT);
 		var insertItemStockQuery = MySqlQueryLoader.getInstance().get("insert_item_stock", "items",
 				SqlQueryType.INSERT);
@@ -48,7 +48,7 @@ public class MySqlItemDao implements ItemDao {
 
 		try (var conn = MySqlFactoryDao.createConnection();
 				var statement = conn.prepareStatement(insertItemQuery, Statement.RETURN_GENERATED_KEYS);
-				var statement2 = conn.prepareStatement(insertItemStockQuery);
+				var statement2 = conn.prepareStatement(insertItemStockQuery, Statement.RETURN_GENERATED_KEYS);
 				var statement3 = conn.prepareStatement(insertItemCategoryQuery);
 				var statement4 = conn.prepareStatement(insertSupplierItemQuery);) {
 			conn.setAutoCommit(false);
@@ -87,13 +87,25 @@ public class MySqlItemDao implements ItemDao {
 			statement2.setBigDecimal(5, srp);
 			statement2.setBigDecimal(6, sellingPrice);
 
+			int generatedItemStockId = -1;
+
 			try {
 				statement2.executeUpdate();
+
+				var generatedKeys = statement2.getGeneratedKeys();
+
+				if (generatedKeys.next()) {
+					generatedItemStockId = generatedKeys.getInt(1);
+				}
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;
 			} finally {
 				ConnectionManager.unregister(Thread.currentThread());
+			}
+
+			if (generatedItemStockId == -1) {
+				throw new SQLException("Failed to retrieve generated item stock ID.");
 			}
 
 			ConnectionManager.register(Thread.currentThread(), statement3);
@@ -126,6 +138,8 @@ public class MySqlItemDao implements ItemDao {
 			}
 
 			conn.commit();
+
+			return new GeneratedItemStockIds(generatedItemItemId, generatedItemStockId);
 		}
 	}
 

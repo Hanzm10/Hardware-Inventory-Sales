@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +54,7 @@ public class DeleteItemsDialog extends JDialog {
 	private int[] rowsToDelete;
 
 	private @NotNull JTable table;
-	private Runnable onDelete;
+	private Consumer<int[]> onDelete;
 	private JPanel headerPanel;
 
 	private JLabel title;
@@ -72,7 +73,7 @@ public class DeleteItemsDialog extends JDialog {
 	private ItemToBeDeleted[] itemsToBeDeleted;
 
 	public DeleteItemsDialog(@NotNull final Window owner, @NotNull final JTable table,
-			@NotNull final Runnable onDelete) {
+			@NotNull final Consumer<int[]> onDelete) {
 		super(owner, "Delete Item(s)", Dialog.ModalityType.APPLICATION_MODAL);
 
 		this.owner = owner;
@@ -240,7 +241,7 @@ public class DeleteItemsDialog extends JDialog {
 
 				SwingUtilities.invokeLater(() -> {
 					new SuccessDialog(this, "Delete operation is successful!").setVisible(true);
-					onDelete.run();
+					onDelete.accept(rowsToDelete);
 					dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				});
 

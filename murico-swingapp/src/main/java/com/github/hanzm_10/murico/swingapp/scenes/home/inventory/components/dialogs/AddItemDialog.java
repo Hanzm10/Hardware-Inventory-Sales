@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.combobox_renderers.PlaceholderRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.lib.utils.NumberUtils;
@@ -120,9 +122,9 @@ public class AddItemDialog extends JDialog {
 	private WindowAdapter windowListener;
 	private ComponentAdapter componentListener;
 
-	private Runnable onUpdate;
+	private Consumer<ItemStock> onUpdate;
 
-	public AddItemDialog(Window owner, Runnable onUpdate) {
+	public AddItemDialog(Window owner, Consumer<ItemStock> onUpdate) {
 		super(owner, "Add New Item", Dialog.ModalityType.APPLICATION_MODAL);
 
 		this.onUpdate = onUpdate;
@@ -600,12 +602,15 @@ public class AddItemDialog extends JDialog {
 			isUpdating.set(true);
 
 			try {
-				factory.getItemDao().addItem(initialQty, minQty, itemName, itemDescription, selectedCategory.id(),
-						selectedPackaging.id(), selectedSupplier.id(), sellingPrice, srp, costPrice);
+				var generatedIds = factory.getItemDao().addItem(initialQty, minQty, itemName, itemDescription,
+						selectedCategory.id(), selectedPackaging.id(), selectedSupplier.id(), sellingPrice, srp,
+						costPrice);
 
 				SwingUtilities.invokeLater(() -> {
 					new SuccessDialog(this, "Item '" + itemName + "' added successfully!").setVisible(true);
-					onUpdate.run();
+					onUpdate.accept(new ItemStock(generatedIds.itemStockId(), generatedIds.itemId(),
+							selectedCategory.name(), selectedPackaging.name(), selectedSupplier.name(), itemName,
+							initialQty, sellingPrice, minQty));
 					dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				});
 			} catch (SQLException | IOException e) {
