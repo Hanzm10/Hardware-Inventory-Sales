@@ -320,7 +320,9 @@ public class InventoryScene implements Scene {
 		var model = (DefaultTableModel) inventoryTable.getTableModel();
 
 		for (int i = deletedRows.length - 1; i >= 0; i--) {
-			model.removeRow(deletedRows[i]);
+			var realRow = inventoryTable.getTable().convertRowIndexToModel(deletedRows[i]);
+
+			model.removeRow(realRow);
 		}
 	}
 
