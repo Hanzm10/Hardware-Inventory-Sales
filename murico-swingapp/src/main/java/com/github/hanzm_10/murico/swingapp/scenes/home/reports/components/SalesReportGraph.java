@@ -106,15 +106,17 @@ public class SalesReportGraph implements SceneComponent {
 
 	private void updateGraph() {
 		if (!initialized.get()) {
-			initializeComponents();
+			SwingUtilities.invokeLater(this::initializeComponents);
 		}
 
-		var totalItemCategorySoldInYearOpened = totalItemCategorySoldInYear.get();
+		SwingUtilities.invokeLater(() -> {
+			var totalItemCategorySoldInYearOpened = totalItemCategorySoldInYear.get();
 
-		for (var itemCategorySoldInYear : totalItemCategorySoldInYearOpened) {
-			graphDataset.addValue(itemCategorySoldInYear.totalQuanitySold(), itemCategorySoldInYear.itemCategory(),
-					itemCategorySoldInYear.year());
-		}
+			for (var itemCategorySoldInYear : totalItemCategorySoldInYearOpened) {
+				graphDataset.addValue(itemCategorySoldInYear.totalQuanitySold(), itemCategorySoldInYear.itemCategory(),
+						itemCategorySoldInYear.year());
+			}
+		});
 	}
 
 }
