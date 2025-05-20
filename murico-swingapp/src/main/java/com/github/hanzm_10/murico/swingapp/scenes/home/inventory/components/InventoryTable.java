@@ -16,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.comparators.NumberWithSymbolsComparator;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
@@ -56,6 +58,15 @@ public class InventoryTable implements SceneComponent {
 
 	private AtomicReference<ItemStock[]> itemStocks = new AtomicReference<>(new ItemStock[0]);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
+
+	public void addItemStock(@NotNull final ItemStock itemStock) {
+		tableModel
+				.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
+						itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
+						itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
+								itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
+						itemStock.minimumQuantity() });
+	}
 
 	private void attachComponents() {
 		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
@@ -140,6 +151,13 @@ public class InventoryTable implements SceneComponent {
 		attachComponents();
 
 		initialized.set(true);
+
+		// not really necessary most of the time,
+		// but this specific table doesn't get shown
+		// without this, unlike the others.
+		// In other words, this is a workaround,
+		// since our view doesn't re-validate
+		// automatically for some reason.
 		view.revalidate();
 	}
 
@@ -163,6 +181,15 @@ public class InventoryTable implements SceneComponent {
 			ErrorDialog.showErrorDialog(SwingUtilities.getWindowAncestor(view), "Something went wrong",
 					"An error occurred while fetching item stocks. Please try again later.");
 		}
+	}
+
+	public void prependItemStock(@NotNull final ItemStock itemStock) {
+		tableModel.insertRow(0,
+				new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
+						itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
+						itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
+								itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
+						itemStock.minimumQuantity() });
 	}
 
 	public void refresh() {
@@ -210,12 +237,7 @@ public class InventoryTable implements SceneComponent {
 			tableModel.setRowCount(0);
 
 			for (var itemStock : itemStocks) {
-				tableModel
-						.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
-								itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
-								itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
-										itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
-								itemStock.minimumQuantity() });
+				addItemStock(itemStock);
 			}
 		});
 	}

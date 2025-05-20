@@ -5,7 +5,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryHeader;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
@@ -34,6 +36,10 @@ public class InventoryScene implements Scene {
 	private RestockItemDialog restockItemDialog;
 
 	private Thread inventoryTableThread;
+
+	private void addRowToTable(ItemStock rowData) {
+		inventoryTable.prependItemStock(rowData);
+	}
 
 	private void attachComponents() {
 		view.setLayout(new MigLayout("insets 0, flowy", "[grow]", "[]16[grow]"));
@@ -64,7 +70,7 @@ public class InventoryScene implements Scene {
 			var owner = SwingUtilities.getWindowAncestor(view);
 
 			if (addItemDialog == null) {
-				addItemDialog = new AddItemDialog(owner, this::refreshTableData);
+				addItemDialog = new AddItemDialog(owner, this::addRowToTable);
 			}
 
 			addItemDialog.setLocationRelativeTo(owner);
@@ -88,7 +94,7 @@ public class InventoryScene implements Scene {
 			var owner = SwingUtilities.getWindowAncestor(view);
 
 			if (deleteItemsDialog == null) {
-				deleteItemsDialog = new DeleteItemsDialog(owner, inventoryTable.getTable(), this::refreshTableData);
+				deleteItemsDialog = new DeleteItemsDialog(owner, inventoryTable.getTable(), this::removeDeletedItems);
 			}
 
 			deleteItemsDialog.setLocationRelativeTo(owner);
@@ -280,6 +286,8 @@ public class InventoryScene implements Scene {
 		terminateThreads();
 	}
 
+	// to optimize the performance of the table, we only update the
+	// columns that are updated
 	private void onItemUpdate(UpdateResult result) {
 		var model = inventoryTable.getTableModel();
 		var realUnitPriceCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_UNIT_PRICE);
@@ -300,6 +308,20 @@ public class InventoryScene implements Scene {
 		});
 
 		inventoryTableThread.start();
+	}
+
+	/**
+	 * To only remove the rows that are deleted from the table model, and not do a
+	 * whole table refresh
+	 *
+	 * @param deletedRows
+	 */
+	public void removeDeletedItems(int[] deletedRows) {
+		var model = (DefaultTableModel) inventoryTable.getTableModel();
+
+		for (int i = deletedRows.length - 1; i >= 0; i--) {
+			model.removeRow(deletedRows[i]);
+		}
 	}
 
 	private void terminateThreads() {

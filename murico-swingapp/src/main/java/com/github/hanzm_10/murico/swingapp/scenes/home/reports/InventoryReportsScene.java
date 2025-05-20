@@ -7,16 +7,16 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 
 public final class InventoryReportsScene implements Scene {
 
+	private JPanel view;
+
 	@Override
 	public String getSceneName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "inventory reports";
 	}
 
 	@Override
 	public JPanel getSceneView() {
-		// TODO Auto-generated method stub
-		return null;
+		return view == null ? (view = new JPanel()) : view;
 	}
 
 	@Override
