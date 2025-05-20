@@ -187,12 +187,13 @@ public class RestockItemDialog extends JDialog {
 	}
 
 	private void clearErrorMessages() {
-
+		supplierErrorMsg.setText("");
+		quantityErrorMsg.setText("");
 	}
 
 	private void clearFields() {
-
 		quantity.setValue(1);
+		supplier.setSelectedIndex(0);
 	}
 
 	private void createButtonPanel() {
