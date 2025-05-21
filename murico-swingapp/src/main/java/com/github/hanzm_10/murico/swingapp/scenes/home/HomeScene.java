@@ -1,6 +1,5 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
@@ -37,21 +36,13 @@ public class HomeScene implements Scene, SubSceneSupport {
 
 	private void createSceneManager() {
 		sceneManager = new StaticSceneManager();
-		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
 		sceneManager.registerScene("profile", () -> new ProfileScene(), GUARD);
 		sceneManager.registerScene("dashboard", () -> new DashboardScene(), GUARD);
 		sceneManager.registerScene("reports", () -> new ReportsScene(), GUARD);
 		sceneManager.registerScene("inventory", () -> new InventoryScene(), GUARD);
 		sceneManager.registerScene("order menu", () -> new OrderMenuScene(), GUARD);
-		sceneManager.registerScene("contacts", () -> { 
-		if (loggedInUser.roles().equalsIgnoreCase("admin")) {
-			return new ContactScene();
-		} else {
-			JOptionPane.showMessageDialog(view, "You do not have permission to access this page.", "Access Denied", JOptionPane.ERROR_MESSAGE);
-			System.err.println("Access denied to contacts scene for user: " + loggedInUser.displayName());
-			return new ReadOnlyScene();
-		}}, GUARD);
+		sceneManager.registerScene("contacts", () -> new ContactScene(), GUARD);
 		sceneManager.registerScene("settings", () -> new SettingsScene(), GUARD);
 	}
 

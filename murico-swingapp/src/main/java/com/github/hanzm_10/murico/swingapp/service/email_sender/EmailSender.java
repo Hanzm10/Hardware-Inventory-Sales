@@ -18,7 +18,7 @@ import jakarta.mail.internet.MimeMultipart;
 public class EmailSender {
 	public static void emailSender(String toEmail) {
 		final String username = "aaronragudos.com";
-		final String password = "";
+		final String password = "sT8mvqoQFfF2eFov";
 		Properties props = new Properties();
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
@@ -54,7 +54,7 @@ public class EmailSender {
 	 * emailSender("bballjaron@gmail.com"); }
 	 */
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		emailSender("medinaaaronangelo@gmail.com");
-	}
+	}*/
 }

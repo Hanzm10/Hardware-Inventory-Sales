@@ -57,7 +57,7 @@ public class ReadOnlyScene implements Scene {
     }
 
     private void initializeProfileUI() throws IOException, InterruptedException {
-        view.setLayout(new MigLayout("fill", "[250][250][250]", "[30][grow][250][grow][grow]"));
+        view.setLayout(new MigLayout("fill", "[250][250][250]", "[30][grow][250]50[grow][grow]"));
         personalDetailsPnl = new RoundedPanel(20);
 
         namelbl = LabelFactory.createBoldLabel("", 18, Color.WHITE);
@@ -74,12 +74,7 @@ public class ReadOnlyScene implements Scene {
         personalDetailsPnl.setAlignmentX(Component.CENTER_ALIGNMENT);
         personalDetailsPnl.setLayout(new MigLayout("wrap", "[grow,center]", "[][][][]"));
         view.add(personalDetailsPnl, "cell 1 4, growx, aligny top");
-       
-        
-        /*System.out.println("Display image string: " + displayImageString);
-		profilepicLbl = new Avatar(AssetManager.getOrLoadImage(displayImageString));
-        view.add(profilepicLbl, "cell 1 2,alignx center");
-	*/
+
         displaynameLbl = LabelFactory.createBoldLabel("", 64, Color.WHITE);
         view.add(displaynameLbl, "cell 1 3,alignx center,aligny top");
 
@@ -139,8 +134,8 @@ public class ReadOnlyScene implements Scene {
         role = profile.getRoleByUsername(username);
 
         if (firstName == null || lastName == null || "Unknown".equalsIgnoreCase(gender)) {
-            fullName = "Set name";
-            gender = "Set gender";
+            fullName = "";
+            gender = "";
         }
 
         if (namelbl != null) {
@@ -156,21 +151,20 @@ public class ReadOnlyScene implements Scene {
             displayRoleLbl.setText(role.toUpperCase());
         }
 
-        // Update profilepicLbl
+        
         if (profilepicLbl != null) {
-            view.remove(profilepicLbl); // Remove the old label
+            view.remove(profilepicLbl); 
         }
         try {
 			profilepicLbl = new Avatar(AssetManager.getOrLoadImage(displayImageString));
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} // Create a new Avatar
-        view.add(profilepicLbl, "cell 1 2,alignx center"); // Add the new label
+		} 
+        view.add(profilepicLbl, "cell 1 2,alignx center");
 
         if (view != null) {
-            view.revalidate(); // Revalidate the panel
-            view.repaint();    // Repaint the panel
+            view.revalidate(); 
+            view.repaint();    
         }
     }
 
