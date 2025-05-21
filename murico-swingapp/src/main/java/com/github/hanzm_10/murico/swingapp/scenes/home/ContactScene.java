@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,6 +17,7 @@ import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -26,6 +28,8 @@ public class ContactScene implements Scene {
 	protected JPanel leftComponent;
 	protected JPanel nameRows;
 	protected JLabel conLabel;
+	
+	private JButton saveBtn;
 
 	protected Image logoImage;
 
@@ -60,12 +64,12 @@ public class ContactScene implements Scene {
 
 	@Override
 	public JPanel getSceneView() {
-		return view == null ? (view = new JPanel()) : view;
+		return view == null ? (view = new RoundedPanel(20)) : view;
 	}
 
 	private void initializeUsersUI() {
 
-		view.setBackground((Styles.PRIMARY_COLOR));
+		view.setBackground((Styles.SECONDARY_COLOR));
 		view.setLayout(new MigLayout("fill", "[grow]", "[grow][grow]"));
 
 		String[] columnNames = { "User ID", "Username", "Email Address", "Role", "Verification Status" };
@@ -83,7 +87,10 @@ public class ContactScene implements Scene {
 		usersScrollpane = new JScrollPane(usersTable);
 		usersScrollpane.setBounds(38, 176, 973, 516);
 		view.add(usersScrollpane, "cell 0 0,grow");
-
+		
+		saveBtn = new JButton("Save Changes");
+		view.add(saveBtn, "cell 0 1, grow ,alignx center");
+		
 	}
 
 	@Override
