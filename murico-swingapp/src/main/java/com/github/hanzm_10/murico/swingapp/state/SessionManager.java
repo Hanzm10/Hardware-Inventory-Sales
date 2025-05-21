@@ -50,9 +50,6 @@ public final class SessionManager {
 	}
 
 	/**
-	 * Returns the current session.
-	 *
-	 * @return The current session.
 	 * @throws IllegalArgumentException if session is null.
 	 * @throws IllegalStateException    if session already exists.
 	 */

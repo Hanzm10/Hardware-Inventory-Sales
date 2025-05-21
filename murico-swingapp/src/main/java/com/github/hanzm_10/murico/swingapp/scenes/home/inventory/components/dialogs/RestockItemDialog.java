@@ -12,6 +12,8 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +42,6 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer.ProgressLevel;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.DashedLineSeparator;
@@ -91,9 +92,7 @@ public class RestockItemDialog extends JDialog {
 
 	private AtomicInteger rowToBeRestocked = new AtomicInteger(-1);
 
-	private Thread fetchThread;
-	private Thread updateThread;
-
+	private ExecutorService executor;
 	private @NotNull Runnable onUpdate;
 
 	public RestockItemDialog(@NotNull final Window owner, @NotNull final JTable table,
@@ -106,14 +105,8 @@ public class RestockItemDialog extends JDialog {
 		this.windowListener = new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if (fetchThread != null && fetchThread.isAlive()) {
-					fetchThread.interrupt();
-					ConnectionManager.cancel(fetchThread);
-				}
-
-				if (updateThread != null && updateThread.isAlive()) {
-					updateThread.interrupt();
-					ConnectionManager.cancel(updateThread);
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
 				}
 
 				clearErrorMessages();
@@ -128,16 +121,14 @@ public class RestockItemDialog extends JDialog {
 		this.componentListener = new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				if (fetchThread != null && fetchThread.isAlive()) {
-					fetchThread.interrupt();
-					ConnectionManager.cancel(fetchThread);
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
 				}
 
-				fetchThread = new Thread(() -> {
-					populateSupplierComboBox();
-				});
+				executor = Executors.newFixedThreadPool(2);
 
-				fetchThread.start();
+				executor.submit(() -> populateSupplierComboBox());
+
 				updateDisplay();
 			}
 		};
@@ -258,14 +249,8 @@ public class RestockItemDialog extends JDialog {
 		removeWindowListener(windowListener);
 		removeComponentListener(componentListener);
 
-		if (fetchThread != null && fetchThread.isAlive()) {
-			fetchThread.interrupt();
-			ConnectionManager.cancel(fetchThread);
-		}
-
-		if (updateThread != null && updateThread.isAlive()) {
-			updateThread.interrupt();
-			ConnectionManager.cancel(updateThread);
+		if (executor != null && !executor.isShutdown()) {
+			executor.shutdownNow();
 		}
 
 		confirmButton.removeActionListener(this::handleConfirm);
@@ -352,7 +337,7 @@ public class RestockItemDialog extends JDialog {
 
 		SwingUtilities.invokeLater(this::disableButtons);
 
-		updateThread = new Thread(() -> {
+		executor.submit(() -> {
 			try {
 				var selectedItem = (RestockSupplierComboBoxItem) supplier.getSelectedItem();
 
@@ -379,8 +364,6 @@ public class RestockItemDialog extends JDialog {
 				SwingUtilities.invokeLater(this::enableButtons);
 			}
 		});
-
-		updateThread.start();
 	}
 
 	private void handleQuantityChange(ChangeEvent ev) {

@@ -13,6 +13,8 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -41,7 +43,6 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.lib.utils.NumberUtils;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.dialogs.SuccessDialog;
@@ -116,8 +117,7 @@ public class AddItemDialog extends JDialog {
 	private JButton cancelButton;
 	private JButton confirmButton;
 
-	private Thread fetchThread;
-	private Thread updateThread;
+	private ExecutorService executor;
 
 	private WindowAdapter windowListener;
 	private ComponentAdapter componentListener;
@@ -137,14 +137,8 @@ public class AddItemDialog extends JDialog {
 		this.windowListener = new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
-				if (fetchThread != null && fetchThread.isAlive()) {
-					fetchThread.interrupt();
-					ConnectionManager.cancel(fetchThread);
-				}
-
-				if (updateThread != null && updateThread.isAlive()) {
-					updateThread.interrupt();
-					ConnectionManager.cancel(updateThread);
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
 				}
 
 				clearErrorMessages();
@@ -158,18 +152,17 @@ public class AddItemDialog extends JDialog {
 		this.componentListener = new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				if (fetchThread != null && fetchThread.isAlive()) {
-					fetchThread.interrupt();
-					ConnectionManager.cancel(fetchThread);
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
 				}
 
-				fetchThread = new Thread(() -> {
+				executor = Executors.newFixedThreadPool(2);
+
+				executor.submit(() -> {
 					populateCategoryComboBox();
 					populatePackagingComboBox();
 					populateSupplierComboBox();
 				});
-
-				fetchThread.start();
 			}
 		};
 
@@ -354,14 +347,8 @@ public class AddItemDialog extends JDialog {
 	}
 
 	public void destroy() {
-		if (fetchThread != null && fetchThread.isAlive()) {
-			fetchThread.interrupt();
-			ConnectionManager.cancel(fetchThread);
-		}
-
-		if (updateThread != null && updateThread.isAlive()) {
-			updateThread.interrupt();
-			ConnectionManager.cancel(updateThread);
+		if (executor != null && !executor.isShutdown()) {
+			executor.shutdownNow();
 		}
 
 		removeWindowListener(windowListener);
@@ -598,7 +585,7 @@ public class AddItemDialog extends JDialog {
 			disableButtons();
 		});
 
-		updateThread = new Thread(() -> {
+		executor.submit(() -> {
 			isUpdating.set(true);
 
 			try {
@@ -628,7 +615,5 @@ public class AddItemDialog extends JDialog {
 				});
 			}
 		});
-
-		updateThread.start();
 	}
 }

@@ -229,16 +229,14 @@ public class InventoryTable implements SceneComponent {
 
 	private void updateTableModel() {
 		if (!initialized.get()) {
-			SwingUtilities.invokeLater(this::initializeComponents);
+			initializeComponents();
 		}
 
-		SwingUtilities.invokeLater(() -> {
-			var itemStocks = this.itemStocks.get();
-			tableModel.setRowCount(0);
+		var itemStocks = this.itemStocks.get();
+		tableModel.setRowCount(0);
 
-			for (var itemStock : itemStocks) {
-				addItemStock(itemStock);
-			}
-		});
+		for (var itemStock : itemStocks) {
+			addItemStock(itemStock);
+		}
 	}
 }

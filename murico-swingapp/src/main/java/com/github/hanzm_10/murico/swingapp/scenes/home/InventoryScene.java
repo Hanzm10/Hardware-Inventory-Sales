@@ -1,6 +1,8 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home;
 
 import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,7 +20,6 @@ import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dial
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.InventoryFilterDialog;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.InventoryFilterDialog.FilterResult;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.RestockItemDialog;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -35,7 +36,7 @@ public class InventoryScene implements Scene {
 	private DeleteItemsDialog deleteItemsDialog;
 	private RestockItemDialog restockItemDialog;
 
-	private Thread inventoryTableThread;
+	private ExecutorService executor;
 
 	private void addRowToTable(ItemStock rowData) {
 		inventoryTable.prependItemStock(rowData);
@@ -234,11 +235,13 @@ public class InventoryScene implements Scene {
 
 	@Override
 	public void onBeforeShow() {
-		terminateThreads();
+		if (executor != null && !executor.isShutdown()) {
+			executor.shutdownNow();
+		}
 
-		inventoryTableThread = new Thread(this::handleInitialInventoryTableThread);
+		executor = Executors.newFixedThreadPool(1);
 
-		inventoryTableThread.start();
+		executor.submit(this::handleInitialInventoryTableThread);
 	}
 
 	@Override
@@ -298,16 +301,7 @@ public class InventoryScene implements Scene {
 	}
 
 	public void refreshTableData() {
-		if (inventoryTableThread != null && inventoryTableThread.isAlive()) {
-			inventoryTableThread.interrupt();
-			ConnectionManager.cancel(inventoryTableThread);
-		}
-
-		inventoryTableThread = new Thread(() -> {
-			inventoryTable.refresh();
-		});
-
-		inventoryTableThread.start();
+		executor.submit(inventoryTable::performBackgroundTask);
 	}
 
 	/**
@@ -327,11 +321,9 @@ public class InventoryScene implements Scene {
 	}
 
 	private void terminateThreads() {
-		if (inventoryTableThread != null && inventoryTableThread.isAlive()) {
-			inventoryTableThread.interrupt();
-			ConnectionManager.cancel(inventoryTableThread);
+		if (executor != null && !executor.isShutdown()) {
+			executor.shutdownNow();
 		}
-
 	}
 
 }

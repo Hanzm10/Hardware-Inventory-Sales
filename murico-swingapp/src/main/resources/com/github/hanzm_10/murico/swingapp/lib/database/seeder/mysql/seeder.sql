@@ -149,25 +149,25 @@ INSERT INTO item_categories_items (_item_category_id, _item_id) VALUES
 
 -- Seed item stocks
 INSERT INTO item_stocks (_item_stock_id, _item_id, _packaging_id, quantity, minimum_quantity, srp_php, price_php) VALUES
-(1, 1, 2, 50, 10, 250.00, 200.00),   -- Hammer / Piece
-(2, 2, 4, 20, 5, 600.00, 480.00),    -- Screwdriver Set / Set
-(3, 3, 3, 100, 20, 120.00, 100.00),  -- PVC Pipe / Pack
-(4, 4, 2, 150, 30, 80.00, 60.00);
+(1, 1, 2, 30, 10, 250.00, 200.00),   -- Hammer / Piece
+(2, 2, 4, 4, 5, 600.00, 480.00),    -- Screwdriver Set / Set
+(3, 3, 3, 74, 20, 120.00, 100.00),  -- PVC Pipe / Pack
+(4, 4, 2, 115, 30, 80.00, 60.00);
 INSERT INTO item_stocks (_item_stock_id, _item_id, _packaging_id, quantity, minimum_quantity, srp_php, price_php) VALUES
-(5, 5, 8, 30, 10, 1400.00, 1200.00),  -- Latex Paint / Can
-(6, 6, 4, 25, 5, 550.00, 450.00),    -- Paint Roller Set / Set
-(7, 7, 2, 40, 10, 950.00, 800.00),   -- Garden Shovel / Piece
-(8, 8, 2, 50, 15, 600.00, 500.00),   -- Pruning Shears / Piece
+(5, 5, 8, 28, 10, 1400.00, 1200.00),  -- Latex Paint / Can
+(6, 6, 4, 22, 5, 550.00, 450.00),    -- Paint Roller Set / Set
+(7, 7, 2, 30, 10, 950.00, 800.00),   -- Garden Shovel / Piece
+(8, 8, 2, 47, 15, 600.00, 500.00),   -- Pruning Shears / Piece
 (9, 9, 2, 10, 5, 4000.00, 3500.00),  -- Car Jack / Piece
-(10, 10, 6, 60, 15, 450.00, 380.00),   -- Motor Oil / Bottle
-(11, 11, 1, 100, 30, 300.00, 250.00),  -- Screws Assortment / Box
-(12, 12, 2, 75, 20, 250.00, 200.00),   -- Safety Goggles / Piece
-(13, 13, 7, 150, 40, 80.00, 60.00),    -- Super Glue / Tube
-(14, 14, 2, 20, 5, 4800.00, 4200.00),  -- Power Drill / Piece
-(15, 15, 2, 35, 10, 1100.00, 900.00),  -- LED Floodlight / Piece
-(16, 16, 2, 15, 5, 2000.00, 1800.00),  -- Aluminum Ladder / Piece
-(17, 17, 3, 40, 10, 360.00, 300.00),   -- Cleaning Rags / Pack
-(18, 18, 6, 80, 20, 180.00, 150.00);   -- Detergent / Bottle;    -- Light Bulb / Piece
+(10, 10, 6, 57, 15, 450.00, 380.00),   -- Motor Oil / Bottle
+(11, 11, 1, 98, 30, 300.00, 250.00),  -- Screws Assortment / Box
+(12, 12, 2, 74, 20, 250.00, 200.00),   -- Safety Goggles / Piece
+(13, 13, 7, 147, 40, 80.00, 60.00),    -- Super Glue / Tube
+(14, 14, 2, 19, 5, 4800.00, 4200.00),  -- Power Drill / Piece
+(15, 15, 2, 25, 10, 1100.00, 900.00),  -- LED Floodlight / Piece
+(16, 16, 2, 14, 5, 2000.00, 1800.00),  -- Aluminum Ladder / Piece
+(17, 17, 3, 13, 10, 360.00, 300.00),   -- Cleaning Rags / Pack
+(18, 18, 6, 68, 20, 180.00, 150.00);   -- Detergent / Bottle;    -- Light Bulb / Piece
 INSERT INTO item_stocks (_item_stock_id, _item_id, _packaging_id, quantity, minimum_quantity, srp_php, price_php) VALUES
 (19, 5, 1, 20, 5, 2500.00, 2320.45),  -- Latex Paint / Box
 (20, 6, 1, 15, 3, 2450.00, 2325.75);    -- Paint Roller Set / Box
@@ -177,7 +177,7 @@ VALUES
 (1, 1, 0, 50, 50),
 (2, 2, 0, 20, 20),
 (3, 3, 0, 100, 100),
-(4, 4, 0, 150, 50);
+(4, 4, 0, 150, 150);
 INSERT INTO item_restocks (_item_restock_id, _item_stock_id, quantity_before, quantity_after, quantity_added)
 VALUES
 (5, 5, 0, 30, 30),

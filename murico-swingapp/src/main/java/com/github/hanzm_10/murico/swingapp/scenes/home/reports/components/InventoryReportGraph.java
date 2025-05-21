@@ -1,33 +1,54 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home.reports.components;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
+
 import javax.swing.JPanel;
 
+import org.jfree.chart.ChartPanel;
+
+import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemQuantityPerPackaging;
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
 
 public class InventoryReportGraph implements SceneComponent {
 
+	private static final Logger LOGGER = MuricoLogger.getLogger(InventoryReportGraph.class);
+
+	private ChartPanel chartPanel;
+
+	private AtomicReference<ItemQuantityPerPackaging[]> itemQuantityPerPackaging = new AtomicReference<>(
+			new ItemQuantityPerPackaging[0]);
+
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public JPanel getView() {
-		// TODO Auto-generated method stub
-		return null;
+		return chartPanel == null ? (chartPanel = new ChartPanel(null)) : chartPanel;
 	}
 
 	@Override
 	public void initializeComponents() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public boolean isInitialized() {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void performBackgroundTask() {
+		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
+
+		try {
+			itemQuantityPerPackaging.set(factory.getItemDao().getItemsQuantityPerPackaging());
+
+		} catch (Exception e) {
+			LOGGER.warning("Failed to get item quantity per packaging: " + e.getMessage());
+		}
 	}
 
 }

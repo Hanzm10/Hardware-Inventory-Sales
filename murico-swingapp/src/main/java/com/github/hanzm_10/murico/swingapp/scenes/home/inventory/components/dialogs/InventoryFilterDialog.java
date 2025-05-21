@@ -10,6 +10,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -29,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import com.github.hanzm_10.murico.swingapp.lib.combobox_renderers.PlaceholderRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
@@ -70,7 +71,7 @@ public class InventoryFilterDialog extends JDialog {
 	private JButton applyButton;
 	private JButton resetButton;
 
-	private Thread fetchThread;
+	private ExecutorService executor;
 
 	private Consumer<FilterResult> onApply;
 
@@ -81,9 +82,8 @@ public class InventoryFilterDialog extends JDialog {
 		this.windowListener = new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if (fetchThread != null && fetchThread.isAlive()) {
-					fetchThread.interrupt();
-					ConnectionManager.cancel(fetchThread);
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
 				}
 
 				dispose();
@@ -92,14 +92,13 @@ public class InventoryFilterDialog extends JDialog {
 		this.componentListener = new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				if (fetchThread != null && fetchThread.isAlive()) {
-					fetchThread.interrupt();
-					ConnectionManager.cancel(fetchThread);
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
 				}
 
-				fetchThread = new Thread(() -> fetchOperation());
+				executor = Executors.newSingleThreadExecutor();
 
-				fetchThread.start();
+				executor.submit(() -> fetchOperation());
 			}
 		};
 
@@ -192,9 +191,8 @@ public class InventoryFilterDialog extends JDialog {
 		removeWindowListener(windowListener);
 		removeComponentListener(componentListener);
 
-		if (fetchThread != null && fetchThread.isAlive()) {
-			fetchThread.interrupt();
-			ConnectionManager.cancel(fetchThread);
+		if (executor != null && !executor.isShutdown()) {
+			executor.shutdownNow();
 		}
 
 		applyButton.removeActionListener(this::handleApplyButton);

@@ -1,10 +1,7 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home.reports.components;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JLabel;
@@ -21,26 +18,30 @@ import javax.swing.table.TableRowSorter;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.comparators.NumberWithSymbolsComparator;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.CustomerPayment;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.InventoryBreakdown;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
 import com.github.hanzm_10.murico.swingapp.lib.table_models.NonEditableTableModel;
-import com.github.hanzm_10.murico.swingapp.lib.table_renderers.CurrencyRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.IdRenderer;
+import com.github.hanzm_10.murico.swingapp.lib.table_renderers.InventoryRemarksRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
 import net.miginfocom.swing.MigLayout;
 
-public class SalesReportTable implements SceneComponent {
+public class InventoryReportTable implements SceneComponent {
 
-	private static final Logger LOGGER = MuricoLogger.getLogger(SalesReportTable.class);
+	private static final Logger LOGGER = MuricoLogger.getLogger(InventoryReportTable.class);
 
-	public static final int COL_CUSTOMER_PAYMENT_ID = 0;
-	public static final int COL_CUSTOMER_ORDER_ID = 1;
-	public static final int COL_DATE = 2;
-	public static final int COL_PAYMENT_METHOD = 3;
-	public static final int COL_AMOUNT_PHP = 4;
+	public static final int COL_ITEM_ID = 0;
+	public static final int COL_ITEM_NAME = 1;
+	public static final int COL_ITEM_CATEGORY = 2;
+	public static final int COL_ITEM_PACKAGING = 3;
+	public static final int COL_ITEM_INITIAL_QUANTITY = 4;
+	public static final int COL_ITEM_SOLD_QUANTITY = 5;
+	public static final int COL_ITEM_RESTOCK_QUANTITY = 6;
+	public static final int COL_ITEM_QUANTITY = 7;
+	public static final int COL_ITEM_REMARKS = 8;
 
 	private JPanel view;
 
@@ -49,8 +50,8 @@ public class SalesReportTable implements SceneComponent {
 	private JTable table;
 	private JScrollPane scrollPane;
 
-	private AtomicReference<CustomerPayment[]> customerPayments = new AtomicReference<>(new CustomerPayment[0]);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
+	private AtomicReference<InventoryBreakdown[]> inventoryBreakdown = new AtomicReference<>(new InventoryBreakdown[0]);
 
 	private void attachComponents() {
 		view.add(title);
@@ -58,9 +59,9 @@ public class SalesReportTable implements SceneComponent {
 	}
 
 	private void createComponents() {
-		view.setLayout(new MigLayout("insets 0, flowy", "[grow]", "[]8px[grow]"));
+		view.setLayout(new MigLayout("insets 0, flowy", "[grow]", "[]8[grow]"));
 
-		title = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml("Sales Breakdown"), 24, Styles.PRIMARY_COLOR);
+		title = LabelFactory.createBoldLabel(HtmlUtils.wrapInHtml("Inventory Breakdown"), 24, Styles.PRIMARY_COLOR);
 
 		tableModel = new NonEditableTableModel();
 		table = new JTable(tableModel);
@@ -70,19 +71,21 @@ public class SalesReportTable implements SceneComponent {
 		var sorter = new TableRowSorter<TableModel>(tableModel);
 		var comparator = new NumberWithSymbolsComparator();
 
-		cellRenderer.setHorizontalAlignment(JLabel.CENTER);
+		cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-		for (var columnName : CustomerPayment.getColumnNames()) {
-			tableModel.addColumn(columnName);
+		for (var columnNames : InventoryBreakdown.getColumnNames()) {
+			tableModel.addColumn(columnNames);
 		}
 
-		for (int i = 0; i < tableModel.getColumnCount(); i++) {
+		for (int i = 0; i < InventoryBreakdown.getColumnNames().length; i++) {
 			table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
 		}
 
-		sorter.setComparator(0, comparator);
-		sorter.setComparator(1, comparator);
-		sorter.setComparator(4, comparator);
+		sorter.setComparator(COL_ITEM_ID, comparator);
+		sorter.setComparator(COL_ITEM_INITIAL_QUANTITY, comparator);
+		sorter.setComparator(COL_ITEM_SOLD_QUANTITY, comparator);
+		sorter.setComparator(COL_ITEM_RESTOCK_QUANTITY, comparator);
+		sorter.setComparator(COL_ITEM_QUANTITY, comparator);
 
 		table.setRowSorter(sorter);
 
@@ -93,25 +96,12 @@ public class SalesReportTable implements SceneComponent {
 		((DefaultTableCellRenderer) header.getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 
 		var columnModel = table.getColumnModel();
-
-		columnModel.getColumn(COL_CUSTOMER_PAYMENT_ID).setCellRenderer(new IdRenderer());
-		columnModel.getColumn(COL_CUSTOMER_ORDER_ID).setCellRenderer(new IdRenderer());
-		columnModel.getColumn(COL_AMOUNT_PHP).setCellRenderer(new CurrencyRenderer());
+		columnModel.getColumn(COL_ITEM_ID).setCellRenderer(new IdRenderer());
+		columnModel.getColumn(COL_ITEM_REMARKS).setCellRenderer(new InventoryRemarksRenderer());
 	}
 
 	@Override
 	public void destroy() {
-		if (view != null) {
-			view.removeAll();
-			view = null;
-		}
-
-		title = null;
-		tableModel = null;
-		table = null;
-		scrollPane = null;
-
-		initialized.set(false);
 	}
 
 	@Override
@@ -139,23 +129,21 @@ public class SalesReportTable implements SceneComponent {
 	@Override
 	public void performBackgroundTask() {
 		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
-		try {
-			var customerPaymentsOpened = factory.getSalesDao().getCustomerPayments();
-			customerPayments.set(customerPaymentsOpened);
-			SwingUtilities.invokeLater(this::updateTableData);
-		} catch (IOException |
 
-				SQLException e) {
-			LOGGER.log(Level.SEVERE, "Failed to get table data", e);
+		try {
+			inventoryBreakdown.set(factory.getItemDao().getInventoryBreakdowns());
+			SwingUtilities.invokeLater(this::updateTable);
+		} catch (Exception e) {
+			LOGGER.warning("Failed to get inventory breakdown: " + e.getMessage());
 		}
 	}
 
-	private void updateTableData() {
+	private void updateTable() {
 		if (!initialized.get()) {
 			initializeComponents();
 		}
 
-		var data = customerPayments.get();
+		var data = inventoryBreakdown.get();
 		tableModel.setRowCount(0);
 
 		for (var item : data) {

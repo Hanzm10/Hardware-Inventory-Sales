@@ -9,7 +9,6 @@ import com.github.hanzm_10.murico.swingapp.lib.database.dao.CategoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.category.ItemCategory;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 public class MySqlCategoryDao implements CategoryDao {
 
@@ -18,8 +17,6 @@ public class MySqlCategoryDao implements CategoryDao {
 		var query = MySqlQueryLoader.getInstance().get("get_all_categories", "categories", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement()) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
-
 			try (var resultSet = stmt.executeQuery(query)) {
 				var categories = new ArrayList<ItemCategory>();
 
@@ -29,8 +26,6 @@ public class MySqlCategoryDao implements CategoryDao {
 				}
 
 				return categories.toArray(new ItemCategory[categories.size()]);
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 		}
 	}

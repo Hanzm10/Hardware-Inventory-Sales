@@ -10,7 +10,6 @@
 
 	<name>Murico - Hardware Inventory and Sales System</name>
     <artifactId>murico-swingapp</artifactId>
-
     <dependencies>
         <dependency>
             <groupId>org.jfree</groupId>

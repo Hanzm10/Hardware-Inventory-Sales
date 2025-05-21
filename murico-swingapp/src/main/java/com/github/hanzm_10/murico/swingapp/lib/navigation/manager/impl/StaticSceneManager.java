@@ -202,6 +202,7 @@ public class StaticSceneManager implements SceneManager {
 		var scene = loadOrCreateScene(parsedSceneName, sceneEntry);
 
 		if (!scene.canShow()) {
+			scene.onCannotShow();
 			return;
 		}
 
@@ -226,6 +227,7 @@ public class StaticSceneManager implements SceneManager {
 
 			if (scene.getSceneManager() != null && sceneManager.getCurrentSceneName() != null
 					&& sceneManager.getCurrentSceneName().equals(parsedSceneName.subSceneName())) {
+				LOGGER.warning("Sub-scene is already being displayed: " + parsedSceneName.subSceneName());
 				return;
 			}
 

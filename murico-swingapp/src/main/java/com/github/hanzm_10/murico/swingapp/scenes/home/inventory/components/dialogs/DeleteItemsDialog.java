@@ -13,6 +13,8 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +35,6 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.dialogs.SuccessDialog;
@@ -68,7 +69,7 @@ public class DeleteItemsDialog extends JDialog {
 
 	private JButton deleteButton;
 
-	private Thread deleteThread;
+	private ExecutorService executor;
 
 	private ItemToBeDeleted[] itemsToBeDeleted;
 
@@ -103,7 +104,10 @@ public class DeleteItemsDialog extends JDialog {
 		this.componentListener = new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				super.componentShown(e);
+				terminateThread();
+
+				executor = Executors.newSingleThreadExecutor();
+
 				updateDisplay();
 
 			}
@@ -233,7 +237,7 @@ public class DeleteItemsDialog extends JDialog {
 
 		SwingUtilities.invokeLater(this::disableButtons);
 
-		deleteThread = new Thread(() -> {
+		executor.submit(() -> {
 			var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
 
 			try {
@@ -255,8 +259,6 @@ public class DeleteItemsDialog extends JDialog {
 				SwingUtilities.invokeLater(this::enableButtons);
 			}
 		});
-
-		deleteThread.start();
 	}
 
 	public void setRowsToDelete(int[] rowsToDelete) {
@@ -264,9 +266,8 @@ public class DeleteItemsDialog extends JDialog {
 	}
 
 	private void terminateThread() {
-		if (deleteThread != null && deleteThread.isAlive()) {
-			deleteThread.interrupt();
-			ConnectionManager.cancel(deleteThread);
+		if (executor != null && !executor.isShutdown()) {
+			executor.shutdownNow();
 		}
 	}
 
