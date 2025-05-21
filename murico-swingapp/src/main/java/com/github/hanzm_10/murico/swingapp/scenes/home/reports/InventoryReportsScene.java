@@ -58,7 +58,7 @@ public final class InventoryReportsScene implements Scene {
 
 	@Override
 	public void onCreate() {
-		view.setLayout(new MigLayout("insets 0", "[grow, left, shrink 20]16[grow]", "[grow][shrink 30,grow]"));
+		view.setLayout(new MigLayout("insets 0", "[grow, left, shrink 20]16[grow]", "[grow][shrink 20,grow]"));
 
 		createComponents();
 		attachComponents();

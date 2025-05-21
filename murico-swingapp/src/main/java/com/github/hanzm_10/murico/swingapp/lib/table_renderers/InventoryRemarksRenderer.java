@@ -1,7 +1,6 @@
 package com.github.hanzm_10.murico.swingapp.lib.table_renderers;
 
 import java.awt.Component;
-import java.awt.Font;
 
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -20,7 +19,6 @@ public class InventoryRemarksRenderer extends DefaultTableCellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
-		setFont(getFont().deriveFont(Font.BOLD));
 
 		if (value instanceof InventoryBreakdown.InventoryBreakdownRemarks valEnum) {
 			switch (valEnum) {

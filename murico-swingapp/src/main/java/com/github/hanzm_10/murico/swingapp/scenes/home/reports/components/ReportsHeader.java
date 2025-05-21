@@ -104,6 +104,10 @@ public class ReportsHeader implements SceneComponent {
 	}
 
 	private void handleNavigation(String currFullSceneName) {
+		if (sceneButtonMap == null) {
+			return;
+		}
+
 		var names = currFullSceneName.split(ParsedSceneName.SEPARATOR);
 
 		String lastName = names[names.length - 1];
@@ -121,10 +125,10 @@ public class ReportsHeader implements SceneComponent {
 		}
 
 		createComponents();
-		attachComponents();
-		attachListeners();
 
 		sceneButtonMap = Map.of("sales reports", salesBtn, "inventory reports", inventoryBtn);
+		attachComponents();
+		attachListeners();
 
 		initialized.set(true);
 	}

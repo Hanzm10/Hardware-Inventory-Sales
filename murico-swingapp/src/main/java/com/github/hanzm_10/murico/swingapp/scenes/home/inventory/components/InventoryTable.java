@@ -1,5 +1,6 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components;
 
+import java.awt.Font;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,6 +99,7 @@ public class InventoryTable implements SceneComponent {
 
 	private void createTable() {
 		table = new JTable(tableModel);
+		table.setFont(table.getFont().deriveFont(Font.BOLD));
 		table.setGridColor(Styles.TERTIARY_COLOR);
 		table.setShowGrid(true);
 		table.setRowHeight(40);

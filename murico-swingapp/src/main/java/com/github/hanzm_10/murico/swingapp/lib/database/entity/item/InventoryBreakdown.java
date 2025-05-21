@@ -19,14 +19,14 @@ public record InventoryBreakdown(@Range(from = 0, to = Integer.MAX_VALUE) int _i
 		CRITICAL, LOW, NORMAL, HIGH;
 
 		public static InventoryBreakdownRemarks fromCurrAndMin(int current, int min) {
-			if (current <= 0) {
+			if (current <= min) {
 				return CRITICAL;
-			} else if (current <= min) {
+			} else if (current <= min * 5) {
 				return LOW;
-			} else if (current <= min * 2) {
-				return NORMAL;
-			} else {
+			} else if (current > min * 10) {
 				return HIGH;
+			} else {
+				return NORMAL;
 			}
 		}
 

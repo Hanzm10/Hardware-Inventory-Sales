@@ -44,6 +44,38 @@ public final class SessionManager {
 		return session;
 	}
 
+	public boolean isAdmin() {
+
+		if (loggedInUser == null) {
+			return false;
+		}
+		return loggedInUser.roles().contains("admin");
+	}
+
+	public boolean isClerk() {
+		if (loggedInUser == null) {
+			return false;
+		}
+
+		return loggedInUser.roles().contains("clerk");
+	}
+
+	public boolean isLogistics() {
+		if (loggedInUser == null) {
+			return false;
+		}
+
+		return loggedInUser.roles().contains("logistics");
+	}
+
+	public boolean isPurchasingOfficer() {
+		if (loggedInUser == null) {
+			return false;
+		}
+
+		return loggedInUser.roles().contains("purchasing officer");
+	}
+
 	public void removeSession() {
 		session = null;
 		loggedInUser = null;
@@ -73,5 +105,17 @@ public final class SessionManager {
 
 	public void updateSession(Session session) {
 		throw new UnsupportedOperationException("Not implemented yet.");
+	}
+
+	public void updateUserMetadata(UserMetadata user) {
+		if (user == null) {
+			throw new IllegalArgumentException("User cannot be null.");
+		}
+
+		if (loggedInUser == null) {
+			throw new IllegalStateException("No user is logged in.");
+		}
+
+		loggedInUser = user;
 	}
 }

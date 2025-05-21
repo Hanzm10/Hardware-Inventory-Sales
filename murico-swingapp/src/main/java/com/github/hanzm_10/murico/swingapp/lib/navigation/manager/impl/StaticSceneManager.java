@@ -78,7 +78,7 @@ public class StaticSceneManager implements SceneManager {
 		LOGGER.info("Scene manager destroyed.");
 	}
 
-	private void destroyScene(Scene scene) {
+	public void destroyScene(Scene scene) {
 		if (scene == null) {
 			return;
 		}
@@ -86,6 +86,10 @@ public class StaticSceneManager implements SceneManager {
 		throwIfWrongThread();
 
 		var view = scene.getSceneView();
+
+		if (scene instanceof SubSceneSupport) {
+			((SubSceneSupport) scene).getSceneManager().destroy();
+		}
 
 		if (view != null) {
 			rootContainer.remove(view);

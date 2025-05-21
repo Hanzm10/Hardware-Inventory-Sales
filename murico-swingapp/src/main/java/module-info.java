@@ -12,6 +12,7 @@ module murico.swingapp {
 	requires io.github.classgraph;
 	requires org.jfree.jfreechart;
 	requires org.apache.commons.text;
+	requires com.github.lgooddatepicker;
 
 	exports com.github.hanzm_10.murico.swingapp;
 	exports com.github.hanzm_10.murico.swingapp.lib.navigation;
