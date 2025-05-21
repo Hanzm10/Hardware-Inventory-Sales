@@ -26,7 +26,7 @@ If you are seeing this, that means something went wrong at app startup. Please c
  - Please set up MySQL first
 3. The registered database credentials for this application do not match with the database:
  - Please set up your database server's credentials to match with what the app is using. Refer to the **Database Credentials** section
-	
+
 ## Database Credentials
 
 As of `v1.0.0`, the application is using these configurations for local databases:
