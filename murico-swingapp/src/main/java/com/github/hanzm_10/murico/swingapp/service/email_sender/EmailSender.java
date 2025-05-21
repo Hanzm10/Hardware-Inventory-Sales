@@ -18,7 +18,7 @@ import jakarta.mail.internet.MimeMultipart;
 public class EmailSender {
 	public static void emailSender(String toEmail) {
 		final String username = "aaronragudos.com";
-		final String password = "sT8mvqoQFfF2eFov";
+		final String password = "";
 		Properties props = new Properties();
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
