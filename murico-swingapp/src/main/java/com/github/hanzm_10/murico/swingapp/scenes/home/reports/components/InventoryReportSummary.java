@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import com.formdev.flatlaf.ui.FlatRoundBorder;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
@@ -178,29 +177,28 @@ public class InventoryReportSummary implements SceneComponent {
 
 	private void updateInventorySummary() {
 		if (!initialized.get()) {
-			SwingUtilities.invokeLater(this::initializeComponents);
+			initializeComponents();
 		}
 
-		SwingUtilities.invokeLater(() -> {
-			var inventorySummary = this.inventorySummary.get();
+		var inventorySummary = this.inventorySummary.get();
 
-			if (inventorySummary == null) {
-				totalInventoryValueInfo.setText(HtmlUtils.wrapInHtml("N/A"));
-				totalItemsInStockInfo.setText(HtmlUtils.wrapInHtml("N/A"));
-				totalItemsBelowCriticalLevelInfo.setText(HtmlUtils.wrapInHtml("N/A"));
-				avgQuantityPerItemInfo.setText(HtmlUtils.wrapInHtml("N/A"));
-				return;
-			}
+		if (inventorySummary == null) {
+			totalInventoryValueInfo.setText(HtmlUtils.wrapInHtml("N/A"));
+			totalItemsInStockInfo.setText(HtmlUtils.wrapInHtml("N/A"));
+			totalItemsBelowCriticalLevelInfo.setText(HtmlUtils.wrapInHtml("N/A"));
+			avgQuantityPerItemInfo.setText(HtmlUtils.wrapInHtml("N/A"));
+			return;
+		}
 
-			totalInventoryValueInfo.setText(
-					HtmlUtils.wrapInHtml("₱" + NumberUtils.formatWithSuffix(inventorySummary.totalInventoryValue())));
-			totalItemsInStockInfo
-					.setText(HtmlUtils.wrapInHtml(NumberUtils.formatWithSuffix(inventorySummary.totalItemsInStock())));
-			totalItemsBelowCriticalLevelInfo.setText(HtmlUtils
-					.wrapInHtml(NumberUtils.formatWithSuffix(inventorySummary.totalItemsBelowCriticalLevel())));
-			avgQuantityPerItemInfo.setText(HtmlUtils
-					.wrapInHtml(NumberUtils.formatWithSuffix(inventorySummary.averageStockPerItem().doubleValue())));
-		});
+		totalInventoryValueInfo.setText(
+				HtmlUtils.wrapInHtml("₱" + NumberUtils.formatWithSuffix(inventorySummary.totalInventoryValue())));
+		totalItemsInStockInfo
+				.setText(HtmlUtils.wrapInHtml(NumberUtils.formatWithSuffix(inventorySummary.totalItemsInStock())));
+		totalItemsBelowCriticalLevelInfo.setText(
+				HtmlUtils.wrapInHtml(NumberUtils.formatWithSuffix(inventorySummary.totalItemsBelowCriticalLevel())));
+		avgQuantityPerItemInfo.setText(HtmlUtils
+				.wrapInHtml(NumberUtils.formatWithSuffix(inventorySummary.averageStockPerItem().doubleValue())));
+
 	}
 
 }

@@ -10,6 +10,11 @@ public record InventoryBreakdown(@Range(from = 0, to = Integer.MAX_VALUE) int _i
 		@Range(from = 0, to = Integer.MAX_VALUE) int amountOfItemsRestocked,
 		@Range(from = 0, to = Integer.MAX_VALUE) int currentItemQuantity, @NotNull InventoryBreakdownRemarks remarks) {
 
+	public Object[] toObjectArray() {
+		return new Object[] { _itemId, itemName, categoryType, packagingType, initialItemQuantity, amountOfItemsSold,
+				amountOfItemsRestocked, currentItemQuantity, remarks };
+	}
+
 	public static enum InventoryBreakdownRemarks {
 		CRITICAL, LOW, NORMAL, HIGH;
 

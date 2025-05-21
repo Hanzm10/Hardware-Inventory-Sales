@@ -2,7 +2,6 @@ package com.github.hanzm_10.murico.swingapp.scenes.home.reports.components;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -153,19 +152,15 @@ public class SalesReportTable implements SceneComponent {
 
 	private void updateTableData() {
 		if (!initialized.get()) {
-			SwingUtilities.invokeLater(this::initializeComponents);
+			initializeComponents();
 		}
 
-		SwingUtilities.invokeLater(() -> {
-			var data = customerPayments.get();
-			tableModel.setRowCount(0);
+		var data = customerPayments.get();
+		tableModel.setRowCount(0);
 
-			for (var item : data) {
-				tableModel.addRow(new Object[] { item._customerPaymentId(), item._customerOrderId(),
-						item._createdAt().toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE).replace("-", "/"),
-						item.paymentMethod(), item.amountPhp(), });
-			}
-		});
+		for (var item : data) {
+			tableModel.addRow(item.toObjectArray());
+		}
 	}
 
 }
