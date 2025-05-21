@@ -1,135 +1,139 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.github.hanzm_10.murico</groupId>
-        <artifactId>Hardware-Inventory-Sales</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.github.hanzm_10.murico</groupId>
+		<artifactId>Hardware-Inventory-Sales</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
 	<name>Murico - Hardware Inventory and Sales System</name>
-    <artifactId>murico-swingapp</artifactId>
-    <dependencies>
-	    <dependency>
-	        <groupId>com.github.lgooddatepicker</groupId>
-	        <artifactId>LGoodDatePicker</artifactId>
-	        <version>11.2.1</version>
-	    </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.5.5</version>
-        </dependency>
-	    <dependency>
-		    <groupId>io.github.classgraph</groupId>
-		    <artifactId>classgraph</artifactId>
-		    <version>4.8.179</version>
+	<artifactId>murico-swingapp</artifactId>
+	<dependencies>
+		<dependency>
+		  <groupId>org.commonmark</groupId>
+		  <artifactId>commonmark</artifactId>
+		  <version>0.21.0</version>
 		</dependency>
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.hanzm_10.murico</groupId>
-            <artifactId>murico-lookandfeel</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-text</artifactId>
-		    <version>1.13.1</version>
+		<dependency>
+			<groupId>com.github.lgooddatepicker</groupId>
+			<artifactId>LGoodDatePicker</artifactId>
+			<version>11.2.1</version>
 		</dependency>
-      <!--  
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.5.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.classgraph</groupId>
+			<artifactId>classgraph</artifactId>
+			<version>4.8.179</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>jakarta.mail</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.activation</groupId>
+			<artifactId>jakarta.activation</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.hanzm_10.murico</groupId>
+			<artifactId>murico-lookandfeel</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.13.1</version>
+		</dependency>
+		<!--
 		<dependency>
 		    <groupId>guru.nidi.com.kitfox</groupId>
 		    <artifactId>svgSalamander</artifactId>
 		    <version>1.1.3</version>
 		</dependency>
       -->
-        <dependency>
-		    <groupId>com.github.weisj</groupId>
-		    <artifactId>jsvg</artifactId>
-		    <version>2.0.0</version>
-		</dependency>
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>9.2.0</version>
-        </dependency>
 		<dependency>
-    		<groupId>org.apache.pdfbox</groupId>
-	    	<artifactId>pdfbox</artifactId>
-	    	<version>2.0.34</version> <!-- Use the latest 2.x version -->
+			<groupId>com.github.weisj</groupId>
+			<artifactId>jsvg</artifactId>
+			<version>2.0.0</version>
 		</dependency>
-        <dependency>
-            <groupId>com.miglayout</groupId>
-            <artifactId>miglayout-swing</artifactId>
-            <version>11.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>9.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.34</version>
+			<!-- Use the latest 2.x version -->
+		</dependency>
+		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout-swing</artifactId>
+			<version>11.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>24.0.1</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 
-    <licenses>
-        <license>
-            <name>MIT</name>
-            <url>https://opensource.org/license/mit</url>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>MIT</name>
+			<url>https://opensource.org/license/mit</url>
+		</license>
+	</licenses>
 
-    <organization>
-        <name>Technological Institute of the Philippines - Quezon City</name>
-        <url>https://www.tip.edu.ph/</url>
-    </organization>
+	<organization>
+		<name>Technological Institute of the Philippines - Quezon City</name>
+		<url>https://www.tip.edu.ph/</url>
+	</organization>
 
-    <developers>
-        <developer>
-            <name>Aaron Ragudos</name>
-            <roles>
-                <role>Lead Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Hanz Mapua</name>
-            <roles>
-                <role>Project Manager</role>
-                <role>Backend Developer</role>
-                <role>Database Operations</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Peter Dela Cruz</name>
-            <roles>
-                <role>Full-stack Developer</role>
-            </roles>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<name>Aaron Ragudos</name>
+			<roles>
+				<role>Lead Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Hanz Mapua</name>
+			<roles>
+				<role>Project Manager</role>
+				<role>Backend Developer</role>
+				<role>Database Operations</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Peter Dela Cruz</name>
+			<roles>
+				<role>Full-stack Developer</role>
+			</roles>
+		</developer>
+	</developers>
 
-    <contributors>
-        <contributor>
-            <name>Jerick Remo</name>
-            <roles>
-                <role>Frontend Developer</role>
-                <role>UI/UX Designer</role>
-            </roles>
-        </contributor>
-        <contributor>
-            <name>Kurt Raneses</name>
-            <roles>
-                <role>Frontend Developer</role>
-                <role>UI/UX Designer</role>
-            </roles>
-        </contributor>
-    </contributors>
+	<contributors>
+		<contributor>
+			<name>Jerick Remo</name>
+			<roles>
+				<role>Frontend Developer</role>
+				<role>UI/UX Designer</role>
+			</roles>
+		</contributor>
+		<contributor>
+			<name>Kurt Raneses</name>
+			<roles>
+				<role>Frontend Developer</role>
+				<role>UI/UX Designer</role>
+			</roles>
+		</contributor>
+	</contributors>
 </project>

@@ -18,7 +18,7 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 public class MySqlMigrator implements Migrator {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlMigrator.class);
 
-	protected void createMigrationTableIfNotExists() {
+	protected void createMigrationTableIfNotExists() throws SQLException {
 		// TEMPORARY !! REMOVE AFTER EVERYONE CLEANSES THEIR DATABASES!
 		// Adding the DROP DATABASE defeats the purpose of migrations, but
 		// since i did not add a name for the UNIQUE composite key constraints I
@@ -38,19 +38,16 @@ public class MySqlMigrator implements Migrator {
 
 			statement.close();
 			conn.close();
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Failed to check if migration exists", e);
 		}
 	}
 
 	@Override
 	public @NotNull String getMigrationsAsAWhole() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void migrate() {
+	public void migrate() throws SQLException {
 		var sqlQueries = MySqlMigratorFactory.getMigrationQueries();
 
 		createMigrationTableIfNotExists();

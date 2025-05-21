@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -13,21 +13,24 @@
  */
 package com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.impl;
 
+import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.ErrorInterpreter;
 
 public class SqlCommunicationErrorInterpreter implements ErrorInterpreter {
 
-    @Override
-    public boolean canInterpret(Throwable e) {
-        return e instanceof java.sql.SQLException && e.getMessage() != null
-                && e.getMessage().contains("Communications link failure");
-    }
+	@Override
+	public boolean canInterpret(Throwable e) {
+		return e instanceof java.sql.SQLException && e.getMessage() != null
+				&& (e.getMessage().contains("Access denied for user")
+						|| e.getMessage().contains("Communications link failure"));
+	}
 
-    @Override
-    public String interpret(Throwable e) {
-        return "Cannot connect to the database.\n"
-                + "There might be invalid database credentials in the configuration file.\n"
-                + " Please check your connection settings in"
-                + " (src/main/resources/com/github/hanzm_10/murico/swingapp/lib/database).";
-    }
+	@Override
+	public String interpret(Throwable e) {
+		return "Cannot connect to the database.\n"
+				+ "There might be invalid database credentials in the configuration file.\n"
+				+ " Please check your connection settings in "
+				+ MySqlFactoryDao.class.getPackageName().replace(".", "/") + "/" + "config.properties"
+				+ "\n\nPlease refer to the README.md for more information.";
+	}
 }
