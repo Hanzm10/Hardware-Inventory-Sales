@@ -23,7 +23,6 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
-import com.github.hanzm_10.murico.swingapp.ui.inputs.TextPlaceholder;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -39,12 +38,8 @@ public class EditProfileScene implements Scene {
 	private JTextField firstnameTF;
 	private JTextField lastnameTF;
 	private JPanel view;
-	private boolean uiInitialized = false;
 	private JButton btnSave;
 	private JButton cancelBtn;
-	private Integer userID;
-	private String firstName;
-	private String lastName;
 
 	private JComboBox<GenderCombo> combo;
 
@@ -66,26 +61,22 @@ public class EditProfileScene implements Scene {
 		String displayName = SessionManager.getInstance().getLoggedInUser().displayName();
 		String newGender = ((GenderCombo) combo.getSelectedItem()).value();
 
-		if (userID != null) {
-			new Profile().profile(userID, firstnameTF.getText(), lastnameTF.getText(), newGender);
-			var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
+		new Profile().profile(SessionManager.getInstance().getLoggedInUser()._userId(), firstnameTF.getText(),
+				lastnameTF.getText(), newGender);
+		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
 
-			try {
-				SessionManager.getInstance()
-						.updateUserMetadata(factory.getUserDao().getUserMetadataByDisplayName(displayName));
-			} catch (IllegalArgumentException | IllegalStateException | IOException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			JOptionPane.showMessageDialog(view, "User not found: " + displayName);
+		try {
+			SessionManager.getInstance()
+					.updateUserMetadata(factory.getUserDao().getUserMetadataByDisplayName(displayName));
+		} catch (IllegalArgumentException | IllegalStateException | IOException | SQLException e) {
+			e.printStackTrace();
 		}
-
 		JOptionPane.showMessageDialog(view, "Changes saved successfully: " + displayName);
 		SceneNavigator.getInstance().navigateTo("home/profile/readonly");
 	}
 
-	private void initializeEditProfileUI() {
+	@Override
+	public void onCreate() {
 		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		view.setBackground(Styles.SECONDARY_COLOR);
 
@@ -136,44 +127,9 @@ public class EditProfileScene implements Scene {
 	}
 
 	@Override
-	public void onCreate() {
-		initializeEditProfileUI();
-		uiInitialized = true;
-	}
-
-	@Override
 	public boolean onDestroy() {
 		cancelBtn.removeActionListener(this::handleCancel);
 		btnSave.removeActionListener(this::handleSave);
-
-		uiInitialized = false;
 		return true;
-	}
-
-	@Override
-	public void onHide() {
-	}
-
-	@Override
-	public void onShow() {
-		Profile profile = new Profile();
-		System.out.println(getSceneName() + ": onShow");
-		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
-		var displayName = loggedInUser.displayName();
-		firstName = profile.getFirstname(displayName);
-		lastName = profile.getLastname(displayName);
-
-		if (firstName != null) {
-			new TextPlaceholder(lastName, lastnameTF);
-
-			new TextPlaceholder(firstName, firstnameTF);
-		} else {
-			new TextPlaceholder("Last Name", lastnameTF);
-			new TextPlaceholder("First Name", firstnameTF);
-		}
-
-		if (!uiInitialized) {
-			onCreate();
-		}
 	}
 }

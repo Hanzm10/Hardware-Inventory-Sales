@@ -115,6 +115,7 @@ public class MuricoSwingApp {
 					return;
 				}
 			} else {
+				java.util.logging.LogManager.getLogManager().reset();
 				MuricoLogger.setLevel(Level.OFF);
 			}
 

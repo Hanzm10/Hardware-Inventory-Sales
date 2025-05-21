@@ -30,8 +30,6 @@ public final class MuricoLogger {
 	public static Logger getDetachedLogger(final Class<?> c) {
 		var logger = getLogger(c);
 		logger.setUseParentHandlers(false);
-		logger.addHandler(HANDLER);
-
 		return logger;
 	}
 
