@@ -33,7 +33,6 @@ public class EditProfileScene implements Scene {
     private Integer userID;
     private String firstName;
     private String lastName;
-    private String role;
 
     @Override
     public String getSceneName() {
@@ -71,7 +70,7 @@ public class EditProfileScene implements Scene {
         var displayName = loggedInUser.displayName();
         firstName = profile.getFirstname(displayName);
         lastName = profile.getLastname(displayName);
-        role = profile.getRoleByUsername(displayName);
+        
        
         if(firstName != null) {
             new TextPlaceholder(lastName, lastnameTF);
@@ -89,7 +88,7 @@ public class EditProfileScene implements Scene {
 
     private void initializeEditProfileUI() {
         Profile pfp = new Profile();
-        view.setLayout(new MigLayout("insets 0, fillx", "[grow]", "[grow]"));
+        view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
         view.setBackground(Styles.SECONDARY_COLOR);
 
         var loggedInUser = SessionManager.getInstance().getLoggedInUser();

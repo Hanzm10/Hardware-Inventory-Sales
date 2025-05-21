@@ -229,4 +229,31 @@ public class Profile{
         return storedRole;
     }
     
+    public String getDisplayImageByDisplayname(String displayName) {
+		String storedImage = null;
+		try {
+			var conn = MySqlFactoryDao.createConnection();
+			var query = MySqlQueryLoader.getInstance().get("get_user_by_display_name", "users", SqlQueryType.SELECT);
+			var ps = conn.prepareStatement(query);
+		
+			ps.setString(1, displayName);
+
+			ResultSet rs = ps.executeQuery();
+				if (rs.next()) {
+					storedImage = rs.getString("display_image");
+					return storedImage;
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error finding profile picture for display name " + displayName, e);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return storedImage;
+    }
 }

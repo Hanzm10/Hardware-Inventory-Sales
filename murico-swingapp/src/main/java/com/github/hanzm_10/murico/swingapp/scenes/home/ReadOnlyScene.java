@@ -3,6 +3,7 @@ package com.github.hanzm_10.murico.swingapp.scenes.home;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -17,6 +18,8 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.Avatar;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedImagePanel;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
@@ -25,7 +28,7 @@ import net.miginfocom.swing.MigLayout;
 public class ReadOnlyScene implements Scene {
     private JLabel displayRoleLbl;
     private RoundedPanel personalDetailsPnl;
-    private JLabel profilepicLbl;
+    private Avatar profilepicLbl;
     private JLabel displaynameLbl;
     private JButton editProfBtn;
     private JLabel namelbl;
@@ -36,6 +39,7 @@ public class ReadOnlyScene implements Scene {
     private String role;
     private UserMetadata loggedInUser;
     private Profile profile;
+    private String displayImageString;
 
     private boolean uiInitialized = false;
 
@@ -53,7 +57,7 @@ public class ReadOnlyScene implements Scene {
     }
 
     private void initializeProfileUI() throws IOException, InterruptedException {
-        view.setLayout(new MigLayout("fill", "[250][grow][250]", "[30][grow][grow][grow][grow]"));
+        view.setLayout(new MigLayout("fill", "[250][250][250]", "[30][grow][250][grow][grow]"));
         personalDetailsPnl = new RoundedPanel(20);
 
         namelbl = LabelFactory.createBoldLabel("", 18, Color.WHITE);
@@ -70,11 +74,12 @@ public class ReadOnlyScene implements Scene {
         personalDetailsPnl.setAlignmentX(Component.CENTER_ALIGNMENT);
         personalDetailsPnl.setLayout(new MigLayout("wrap", "[grow,center]", "[][][][]"));
         view.add(personalDetailsPnl, "cell 1 4, growx, aligny top");
-
-        profilepicLbl = new JLabel("");
-        profilepicLbl.setIcon(new ImageIcon(AssetManager.getOrLoadImage("images/profilepic.png")));
-        view.add(profilepicLbl, "cell 1 2,alignx center,growy");
-
+       
+        
+        /*System.out.println("Display image string: " + displayImageString);
+		profilepicLbl = new Avatar(AssetManager.getOrLoadImage(displayImageString));
+        view.add(profilepicLbl, "cell 1 2,alignx center");
+	*/
         displaynameLbl = LabelFactory.createBoldLabel("", 64, Color.WHITE);
         view.add(displaynameLbl, "cell 1 3,alignx center,aligny top");
 
@@ -117,20 +122,21 @@ public class ReadOnlyScene implements Scene {
     @Override
     public void onShow() {
         System.out.println(getSceneName() + ": onShow");
-        refreshUI();
+			refreshUI();
+	
     }
 
     public void refreshUI() {
-    	profile = new Profile();
+        profile = new Profile();
         loggedInUser = SessionManager.getInstance().getLoggedInUser();
-        
+
         String username = loggedInUser.displayName();
         String firstName = profile.getFirstname(username);
         String lastName = profile.getLastname(username);
+        displayImageString = profile.getDisplayImageByDisplayname(username);
         fullName = firstName + " " + lastName;
         gender = profile.getGender(username);
         role = profile.getRoleByUsername(username);
-        
 
         if (firstName == null || lastName == null || "Unknown".equalsIgnoreCase(gender)) {
             fullName = "Set name";
@@ -139,11 +145,9 @@ public class ReadOnlyScene implements Scene {
 
         if (namelbl != null) {
             namelbl.setText(fullName.toUpperCase());
-  
         }
         if (genderlbl != null) {
             genderlbl.setText(gender.toUpperCase());
-            
         }
         if (displaynameLbl != null) {
             displaynameLbl.setText(loggedInUser.displayName().toUpperCase());
@@ -152,11 +156,24 @@ public class ReadOnlyScene implements Scene {
             displayRoleLbl.setText(role.toUpperCase());
         }
 
+        // Update profilepicLbl
+        if (profilepicLbl != null) {
+            view.remove(profilepicLbl); // Remove the old label
+        }
+        try {
+			profilepicLbl = new Avatar(AssetManager.getOrLoadImage(displayImageString));
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // Create a new Avatar
+        view.add(profilepicLbl, "cell 1 2,alignx center"); // Add the new label
+
         if (view != null) {
-            view.revalidate();
-            view.repaint();
+            view.revalidate(); // Revalidate the panel
+            view.repaint();    // Repaint the panel
         }
     }
+
     
  
 }
