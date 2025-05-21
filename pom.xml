@@ -87,6 +87,7 @@
                     <source>22</source>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <show>private</show>
+                    
                 </configuration>
             </plugin>
             <plugin>

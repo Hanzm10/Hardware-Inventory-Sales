@@ -1,4 +1,4 @@
-open module murico.swingapp {
+module murico.swingapp {
 	requires transitive java.desktop;
 	requires transitive java.logging;
 	requires transitive java.sql;
@@ -12,4 +12,12 @@ open module murico.swingapp {
 	requires io.github.classgraph;
 	requires org.jfree.jfreechart;
 	requires org.apache.commons.text;
+	requires com.github.lgooddatepicker;
+
+	exports com.github.hanzm_10.murico.swingapp;
+	exports com.github.hanzm_10.murico.swingapp.lib.navigation;
+	exports com.github.hanzm_10.murico.swingapp.lib.navigation.manager;
+	exports com.github.hanzm_10.murico.swingapp.lib.navigation.scene;
+	exports com.github.hanzm_10.murico.swingapp.lib.navigation.factory;
+	exports com.github.hanzm_10.murico.swingapp.lib.navigation.guard;
 }

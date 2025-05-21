@@ -22,10 +22,10 @@ public class PasswordValidator {
 	/**
 	 * <ul>
 	 * <li>Has a minimum of 8 characters {8,}</li>
-	 * <li>At least one upper case English letter. (?=.*?[A-Z])</li>
-	 * <li>At least one lower case English letter. (?=.*?[a-z])</li>
-	 * <li>At least one digit. (?=.*?[0-9])</li>
-	 * <li>At least one special character. (?=.*? [#?!@$%^&*-])</li>
+	 * <li>At least one upper case English letter. {@code (?=.*?[A-Z])}</li>
+	 * <li>At least one lower case English letter. {@code (?=.*?[a-z])}</li>
+	 * <li>At least one digit. {@code (?=.*?[0-9])}</li>
+	 * <li>At least one special character.{@code (?=.*? [#?!@$%^&*-])}</li>
 	 * </ul>
 	 */
 	public static @NotNull final Pattern STRONG_PASSWORD = Pattern

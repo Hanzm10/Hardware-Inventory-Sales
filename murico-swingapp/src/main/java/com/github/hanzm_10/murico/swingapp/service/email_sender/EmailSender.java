@@ -54,7 +54,7 @@ public class EmailSender {
 	 * emailSender("bballjaron@gmail.com"); }
 	 */
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		emailSender("medinaaaronangelo@gmail.com");
-	}
+	}*/
 }

@@ -1,22 +1,23 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home;
 
+import java.awt.Color;
 import java.awt.Image;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+import java.awt.Cursor;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
-import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
-import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.contactScene.Contact;
+import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 
 import net.miginfocom.swing.MigLayout;
@@ -38,23 +39,9 @@ public class ContactScene implements Scene {
 	private DefaultTableModel usersTableModel;
 
 	private JScrollPane usersScrollpane;
+	private boolean uiInitialized = false;
 
-	private void displayUsersTable(DefaultTableModel tableModel) {
-		UserMetadata[] users;
-		try {
-			users = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL).getUserDao().getAllUsers();
 
-			for (var user : users) {
-				Object[] rowData = { user._userId(), user.displayName(), user.email(), user.roles(),
-						user.verificationStatus() };
-				tableModel.addRow(rowData);
-			}
-		} catch (IOException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 
 	@Override
 	public String getSceneName() {
@@ -68,36 +55,100 @@ public class ContactScene implements Scene {
 	}
 
 	private void initializeUsersUI() {
-
-		view.setBackground((Styles.SECONDARY_COLOR));
-		view.setLayout(new MigLayout("fill", "[grow]", "[grow][grow]"));
-
-		String[] columnNames = { "User ID", "Username", "Email Address", "Role", "Verification Status" };
-		usersTableModel = new DefaultTableModel(columnNames, 0) {
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return column == 3;
-			}
-		};
-
-		usersTable = new JTable(usersTableModel);
-		displayUsersTable(usersTableModel);
-
-		usersScrollpane = new JScrollPane(usersTable);
-		usersScrollpane.setBounds(38, 176, 973, 516);
-		view.add(usersScrollpane, "cell 0 0,grow");
-		
-		saveBtn = new JButton("Save Changes");
-		view.add(saveBtn, "cell 0 1, grow ,alignx center");
-		
+		showTable();
 	}
 
 	@Override
 	public void onCreate() {
-		System.out.println(getSceneName() + ": onCreate");
-		initializeUsersUI();
+		if(!uiInitialized) {
+			try {
+				initializeUsersUI();
+				uiInitialized = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
+	@Override
+	public boolean onDestroy() {
+		System.out.println(getSceneName() + ": onDestroy");
+		uiInitialized = false;
+		return true;
+	}
+	@Override
+	public void onHide() {
+		System.out.println(getSceneName() + ": onHide");
+		
+	}
+	
+	@Override
+	public void onShow() {
+		System.out.println(getSceneName() + ": onShow");
+	
+		
+	}
+	public void showTable() {
+		Contact contact = new Contact();
+		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
+		var role = loggedInUser.roles();
+		
+		view.setBackground((Styles.SECONDARY_COLOR));
+		view.setLayout(new MigLayout("fill", "[grow]", "[650][grow]"));
+		
+		JPanel tablePanel = new RoundedPanel(20);
+		tablePanel.setBackground((Color.WHITE));
+		tablePanel.setLayout(new MigLayout("fill", "[grow]", "[grow]"));
+		view.add(tablePanel, "cell 0 0,grow");
+		
+		
+		JPanel buttonPnl = new JPanel();
+		buttonPnl.setLayout(new MigLayout("insets 0, fillx", "[grow]"));
+		buttonPnl.setBackground(Styles.SECONDARY_COLOR);
+		view.add(buttonPnl, "cell 0 1,grow");
+		
+		saveBtn = new JButton("Save Changes");
+		saveBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		buttonPnl.add(saveBtn, "align center");
+		if (role.equalsIgnoreCase("admin")) {
+			String[] columnNames = { "User ID", "Username", "Email Address", "Role", "Verification Status" };
+			usersTableModel = new DefaultTableModel(columnNames, 0) {
+
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return column == 3;
+				}
+			};
+
+			usersTable = new JTable(usersTableModel);
+			contact.displayUsersTableForAdmin(usersTableModel, editedRows);
+			usersScrollpane = new JScrollPane(usersTable);
+			tablePanel.add(usersScrollpane, "cell 0 0, grow");
+			saveBtn.setEnabled(true);
+		} else {
+			String[] columnNames = { "User ID", "Username", "Role", "Verification Status" };
+			usersTableModel = new DefaultTableModel(columnNames, 0) {};
+
+			usersTable = new JTable(usersTableModel);
+			contact.displayUsersTableForNotAdmin(usersTableModel, editedRows);
+			usersScrollpane = new JScrollPane(usersTable);
+			tablePanel.add(usersScrollpane, "cell 0 0, grow");
+			saveBtn.setEnabled(false);			
+		}
+		
+		saveBtn.addActionListener(e -> {
+			contact.saveChanges(usersTableModel, editedRows);
+			JOptionPane.showMessageDialog(view, "Changes saved successfully!");
+		});
+		
+		if (view != null) {
+            view.revalidate(); 
+            view.repaint();    
+        }
 
 	}
 
 }
+
+// 		

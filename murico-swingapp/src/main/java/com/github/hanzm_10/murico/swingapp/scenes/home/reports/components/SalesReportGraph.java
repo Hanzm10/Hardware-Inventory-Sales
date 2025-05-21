@@ -1,6 +1,7 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home.reports.components;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -9,7 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -27,10 +30,14 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalItemCa
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SceneComponent;
 
+import net.miginfocom.swing.MigLayout;
+
 public class SalesReportGraph implements SceneComponent {
 
 	private static final Logger LOGGER = MuricoLogger.getLogger(SalesReportGraph.class);
 
+	private JPanel view;
+	private JScrollPane scrollPane;
 	private ChartPanel chartPanel;
 	private DefaultCategoryDataset graphDataset;
 
@@ -50,7 +57,7 @@ public class SalesReportGraph implements SceneComponent {
 
 	@Override
 	public JPanel getView() {
-		return chartPanel == null ? (chartPanel = new ChartPanel(null)) : chartPanel;
+		return view == null ? (view = new JPanel()) : view;
 	}
 
 	@Override
@@ -81,14 +88,24 @@ public class SalesReportGraph implements SceneComponent {
 
 		plot.setRenderer(renderer);
 
-		chartPanel.setChart(chart);
+		chartPanel = new ChartPanel(chart);
+		chartPanel.setFont(new Font("Montserrat", Font.PLAIN, 12));
+
+		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
+
+		scrollPane = new JScrollPane(chartPanel);
+		scrollPane.setBorder(new LineBorder(Styles.SECONDARY_COLOR, 1));
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+
+		view.add(scrollPane, "grow");
 
 		initialized.set(true);
 	}
 
 	@Override
 	public boolean isInitialized() {
-		return false;
+		return initialized.get();
 	}
 
 	@Override
@@ -106,17 +123,15 @@ public class SalesReportGraph implements SceneComponent {
 
 	private void updateGraph() {
 		if (!initialized.get()) {
-			SwingUtilities.invokeLater(this::initializeComponents);
+			initializeComponents();
 		}
 
-		SwingUtilities.invokeLater(() -> {
-			var totalItemCategorySoldInYearOpened = totalItemCategorySoldInYear.get();
+		var totalItemCategorySoldInYearOpened = totalItemCategorySoldInYear.get();
 
-			for (var itemCategorySoldInYear : totalItemCategorySoldInYearOpened) {
-				graphDataset.addValue(itemCategorySoldInYear.totalQuanitySold(), itemCategorySoldInYear.itemCategory(),
-						itemCategorySoldInYear.year());
-			}
-		});
+		for (var itemCategorySoldInYear : totalItemCategorySoldInYearOpened) {
+			graphDataset.addValue(itemCategorySoldInYear.totalQuanitySold(), itemCategorySoldInYear.itemCategory(),
+					itemCategorySoldInYear.year());
+		}
 	}
 
 }

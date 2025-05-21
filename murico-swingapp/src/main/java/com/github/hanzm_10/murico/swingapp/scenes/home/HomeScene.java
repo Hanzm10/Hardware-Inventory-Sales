@@ -37,21 +37,23 @@ public class HomeScene implements Scene, SubSceneSupport {
 
 	private void createSceneManager() {
 		sceneManager = new StaticSceneManager();
-		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
 		sceneManager.registerScene("profile", () -> new ProfileScene(), GUARD);
 		sceneManager.registerScene("dashboard", () -> new DashboardScene(), GUARD);
 		sceneManager.registerScene("reports", () -> new ReportsScene(), GUARD);
 		sceneManager.registerScene("inventory", () -> new InventoryScene(), GUARD);
 		sceneManager.registerScene("order menu", () -> new OrderMenuScene(), GUARD);
-		sceneManager.registerScene("contacts", () -> { 
-		if (loggedInUser.roles().equalsIgnoreCase("admin")) {
-			return new ContactScene();
-		} else {
-			JOptionPane.showMessageDialog(view, "You do not have permission to access this page.", "Access Denied", JOptionPane.ERROR_MESSAGE);
-			System.err.println("Access denied to contacts scene for user: " + loggedInUser.displayName());
-			return new ReadOnlyScene();
-		}}, GUARD);
+		sceneManager.registerScene("contacts", () -> {
+			var loggedInUser = SessionManager.getInstance().getLoggedInUser();
+			if (loggedInUser.roles().contains("admin")) {
+				return new ContactScene();
+			} else {
+				JOptionPane.showMessageDialog(view, "You do not have permission to access this page.", "Access Denied",
+						JOptionPane.ERROR_MESSAGE);
+				System.err.println("Access denied to contacts scene for user: " + loggedInUser.displayName());
+				return new ReadOnlyScene();
+			}
+		}, GUARD);
 		sceneManager.registerScene("settings", () -> new SettingsScene(), GUARD);
 	}
 
@@ -102,7 +104,14 @@ public class HomeScene implements Scene, SubSceneSupport {
 		header.destroy();
 		sidebar.destroy();
 
+		header = null;
+		sidebar = null;
+
 		return true;
+	}
+
+	@Override
+	public void onHide() {
 	}
 
 	@Override

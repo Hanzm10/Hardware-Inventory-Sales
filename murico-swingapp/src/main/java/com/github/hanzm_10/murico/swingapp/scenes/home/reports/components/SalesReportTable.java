@@ -1,8 +1,8 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home.reports.components;
 
+import java.awt.Font;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -65,6 +65,10 @@ public class SalesReportTable implements SceneComponent {
 
 		tableModel = new NonEditableTableModel();
 		table = new JTable(tableModel);
+		table.setFont(table.getFont().deriveFont(Font.BOLD));
+		table.setShowGrid(true);
+		table.setRowHeight(40);
+		table.setBackground(view.getBackground());
 		scrollPane = new JScrollPane(table);
 
 		var cellRenderer = new DefaultTableCellRenderer();
@@ -73,9 +77,7 @@ public class SalesReportTable implements SceneComponent {
 
 		cellRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-		for (var columnName : CustomerPayment.getColumnNames()) {
-			tableModel.addColumn(columnName);
-		}
+		tableModel.setColumnIdentifiers(CustomerPayment.getColumnNames());
 
 		for (int i = 0; i < tableModel.getColumnCount(); i++) {
 			table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
@@ -143,28 +145,25 @@ public class SalesReportTable implements SceneComponent {
 		try {
 			var customerPaymentsOpened = factory.getSalesDao().getCustomerPayments();
 			customerPayments.set(customerPaymentsOpened);
-
 			SwingUtilities.invokeLater(this::updateTableData);
-		} catch (IOException | SQLException e) {
+		} catch (IOException |
+
+				SQLException e) {
 			LOGGER.log(Level.SEVERE, "Failed to get table data", e);
 		}
 	}
 
 	private void updateTableData() {
 		if (!initialized.get()) {
-			SwingUtilities.invokeLater(this::initializeComponents);
+			initializeComponents();
 		}
 
-		SwingUtilities.invokeLater(() -> {
-			var data = customerPayments.get();
-			tableModel.setRowCount(0);
+		var data = customerPayments.get();
+		tableModel.setRowCount(0);
 
-			for (var item : data) {
-				tableModel.addRow(new Object[] { item._customerPaymentId(), item._customerOrderId(),
-						item._createdAt().toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE).replace("-", "/"),
-						item.paymentMethod(), item.amountPhp(), });
-			}
-		});
+		for (var item : data) {
+			tableModel.addRow(item.toObjectArray());
+		}
 	}
 
 }

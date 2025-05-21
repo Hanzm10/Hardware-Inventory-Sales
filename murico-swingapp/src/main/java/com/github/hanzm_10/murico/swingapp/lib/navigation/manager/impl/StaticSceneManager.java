@@ -78,7 +78,7 @@ public class StaticSceneManager implements SceneManager {
 		LOGGER.info("Scene manager destroyed.");
 	}
 
-	private void destroyScene(Scene scene) {
+	public void destroyScene(Scene scene) {
 		if (scene == null) {
 			return;
 		}
@@ -86,6 +86,10 @@ public class StaticSceneManager implements SceneManager {
 		throwIfWrongThread();
 
 		var view = scene.getSceneView();
+
+		if (scene instanceof SubSceneSupport) {
+			((SubSceneSupport) scene).getSceneManager().destroy();
+		}
 
 		if (view != null) {
 			rootContainer.remove(view);
@@ -202,6 +206,7 @@ public class StaticSceneManager implements SceneManager {
 		var scene = loadOrCreateScene(parsedSceneName, sceneEntry);
 
 		if (!scene.canShow()) {
+			scene.onCannotShow();
 			return;
 		}
 
@@ -226,6 +231,7 @@ public class StaticSceneManager implements SceneManager {
 
 			if (scene.getSceneManager() != null && sceneManager.getCurrentSceneName() != null
 					&& sceneManager.getCurrentSceneName().equals(parsedSceneName.subSceneName())) {
+				LOGGER.warning("Sub-scene is already being displayed: " + parsedSceneName.subSceneName());
 				return;
 			}
 

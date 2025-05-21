@@ -15,7 +15,7 @@ public class FuzzyFilter extends RowFilter<TableModel, Integer> {
 
 	public FuzzyFilter(@NotNull final String query) {
 		this.query = query.toLowerCase(Locale.ENGLISH);
-		this.threshold = 0.5f;
+		this.threshold = 0.7f;
 		this.fuzzyFinder = new JaroWinklerSimilarity();
 	}
 

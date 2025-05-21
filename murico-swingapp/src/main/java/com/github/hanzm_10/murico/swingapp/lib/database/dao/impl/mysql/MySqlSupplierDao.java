@@ -12,7 +12,6 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.supplier.ItemSupp
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.supplier.Supplier;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 public class MySqlSupplierDao implements SupplierDao {
 
@@ -21,8 +20,6 @@ public class MySqlSupplierDao implements SupplierDao {
 		var query = MySqlQueryLoader.getInstance().get("get_all_suppliers", "suppliers", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement()) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
-
 			try (var resultSet = stmt.executeQuery(query)) {
 				var suppliers = new ArrayList<Supplier>();
 
@@ -34,8 +31,6 @@ public class MySqlSupplierDao implements SupplierDao {
 				}
 
 				return suppliers.toArray(new Supplier[suppliers.size()]);
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 		}
 	}
@@ -46,8 +41,6 @@ public class MySqlSupplierDao implements SupplierDao {
 		var query = MySqlQueryLoader.getInstance().get("get_all_suppliers_for_item", "suppliers", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.prepareStatement(query);) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
-
 			stmt.setInt(1, _itemId);
 
 			try (var resultSet = stmt.executeQuery()) {
@@ -59,8 +52,6 @@ public class MySqlSupplierDao implements SupplierDao {
 				}
 
 				return suppliers.toArray(new ItemSupplierNameWsp[suppliers.size()]);
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 		}
 	}
