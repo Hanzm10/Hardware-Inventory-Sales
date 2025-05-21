@@ -10,8 +10,8 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
-import com.github.hanzm_10.murico.swingapp.scenes.home.profile.EditProfileScene;
-import com.github.hanzm_10.murico.swingapp.scenes.home.profile.ReadOnlyScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.EditProfileScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.ReadOnlyScene;
 
 import net.miginfocom.swing.MigLayout;
 
