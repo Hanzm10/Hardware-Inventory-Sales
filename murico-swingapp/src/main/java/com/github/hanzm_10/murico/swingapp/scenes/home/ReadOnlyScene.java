@@ -156,7 +156,6 @@ public class ReadOnlyScene implements Scene {
 		try {
 			profilepicLbl = new Avatar(AssetManager.getOrLoadImage(displayImageString));
 		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} // Create a new Avatar
 		view.add(profilepicLbl, "cell 1 2,alignx center"); // Add the new label

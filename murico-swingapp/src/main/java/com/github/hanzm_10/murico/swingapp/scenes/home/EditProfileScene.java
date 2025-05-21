@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
@@ -43,7 +44,6 @@ public class EditProfileScene implements Scene {
 	private JButton cancelBtn;
 	private Integer userID;
 	private String firstName;
-
 	private String lastName;
 
 	@Override

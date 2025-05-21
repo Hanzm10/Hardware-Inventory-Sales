@@ -37,7 +37,6 @@ public class HomeScene implements Scene, SubSceneSupport {
 
 	private void createSceneManager() {
 		sceneManager = new StaticSceneManager();
-		var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
 		sceneManager.registerScene("profile", () -> new ProfileScene(), GUARD);
 		sceneManager.registerScene("dashboard", () -> new DashboardScene(), GUARD);
@@ -45,6 +44,7 @@ public class HomeScene implements Scene, SubSceneSupport {
 		sceneManager.registerScene("inventory", () -> new InventoryScene(), GUARD);
 		sceneManager.registerScene("order menu", () -> new OrderMenuScene(), GUARD);
 		sceneManager.registerScene("contacts", () -> {
+			var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 			if (loggedInUser.roles().contains("admin")) {
 				return new ContactScene();
 			} else {

@@ -85,7 +85,11 @@ public class ReportsScene implements Scene, SubSceneSupport {
 
 	@Override
 	public boolean onDestroy() {
+		sceneManager.destroy();
+
 		header.destroy();
+
+		header = null;
 
 		return true;
 	}
