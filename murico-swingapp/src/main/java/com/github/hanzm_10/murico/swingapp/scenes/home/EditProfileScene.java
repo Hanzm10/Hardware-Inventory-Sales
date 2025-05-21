@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.io.IOException;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -12,11 +14,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
+import com.github.hanzm_10.murico.swingapp.ui.components.panels.Avatar;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextPlaceholder;
 
@@ -33,6 +37,8 @@ public class EditProfileScene implements Scene {
     private Integer userID;
     private String firstName;
     private String lastName;
+    private Avatar profilePic;
+	private String displayImageString;
 
     @Override
     public String getSceneName() {
@@ -44,58 +50,15 @@ public class EditProfileScene implements Scene {
         return view == null ? (view = new RoundedPanel(20)) : view;
     }
 
-    @Override
-    public void onCreate() {
-        System.out.println(getSceneName() + ": onCreate");
-        initializeEditProfileUI();
-        uiInitialized = true;
-    }
-
-    @Override
-    public boolean onDestroy() {
-        uiInitialized = false;
-        return true;
-    }
-
-    @Override
-    public void onHide() {
-        System.out.println(getSceneName() + ": onHide");
-    }
-
-    @Override
-    public void onShow() {
-        Profile profile = new Profile();
-        System.out.println(getSceneName() + ": onShow");
-        var loggedInUser = SessionManager.getInstance().getLoggedInUser();
-        var displayName = loggedInUser.displayName();
-        firstName = profile.getFirstname(displayName);
-        lastName = profile.getLastname(displayName);
-        
-       
-        if(firstName != null) {
-            new TextPlaceholder(lastName, lastnameTF);
-            
-            new TextPlaceholder(firstName, firstnameTF);
-        } else {
-            new TextPlaceholder("Last Name", lastnameTF);
-            new TextPlaceholder("First Name", firstnameTF);
-        }
-
-        if (!uiInitialized) {
-            onCreate();
-        }
-    }
 
     private void initializeEditProfileUI() {
         Profile pfp = new Profile();
-        view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
+        view.setLayout(new MigLayout("insets 0", "[grow]", "50[250][250][50]"));
         view.setBackground(Styles.SECONDARY_COLOR);
 
-        var loggedInUser = SessionManager.getInstance().getLoggedInUser();
-
         JPanel profilePnl = new JPanel(new MigLayout("wrap, insets 20 50 20 50", "[grow,center]", "[]20[]20[]20[]20[]30[][]"));
-        profilePnl.setBackground(new Color(33, 64, 107));
-        view.add(profilePnl, "cell 0 0 , growx,growy, aligny center, alignx center");
+        profilePnl.setBackground(Styles.SECONDARY_COLOR);
+        view.add(profilePnl, "cell 0 1 , growx,growy, aligny center, alignx center");
 
         JLabel pfpName = new JLabel();
         pfpName.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -105,7 +68,7 @@ public class EditProfileScene implements Scene {
 
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("Select gender");
-        for (String r : new String[]{"Male", "Female", "To be assigned"}) {
+        for (String r : new String[]{"Male", "Female", "Non-binary"}) {
             model.addElement(r);
         }
 
@@ -117,7 +80,6 @@ public class EditProfileScene implements Scene {
         profilePnl.add(lastnameTF, "cell 0 2,growx,width 257!,alignx center");
         lastnameTF.setColumns(10);
  		
-
         JComboBox<String> combo = new JComboBox<>(model);
         profilePnl.add(combo, "cell 0 3,growx,width 257!,alignx center");
 
@@ -146,13 +108,70 @@ public class EditProfileScene implements Scene {
                 }
                 JOptionPane.showMessageDialog(view, "Changes saved successfully: " + displayName);
                 SceneNavigator.getInstance().navigateTo("home/profile/readonly");
-                // Navigate to the readonly scene and refresh its data
                
         }
             );
 
         cancelBtn.addActionListener(e -> SceneNavigator.getInstance().navigateTo("home/profile/readonly"));
     }
+    
+    @Override
+    public void onCreate() {
+        System.out.println(getSceneName() + ": onCreate");
+        initializeEditProfileUI();
+        uiInitialized = true;
+    }
+
+    @Override
+    public boolean onDestroy() {
+        uiInitialized = false;
+        return true;
+    }
+
+    @Override
+    public void onHide() {
+        System.out.println(getSceneName() + ": onHide");
+    }
+
+ 
+    
+    @Override
+    public void onShow() {
+        Profile profile = new Profile();
+        System.out.println(getSceneName() + ": onShow");
+        var loggedInUser = SessionManager.getInstance().getLoggedInUser();
+        var displayName = loggedInUser.displayName();
+        displayImageString = profile.getDisplayImageByDisplayname(displayName);
+        System.out.println("Display Image String: " + displayImageString);
+        firstName = profile.getFirstname(displayName);
+        lastName = profile.getLastname(displayName);
+        
+       
+        if(firstName != null) {
+            new TextPlaceholder(lastName, lastnameTF);
+            
+            new TextPlaceholder(firstName, firstnameTF);
+        } else {
+            new TextPlaceholder("Last Name", lastnameTF);
+            new TextPlaceholder("First Name", firstnameTF);
+        }
+        
+        if (profilePic != null) {
+        view.remove(profilePic);
+		}
+        try {
+			profilePic = new Avatar(AssetManager.getOrLoadImage(displayImageString));
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		} 
+        view.add(profilePic, "cell 0 0,alignx center");
+        
+        if(view != null) {
+			view.revalidate();
+			view.repaint();
+		}
+    }
 }
+
 
 
