@@ -1,5 +1,6 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home.reports.components;
 
+import java.awt.Font;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -64,6 +65,10 @@ public class SalesReportTable implements SceneComponent {
 
 		tableModel = new NonEditableTableModel();
 		table = new JTable(tableModel);
+		table.setFont(table.getFont().deriveFont(Font.BOLD));
+		table.setShowGrid(true);
+		table.setRowHeight(40);
+		table.setBackground(view.getBackground());
 		scrollPane = new JScrollPane(table);
 
 		var cellRenderer = new DefaultTableCellRenderer();
@@ -72,9 +77,7 @@ public class SalesReportTable implements SceneComponent {
 
 		cellRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-		for (var columnName : CustomerPayment.getColumnNames()) {
-			tableModel.addColumn(columnName);
-		}
+		tableModel.setColumnIdentifiers(CustomerPayment.getColumnNames());
 
 		for (int i = 0; i < tableModel.getColumnCount(); i++) {
 			table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);

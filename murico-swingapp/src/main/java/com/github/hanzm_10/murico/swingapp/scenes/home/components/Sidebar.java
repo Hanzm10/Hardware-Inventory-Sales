@@ -18,6 +18,7 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.ParsedSceneName;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.listeners.ButtonSceneNavigatorListener;
+import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.GradientRoundedPanel;
 
@@ -61,9 +62,20 @@ public class Sidebar {
 		container.add(profileBtn, "width 40!, height 40!");
 		container.add(dashboardBtn, "width 40!, height 40!");
 		container.add(reportsBtn, "width 40!, height 40!");
-		container.add(inventoryBtn, "width 40!, height 40!");
-		container.add(orderMenuBtn, "width 40!, height 40!");
-		container.add(contactsBtn, "width 40!, height 40!");
+
+		if (SessionManager.getInstance().isAdmin() || SessionManager.getInstance().isLogistics()
+				|| SessionManager.getInstance().isPurchasingOfficer()) {
+			container.add(inventoryBtn, "width 40!, height 40!");
+		}
+
+		if (SessionManager.getInstance().isAdmin() || SessionManager.getInstance().isClerk()) {
+			container.add(orderMenuBtn, "width 40!, height 40!");
+		}
+
+		if (SessionManager.getInstance().isAdmin()) {
+			container.add(contactsBtn, "width 40!, height 40!");
+		}
+
 		container.add(Box.createVerticalGlue(), "pushy, growy, span");
 		container.add(settingsBtn, "width 40!, height 40!, aligny bottom");
 	}

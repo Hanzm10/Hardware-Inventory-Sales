@@ -30,6 +30,7 @@ public class LogoutButton extends JButton implements ActionListener {
 			try {
 				SessionService.logout();
 				SceneNavigator.getInstance().navigateTo("auth/login");
+				SceneNavigator.getInstance().destroyScene("home");
 			} catch (MuricoError e) {
 				SwingUtilities.invokeLater(() -> {
 					JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), e.getMessage(),

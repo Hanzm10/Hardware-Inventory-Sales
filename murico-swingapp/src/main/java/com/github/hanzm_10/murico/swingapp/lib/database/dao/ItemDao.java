@@ -16,6 +16,7 @@ package com.github.hanzm_10.murico.swingapp.lib.database.dao;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,8 @@ public interface ItemDao {
 	public void archiveItems(@NotNull final ItemToBeDeleted[] itemsToBeDeleted, Consumer<Integer> onDelete)
 			throws SQLException, IOException;
 
-	public InventoryBreakdown[] getInventoryBreakdowns() throws SQLException, IOException;
+	public InventoryBreakdown[] getInventoryBreakdowns(@NotNull final LocalDate fromDate,
+			@NotNull final LocalDate toDate) throws SQLException, IOException;
 
 	public InventorySummary getInventorySummary() throws SQLException, IOException;
 

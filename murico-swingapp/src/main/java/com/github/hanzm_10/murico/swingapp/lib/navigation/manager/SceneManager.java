@@ -30,6 +30,8 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
 public interface SceneManager {
 	void destroy();
 
+	public void destroyScene(@NotNull final Scene scene);
+
 	/**
 	 * @return The current {@link Scene} that is being displayed.
 	 */

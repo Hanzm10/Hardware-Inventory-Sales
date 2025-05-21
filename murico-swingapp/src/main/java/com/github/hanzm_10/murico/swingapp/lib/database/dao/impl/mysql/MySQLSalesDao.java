@@ -7,8 +7,13 @@ import java.util.ArrayList;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.SalesDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.CustomerPayment;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.MonthlyGross;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.MonthlyGross.Month;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalItemCategorySoldInYear;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalOfSales;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.WeeklyGross;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.WeeklyGross.WeekDays;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.YearlyGross;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 
@@ -29,6 +34,23 @@ public class MySQLSalesDao implements SalesDao {
 			}
 
 			return result.toArray(new CustomerPayment[result.size()]);
+		}
+	}
+
+	@Override
+	public MonthlyGross[] getMonthlyGross() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_monthly_sales", "sales", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			var result = new ArrayList<MonthlyGross>();
+			var resultSet = stmt.executeQuery(query);
+
+			while (resultSet.next()) {
+				result.add(new MonthlyGross(Month.fromString(resultSet.getString("month")),
+						resultSet.getBigDecimal("total_gross")));
+			}
+
+			return result.toArray(new MonthlyGross[result.size()]);
 		}
 	}
 
@@ -68,6 +90,39 @@ public class MySQLSalesDao implements SalesDao {
 		}
 
 		return totalOfSales;
+	}
+
+	@Override
+	public WeeklyGross[] getWeeklyGross() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_weekly_sales", "sales", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			var result = new ArrayList<WeeklyGross>();
+			var resultSet = stmt.executeQuery(query);
+
+			while (resultSet.next()) {
+				result.add(new WeeklyGross(WeekDays.fromString(resultSet.getString("weekday")),
+						resultSet.getBigDecimal("total_gross")));
+			}
+
+			return result.toArray(new WeeklyGross[result.size()]);
+		}
+	}
+
+	@Override
+	public YearlyGross[] getYearlyGross() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_yearly_sales", "sales", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			var result = new ArrayList<YearlyGross>();
+			var resultSet = stmt.executeQuery(query);
+
+			while (resultSet.next()) {
+				result.add(new YearlyGross(resultSet.getString("year"), resultSet.getBigDecimal("total_gross")));
+			}
+
+			return result.toArray(new YearlyGross[result.size()]);
+		}
 	}
 
 }

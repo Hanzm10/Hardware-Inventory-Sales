@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -24,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
+import com.github.hanzm_10.murico.swingapp.lib.database.NamedPrepareStatement;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.ItemDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.inventory.Item;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.InventoryBreakdown;
@@ -162,12 +165,15 @@ public class MySqlItemDao implements ItemDao {
 	}
 
 	@Override
-	public InventoryBreakdown[] getInventoryBreakdowns() throws SQLException, IOException {
+	public InventoryBreakdown[] getInventoryBreakdowns(@NotNull LocalDate fromDate, @NotNull LocalDate toDate)
+			throws SQLException, IOException {
 		var query = MySqlQueryLoader.getInstance().get("get_inventory_breakdown", "items", SqlQueryType.SELECT);
 
-		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+		try (var conn = MySqlFactoryDao.createConnection(); var namedStmt = new NamedPrepareStatement(conn, query);) {
+			namedStmt.setTimestamp("start_date", Timestamp.valueOf(fromDate.atStartOfDay()));
+			namedStmt.setTimestamp("end_date", Timestamp.valueOf(toDate.atStartOfDay()));
 
-			var resultSet = stmt.executeQuery(query);
+			var resultSet = namedStmt.executeQuery();
 			var result = new ArrayList<InventoryBreakdown>();
 
 			while (resultSet.next()) {

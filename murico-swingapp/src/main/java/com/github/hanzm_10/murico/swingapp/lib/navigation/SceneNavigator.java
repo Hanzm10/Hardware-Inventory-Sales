@@ -54,6 +54,17 @@ public class SceneNavigator implements Observer<String> {
 		sceneManager = null;
 	}
 
+	public void destroyScene(String sceneName) {
+		if (!isInitialized.get()) {
+			throw new IllegalStateException("SceneNavigator is not initialized.");
+		}
+
+		SwingUtilities.invokeLater(() -> {
+			sceneManager.destroyScene(sceneManager.getScene(sceneName));
+			LOGGER.info("Destroyed scene: " + sceneName);
+		});
+	}
+
 	public String getCurrentFullSceneName() {
 		return currentFullSceneName;
 	}
