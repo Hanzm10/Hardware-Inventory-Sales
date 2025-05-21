@@ -239,7 +239,7 @@ public class InventoryScene implements Scene {
 			executor.shutdownNow();
 		}
 
-		executor = Executors.newSingleThreadExecutor();
+		executor = Executors.newFixedThreadPool(1);
 
 		executor.submit(this::handleInitialInventoryTableThread);
 	}

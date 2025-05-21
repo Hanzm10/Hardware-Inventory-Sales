@@ -179,7 +179,6 @@ public class InventoryHeader implements SceneComponent {
 		this.searchListener = searchListener;
 
 		searchField.getDocument().addDocumentListener(searchListener);
-		System.out.println(searchListener);
 	}
 
 }
