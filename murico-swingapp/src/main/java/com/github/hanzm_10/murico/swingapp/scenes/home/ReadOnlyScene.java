@@ -167,7 +167,5 @@ public class ReadOnlyScene implements Scene {
             view.repaint();    
         }
     }
-
-    
  
 }

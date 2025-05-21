@@ -39,8 +39,6 @@ public class EditProfileScene implements Scene {
     private String lastName;
     private Avatar profilePic;
 	private String displayImageString;
-	private RoundedPanel imgPanel;
-	private JPanel panel;
 
     @Override
     public String getSceneName() {
@@ -110,7 +108,6 @@ public class EditProfileScene implements Scene {
                 }
                 JOptionPane.showMessageDialog(view, "Changes saved successfully: " + displayName);
                 SceneNavigator.getInstance().navigateTo("home/profile/readonly");
-                // Navigate to the readonly scene and refresh its data
                
         }
             );
@@ -175,5 +172,6 @@ public class EditProfileScene implements Scene {
 		}
     }
 }
+
 
 
