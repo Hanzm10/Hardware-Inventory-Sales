@@ -140,7 +140,7 @@ public final class MySqlFactoryDao extends AbstractSqlFactoryDao {
 
 		// Check if properties were loaded successfully
 		if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
-			throw new SQLException("Database connection properties are not initialized. Check config.properties.");
+			throw new SQLException("Communications link failure: Missing database properties.");
 		}
 
 		LOGGER.fine("Attempting to connect to database: " + DB_URL);

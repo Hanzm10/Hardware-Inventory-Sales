@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -15,7 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.github.hanzm_10.murico.swingapp.assets.AssetManager;
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
@@ -46,6 +46,8 @@ public class EditProfileScene implements Scene {
 	private String firstName;
 	private String lastName;
 
+	private JComboBox<GenderCombo> combo;
+
 	@Override
 	public String getSceneName() {
 		return "edit";
@@ -56,8 +58,34 @@ public class EditProfileScene implements Scene {
 		return view == null ? (view = new RoundedPanel(20)) : view;
 	}
 
+	private void handleCancel(ActionEvent e) {
+		SceneNavigator.getInstance().navigateTo("home/profile/readonly");
+	}
+
+	private void handleSave(ActionEvent ev) {
+		String displayName = SessionManager.getInstance().getLoggedInUser().displayName();
+		String newGender = ((GenderCombo) combo.getSelectedItem()).value();
+
+		if (userID != null) {
+			new Profile().profile(userID, firstnameTF.getText(), lastnameTF.getText(), newGender);
+			var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
+
+			try {
+				SessionManager.getInstance()
+						.updateUserMetadata(factory.getUserDao().getUserMetadataByDisplayName(displayName));
+			} catch (IllegalArgumentException | IllegalStateException | IOException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			JOptionPane.showMessageDialog(view, "User not found: " + displayName);
+		}
+
+		JOptionPane.showMessageDialog(view, "Changes saved successfully: " + displayName);
+		SceneNavigator.getInstance().navigateTo("home/profile/readonly");
+	}
+
 	private void initializeEditProfileUI() {
-		Profile pfp = new Profile();
 		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
 		view.setBackground(Styles.SECONDARY_COLOR);
 
@@ -86,7 +114,7 @@ public class EditProfileScene implements Scene {
 		profilePnl.add(lastnameTF, "cell 0 2,growx,width 257!,alignx center");
 		lastnameTF.setColumns(10);
 
-		JComboBox<GenderCombo> combo = new JComboBox<>(model);
+		combo = new JComboBox<>(model);
 		profilePnl.add(combo, "cell 0 3,growx,width 257!,alignx center");
 
 		JPanel buttonPanel = new JPanel(new MigLayout("insets 0, fillx", "[grow][grow]"));
@@ -103,51 +131,27 @@ public class EditProfileScene implements Scene {
 
 		profilePnl.add(buttonPanel, "cell 0 5, alignx center");
 
-		btnSave.addActionListener(_ -> {
-			String displayName = SessionManager.getInstance().getLoggedInUser().displayName();
-			String newGender = ((GenderCombo) combo.getSelectedItem()).value();
-
-			userID = pfp.getUserIdByDisplayName(displayName);
-
-			if (userID != null) {
-				pfp.profile(userID, firstnameTF.getText(), lastnameTF.getText(), newGender);
-				var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
-
-				try {
-					SessionManager.getInstance()
-							.updateUserMetadata(factory.getUserDao().getUserMetadataByDisplayName(displayName));
-				} catch (IllegalArgumentException | IllegalStateException | IOException | SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				JOptionPane.showMessageDialog(view, "User not found: " + displayName);
-			}
-
-			JOptionPane.showMessageDialog(view, "Changes saved successfully: " + displayName);
-			SceneNavigator.getInstance().navigateTo("home/profile/readonly");
-
-		});
-
-		cancelBtn.addActionListener(e -> SceneNavigator.getInstance().navigateTo("home/profile/readonly"));
+		btnSave.addActionListener(this::handleSave);
+		cancelBtn.addActionListener(this::handleCancel);
 	}
 
 	@Override
 	public void onCreate() {
-		System.out.println(getSceneName() + ": onCreate");
 		initializeEditProfileUI();
 		uiInitialized = true;
 	}
 
 	@Override
 	public boolean onDestroy() {
+		cancelBtn.removeActionListener(this::handleCancel);
+		btnSave.removeActionListener(this::handleSave);
+
 		uiInitialized = false;
 		return true;
 	}
 
 	@Override
 	public void onHide() {
-		System.out.println(getSceneName() + ": onHide");
 	}
 
 	@Override

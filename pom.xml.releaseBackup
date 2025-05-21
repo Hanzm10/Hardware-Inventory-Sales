@@ -74,7 +74,7 @@
 	        	<directory>src/main/resources</directory>
 	        	<excludes>
 	        		<exclude>**/*.properties</exclude>
-	        	</excludes>
+	        	</excludes>     	
 	      	</resource>
 	    </resources>
         <plugins>
@@ -87,7 +87,7 @@
                     <source>22</source>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <show>private</show>
-
+                    
                 </configuration>
             </plugin>
             <plugin>
@@ -135,37 +135,6 @@
                     </java>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
-                <configuration>
-                      <filters>
-    <filter>
-      <artifact>*:*</artifact>
-      <excludes>
-        <exclude>module-info.class</exclude>
-        <exclude>META-INF/versions/9/module-info.class</exclude>
-      </excludes>
-    </filter>
-  </filters>
-                  <transformers>
-    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-      <mainClass>com.github.hanzm_10.murico.swingapp.MuricoSwingApp</mainClass>
-    </transformer>
-  </transformers>
-  <shadedArtifactAttached>true</shadedArtifactAttached>
-  <shadedClassifierName>launcher</shadedClassifierName>
-                </configuration>
-                <executions>
-                  <execution>
-                    <phase>package</phase>
-                    <goals>
-                      <goal>shade</goal>
-                    </goals>
-                  </execution>
-                </executions>
-              </plugin>
         </plugins>
     </build>
 </project>

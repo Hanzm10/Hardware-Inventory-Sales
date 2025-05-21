@@ -1,5 +1,7 @@
 package com.github.hanzm_10.murico.swingapp.lib.database.migrations;
 
+import java.sql.SQLException;
+
 import org.jetbrains.annotations.NotNull;
 
 public interface Migrator {
@@ -10,5 +12,5 @@ public interface Migrator {
 	 */
 	public @NotNull String getMigrationsAsAWhole();
 
-	public void migrate();
+	public void migrate() throws SQLException;
 }

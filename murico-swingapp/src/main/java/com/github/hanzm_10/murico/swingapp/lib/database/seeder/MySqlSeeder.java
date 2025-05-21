@@ -2,7 +2,6 @@ package com.github.hanzm_10.murico.swingapp.lib.database.seeder;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
@@ -13,7 +12,7 @@ public class MySqlSeeder implements Seeder {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlSeeder.class);
 
 	@Override
-	public void seed() {
+	public void seed() throws SQLException {
 		LOGGER.info("Seeding database...");
 
 		var query = MySqlMigratorFactory.getSeederQuery();
@@ -49,8 +48,6 @@ public class MySqlSeeder implements Seeder {
 					}
 				}
 			}
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Failed to seed database", e);
 		}
 
 		System.out.println("\n===================================================\n");

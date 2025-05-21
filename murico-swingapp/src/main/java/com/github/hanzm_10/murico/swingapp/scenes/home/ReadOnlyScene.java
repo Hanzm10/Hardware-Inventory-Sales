@@ -2,7 +2,7 @@ package com.github.hanzm_10.murico.swingapp.scenes.home;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import javax.swing.JButton;
@@ -14,7 +14,6 @@ import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
-import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
 import com.github.hanzm_10.murico.swingapp.state.SessionManager;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.Avatar;
 import com.github.hanzm_10.murico.swingapp.ui.components.panels.RoundedPanel;
@@ -35,7 +34,6 @@ public class ReadOnlyScene implements Scene {
 	private String gender;
 	private String role;
 	private UserMetadata loggedInUser;
-	private Profile profile;
 	private String displayImageString;
 
 	private boolean uiInitialized = false;
@@ -51,6 +49,10 @@ public class ReadOnlyScene implements Scene {
 	@Override
 	public JPanel getSceneView() {
 		return view == null ? (view = new RoundedPanel(20)) : view;
+	}
+
+	private void handleEdit(ActionEvent e) {
+		SceneNavigator.getInstance().navigateTo("home/profile/edit");
 	}
 
 	private void initializeProfileUI() throws IOException, InterruptedException {
@@ -81,10 +83,9 @@ public class ReadOnlyScene implements Scene {
 		view.add(displaynameLbl, "cell 1 3,alignx center,aligny top");
 
 		editProfBtn = new JButton("Edit Profile");
-		editProfBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		view.add(editProfBtn, "cell 2 0,alignx right,growy");
 
-		editProfBtn.addActionListener(e -> SceneNavigator.getInstance().navigateTo("home/profile/edit"));
+		editProfBtn.addActionListener(this::handleEdit);
 	}
 
 	@Override
@@ -104,6 +105,7 @@ public class ReadOnlyScene implements Scene {
 
 	@Override
 	public boolean onDestroy() {
+		editProfBtn.removeActionListener(this::handleEdit);
 		uiInitialized = false;
 		return true;
 	}
@@ -121,7 +123,6 @@ public class ReadOnlyScene implements Scene {
 	}
 
 	public void refreshUI() {
-		profile = new Profile();
 		loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
 		String firstName = loggedInUser.firstName();
