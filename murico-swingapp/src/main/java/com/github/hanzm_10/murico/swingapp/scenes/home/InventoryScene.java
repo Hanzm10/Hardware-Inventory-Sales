@@ -5,9 +5,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
-import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer.ProgressLevel;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryHeader;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.AddItemDialog;
@@ -32,8 +33,13 @@ public class InventoryScene implements Scene {
 	private InventoryFilterDialog filterDialog;
 	private EditItemDialog editItemDialog;
 	private DeleteItemsDialog deleteItemsDialog;
+	private RestockItemDialog restockItemDialog;
 
 	private Thread inventoryTableThread;
+
+	private void addRowToTable(ItemStock rowData) {
+		inventoryTable.prependItemStock(rowData);
+	}
 
 	private void attachComponents() {
 		view.setLayout(new MigLayout("insets 0, flowy", "[grow]", "[]16[grow]"));
@@ -64,7 +70,7 @@ public class InventoryScene implements Scene {
 			var owner = SwingUtilities.getWindowAncestor(view);
 
 			if (addItemDialog == null) {
-				addItemDialog = new AddItemDialog(owner, this::refreshTableData);
+				addItemDialog = new AddItemDialog(owner, this::addRowToTable);
 			}
 
 			addItemDialog.setLocationRelativeTo(owner);
@@ -88,7 +94,7 @@ public class InventoryScene implements Scene {
 			var owner = SwingUtilities.getWindowAncestor(view);
 
 			if (deleteItemsDialog == null) {
-				deleteItemsDialog = new DeleteItemsDialog(owner, inventoryTable.getTable(), this::refreshTableData);
+				deleteItemsDialog = new DeleteItemsDialog(owner, inventoryTable.getTable(), this::removeDeletedItems);
 			}
 
 			deleteItemsDialog.setLocationRelativeTo(owner);
@@ -191,23 +197,17 @@ public class InventoryScene implements Scene {
 			return;
 		}
 
-		var selectedRow = selectedRows[0];
-		var realItemStockIdCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_STOCK_ID);
-		var realItemNameCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_NAME);
-		var realQtyCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_STOCK_QUANTITY);
-		var realItemIdCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_ITEM_ID);
+		SwingUtilities.invokeLater(() -> {
+			var owner = SwingUtilities.getWindowAncestor(view);
 
-		var itemStockId = (int) inventoryTable.getTable().getValueAt(selectedRow, realItemStockIdCol);
-		var itemName = (String) inventoryTable.getTable().getValueAt(selectedRow, realItemNameCol);
-		var itemId = (int) inventoryTable.getTable().getValueAt(selectedRow, realItemIdCol);
-		var currentQty = ((ProgressLevel) inventoryTable.getTable().getValueAt(selectedRow, realQtyCol))
-				.currentProgressLevel();
+			if (restockItemDialog == null) {
+				restockItemDialog = new RestockItemDialog(owner, inventoryTable.getTable(), this::refreshTableData);
+			}
 
-		var owner = SwingUtilities.getWindowAncestor(view);
-		var dialog = new RestockItemDialog(owner, itemStockId, itemId, itemName, currentQty, this::refreshTableData);
-
-		dialog.setLocationRelativeTo(owner);
-		dialog.setVisible(true);
+			restockItemDialog.setLocationRelativeTo(owner);
+			restockItemDialog.setRowToBeRestocked(selectedRows[0]);
+			restockItemDialog.setVisible(true);
+		});
 	}
 
 	private void listenToHeaderButtonEvents(ActionEvent ev) {
@@ -274,6 +274,10 @@ public class InventoryScene implements Scene {
 			deleteItemsDialog.destroy();
 		}
 
+		if (restockItemDialog != null) {
+			restockItemDialog.destroy();
+		}
+
 		return true;
 	}
 
@@ -282,6 +286,8 @@ public class InventoryScene implements Scene {
 		terminateThreads();
 	}
 
+	// to optimize the performance of the table, we only update the
+	// columns that are updated
 	private void onItemUpdate(UpdateResult result) {
 		var model = inventoryTable.getTableModel();
 		var realUnitPriceCol = inventoryTable.getTable().convertColumnIndexToView(InventoryTable.COL_UNIT_PRICE);
@@ -302,6 +308,22 @@ public class InventoryScene implements Scene {
 		});
 
 		inventoryTableThread.start();
+	}
+
+	/**
+	 * To only remove the rows that are deleted from the table model, and not do a
+	 * whole table refresh
+	 *
+	 * @param deletedRows
+	 */
+	public void removeDeletedItems(int[] deletedRows) {
+		var model = (DefaultTableModel) inventoryTable.getTableModel();
+
+		for (int i = deletedRows.length - 1; i >= 0; i--) {
+			var realRow = inventoryTable.getTable().convertRowIndexToModel(deletedRows[i]);
+
+			model.removeRow(realRow);
+		}
 	}
 
 	private void terminateThreads() {

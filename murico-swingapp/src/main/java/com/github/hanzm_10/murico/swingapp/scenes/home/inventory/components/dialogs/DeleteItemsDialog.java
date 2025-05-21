@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,7 @@ import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.Inve
 import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
+import com.github.hanzm_10.murico.swingapp.ui.components.dialogs.SuccessDialog;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
 import net.miginfocom.swing.MigLayout;
@@ -52,7 +54,7 @@ public class DeleteItemsDialog extends JDialog {
 	private int[] rowsToDelete;
 
 	private @NotNull JTable table;
-	private Runnable onDelete;
+	private Consumer<int[]> onDelete;
 	private JPanel headerPanel;
 
 	private JLabel title;
@@ -71,14 +73,14 @@ public class DeleteItemsDialog extends JDialog {
 	private ItemToBeDeleted[] itemsToBeDeleted;
 
 	public DeleteItemsDialog(@NotNull final Window owner, @NotNull final JTable table,
-			@NotNull final Runnable onDelete) {
-		super(owner, "Delete Items", Dialog.ModalityType.APPLICATION_MODAL);
+			@NotNull final Consumer<int[]> onDelete) {
+		super(owner, "Delete Item(s)", Dialog.ModalityType.APPLICATION_MODAL);
 
 		this.owner = owner;
 		this.table = table;
 		this.onDelete = onDelete;
 
-		setLayout(new MigLayout("insets 16, flowy", "[grow]", "[grow]"));
+		setLayout(new MigLayout("insets 16, flowy, gap 2 16", "[grow]", "[grow]"));
 
 		createComponents();
 		attachComponents();
@@ -89,7 +91,10 @@ public class DeleteItemsDialog extends JDialog {
 				terminateThread();
 
 				rowsToDelete = null;
+				itemsToBeDeleted = null;
+
 				contentPanel.removeAll();
+				validate();
 
 				dispose();
 			}
@@ -101,14 +106,11 @@ public class DeleteItemsDialog extends JDialog {
 				super.componentShown(e);
 				updateDisplay();
 
-				SwingUtilities.invokeLater(() -> {
-					scrollPane.getVerticalScrollBar().setValue(0);
-				});
 			}
 		};
 
 		pack();
-		setSize(new Dimension(500, 350));
+		setSize(new Dimension(400, 300));
 
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		addWindowListener(windowListener);
@@ -142,10 +144,10 @@ public class DeleteItemsDialog extends JDialog {
 		scrollPane.setBorder(null);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 0));
+		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
 		buttonPanel.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, getForeground()),
-						BorderFactory.createEmptyBorder(16, 0, 0, 0)));
+						BorderFactory.createEmptyBorder(8, 0, 0, 0)));
 
 		cancelButton = StyledButtonFactory.createButton("Cancel", ButtonStyles.SECONDARY);
 		deleteButton = StyledButtonFactory.createButton("Delete", ButtonStyles.PRIMARY);
@@ -229,7 +231,7 @@ public class DeleteItemsDialog extends JDialog {
 	private void handleDelete(ActionEvent ev) {
 		terminateThread();
 
-		disableButtons();
+		SwingUtilities.invokeLater(this::disableButtons);
 
 		deleteThread = new Thread(() -> {
 			var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
@@ -238,9 +240,8 @@ public class DeleteItemsDialog extends JDialog {
 				factory.getItemDao().archiveItems(itemsToBeDeleted, null);
 
 				SwingUtilities.invokeLater(() -> {
-					JOptionPane.showMessageDialog(this, "Items deleted successfully.", "Success",
-							JOptionPane.INFORMATION_MESSAGE);
-					onDelete.run();
+					new SuccessDialog(this, "Delete operation is successful!").setVisible(true);
+					onDelete.accept(rowsToDelete);
 					dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				});
 
@@ -263,7 +264,6 @@ public class DeleteItemsDialog extends JDialog {
 	}
 
 	private void terminateThread() {
-
 		if (deleteThread != null && deleteThread.isAlive()) {
 			deleteThread.interrupt();
 			ConnectionManager.cancel(deleteThread);
@@ -301,6 +301,8 @@ public class DeleteItemsDialog extends JDialog {
 		var rowLen = rowsToDelete == null ? 0 : rowsToDelete.length;
 		title.setText("Deleting " + rowLen + " item(s)");
 		updateContents();
+
+		validate();
 	}
 
 }

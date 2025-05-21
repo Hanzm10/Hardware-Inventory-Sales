@@ -16,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.comparators.NumberWithSymbolsComparator;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
@@ -56,6 +58,15 @@ public class InventoryTable implements SceneComponent {
 
 	private AtomicReference<ItemStock[]> itemStocks = new AtomicReference<>(new ItemStock[0]);
 	private AtomicBoolean initialized = new AtomicBoolean(false);
+
+	public void addItemStock(@NotNull final ItemStock itemStock) {
+		tableModel
+				.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
+						itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
+						itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
+								itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
+						itemStock.minimumQuantity() });
+	}
 
 	private void attachComponents() {
 		view.setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
@@ -140,6 +151,14 @@ public class InventoryTable implements SceneComponent {
 		attachComponents();
 
 		initialized.set(true);
+
+		// not really necessary most of the time,
+		// but this specific table doesn't get shown
+		// without this, unlike the others.
+		// In other words, this is a workaround,
+		// since our view doesn't re-validate
+		// automatically for some reason.
+		view.revalidate();
 	}
 
 	@Override
@@ -164,6 +183,15 @@ public class InventoryTable implements SceneComponent {
 		}
 	}
 
+	public void prependItemStock(@NotNull final ItemStock itemStock) {
+		tableModel.insertRow(0,
+				new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
+						itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
+						itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
+								itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
+						itemStock.minimumQuantity() });
+	}
+
 	public void refresh() {
 		if (table != null && tableModel != null) { // Added null check for model
 			performBackgroundTask();
@@ -178,15 +206,15 @@ public class InventoryTable implements SceneComponent {
 
 		cellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
 
-		columnModel.getColumn(COL_ITEM_STOCK_ID).setPreferredWidth(120);
-		columnModel.getColumn(COL_ITEM_ID).setPreferredWidth(120);
-		columnModel.getColumn(COL_PACKAGING_TYPE).setPreferredWidth(120);
-		columnModel.getColumn(COL_CATEGORY_TYPE).setPreferredWidth(120);
-		columnModel.getColumn(COL_SUPPLIER_NAME).setPreferredWidth(120);
+		columnModel.getColumn(COL_ITEM_STOCK_ID).setPreferredWidth(48);
+		columnModel.getColumn(COL_ITEM_ID).setPreferredWidth(48);
+		columnModel.getColumn(COL_PACKAGING_TYPE).setPreferredWidth(80);
+		columnModel.getColumn(COL_CATEGORY_TYPE).setPreferredWidth(100);
 		columnModel.getColumn(COL_ITEM_NAME).setPreferredWidth(120);
-		columnModel.getColumn(COL_UNIT_PRICE).setPreferredWidth(120);
+		columnModel.getColumn(COL_SUPPLIER_NAME).setPreferredWidth(280);
+		columnModel.getColumn(COL_UNIT_PRICE).setPreferredWidth(80);
 		columnModel.getColumn(COL_STOCK_QUANTITY).setPreferredWidth(120);
-		columnModel.getColumn(COL_MINIMUM_QUANTITY).setPreferredWidth(120);
+		columnModel.getColumn(COL_MINIMUM_QUANTITY).setPreferredWidth(48);
 
 		columnModel.getColumn(COL_ITEM_STOCK_ID).setCellRenderer(new IdRenderer());
 		columnModel.getColumn(COL_ITEM_ID).setCellRenderer(new IdRenderer());
@@ -201,23 +229,16 @@ public class InventoryTable implements SceneComponent {
 
 	private void updateTableModel() {
 		if (!initialized.get()) {
-			initializeComponents();
+			SwingUtilities.invokeLater(this::initializeComponents);
 		}
 
-		var itemStocks = this.itemStocks.get();
-		tableModel.setRowCount(0);
+		SwingUtilities.invokeLater(() -> {
+			var itemStocks = this.itemStocks.get();
+			tableModel.setRowCount(0);
 
-		for (var itemStock : itemStocks) {
-			tableModel
-					.addRow(new Object[] { itemStock._itemStockId(), itemStock._itemId(), itemStock.categoryType(),
-							itemStock.packagingType(), itemStock.supplierName(), itemStock.itemName(),
-							itemStock.unitPrice(), new ProgressLevelRenderer.ProgressLevel(itemStock._itemId(),
-									itemStock.stockQuantity(), itemStock.minimumQuantity(), "unit(s)"),
-							itemStock.minimumQuantity() });
-		}
-
-		table.revalidate();
-		view.revalidate();
-		view.repaint();
+			for (var itemStock : itemStocks) {
+				addItemStock(itemStock);
+			}
+		});
 	}
 }

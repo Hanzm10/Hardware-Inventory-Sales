@@ -59,11 +59,11 @@ public class Sidebar {
 
 	private void attachBtns() {
 		container.add(profileBtn, "width 40!, height 40!");
-		// container.add(dashboardBtn, "cell 0 1,grow");
+		container.add(dashboardBtn, "width 40!, height 40!");
 		container.add(reportsBtn, "width 40!, height 40!");
 		container.add(inventoryBtn, "width 40!, height 40!");
 		container.add(orderMenuBtn, "width 40!, height 40!");
-		// container.add(contactsBtn, "cell 0 5,grow");
+		container.add(contactsBtn, "width 40!, height 40!");
 		container.add(Box.createVerticalGlue(), "pushy, growy, span");
 		container.add(settingsBtn, "width 40!, height 40!, aligny bottom");
 	}

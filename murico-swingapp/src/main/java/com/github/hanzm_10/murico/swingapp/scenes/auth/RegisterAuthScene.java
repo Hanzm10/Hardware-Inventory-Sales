@@ -104,7 +104,9 @@ public class RegisterAuthScene implements Scene, ActionListener {
 			return;
 		}
 
-		clearErrorMessage();
+		SwingUtilities.invokeLater(() -> {
+			clearErrorMessage();
+		});
 
 		var name = nameInput.getText();
 		var email = emailInput.getText();
@@ -116,8 +118,10 @@ public class RegisterAuthScene implements Scene, ActionListener {
 			return;
 		}
 
-		disableNavigationButtons();
-		showLoadingIndicator();
+		SwingUtilities.invokeLater(() -> {
+			disableNavigationButtons();
+			showLoadingIndicator();
+		});
 
 		registerThread = new Thread(() -> {
 			try {
@@ -276,34 +280,46 @@ public class RegisterAuthScene implements Scene, ActionListener {
 		var isValid = true;
 
 		if (name.isBlank()) {
-			errorMessageName.setText(HtmlUtils.wrapInHtml("Username must not be empty"));
-			nameInput.putClientProperty("JComponent.outline", "warning");
+			SwingUtilities.invokeLater(() -> {
+				errorMessageName.setText(HtmlUtils.wrapInHtml("Username must not be empty"));
+				nameInput.putClientProperty("JComponent.outline", "warning");
+			});
 			isValid = false;
 		} else if (name.length() < User.MINIMUM_USERNAME_LENGTH) {
-			errorMessageName.setText(
-					HtmlUtils.wrapInHtml("Username must be > " + User.MINIMUM_USERNAME_LENGTH + " characters long."));
-			nameInput.putClientProperty("JComponent.outline", "warning");
+			SwingUtilities.invokeLater(() -> {
+				errorMessageName.setText(HtmlUtils
+						.wrapInHtml("Username must be > " + User.MINIMUM_USERNAME_LENGTH + " characters long."));
+				nameInput.putClientProperty("JComponent.outline", "warning");
+			});
 			isValid = false;
 		} else if (name.length() > User.MAXIMUM_USERNAME_LENGTH) {
-			errorMessageName.setText(
-					HtmlUtils.wrapInHtml("Username must be < " + User.MAXIMUM_USERNAME_LENGTH + " characters long."));
-			nameInput.putClientProperty("JComponent.outline", "warning");
+			SwingUtilities.invokeLater(() -> {
+				errorMessageName.setText(HtmlUtils
+						.wrapInHtml("Username must be < " + User.MAXIMUM_USERNAME_LENGTH + " characters long."));
+				nameInput.putClientProperty("JComponent.outline", "warning");
+			});
 			isValid = false;
 		}
 
 		if (email.isBlank()) {
-			errorMessageEmail.setText(HtmlUtils.wrapInHtml("Email must not be empty."));
-			emailInput.putClientProperty("JComponent.outline", "warning");
+			SwingUtilities.invokeLater(() -> {
+				errorMessageEmail.setText(HtmlUtils.wrapInHtml("Email must not be empty."));
+				emailInput.putClientProperty("JComponent.outline", "warning");
+			});
 			isValid = false;
 		} else if (!EmailValidator.isEmailValid(email, EmailValidator.EMAIL_REGEX)) {
-			errorMessageEmail.setText(HtmlUtils.wrapInHtml("Email format not accepted."));
-			emailInput.putClientProperty("JComponent.outline", "warning");
+			SwingUtilities.invokeLater(() -> {
+				errorMessageEmail.setText(HtmlUtils.wrapInHtml("Email format not accepted."));
+				emailInput.putClientProperty("JComponent.outline", "warning");
+			});
 			isValid = false;
 		}
 
 		if (!PasswordValidator.isPasswordValid(password, PasswordValidator.STRONG_PASSWORD)) {
-			errorMessagePassword.setText(HtmlUtils.wrapInHtml(PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE));
-			passwordInput.putClientProperty("JComponent.outline", "warning");
+			SwingUtilities.invokeLater(() -> {
+				errorMessagePassword.setText(HtmlUtils.wrapInHtml(PasswordValidator.STRONG_PASSWORD_ERROR_MESSAGE));
+				passwordInput.putClientProperty("JComponent.outline", "warning");
+			});
 			isValid = false;
 		}
 

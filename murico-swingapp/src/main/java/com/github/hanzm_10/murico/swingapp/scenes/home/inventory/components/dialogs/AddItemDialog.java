@@ -4,15 +4,17 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,12 +37,14 @@ import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.combobox_renderers.PlaceholderRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.lib.utils.NumberUtils;
 import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
+import com.github.hanzm_10.murico.swingapp.ui.components.dialogs.SuccessDialog;
 import com.github.hanzm_10.murico.swingapp.ui.inputs.TextFieldFactory;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
 
@@ -60,6 +64,10 @@ public class AddItemDialog extends JDialog {
 	private JScrollPane formScrollPane;
 
 	private AtomicBoolean isUpdating = new AtomicBoolean(false);
+
+	private JPanel headerPanel;
+	private JLabel title;
+	private JLabel subTitle;
 
 	private JPanel formPanel;
 
@@ -112,16 +120,16 @@ public class AddItemDialog extends JDialog {
 	private Thread updateThread;
 
 	private WindowAdapter windowListener;
+	private ComponentAdapter componentListener;
 
-	private Runnable onUpdate;
+	private Consumer<ItemStock> onUpdate;
 
-	public AddItemDialog(Window owner, Runnable onUpdate) {
+	public AddItemDialog(Window owner, Consumer<ItemStock> onUpdate) {
 		super(owner, "Add New Item", Dialog.ModalityType.APPLICATION_MODAL);
 
 		this.onUpdate = onUpdate;
 
-		setLayout(new MigLayout("insets 16, flowy", "[grow]", "[grow]"));
-		setFont(new Font("Montserrat", Font.BOLD, 16));
+		setLayout(new MigLayout("insets 16, flowy, gap 2 16", "[grow]", "[grow]"));
 
 		createComponents();
 		attachComponents();
@@ -142,7 +150,26 @@ public class AddItemDialog extends JDialog {
 				clearErrorMessages();
 				clearFields();
 
+				validate();
+
 				dispose();
+			}
+		};
+		this.componentListener = new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				if (fetchThread != null && fetchThread.isAlive()) {
+					fetchThread.interrupt();
+					ConnectionManager.cancel(fetchThread);
+				}
+
+				fetchThread = new Thread(() -> {
+					populateCategoryComboBox();
+					populatePackagingComboBox();
+					populateSupplierComboBox();
+				});
+
+				fetchThread.start();
 			}
 		};
 
@@ -151,9 +178,13 @@ public class AddItemDialog extends JDialog {
 
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		addWindowListener(windowListener);
+		addComponentListener(componentListener);
 	}
 
 	private void attachComponents() {
+		headerPanel.add(title, "grow");
+		headerPanel.add(subTitle, "grow");
+
 		formPanel.add(itemNameLabel, "grow");
 		formPanel.add(itemName, "grow");
 		formPanel.add(itemNameError, "grow");
@@ -164,49 +195,33 @@ public class AddItemDialog extends JDialog {
 		formPanel.add(itemDescription, "grow");
 		formPanel.add(itemDescriptionError, "grow");
 
-		formPanel.add(Box.createVerticalStrut(2));
-
 		formPanel.add(categoryLabel, "grow");
 		formPanel.add(category, "grow");
 		formPanel.add(categoryError, "grow");
-
-		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(packagingLabel, "grow");
 		formPanel.add(packaging, "grow");
 		formPanel.add(packagingError, "grow");
 
-		formPanel.add(Box.createVerticalStrut(2));
-
 		formPanel.add(initialQuantityLabel, "grow");
 		formPanel.add(initialQuantity, "grow");
 		formPanel.add(initialQuantityError, "grow");
-
-		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(minQuantityLabel, "grow");
 		formPanel.add(minQuantity, "grow");
 		formPanel.add(minQuantityError, "grow");
 
-		formPanel.add(Box.createVerticalStrut(2));
-
 		formPanel.add(sellingPriceLabel, "grow");
 		formPanel.add(sellingPrice, "grow");
 		formPanel.add(sellingPriceError, "grow");
-
-		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(srpLabel, "grow");
 		formPanel.add(srp, "grow");
 		formPanel.add(srpError, "grow");
 
-		formPanel.add(Box.createVerticalStrut(2));
-
 		formPanel.add(supplierLabel, "grow");
 		formPanel.add(supplier, "grow");
 		formPanel.add(supplierNameError, "grow");
-
-		formPanel.add(Box.createVerticalStrut(2));
 
 		formPanel.add(costPriceLabel, "grow");
 		formPanel.add(costPrice, "grow");
@@ -215,6 +230,7 @@ public class AddItemDialog extends JDialog {
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(confirmButton);
 
+		add(headerPanel, "grow");
 		add(formScrollPane, "grow");
 		add(buttonPanel, "grow");
 	}
@@ -246,11 +262,11 @@ public class AddItemDialog extends JDialog {
 	}
 
 	private void createButtonPanel() {
-		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 0));
+		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
 
 		buttonPanel.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, getForeground()),
-						BorderFactory.createEmptyBorder(16, 0, 0, 0)));
+						BorderFactory.createEmptyBorder(8, 0, 0, 0)));
 
 		cancelButton = StyledButtonFactory.createButton("Cancel", ButtonStyles.SECONDARY);
 		confirmButton = StyledButtonFactory.createButton("Save Item", ButtonStyles.PRIMARY);
@@ -260,6 +276,7 @@ public class AddItemDialog extends JDialog {
 	}
 
 	private void createComponents() {
+		createHeaderPanel();
 		createFormPanel();
 		createButtonPanel();
 	}
@@ -320,21 +337,36 @@ public class AddItemDialog extends JDialog {
 		formScrollPane.setBorder(null);
 		formScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-		category.setRenderer(new PlaceholderRenderer(category));
-		packaging.setRenderer(new PlaceholderRenderer(packaging));
-		supplier.setRenderer(new PlaceholderRenderer(supplier));
+		category.setRenderer(new PlaceholderRenderer<ComboBoxItem>(category));
+		packaging.setRenderer(new PlaceholderRenderer<ComboBoxItem>(packaging));
+		supplier.setRenderer(new PlaceholderRenderer<ComboBoxItem>(supplier));
 
 		category.addItem(new ComboBoxItem(-1, "Select Category"));
 		packaging.addItem(new ComboBoxItem(-1, "Select Packaging"));
 		supplier.addItem(new ComboBoxItem(-1, "Select Supplier"));
+	}
 
-		populateCategoryComboBox();
-		populatePackagingComboBox();
-		populateSupplierComboBox();
+	private void createHeaderPanel() {
+		headerPanel = new JPanel(new MigLayout("insets 0, flowy, gap 2 4", "[grow]", "[top]"));
+
+		title = LabelFactory.createBoldLabel("Add New Item", 24);
+		subTitle = LabelFactory.createBoldLabel("Fill in the details below to add a new item.", 14, Color.GRAY);
 	}
 
 	public void destroy() {
+		if (fetchThread != null && fetchThread.isAlive()) {
+			fetchThread.interrupt();
+			ConnectionManager.cancel(fetchThread);
+		}
+
+		if (updateThread != null && updateThread.isAlive()) {
+			updateThread.interrupt();
+			ConnectionManager.cancel(updateThread);
+		}
+
 		removeWindowListener(windowListener);
+		removeComponentListener(componentListener);
+
 		cancelButton.removeActionListener(this::handleCancelButton);
 		confirmButton.removeActionListener(this::handleSaveButton);
 	}
@@ -365,61 +397,87 @@ public class AddItemDialog extends JDialog {
 		var isValid = true;
 
 		if (itemName.isEmpty()) {
-			itemNameError.setText(HtmlUtils.wrapInHtml("Item Name is required."));
+			SwingUtilities.invokeLater(() -> {
+				itemNameError.setText(HtmlUtils.wrapInHtml("Item Name is required."));
+			});
 			isValid = false;
 		} else if (itemName.length() > 100) {
-			itemNameError.setText(HtmlUtils.wrapInHtml("Item Name must be less than 100 characters."));
+			SwingUtilities.invokeLater(() -> {
+				itemNameError.setText(HtmlUtils.wrapInHtml("Item Name must be less than 100 characters."));
+			});
 			isValid = false;
 		} else if (itemName.length() < 3) {
-			itemNameError.setText(HtmlUtils.wrapInHtml("Item Name must be at least 3 characters."));
+			SwingUtilities.invokeLater(() -> {
+				itemNameError.setText(HtmlUtils.wrapInHtml("Item Name must be at least 3 characters."));
+			});
 			isValid = false;
 		}
 
 		if (itemDescription.length() > 255) {
-			itemDescriptionError.setText(HtmlUtils.wrapInHtml("Description must be less than 255 characters."));
+			SwingUtilities.invokeLater(() -> {
+				itemDescriptionError.setText(HtmlUtils.wrapInHtml("Description must be less than 255 characters."));
+			});
 			isValid = false;
 		}
 
 		if (selectedCategory == null || selectedCategory.id() == -1) {
-			categoryError.setText(HtmlUtils.wrapInHtml("Category is required."));
+			SwingUtilities.invokeLater(() -> {
+				categoryError.setText(HtmlUtils.wrapInHtml("Category is required."));
+			});
 			isValid = false;
 		}
 
 		if (selectedPackaging == null || selectedPackaging.id() == -1) {
-			packagingError.setText(HtmlUtils.wrapInHtml("Packaging is required."));
+			SwingUtilities.invokeLater(() -> {
+				packagingError.setText(HtmlUtils.wrapInHtml("Packaging is required."));
+			});
 			isValid = false;
 		}
 
 		if (selectedSupplier == null || selectedSupplier.id() == -1) {
-			supplierNameError.setText(HtmlUtils.wrapInHtml("Supplier is required."));
+			SwingUtilities.invokeLater(() -> {
+				supplierNameError.setText(HtmlUtils.wrapInHtml("Supplier is required."));
+			});
 			isValid = false;
 		}
 
 		if (initQty <= 0) {
-			initialQuantityError.setText(HtmlUtils.wrapInHtml("Initial Quantity must be greater than 0."));
+			SwingUtilities.invokeLater(() -> {
+				initialQuantityError.setText(HtmlUtils.wrapInHtml("Initial Quantity must be greater than 0."));
+			});
 			isValid = false;
 		} else if (initQty > 10000) {
-			initialQuantityError.setText(HtmlUtils.wrapInHtml("Initial Quantity must be less than 10,000."));
+			SwingUtilities.invokeLater(() -> {
+				initialQuantityError.setText(HtmlUtils.wrapInHtml("Initial Quantity must be less than 10,000."));
+			});
 			isValid = false;
 		}
 
 		if (minQty < 0) {
-			minQuantityError.setText(HtmlUtils.wrapInHtml("Min. Stock Qty must be greater than or equal to 0."));
+			SwingUtilities.invokeLater(() -> {
+				minQuantityError.setText(HtmlUtils.wrapInHtml("Min. Stock Qty must be greater than or equal to 0."));
+			});
 			isValid = false;
 		}
 
 		if (sellingPrice.compareTo(BigDecimal.ZERO) <= 0) {
-			sellingPriceError.setText(HtmlUtils.wrapInHtml("Selling Price must be greater than 0."));
+			SwingUtilities.invokeLater(() -> {
+				sellingPriceError.setText(HtmlUtils.wrapInHtml("Selling Price must be greater than 0."));
+			});
 			isValid = false;
 		}
 
 		if (srp.compareTo(BigDecimal.ZERO) <= 0) {
-			srpError.setText(HtmlUtils.wrapInHtml("SRP must be greater than 0."));
+			SwingUtilities.invokeLater(() -> {
+				srpError.setText(HtmlUtils.wrapInHtml("SRP must be greater than 0."));
+			});
 			isValid = false;
 		}
 
 		if (costPrice.compareTo(BigDecimal.ZERO) <= 0) {
-			costPriceError.setText(HtmlUtils.wrapInHtml("Cost Price must be greater than 0."));
+			SwingUtilities.invokeLater(() -> {
+				costPriceError.setText(HtmlUtils.wrapInHtml("Cost Price must be greater than 0."));
+			});
 			isValid = false;
 		}
 
@@ -432,8 +490,17 @@ public class AddItemDialog extends JDialog {
 					.getAllCategories();
 
 			SwingUtilities.invokeLater(() -> {
+				var selectedItem = (ComboBoxItem) category.getSelectedItem();
+
+				this.category.removeAllItems();
+				category.addItem(new ComboBoxItem(-1, "Select Category"));
+
 				for (var category : categories) {
 					this.category.addItem(new ComboBoxItem(category._itemCategoryId(), category.name()));
+				}
+
+				if (selectedItem != null) {
+					this.category.setSelectedItem(selectedItem);
 				}
 			});
 		} catch (SQLException | IOException e) {
@@ -452,8 +519,17 @@ public class AddItemDialog extends JDialog {
 					.getAllPackagings();
 
 			SwingUtilities.invokeLater(() -> {
+				var selectedItem = (ComboBoxItem) packaging.getSelectedItem();
+
+				this.packaging.removeAllItems();
+				packaging.addItem(new ComboBoxItem(-1, "Select Packaging"));
+
 				for (var packaging : packagings) {
 					this.packaging.addItem(new ComboBoxItem(packaging._packagingId(), packaging.name()));
+				}
+
+				if (selectedItem != null) {
+					this.packaging.setSelectedItem(selectedItem);
 				}
 			});
 		} catch (SQLException | IOException e) {
@@ -472,8 +548,17 @@ public class AddItemDialog extends JDialog {
 					.getAllSuppliers();
 
 			SwingUtilities.invokeLater(() -> {
+				var selectedItem = (ComboBoxItem) supplier.getSelectedItem();
+
+				this.supplier.removeAllItems();
+				supplier.addItem(new ComboBoxItem(-1, "Select Supplier"));
+
 				for (var supplier : suppliers) {
 					this.supplier.addItem(new ComboBoxItem(supplier._supplierId(), supplier.name()));
+				}
+
+				if (selectedItem != null) {
+					this.supplier.setSelectedItem(selectedItem);
 				}
 			});
 		} catch (SQLException | IOException e) {
@@ -498,7 +583,9 @@ public class AddItemDialog extends JDialog {
 		var srp = NumberUtils.getSpinnerBigDecimal(this.srp);
 		var costPrice = NumberUtils.getSpinnerBigDecimal(this.costPrice);
 
-		clearErrorMessages();
+		SwingUtilities.invokeLater(() -> {
+			clearErrorMessages();
+		});
 
 		if (!isValid(initialQty, minQty, itemName, itemDescription, selectedCategory, selectedPackaging,
 				selectedSupplier, sellingPrice, srp, costPrice)) {
@@ -507,19 +594,23 @@ public class AddItemDialog extends JDialog {
 
 		var factory = AbstractSqlFactoryDao.getSqlFactoryDao(AbstractSqlFactoryDao.MYSQL);
 
-		disableButtons();
+		SwingUtilities.invokeLater(() -> {
+			disableButtons();
+		});
 
 		updateThread = new Thread(() -> {
 			isUpdating.set(true);
 
 			try {
-				factory.getItemDao().addItem(initialQty, minQty, itemName, itemDescription, selectedCategory.id(),
-						selectedPackaging.id(), selectedSupplier.id(), sellingPrice, srp, costPrice);
+				var generatedIds = factory.getItemDao().addItem(initialQty, minQty, itemName, itemDescription,
+						selectedCategory.id(), selectedPackaging.id(), selectedSupplier.id(), sellingPrice, srp,
+						costPrice);
 
 				SwingUtilities.invokeLater(() -> {
-					JOptionPane.showMessageDialog(this, "Item '" + itemName + "' added successfully!", "Success",
-							JOptionPane.INFORMATION_MESSAGE);
-					onUpdate.run();
+					new SuccessDialog(this, "Item '" + itemName + "' added successfully!").setVisible(true);
+					onUpdate.accept(new ItemStock(generatedIds.itemStockId(), generatedIds.itemId(),
+							selectedCategory.name(), selectedPackaging.name(), selectedSupplier.name(), itemName,
+							initialQty, sellingPrice, minQty));
 					dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				});
 			} catch (SQLException | IOException e) {

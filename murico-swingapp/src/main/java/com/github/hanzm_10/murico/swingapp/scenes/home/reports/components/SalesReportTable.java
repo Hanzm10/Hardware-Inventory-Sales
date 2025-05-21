@@ -73,9 +73,7 @@ public class SalesReportTable implements SceneComponent {
 
 		cellRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-		var columnNames = CustomerPayment.getColumnNames();
-
-		for (var columnName : columnNames) {
+		for (var columnName : CustomerPayment.getColumnNames()) {
 			tableModel.addColumn(columnName);
 		}
 
@@ -154,17 +152,19 @@ public class SalesReportTable implements SceneComponent {
 
 	private void updateTableData() {
 		if (!initialized.get()) {
-			initializeComponents();
+			SwingUtilities.invokeLater(this::initializeComponents);
 		}
 
-		var data = customerPayments.get();
-		tableModel.setRowCount(0);
+		SwingUtilities.invokeLater(() -> {
+			var data = customerPayments.get();
+			tableModel.setRowCount(0);
 
-		for (var item : data) {
-			tableModel.addRow(new Object[] { item._customerPaymentId(), item._customerOrderId(),
-					item._createdAt().toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE).replace("-", "/"),
-					item.paymentMethod(), item.amountPhp(), });
-		}
+			for (var item : data) {
+				tableModel.addRow(new Object[] { item._customerPaymentId(), item._customerOrderId(),
+						item._createdAt().toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE).replace("-", "/"),
+						item.paymentMethod(), item.amountPhp(), });
+			}
+		});
 	}
 
 }

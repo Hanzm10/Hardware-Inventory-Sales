@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.github.hanzm_10.murico.swingapp.constants.Styles;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.SceneNavigator;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.profile.Profile;
@@ -23,14 +24,16 @@ import net.miginfocom.swing.MigLayout;
 
 public class EditProfileScene implements Scene {
 
-    private JTextField textField;
-    private JTextField textField_1;
+    private JTextField firstnameTF;
+    private JTextField lastnameTF;
     private JPanel view;
     private boolean uiInitialized = false;
     private JButton btnSave;
     private JButton cancelBtn;
     private Integer userID;
-    private String fullName;
+    private String firstName;
+    private String lastName;
+    private String role;
 
     @Override
     public String getSceneName() {
@@ -62,9 +65,22 @@ public class EditProfileScene implements Scene {
 
     @Override
     public void onShow() {
+        Profile profile = new Profile();
         System.out.println(getSceneName() + ": onShow");
         var loggedInUser = SessionManager.getInstance().getLoggedInUser();
-        fullName = loggedInUser.firstName() + " " + loggedInUser.lastName();
+        var displayName = loggedInUser.displayName();
+        firstName = profile.getFirstname(displayName);
+        lastName = profile.getLastname(displayName);
+        role = profile.getRoleByUsername(displayName);
+       
+        if(firstName != null) {
+            new TextPlaceholder(lastName, lastnameTF);
+            
+            new TextPlaceholder(firstName, firstnameTF);
+        } else {
+            new TextPlaceholder("Last Name", lastnameTF);
+            new TextPlaceholder("First Name", firstnameTF);
+        }
 
         if (!uiInitialized) {
             onCreate();
@@ -74,6 +90,7 @@ public class EditProfileScene implements Scene {
     private void initializeEditProfileUI() {
         Profile pfp = new Profile();
         view.setLayout(new MigLayout("insets 0, fillx", "[grow]", "[grow]"));
+        view.setBackground(Styles.SECONDARY_COLOR);
 
         var loggedInUser = SessionManager.getInstance().getLoggedInUser();
 
@@ -93,21 +110,14 @@ public class EditProfileScene implements Scene {
             model.addElement(r);
         }
 
-        textField = new JTextField();
-        profilePnl.add(textField, "cell 0 1,growx,width 257!,alignx center");
-        textField.setColumns(10);
+        firstnameTF = new JTextField();
+        profilePnl.add(firstnameTF, "cell 0 1,growx,width 257!,alignx center");
+        firstnameTF.setColumns(10);
 
-        textField_1 = new JTextField();
-        profilePnl.add(textField_1, "cell 0 2,growx,width 257!,alignx center");
-        textField_1.setColumns(10);
-
-        if (fullName != null) {
-            new TextPlaceholder(loggedInUser.lastName(), textField_1);
-            new TextPlaceholder(loggedInUser.firstName(), textField);
-        } else {
-            new TextPlaceholder("Last Name", textField_1);
-            new TextPlaceholder("First Name", textField);
-        }
+        lastnameTF = new JTextField();
+        profilePnl.add(lastnameTF, "cell 0 2,growx,width 257!,alignx center");
+        lastnameTF.setColumns(10);
+ 		
 
         JComboBox<String> combo = new JComboBox<>(model);
         profilePnl.add(combo, "cell 0 3,growx,width 257!,alignx center");
@@ -131,7 +141,7 @@ public class EditProfileScene implements Scene {
                 String newGender = (String) combo.getSelectedItem();
                 userID = pfp.getUserIdByDisplayName(displayName);
                 if (userID != null) {
-                    pfp.profile(userID, textField.getText(), textField_1.getText(), newGender);
+                    pfp.profile(userID, firstnameTF.getText(), lastnameTF.getText(), newGender);
                 } else {
                     JOptionPane.showMessageDialog(view, "User not found: " + displayName);
                 }
@@ -145,3 +155,5 @@ public class EditProfileScene implements Scene {
         cancelBtn.addActionListener(e -> SceneNavigator.getInstance().navigateTo("home/profile/readonly"));
     }
 }
+
+

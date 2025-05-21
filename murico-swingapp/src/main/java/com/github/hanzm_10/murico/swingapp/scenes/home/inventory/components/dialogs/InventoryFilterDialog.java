@@ -4,6 +4,10 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.function.Consumer;
@@ -25,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import com.github.hanzm_10.murico.swingapp.lib.combobox_renderers.PlaceholderRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
+import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
@@ -44,6 +49,13 @@ public class InventoryFilterDialog extends JDialog {
 
 	private static final Logger LOGGER = MuricoLogger.getLogger(InventoryFilterDialog.class);
 
+	private @NotNull WindowAdapter windowListener;
+	private @NotNull ComponentAdapter componentListener;
+
+	private JPanel headerPanel;
+	private JLabel title;
+	private JLabel subTitle;
+
 	private JPanel formPanel;
 
 	private JLabel categoryLabel;
@@ -58,24 +70,56 @@ public class InventoryFilterDialog extends JDialog {
 	private JButton applyButton;
 	private JButton resetButton;
 
+	private Thread fetchThread;
+
 	private Consumer<FilterResult> onApply;
 
 	public InventoryFilterDialog(Window owner, Consumer<FilterResult> onApply) {
 		super(owner, "Filter Inventory", ModalityType.APPLICATION_MODAL);
 
 		this.onApply = onApply;
+		this.windowListener = new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (fetchThread != null && fetchThread.isAlive()) {
+					fetchThread.interrupt();
+					ConnectionManager.cancel(fetchThread);
+				}
 
-		setLayout(new MigLayout("insets 16, flowy", "[grow]", "[grow,bottom]"));
+				dispose();
+			}
+		};
+		this.componentListener = new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				if (fetchThread != null && fetchThread.isAlive()) {
+					fetchThread.interrupt();
+					ConnectionManager.cancel(fetchThread);
+				}
+
+				fetchThread = new Thread(() -> fetchOperation());
+
+				fetchThread.start();
+			}
+		};
+
+		setLayout(new MigLayout("insets 16, flowy, gap 2 16", "[grow]", "[grow,bottom]"));
 
 		createComponents();
 		attachComponents();
 
 		pack();
+		setSize(510, 365);
 
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		addWindowListener(windowListener);
+		addComponentListener(componentListener);
 	}
 
 	private void attachComponents() {
+		headerPanel.add(title, "grow");
+		headerPanel.add(subTitle, "grow");
+
 		formPanel.add(categoryLabel, "growx");
 		formPanel.add(categoryFilterCombo, "growx");
 
@@ -87,16 +131,17 @@ public class InventoryFilterDialog extends JDialog {
 		buttonPanel.add(resetButton);
 		buttonPanel.add(applyButton);
 
+		add(headerPanel, "growx");
 		add(scrollPane, "growx");
 		add(buttonPanel, "growx");
 	}
 
 	private void createButtonPanel() {
-		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 0));
+		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
 
 		buttonPanel.setBorder(
 				BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, getForeground()),
-						BorderFactory.createEmptyBorder(16, 0, 0, 0)));
+						BorderFactory.createEmptyBorder(8, 0, 0, 0)));
 
 		resetButton = StyledButtonFactory.createButton("Reset", ButtonStyles.SECONDARY);
 		applyButton = StyledButtonFactory.createButton("Apply filters", ButtonStyles.PRIMARY);
@@ -109,6 +154,7 @@ public class InventoryFilterDialog extends JDialog {
 	}
 
 	private void createComponents() {
+		createHeaderPanel();
 		createFormPanel();
 		createButtonPanel();
 	}
@@ -128,26 +174,45 @@ public class InventoryFilterDialog extends JDialog {
 		scrollPane.setBorder(null);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-		categoryFilterCombo.setRenderer(new PlaceholderRenderer(categoryFilterCombo));
-		supplierFilterCombo.setRenderer(new PlaceholderRenderer(supplierFilterCombo));
+		categoryFilterCombo.setRenderer(new PlaceholderRenderer<InventoryFilterComboBoxItem>(categoryFilterCombo));
+		supplierFilterCombo.setRenderer(new PlaceholderRenderer<InventoryFilterComboBoxItem>(supplierFilterCombo));
 
 		categoryFilterCombo.addItem(new InventoryFilterComboBoxItem("", "Select a category"));
 		supplierFilterCombo.addItem(new InventoryFilterComboBoxItem("", "Select a supplier"));
+	}
 
-		populateCategoryComboBox();
-		populateSupplierComboBox();
+	private void createHeaderPanel() {
+		headerPanel = new JPanel(new MigLayout("insets 0, flowy", "[grow]", "[top]4[top]"));
+
+		title = LabelFactory.createBoldLabel("Filter Inventory", 24);
+		subTitle = LabelFactory.createLabel("Select the filters you want to apply", 14);
 	}
 
 	public void destroy() {
+		removeWindowListener(windowListener);
+		removeComponentListener(componentListener);
+
+		if (fetchThread != null && fetchThread.isAlive()) {
+			fetchThread.interrupt();
+			ConnectionManager.cancel(fetchThread);
+		}
+
 		applyButton.removeActionListener(this::handleApplyButton);
 		resetButton.removeActionListener(this::handleResetButton);
+	}
+
+	private void fetchOperation() {
+		populateCategoryComboBox();
+		populateSupplierComboBox();
 	}
 
 	private void handleApplyButton(ActionEvent ev) {
 		onApply.accept(new FilterResult(((InventoryFilterComboBoxItem) categoryFilterCombo.getSelectedItem()).value(),
 				((InventoryFilterComboBoxItem) supplierFilterCombo.getSelectedItem()).value()));
 
-		dispose();
+		SwingUtilities.invokeLater(() -> {
+			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		});
 	}
 
 	private void handleResetButton(ActionEvent ev) {
@@ -157,7 +222,9 @@ public class InventoryFilterDialog extends JDialog {
 		onApply.accept(new FilterResult(((InventoryFilterComboBoxItem) categoryFilterCombo.getSelectedItem()).value(),
 				((InventoryFilterComboBoxItem) supplierFilterCombo.getSelectedItem()).value()));
 
-		dispose();
+		SwingUtilities.invokeLater(() -> {
+			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		});
 	}
 
 	private void populateCategoryComboBox() {
@@ -166,8 +233,17 @@ public class InventoryFilterDialog extends JDialog {
 					.getAllCategories();
 
 			SwingUtilities.invokeLater(() -> {
+				var selectedItem = (InventoryFilterComboBoxItem) this.categoryFilterCombo.getSelectedItem();
+
+				this.categoryFilterCombo.removeAllItems();
+				this.categoryFilterCombo.addItem(new InventoryFilterComboBoxItem("", "Select a category"));
+
 				for (var category : categories) {
 					this.categoryFilterCombo.addItem(new InventoryFilterComboBoxItem(category.name(), category.name()));
+				}
+
+				if (selectedItem != null && !selectedItem.value().isEmpty()) {
+					this.categoryFilterCombo.setSelectedItem(selectedItem);
 				}
 			});
 		} catch (SQLException | IOException e) {
@@ -186,8 +262,17 @@ public class InventoryFilterDialog extends JDialog {
 					.getAllSuppliers();
 
 			SwingUtilities.invokeLater(() -> {
+				var selectedItem = (InventoryFilterComboBoxItem) this.supplierFilterCombo.getSelectedItem();
+
+				this.supplierFilterCombo.removeAllItems();
+				this.supplierFilterCombo.addItem(new InventoryFilterComboBoxItem("", "Select a supplier"));
+
 				for (var supplier : suppliers) {
 					this.supplierFilterCombo.addItem(new InventoryFilterComboBoxItem(supplier.name(), supplier.name()));
+				}
+
+				if (selectedItem != null && !selectedItem.value().isEmpty()) {
+					this.supplierFilterCombo.setSelectedItem(selectedItem);
 				}
 			});
 		} catch (SQLException | IOException e) {

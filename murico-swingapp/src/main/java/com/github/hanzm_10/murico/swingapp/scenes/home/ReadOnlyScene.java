@@ -53,7 +53,7 @@ public class ReadOnlyScene implements Scene {
     }
 
     private void initializeProfileUI() throws IOException, InterruptedException {
-        view.setLayout(new MigLayout("fill", "[250][grow][grow]", "[grow][grow][grow][grow][grow]"));
+        view.setLayout(new MigLayout("fill", "[250][grow][250]", "[30][grow][grow][grow][grow]"));
         personalDetailsPnl = new RoundedPanel(20);
 
         namelbl = LabelFactory.createBoldLabel("", 18, Color.WHITE);
@@ -139,11 +139,11 @@ public class ReadOnlyScene implements Scene {
 
         if (namelbl != null) {
             namelbl.setText(fullName.toUpperCase());
-            System.out.println("Full Name: " + fullName);
+  
         }
         if (genderlbl != null) {
             genderlbl.setText(gender.toUpperCase());
-            System.out.println("gender: " + gender);
+            
         }
         if (displaynameLbl != null) {
             displaynameLbl.setText(loggedInUser.displayName().toUpperCase());
