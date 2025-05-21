@@ -1,12 +1,13 @@
 
 -- Seed for users
-INSERT INTO users (_user_id, display_name)
+INSERT INTO users (_user_id, display_name, display_image)
 VALUES 
-(1, 'aaron'),
-(2, 'hanz'),
-(3, 'peter'),
-(4, 'kurt'),
-(5, 'jerick');
+(1, 'aaron', 'profile_picture/aaron.png'),
+(2, 'hanz', 'profile_picture/hanz.png'),
+(3, 'peter', 'profile_picture/peter.png'),
+(4, 'kurt', 'profile_picture/kurt.png'),
+(5, 'jerick', 'profile_picture/jerick.png');
+
 
 -- Seed for accounts
 INSERT INTO accounts (_account_id, _user_id, email, password_hash, password_salt, verification_status, verified_at)
