@@ -46,17 +46,6 @@ public class InventoryReportGraph implements SceneComponent {
 		try {
 			itemQuantityPerPackaging.set(factory.getItemDao().getItemsQuantityPerPackaging());
 
-			for (var item : itemQuantityPerPackaging.get()) {
-				System.out.println("Item: " + item.itemName());
-
-				for (var packaging : item.packagingQuantities()) {
-					System.out
-							.println("Packaging: " + packaging.packagingName() + ", Quantity: " + packaging.quantity());
-				}
-
-				System.out.println();
-
-			}
 		} catch (Exception e) {
 			LOGGER.warning("Failed to get item quantity per packaging: " + e.getMessage());
 		}

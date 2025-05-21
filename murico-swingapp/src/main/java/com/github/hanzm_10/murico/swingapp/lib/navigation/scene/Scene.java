@@ -52,7 +52,7 @@ public interface Scene {
 
 	/**
 	 * Called to obtain the view component of the scene. This is typically where the
-	 * layout is initialized if it hasn't been created yet.
+	 * view is initialized if it hasn't been created yet.
 	 *
 	 * @return The root panel for this scene.
 	 */
@@ -89,9 +89,12 @@ public interface Scene {
 	default void onCannotHide() {
 	}
 
+	default void onCannotShow() {
+	}
+
 	/**
-	 * Called once when the scene is first created. This is the recommended place to
-	 * allocate resources or set up state.
+	 * Called once when the scene is first created and cached. This is the
+	 * recommended place to allocate resources or set up state.
 	 */
 	void onCreate();
 

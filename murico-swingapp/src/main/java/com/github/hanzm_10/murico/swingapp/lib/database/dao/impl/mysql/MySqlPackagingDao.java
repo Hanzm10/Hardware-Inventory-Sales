@@ -9,7 +9,6 @@ import com.github.hanzm_10.murico.swingapp.lib.database.dao.PackagingDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.packaging.ItemPackaging;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 public class MySqlPackagingDao implements PackagingDao {
 
@@ -18,8 +17,6 @@ public class MySqlPackagingDao implements PackagingDao {
 		var query = MySqlQueryLoader.getInstance().get("get_all_packagings", "packagings", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement()) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
-
 			try (var resultSet = stmt.executeQuery(query)) {
 				var packagings = new ArrayList<ItemPackaging>();
 
@@ -30,8 +27,6 @@ public class MySqlPackagingDao implements PackagingDao {
 				}
 
 				return packagings.toArray(new ItemPackaging[packagings.size()]);
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 		}
 	}

@@ -13,6 +13,8 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -39,7 +41,6 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer.ProgressLevel;
 import com.github.hanzm_10.murico.swingapp.lib.utils.HtmlUtils;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.InventoryTable;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.ButtonStyles;
 import com.github.hanzm_10.murico.swingapp.ui.buttons.StyledButtonFactory;
 import com.github.hanzm_10.murico.swingapp.ui.components.dialogs.SuccessDialog;
@@ -81,7 +82,7 @@ public class EditItemDialog extends JDialog {
 	private JButton cancelButton;
 	private JButton saveButton;
 
-	private Thread updateThread;
+	private ExecutorService executor;
 
 	private Consumer<UpdateResult> onUpdate;
 
@@ -94,9 +95,8 @@ public class EditItemDialog extends JDialog {
 		this.windowListener = new WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent e) {
-				if (updateThread != null && updateThread.isAlive()) {
-					updateThread.interrupt();
-					ConnectionManager.cancel(updateThread);
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
 				}
 
 				clearErrorMessages();
@@ -104,7 +104,6 @@ public class EditItemDialog extends JDialog {
 				validate();
 
 				rowToBeEdited.set(-1);
-				;
 
 				dispose();
 			};
@@ -112,9 +111,13 @@ public class EditItemDialog extends JDialog {
 		this.componentListener = new ComponentAdapter() {
 			@Override
 			public void componentShown(ComponentEvent e) {
-				super.componentShown(e);
-				updateDisplay();
+				if (executor != null && !executor.isShutdown()) {
+					executor.shutdownNow();
+				}
 
+				executor = Executors.newSingleThreadExecutor();
+
+				updateDisplay();
 			}
 		};
 
@@ -216,9 +219,8 @@ public class EditItemDialog extends JDialog {
 		removeWindowListener(windowListener);
 		removeComponentListener(componentListener);
 
-		if (updateThread != null && updateThread.isAlive()) {
-			updateThread.interrupt();
-			ConnectionManager.cancel(updateThread);
+		if (executor != null && !executor.isShutdown()) {
+			executor.shutdownNow();
 		}
 
 		cancelButton.removeActionListener(this::handleCancel);
@@ -312,7 +314,7 @@ public class EditItemDialog extends JDialog {
 
 		SwingUtilities.invokeLater(this::disableButtons);
 
-		updateThread = new Thread(() -> {
+		executor.submit(() -> {
 			try {
 				factory.getItemDao().updateItemStock(getStockId(), BigDecimal.valueOf((double) sellingPrice.getValue()),
 						(int) minQty.getValue());
@@ -334,8 +336,6 @@ public class EditItemDialog extends JDialog {
 				SwingUtilities.invokeLater(this::enableButtons);
 			}
 		});
-
-		updateThread.start();
 	}
 
 	private boolean isValidInput() {

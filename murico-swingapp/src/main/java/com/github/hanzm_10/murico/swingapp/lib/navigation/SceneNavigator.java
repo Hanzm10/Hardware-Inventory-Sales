@@ -85,9 +85,7 @@ public class SceneNavigator implements Observer<String> {
 	 * <code>[parentSceneName]/[subSceneName]/...
 	 * </code> and the scene name must be registered in the {@link SceneManager}.
 	 * Each [parentSceneName]'s respective scene must handle the [subSceneName] in
-	 * its own {@link SceneManager}. Navigates to the specified scene. This method
-	 * will throw an exception if the scene is not registered or if the scene is not
-	 * a valid scene.
+	 * its own {@link SceneManager}.
 	 *
 	 * @param sceneName The name of the scene to navigate to.
 	 * @throws IllegalArgumentException If the scene name is invalid.

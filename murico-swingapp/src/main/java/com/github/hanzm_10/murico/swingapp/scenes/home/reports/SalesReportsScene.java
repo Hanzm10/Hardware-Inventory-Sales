@@ -1,12 +1,14 @@
 package com.github.hanzm_10.murico.swingapp.scenes.home.reports;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.swing.JPanel;
 
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.scenes.home.reports.components.SalesReportGraph;
 import com.github.hanzm_10.murico.swingapp.scenes.home.reports.components.SalesReportSummary;
 import com.github.hanzm_10.murico.swingapp.scenes.home.reports.components.SalesReportTable;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -17,9 +19,7 @@ public final class SalesReportsScene implements Scene {
 	private SalesReportTable salesReportTable;
 	private SalesReportGraph salesReportGraph;
 
-	private Thread salesReportSummaryThread;
-	private Thread salesReportTableThread;
-	private Thread salesReportGraphThread;
+	private ExecutorService executor;
 
 	private void attachComponents() {
 		view.add(salesReportSummary.getView(), "cell 0 0, grow");
@@ -47,18 +47,16 @@ public final class SalesReportsScene implements Scene {
 	public void onBeforeShow() {
 		terminateThreads();
 
-		salesReportSummaryThread = new Thread(salesReportSummary::performBackgroundTask);
-		salesReportTableThread = new Thread(salesReportTable::performBackgroundTask);
-		salesReportGraphThread = new Thread(salesReportGraph::performBackgroundTask);
+		executor = Executors.newCachedThreadPool();
 
-		salesReportSummaryThread.start();
-		salesReportTableThread.start();
-		salesReportGraphThread.start();
+		executor.submit(salesReportSummary::performBackgroundTask);
+		executor.submit(salesReportTable::performBackgroundTask);
+		executor.submit(salesReportGraph::performBackgroundTask);
 	}
 
 	@Override
 	public void onCreate() {
-		view.setLayout(new MigLayout("insets 0", "[grow, left, shrink 10]16[grow]", "[grow][shrink 10,grow]"));
+		view.setLayout(new MigLayout("insets 0", "[grow, left, shrink 20]16[grow]", "[grow][shrink 30,grow]"));
 
 		createComponents();
 		attachComponents();
@@ -81,19 +79,9 @@ public final class SalesReportsScene implements Scene {
 	}
 
 	private void terminateThreads() {
-		if (salesReportSummaryThread != null && salesReportSummaryThread.isAlive()) {
-			salesReportSummaryThread.interrupt();
-			ConnectionManager.cancel(salesReportSummaryThread);
-		}
-
-		if (salesReportTableThread != null && salesReportTableThread.isAlive()) {
-			salesReportTableThread.interrupt();
-			ConnectionManager.cancel(salesReportTableThread);
-		}
-
-		if (salesReportGraphThread != null && salesReportGraphThread.isAlive()) {
-			salesReportGraphThread.interrupt();
-			ConnectionManager.cancel(salesReportGraphThread);
+		if (executor != null) {
+			executor.shutdownNow();
+			executor = null;
 		}
 	}
 }

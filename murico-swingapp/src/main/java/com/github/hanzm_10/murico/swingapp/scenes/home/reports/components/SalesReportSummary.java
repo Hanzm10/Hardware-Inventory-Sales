@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.formdev.flatlaf.ui.FlatRoundBorder;
@@ -51,21 +50,21 @@ public class SalesReportSummary implements SceneComponent {
 	private AtomicBoolean initialized = new AtomicBoolean(false);
 
 	private void attachComponents() {
-		view.add(totalRevenueContainer);
-		totalRevenueContainer.add(totalRevenueTitle);
-		totalRevenueContainer.add(totalRevenueInfo);
+		view.add(totalRevenueContainer, "grow");
+		totalRevenueContainer.add(totalRevenueTitle, "growx");
+		totalRevenueContainer.add(totalRevenueInfo, "growx");
 
-		view.add(totalGrossContainer);
-		totalGrossContainer.add(totalGrossTitle);
-		totalGrossContainer.add(totalGrossInfo);
+		view.add(totalGrossContainer, "grow");
+		totalGrossContainer.add(totalGrossTitle, "growx");
+		totalGrossContainer.add(totalGrossInfo, "growx");
 
-		view.add(totalNetSalesContainer);
-		totalNetSalesContainer.add(totalNetSalesTitle);
-		totalNetSalesContainer.add(totalNetSalesInfo);
+		view.add(totalNetSalesContainer, "grow");
+		totalNetSalesContainer.add(totalNetSalesTitle, "growx");
+		totalNetSalesContainer.add(totalNetSalesInfo, "growx");
 
-		view.add(totalItemsSoldContainer);
-		totalItemsSoldContainer.add(totalItemsSoldTitle);
-		totalItemsSoldContainer.add(totalItemsSoldInfo);
+		view.add(totalItemsSoldContainer, "grow");
+		totalItemsSoldContainer.add(totalItemsSoldTitle, "growx");
+		totalItemsSoldContainer.add(totalItemsSoldInfo, "growx");
 	}
 
 	private void createComponents() {
@@ -95,15 +94,10 @@ public class SalesReportSummary implements SceneComponent {
 		totalNetSalesContainer.setBackground(Styles.SECONDARY_COLOR);
 		totalItemsSoldContainer.setBackground(Styles.SECONDARY_COLOR);
 
-		totalRevenueContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]", "[grow]"));
-		totalGrossContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]", "[grow]"));
-		totalNetSalesContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]", "[grow]"));
-		totalItemsSoldContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]", "[grow]"));
-
-		totalRevenueInfo.setHorizontalAlignment(SwingConstants.CENTER);
-		totalGrossInfo.setHorizontalAlignment(SwingConstants.CENTER);
-		totalNetSalesInfo.setHorizontalAlignment(SwingConstants.CENTER);
-		totalItemsSoldInfo.setHorizontalAlignment(SwingConstants.CENTER);
+		totalRevenueContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]"));
+		totalGrossContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]"));
+		totalNetSalesContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]"));
+		totalItemsSoldContainer.setLayout(new MigLayout("insets 16, flowy", "[grow, center]"));
 
 		var border = new FlatRoundBorder();
 

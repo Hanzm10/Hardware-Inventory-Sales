@@ -143,9 +143,10 @@ public class SalesReportTable implements SceneComponent {
 		try {
 			var customerPaymentsOpened = factory.getSalesDao().getCustomerPayments();
 			customerPayments.set(customerPaymentsOpened);
-
 			SwingUtilities.invokeLater(this::updateTableData);
-		} catch (IOException | SQLException e) {
+		} catch (IOException |
+
+				SQLException e) {
 			LOGGER.log(Level.SEVERE, "Failed to get table data", e);
 		}
 	}

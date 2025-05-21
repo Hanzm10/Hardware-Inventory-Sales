@@ -33,7 +33,6 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.item.ItemStock;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 import com.github.hanzm_10.murico.swingapp.scenes.home.inventory.components.dialogs.DeleteItemsDialog.ItemToBeDeleted;
-import com.github.hanzm_10.murico.swingapp.service.ConnectionManager;
 
 public class MySqlItemDao implements ItemDao {
 
@@ -55,9 +54,6 @@ public class MySqlItemDao implements ItemDao {
 				var statement3 = conn.prepareStatement(insertItemCategoryQuery);
 				var statement4 = conn.prepareStatement(insertSupplierItemQuery);) {
 			conn.setAutoCommit(false);
-
-			ConnectionManager.register(Thread.currentThread(), statement);
-
 			int generatedItemItemId = -1;
 
 			try {
@@ -73,15 +69,11 @@ public class MySqlItemDao implements ItemDao {
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 
 			if (generatedItemItemId == -1) {
 				throw new SQLException("Failed to retrieve generated item ID.");
 			}
-
-			ConnectionManager.register(Thread.currentThread(), statement2);
 
 			statement2.setInt(1, generatedItemItemId);
 			statement2.setInt(2, selectedPackaging);
@@ -103,15 +95,11 @@ public class MySqlItemDao implements ItemDao {
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 
 			if (generatedItemStockId == -1) {
 				throw new SQLException("Failed to retrieve generated item stock ID.");
 			}
-
-			ConnectionManager.register(Thread.currentThread(), statement3);
 
 			statement3.setInt(1, selectedCategory);
 			statement3.setInt(2, generatedItemItemId);
@@ -121,11 +109,8 @@ public class MySqlItemDao implements ItemDao {
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 
-			ConnectionManager.register(Thread.currentThread(), statement4);
 			statement4.setInt(1, selectedSupplier);
 			statement4.setInt(2, generatedItemItemId);
 			statement4.setBigDecimal(3, srp);
@@ -136,8 +121,6 @@ public class MySqlItemDao implements ItemDao {
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 
 			conn.commit();
@@ -157,15 +140,10 @@ public class MySqlItemDao implements ItemDao {
 				var statement2 = conn.prepareStatement(delItemStockQuery);) {
 			conn.setAutoCommit(false);
 
-			ConnectionManager.register(Thread.currentThread(), statement);
-
 			for (int i = 0; i < itemsToBeDeleted.length; i++) {
 				try {
 					statement.setInt(1, itemsToBeDeleted[i].itemId());
 					statement.executeUpdate();
-
-					ConnectionManager.unregister(Thread.currentThread());
-					ConnectionManager.register(Thread.currentThread(), statement2);
 
 					statement2.setInt(1, itemsToBeDeleted[i].itemStockId());
 					statement2.executeUpdate();
@@ -176,14 +154,10 @@ public class MySqlItemDao implements ItemDao {
 				} catch (SQLException e) {
 					conn.rollback();
 					throw e;
-				} finally {
-					ConnectionManager.unregister(Thread.currentThread());
 				}
 			}
 
 			conn.commit();
-		} finally {
-			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 
@@ -192,7 +166,6 @@ public class MySqlItemDao implements ItemDao {
 		var query = MySqlQueryLoader.getInstance().get("get_inventory_breakdown", "items", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
 
 			var resultSet = stmt.executeQuery(query);
 			var result = new ArrayList<InventoryBreakdown>();
@@ -207,8 +180,6 @@ public class MySqlItemDao implements ItemDao {
 			}
 
 			return result.toArray(new InventoryBreakdown[result.size()]);
-		} finally {
-			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 
@@ -217,7 +188,6 @@ public class MySqlItemDao implements ItemDao {
 		var query = MySqlQueryLoader.getInstance().get("get_inventory_summary", "items", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
 
 			var resultSet = stmt.executeQuery(query);
 			InventorySummary inventorySummary = null;
@@ -225,12 +195,10 @@ public class MySqlItemDao implements ItemDao {
 			if (resultSet.next()) {
 				inventorySummary = new InventorySummary(resultSet.getInt("total_inventory_value"),
 						resultSet.getInt("total_items_in_stock"), resultSet.getInt("total_items_below_critical_level"),
-						resultSet.getBigDecimal("average_stock_per_item"));
+						resultSet.getBigDecimal("avg_quantity_per_item"));
 			}
 
 			return inventorySummary;
-		} finally {
-			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 
@@ -240,7 +208,6 @@ public class MySqlItemDao implements ItemDao {
 		var query = MySqlQueryLoader.getInstance().get("get_item_by_itemId", "items", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
-
 			var resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
@@ -264,7 +231,6 @@ public class MySqlItemDao implements ItemDao {
 		var query = MySqlQueryLoader.getInstance().get("get_item_by_itemName", "items", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
-
 			var resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
@@ -288,7 +254,6 @@ public class MySqlItemDao implements ItemDao {
 				SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
 
 			var resultSet = stmt.executeQuery(query);
 			var result = new ArrayList<ItemQuantityPerPackaging>();
@@ -323,8 +288,6 @@ public class MySqlItemDao implements ItemDao {
 			}
 
 			return result.toArray(new ItemQuantityPerPackaging[result.size()]);
-		} finally {
-			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 
@@ -333,8 +296,6 @@ public class MySqlItemDao implements ItemDao {
 		var query = MySqlQueryLoader.getInstance().get("get_item_stocks", "items", SqlQueryType.SELECT);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
-			ConnectionManager.register(Thread.currentThread(), stmt);
-
 			var resultSet = stmt.executeQuery(query);
 			var result = new ArrayList<ItemStock>();
 
@@ -348,8 +309,6 @@ public class MySqlItemDao implements ItemDao {
 			}
 
 			return result.toArray(new ItemStock[result.size()]);
-		} finally {
-			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 
@@ -367,8 +326,6 @@ public class MySqlItemDao implements ItemDao {
 				var statement2 = conn.prepareStatement(insertItemRestocksQuery);) {
 			conn.setAutoCommit(false);
 
-			ConnectionManager.register(Thread.currentThread(), statement);
-
 			statement.setInt(1, newQuantity);
 			statement.setInt(2, itemStockId);
 
@@ -377,12 +334,7 @@ public class MySqlItemDao implements ItemDao {
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
-
-			ConnectionManager.register(Thread.currentThread(), statement2);
-
 			statement2.setInt(1, itemStockId);
 			statement2.setInt(2, currentQuantity);
 			statement2.setInt(3, newQuantity);
@@ -393,13 +345,9 @@ public class MySqlItemDao implements ItemDao {
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;
-			} finally {
-				ConnectionManager.unregister(Thread.currentThread());
 			}
 
 			conn.commit();
-		} finally {
-			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 
@@ -413,15 +361,12 @@ public class MySqlItemDao implements ItemDao {
 		var query = MySqlQueryLoader.getInstance().get("update_item_stock", "items", SqlQueryType.UPDATE);
 
 		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
-			ConnectionManager.register(Thread.currentThread(), statement);
 
 			statement.setBigDecimal(1, unitPrice);
 			statement.setInt(2, minQty);
 			statement.setInt(3, itemStockId);
 
 			statement.executeUpdate();
-		} finally {
-			ConnectionManager.unregister(Thread.currentThread());
 		}
 	}
 }
