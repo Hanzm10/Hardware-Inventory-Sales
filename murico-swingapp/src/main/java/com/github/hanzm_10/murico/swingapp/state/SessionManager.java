@@ -46,14 +46,14 @@ public final class SessionManager {
 
 	public boolean isAdmin() {
 
-		if (loggedInUser == null) {
+		if (loggedInUser == null || loggedInUser.roles() == null) {
 			return false;
 		}
 		return loggedInUser.roles().contains("admin");
 	}
 
 	public boolean isClerk() {
-		if (loggedInUser == null) {
+		if (loggedInUser == null || loggedInUser.roles() == null) {
 			return false;
 		}
 
@@ -61,15 +61,16 @@ public final class SessionManager {
 	}
 
 	public boolean isLogistics() {
-		if (loggedInUser == null) {
+		if (loggedInUser == null || loggedInUser.roles() == null) {
 			return false;
+			
 		}
 
 		return loggedInUser.roles().contains("logistics");
 	}
 
 	public boolean isPurchasingOfficer() {
-		if (loggedInUser == null) {
+		if (loggedInUser == null || loggedInUser.roles() == null) {
 			return false;
 		}
 

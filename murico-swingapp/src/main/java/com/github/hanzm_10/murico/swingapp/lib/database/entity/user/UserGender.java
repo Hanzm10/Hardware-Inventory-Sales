@@ -16,7 +16,7 @@ package com.github.hanzm_10.murico.swingapp.lib.database.entity.user;
 import java.util.Locale;
 
 public enum UserGender {
-	MALE, FEMALE, UNKNOWN;
+	MALE, FEMALE, UNKNOWN, OTHER;
 
 	/**
 	 * Returns the UserGender corresponding to the given string.
@@ -46,6 +46,7 @@ public enum UserGender {
 			case MALE -> "male";
 			case FEMALE -> "female";
 			case UNKNOWN -> "unknown";
+		default -> throw new IllegalArgumentException("Unexpected value: " + this);
 		};
 	}
 }

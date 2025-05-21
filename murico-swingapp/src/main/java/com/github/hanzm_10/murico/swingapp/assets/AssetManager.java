@@ -37,6 +37,13 @@ public class AssetManager {
 	public static SVGDocument getDocument(String path) {
 		var svgLoader = new SVGLoader();
 		var url = AssetManager.class.getResource(path);
+		
+	    if (url == null) { // ***** ADD THIS CHECK *****
+	        System.err.println("SVGDocument resource not found: " + path + ". Returning null.");
+	        // throw new IllegalArgumentException("SVG resource not found at path: " + path);
+	        return null; // Or handle as appropriate
+	    }
+		
 		var svgDocument = svgLoader.load(url, LoaderContext.builder().build());
 
 		return svgDocument;
@@ -69,6 +76,15 @@ public class AssetManager {
 	private static ImageIcon loadIcon(@NotNull final String path) {
 		var svgLoader = new SVGLoader();
 		var url = AssetManager.class.getResource(path);
+		
+	    if (url == null) { // ***** ADD THIS CHECK *****
+	        System.err.println("ImageIcon resource not found: " + path + ". Returning null or default icon.");
+	        // Optionally return a default placeholder icon or throw an exception
+	        // For example, return a small transparent ImageIcon:
+	        // return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB));
+	        throw new IllegalArgumentException("Icon resource not found at path: " + path); // Or handle more gracefully
+	    }
+		
 		var svgDocument = svgLoader.load(url, LoaderContext.builder().build());
 		var size = svgDocument.size();
 		var icon = new BufferedImage((int) size.width, (int) size.height, BufferedImage.TYPE_INT_ARGB);

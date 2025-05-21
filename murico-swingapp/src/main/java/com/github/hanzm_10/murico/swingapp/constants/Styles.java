@@ -15,6 +15,7 @@ package com.github.hanzm_10.murico.swingapp.constants;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -23,6 +24,10 @@ import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 public class Styles {
 	private static final Logger LOGGER = MuricoLogger.getLogger(Styles.class);
+
+	public static final Font TABLE_CELL_FONT = null;
+
+	public static final Font TABLE_HEADER_FONT = null;
 
 	public static Dimension DEFAULT_DIMENSIONS;
 

@@ -94,7 +94,7 @@ public class Sidebar {
 		reportsBtn.setActionCommand("home/reports");
 		inventoryBtn.setActionCommand("home/inventory");
 		orderMenuBtn.setActionCommand("home/order menu");
-		contactsBtn.setActionCommand("home/contacts");
+		contactsBtn.setActionCommand("home/Users Management");
 		settingsBtn.setActionCommand("home/settings");
 	}
 
