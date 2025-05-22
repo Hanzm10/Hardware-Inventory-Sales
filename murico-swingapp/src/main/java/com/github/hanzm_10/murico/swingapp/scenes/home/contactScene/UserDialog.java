@@ -78,7 +78,7 @@ public class UserDialog extends JDialog {
 					now, // _createdAt
 					now, // updatedAt
 					newDisplayName, "profile_picture/default.png", // Default displayImage
-					UserGender.OTHER, // Default gender (You need a UserGender enum: MALE, FEMALE, OTHER,
+					UserGender.UNKNOWN, // Default gender (You need a UserGender enum: MALE, FEMALE, OTHER,
 										// PREFER_NOT_TO_SAY)
 					"", // Default firstName (or make it a field in dialog)
 					"", // Default lastName (or make it a field in dialog)

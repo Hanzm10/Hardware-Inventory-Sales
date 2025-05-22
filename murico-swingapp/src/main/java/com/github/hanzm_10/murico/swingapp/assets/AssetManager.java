@@ -14,7 +14,6 @@
 package com.github.hanzm_10.murico.swingapp.assets;
 
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,6 +24,7 @@ import javax.swing.ImageIcon;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.hanzm_10.murico.swingapp.lib.cache.LRU;
+import com.github.hanzm_10.murico.swingapp.lib.utils.PaintUtils;
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.parser.LoaderContext;
 import com.github.weisj.jsvg.parser.SVGLoader;
@@ -37,13 +37,7 @@ public class AssetManager {
 	public static SVGDocument getDocument(String path) {
 		var svgLoader = new SVGLoader();
 		var url = AssetManager.class.getResource(path);
-		
-	    if (url == null) { // ***** ADD THIS CHECK *****
-	        System.err.println("SVGDocument resource not found: " + path + ". Returning null.");
-	        // throw new IllegalArgumentException("SVG resource not found at path: " + path);
-	        return null; // Or handle as appropriate
-	    }
-		
+
 		var svgDocument = svgLoader.load(url, LoaderContext.builder().build());
 
 		return svgDocument;
@@ -76,29 +70,20 @@ public class AssetManager {
 	private static ImageIcon loadIcon(@NotNull final String path) {
 		var svgLoader = new SVGLoader();
 		var url = AssetManager.class.getResource(path);
-		
-	    if (url == null) { // ***** ADD THIS CHECK *****
-	        System.err.println("ImageIcon resource not found: " + path + ". Returning null or default icon.");
-	        // Optionally return a default placeholder icon or throw an exception
-	        // For example, return a small transparent ImageIcon:
-	        // return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB));
-	        throw new IllegalArgumentException("Icon resource not found at path: " + path); // Or handle more gracefully
-	    }
-		
+
 		var svgDocument = svgLoader.load(url, LoaderContext.builder().build());
 		var size = svgDocument.size();
 		var icon = new BufferedImage((int) size.width, (int) size.height, BufferedImage.TYPE_INT_ARGB);
 		var g = icon.createGraphics();
+
+		PaintUtils.valueQuality(g);
+
 		// Will use the value of RenderingHints.KEY_ANTIALIASING by default
 		g.setRenderingHint(SVGRenderingHints.KEY_IMAGE_ANTIALIASING, SVGRenderingHints.VALUE_IMAGE_ANTIALIASING_ON);
 		g.setRenderingHint(SVGRenderingHints.KEY_SOFT_CLIPPING, SVGRenderingHints.VALUE_SOFT_CLIPPING_ON);
 		g.setRenderingHint(SVGRenderingHints.KEY_MASK_CLIP_RENDERING,
 				SVGRenderingHints.VALUE_MASK_CLIP_RENDERING_ACCURACY);
-		g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_RESOLUTION_VARIANT, RenderingHints.VALUE_RESOLUTION_VARIANT_BASE);
+
 		svgDocument.render(null, g);
 		g.dispose();
 		return new ImageIcon(icon);

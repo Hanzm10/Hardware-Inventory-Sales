@@ -2,11 +2,12 @@ module murico.swingapp {
 	requires transitive java.desktop;
 	requires transitive java.logging;
 	requires transitive java.sql;
+	requires static org.jetbrains.annotations;
+
+	requires murico.lookandfeel;
+
 	requires com.github.weisj.jsvg;
 	requires com.miglayout.swing;
-	requires static org.jetbrains.annotations;
-	requires murico.lookandfeel;
-	requires jakarta.mail;
 	requires org.apache.pdfbox;
 	requires mysql.connector.j;
 	requires io.github.classgraph;
@@ -15,10 +16,5 @@ module murico.swingapp {
 	requires com.github.lgooddatepicker;
 	requires org.commonmark;
 
-	exports com.github.hanzm_10.murico.swingapp;
-	exports com.github.hanzm_10.murico.swingapp.lib.navigation;
-	exports com.github.hanzm_10.murico.swingapp.lib.navigation.manager;
-	exports com.github.hanzm_10.murico.swingapp.lib.navigation.scene;
-	exports com.github.hanzm_10.murico.swingapp.lib.navigation.factory;
-	exports com.github.hanzm_10.murico.swingapp.lib.navigation.guard;
+	opens com.github.hanzm_10.murico.swingapp;
 }

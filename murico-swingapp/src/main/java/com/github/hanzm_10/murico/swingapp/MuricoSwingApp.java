@@ -16,11 +16,10 @@ package com.github.hanzm_10.murico.swingapp;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
 import com.github.hanzm_10.murico.lookandfeel.MuricoLightFlatLaf;
@@ -28,72 +27,24 @@ import com.github.hanzm_10.murico.swingapp.constants.Directories;
 import com.github.hanzm_10.murico.swingapp.constants.Metadata;
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractMigratorFactory;
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.handlers.GlobalUncaughtExceptionHandler;
-import com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.ErrorInterpreterRegistry;
 import com.github.hanzm_10.murico.swingapp.lib.io.FileUtils;
 import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.service.database.SessionService;
 import com.github.hanzm_10.murico.swingapp.ui.MainFrame;
-import com.github.hanzm_10.murico.swingapp.ui.labels.LabelFactory;
+import com.github.hanzm_10.murico.swingapp.ui.components.ProgressWindow;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
-import net.miginfocom.swing.MigLayout;
-
 public class MuricoSwingApp {
-	static class ProgressWindow extends JWindow {
-		JLabel label;
-
-		public ProgressWindow(String text) {
-
-			label = LabelFactory.createLabel(text, 20);
-			var progressBar = new javax.swing.JProgressBar();
-
-			label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-			progressBar.setIndeterminate(true);
-
-			var panel = new javax.swing.JPanel();
-
-			panel.setLayout(new MigLayout("wrap", "[grow, center]", "[grow, center]"));
-
-			panel.add(progressBar, "growx");
-			panel.add(label, "grow");
-
-			add(panel);
-
-			setSize(300, 100);
-			setLocationRelativeTo(null);
-		}
-
-		public void setText(String text) {
-			label.setText(text);
-			validate();
-		}
-	}
-
-	private static ProgressWindow PROGRESS_WINDOW = new ProgressWindow("Initializing Murico...");
 	private static final Logger LOGGER = MuricoLogger.getLogger(MuricoSwingApp.class);
 
+	private static ProgressWindow PROGRESS_WINDOW;
+	public static boolean IS_DEVELOPMENT = Metadata.APP_ENV.equals("development");
+
 	private static void createAndShowGUI() {
-		new MainFrame();
-	}
-
-	private static boolean doDevelopmentSetup() throws SQLException {
-		var migratorFactory = AbstractMigratorFactory.getMigrator(AbstractMigratorFactory.MYSQL);
-		var migrator = migratorFactory.getMigrator();
-		var seeder = migratorFactory.getSeeder();
-
 		SwingUtilities.invokeLater(() -> {
-			PROGRESS_WINDOW.setText("Creating data structures...");
+			var mainFrame = new MainFrame();
+			mainFrame.setVisible(true);
 		});
-
-		migrator.migrate();
-
-		SwingUtilities.invokeLater(() -> {
-			PROGRESS_WINDOW.setText("Initializing data...");
-		});
-
-		seeder.seed();
-
-		return true;
 	}
 
 	public static void main(String[] args) {
@@ -105,32 +56,44 @@ public class MuricoSwingApp {
 		}
 
 		SwingUtilities.invokeLater(() -> {
+			PROGRESS_WINDOW = new ProgressWindow("Initializing Murico...");
 			PROGRESS_WINDOW.setVisible(true);
 		});
 
 		try {
-			if (Metadata.APP_ENV.equals("development")) {
-				if (!doDevelopmentSetup()) {
-					LOGGER.log(Level.SEVERE, "Failed to setup development environment");
-					return;
-				}
-			} else {
-				java.util.logging.LogManager.getLogManager().reset();
+			if (!Metadata.APP_ENV.equals("development")) {
+				LogManager.getLogManager().reset();
 				MuricoLogger.setLevel(Level.OFF);
 			}
+
+			var migratorFactory = AbstractMigratorFactory.getMigrator(AbstractMigratorFactory.MYSQL);
+			var migrator = migratorFactory.getMigrator();
+			var seeder = migratorFactory.getSeeder();
+
+			SwingUtilities.invokeLater(() -> {
+				PROGRESS_WINDOW.setText("Creating data structures...");
+			});
+
+			migrator.migrate();
+
+			SwingUtilities.invokeLater(() -> {
+				PROGRESS_WINDOW.setText("Initializing data...");
+			});
+
+			seeder.seed();
 
 			Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
 			FileUtils.createDirectoryIfNotExists(Directories.CONFIG_DIRECTORY);
 			FileUtils.createDirectoryIfNotExists(Directories.LOGS_DIRECTORY);
 			SessionService.checkPreviousSessionAndStoreInSessionManager();
+
 			createAndShowGUI();
 		} catch (IOException | SQLException e) {
-			// TODO: Probably don't start the app if this happens
 			SwingUtilities.invokeLater(() -> {
-				var msg = new ErrorInterpreterRegistry().interpret(e);
+				LOGGER.log(Level.SEVERE, "Failed to start application", e);
 
 				JOptionPane.showMessageDialog(null,
-						"The following error has occured:\n\n" + msg + " \n\nPress ok to show the user manual", "Error",
+						"Sorry, but the application cannot start. \n\nPress ok to show the user manual", "Error",
 						JOptionPane.ERROR_MESSAGE);
 				new ReadmeWindow().setVisible(true);
 			});
@@ -140,6 +103,7 @@ public class MuricoSwingApp {
 		} finally {
 			SwingUtilities.invokeLater(() -> {
 				PROGRESS_WINDOW.dispose();
+				PROGRESS_WINDOW = null;
 			});
 		}
 	}

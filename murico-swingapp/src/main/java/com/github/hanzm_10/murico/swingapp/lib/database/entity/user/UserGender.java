@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -16,16 +16,14 @@ package com.github.hanzm_10.murico.swingapp.lib.database.entity.user;
 import java.util.Locale;
 
 public enum UserGender {
-	MALE, FEMALE, UNKNOWN, OTHER;
+	MALE, FEMALE, UNKNOWN, NON_BINARY;
 
 	/**
 	 * Returns the UserGender corresponding to the given string.
 	 *
-	 * @param gender
-	 *            the string representation of the UserGender
+	 * @param gender the string representation of the UserGender
 	 * @return the UserGender corresponding to the given string
-	 * @throws IllegalArgumentException
-	 *             if the string does not match any UserGender
+	 * @throws IllegalArgumentException if the string does not match any UserGender
 	 */
 	public static UserGender fromString(String gender) throws IllegalArgumentException {
 		if (gender == null) {
@@ -33,19 +31,21 @@ public enum UserGender {
 		}
 
 		return switch (gender.toUpperCase(Locale.ENGLISH)) {
-			case "MALE" -> MALE;
-			case "FEMALE" -> FEMALE;
-			case "UNKNOWN" -> UNKNOWN;
-			default -> throw new IllegalArgumentException("Invalid gender: " + gender);
+		case "MALE" -> MALE;
+		case "FEMALE" -> FEMALE;
+		case "NON_BINARY" -> NON_BINARY;
+		case "UNKNOWN" -> UNKNOWN;
+		default -> throw new IllegalArgumentException("Invalid gender: " + gender);
 		};
 	}
 
 	@Override
 	public String toString() {
 		return switch (this) {
-			case MALE -> "male";
-			case FEMALE -> "female";
-			case UNKNOWN -> "unknown";
+		case MALE -> "male";
+		case FEMALE -> "female";
+		case UNKNOWN -> "unknown";
+		case NON_BINARY -> "non_binary";
 		default -> throw new IllegalArgumentException("Unexpected value: " + this);
 		};
 	}

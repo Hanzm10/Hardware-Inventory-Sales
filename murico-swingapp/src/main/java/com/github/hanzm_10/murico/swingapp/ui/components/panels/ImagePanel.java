@@ -25,6 +25,7 @@ import com.github.hanzm_10.murico.swingapp.lib.utils.PaintUtils;
 
 public class ImagePanel extends JPanel {
 	protected Image image;
+	protected boolean scaleImage = true;
 
 	public ImagePanel(Image image) {
 		super();
@@ -44,32 +45,38 @@ public class ImagePanel extends JPanel {
 		super.paintComponent(g);
 
 		if (image != null) {
-			Insets insets = getInsets(); // Get the border insets
-			var panelX = insets.left;
-			var panelY = insets.top;
-			var panelWidth = getWidth() - insets.left - insets.right;
-			var panelHeight = getHeight() - insets.top - insets.bottom;
-			var imgWidth = image.getWidth(null);
-			var imgHeight = image.getHeight(null);
+			var g2 = (Graphics2D) g.create();
 
-			if (imgWidth > 0 && imgHeight > 0) {
-				var g2 = (Graphics2D) g.create();
+			PaintUtils.valueQuality(g2);
 
-				PaintUtils.valueQuality(g2);
+			if (!scaleImage) {
+				g2.drawImage(image, 0, 0, this); // Draw at original size
+			} else {
 
-				var scaleX = panelWidth / (double) imgWidth;
-				var scaleY = panelHeight / (double) imgHeight;
-				var scale = Math.min(scaleX, scaleY);
+				Insets insets = getInsets(); // Get the border insets
+				var panelX = insets.left;
+				var panelY = insets.top;
+				var panelWidth = getWidth() - insets.left - insets.right;
+				var panelHeight = getHeight() - insets.top - insets.bottom;
+				var imgWidth = image.getWidth(null);
+				var imgHeight = image.getHeight(null);
 
-				var drawWidth = (int) (imgWidth * scale);
-				var drawHeight = (int) (imgHeight * scale);
+				if (imgWidth > 0 && imgHeight > 0) {
 
-				var x = panelX + (panelWidth - drawWidth) / 2;
-				var y = panelY + (panelHeight - drawHeight) / 2;
+					var scaleX = panelWidth / (double) imgWidth;
+					var scaleY = panelHeight / (double) imgHeight;
+					var scale = Math.min(scaleX, scaleY);
 
-				g2.drawImage(image, x, y, drawWidth, drawHeight, this);
-				g2.dispose();
+					var drawWidth = (int) (imgWidth * scale);
+					var drawHeight = (int) (imgHeight * scale);
+
+					var x = panelX + (panelWidth - drawWidth) / 2;
+					var y = panelY + (panelHeight - drawHeight) / 2;
+
+					g2.drawImage(image, x, y, drawWidth, drawHeight, this);
+				}
 			}
+			g2.dispose();
 		}
 	}
 

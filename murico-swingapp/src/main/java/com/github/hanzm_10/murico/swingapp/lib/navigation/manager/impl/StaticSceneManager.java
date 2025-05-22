@@ -78,6 +78,7 @@ public class StaticSceneManager implements SceneManager {
 		LOGGER.info("Scene manager destroyed.");
 	}
 
+	@Override
 	public void destroyScene(Scene scene) {
 		if (scene == null) {
 			return;
@@ -169,7 +170,7 @@ public class StaticSceneManager implements SceneManager {
 	}
 
 	@Override
-	public synchronized void navigateTo(@NotNull String sceneName) {
+	public synchronized boolean navigateTo(@NotNull String sceneName) {
 		throwIfWrongThread();
 
 		var parsedSceneName = ParsedSceneName.parse(sceneName);
@@ -177,52 +178,53 @@ public class StaticSceneManager implements SceneManager {
 		if (parsedSceneName.parentSceneName().equals(currentSceneName)) {
 			if (parsedSceneName.subSceneName() == null) {
 				LOGGER.warning("Cannot navigate to the same scene: " + sceneName);
-				return;
+				return false;
 			}
 
-			navigateToSubScenesIfPossible(parsedSceneName);
-			return;
+			return navigateToSubScenesIfPossible(parsedSceneName);
 		}
 
 		var sceneEntry = registeredSceneEntries.get(parsedSceneName.parentSceneName());
 
 		if (sceneEntry == null) {
 			LOGGER.log(Level.SEVERE, "Failed to navigate", new MuricoError(MuricoErrorCodes.SCENE_NOT_FOUND));
-			return;
+			return false;
 		}
 
 		if (!sceneEntry.sceneGuard().canAccess()) {
 			LOGGER.warning("Scene guard denied access: " + sceneName);
-			return;
+			return false;
 		}
 
 		var oldScene = currentSceneName == null ? null : getScene(currentSceneName);
 
 		if (oldScene != null && !oldScene.canHide()) {
 			oldScene.onCannotHide();
-			return;
+			return false;
 		}
 
 		var scene = loadOrCreateScene(parsedSceneName, sceneEntry);
 
 		if (!scene.canShow()) {
 			scene.onCannotShow();
-			return;
+			return false;
 		}
 
 		switchScenes(scene, oldScene);
 
 		if (parsedSceneName.subSceneName() != null && !parsedSceneName.subSceneName().isBlank()) {
-			navigateToSubScenesIfPossible(parsedSceneName);
+			return navigateToSubScenesIfPossible(parsedSceneName);
 		}
+
+		return true;
 	}
 
-	private void navigateToSubScenesIfPossible(@NotNull final ParsedSceneName parsedSceneName) {
+	private boolean navigateToSubScenesIfPossible(@NotNull final ParsedSceneName parsedSceneName) {
 		var currentScene = getScene(currentSceneName);
 
 		if (currentScene == null) {
 			LOGGER.severe("Current scene is set to a scene that does not exist: " + currentSceneName);
-			return;
+			return false;
 		}
 
 		if (currentScene.supportsSubScenes()) {
@@ -232,18 +234,14 @@ public class StaticSceneManager implements SceneManager {
 			if (scene.getSceneManager() != null && sceneManager.getCurrentSceneName() != null
 					&& sceneManager.getCurrentSceneName().equals(parsedSceneName.subSceneName())) {
 				LOGGER.warning("Sub-scene is already being displayed: " + parsedSceneName.subSceneName());
-				return;
+				return false;
 			}
 
-			SwingUtilities.invokeLater(() -> {
-				scene.navigateTo(parsedSceneName.subSceneName());
-			});
+			return sceneManager.navigateTo(parsedSceneName.subSceneName());
 		} else {
 			LOGGER.warning("Current scene does not support sub-scenes: " + currentSceneName);
-			return;
+			return false;
 		}
-
-		return;
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public final class SessionManager {
 	public boolean isLogistics() {
 		if (loggedInUser == null || loggedInUser.roles() == null) {
 			return false;
-			
+
 		}
 
 		return loggedInUser.roles().contains("logistics");
@@ -99,7 +99,6 @@ public final class SessionManager {
 		if (this.session != null) {
 			throw new IllegalStateException("Session already exists.");
 		}
-
 		this.session = session;
 		this.loggedInUser = user;
 	}

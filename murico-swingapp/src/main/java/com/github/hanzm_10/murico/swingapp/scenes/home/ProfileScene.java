@@ -10,20 +10,22 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.impl.StaticSceneManager;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.Scene;
 import com.github.hanzm_10.murico.swingapp.lib.navigation.scene.SubSceneSupport;
+import com.github.hanzm_10.murico.swingapp.scenes.home.profile.EditProfileScene;
+import com.github.hanzm_10.murico.swingapp.scenes.home.profile.ReadOnlyProfileScene;
 
 import net.miginfocom.swing.MigLayout;
 
 public class ProfileScene implements Scene, SubSceneSupport {
-	private JPanel view;
 
 	private SceneManager sceneManager;
+
+	private JPanel view;
 
 	private void createSceneManager() {
 		sceneManager = new StaticSceneManager();
 
-		sceneManager.registerScene("readonly", () -> new ReadOnlyScene(), HomeScene.GUARD);
+		sceneManager.registerScene("readonly", () -> new ReadOnlyProfileScene(), HomeScene.GUARD);
 		sceneManager.registerScene("edit", () -> new EditProfileScene(), HomeScene.GUARD);
-
 	}
 
 	@Override
@@ -31,6 +33,7 @@ public class ProfileScene implements Scene, SubSceneSupport {
 		if (sceneManager == null) {
 			createSceneManager();
 		}
+
 		return sceneManager;
 	}
 
@@ -45,9 +48,8 @@ public class ProfileScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
-	public void navigateTo(@NotNull String subSceneName) {
-		sceneManager.navigateTo(subSceneName);
-
+	public boolean navigateTo(@NotNull String subSceneName) {
+		return sceneManager.navigateTo(subSceneName);
 	}
 
 	@Override
