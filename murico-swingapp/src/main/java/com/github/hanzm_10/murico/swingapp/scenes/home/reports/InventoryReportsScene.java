@@ -49,7 +49,7 @@ public final class InventoryReportsScene implements Scene {
 	public void onBeforeShow() {
 		terminateThreads();
 
-		executor = Executors.newFixedThreadPool(3);
+		executor = Executors.newCachedThreadPool();
 
 		executor.submit(inventoryReportSummary::performBackgroundTask);
 		executor.submit(inventoryReportTable::performBackgroundTask);
@@ -81,7 +81,7 @@ public final class InventoryReportsScene implements Scene {
 	}
 
 	private void terminateThreads() {
-		if (executor != null) {
+		if (executor != null && !executor.isShutdown()) {
 			executor.shutdownNow();
 			executor = null;
 		}

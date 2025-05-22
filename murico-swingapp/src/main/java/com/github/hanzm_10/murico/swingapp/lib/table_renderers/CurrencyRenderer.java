@@ -15,6 +15,10 @@ public class CurrencyRenderer extends DefaultTableCellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
+		if (value == null) {
+			return super.getTableCellRendererComponent(table, "0", isSelected, hasFocus, row, column);
+		}
+
 		value = "₱" + NumberUtils.formatter.format(value);
 		return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 	}

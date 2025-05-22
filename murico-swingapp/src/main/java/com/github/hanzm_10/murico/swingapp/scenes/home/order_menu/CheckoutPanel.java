@@ -22,7 +22,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
@@ -32,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -42,12 +42,15 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.CheckoutSearchComponent.ItemData;
 import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.CheckoutSearchComponent.ItemSelectedListener;
 import com.github.hanzm_10.murico.swingapp.service.database.CheckoutService;
 import com.github.hanzm_10.murico.swingapp.service.database.OrderLineItemData;
 
 public class CheckoutPanel extends JPanel implements ItemSelectedListener, QuantityChangeListener, RemoveItemListener {
+
+	private static final Logger LOGGER = MuricoLogger.getLogger(CheckoutPanel.class);
 
 	private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("₱ #,##0.00");
 	private static final DecimalFormat INPUT_CURRENCY_FORMAT = new DecimalFormat("#,##0.00");
@@ -74,12 +77,14 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 		clearCheckoutState();
 	}
 
-	private void clearCheckoutState() {
+	public void clearCheckoutState() {
 		if (tableComponent != null) {
 			tableComponent.clearTable();
 		}
+
 		currentTotalAmount = BigDecimal.ZERO;
 		currentCashTenderedForPreview = BigDecimal.ZERO;
+
 		if (totalLabelValue != null) {
 			totalLabelValue.setText(CURRENCY_FORMAT.format(currentTotalAmount));
 		}
@@ -97,19 +102,26 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 		}
 		currentStockCache.clear();
 		lastFinalizedOrderId = -1;
-		System.out.println("Checkout state cleared.");
+		LOGGER.info("Checkout state cleared.");
+	}
+
+	public void destroy() {
+		receiptComponent.destroy();
+		searchComponent.destroy();
+
+		finalizeButton.removeActionListener(this::finalizeOrder);
+		cashEnterButton.removeActionListener(this::handleCashEnterButtonAction);
 	}
 
 	private void finalizeOrder(ActionEvent ev) {
-		System.out.println("Finalize button clicked.");
+		LOGGER.info("Finalize button clicked.");
 		if (tableComponent == null || tableComponent.getTableModel() == null || totalLabelValue == null) { // Added
-			// totalLabelValue
-			// null
-			// check
+
 			JOptionPane.showMessageDialog(this, "Checkout components are not ready.", "Internal Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
 		DefaultTableModel model = tableComponent.getTableModel();
 
 		if (model.getRowCount() == 0) {
@@ -150,7 +162,7 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 						+ CURRENCY_FORMAT.format(changeForDialog),
 				"Confirm", JOptionPane.YES_NO_OPTION);
 		if (confirm != JOptionPane.YES_OPTION) {
-			System.out.println("Finalization cancelled.");
+			LOGGER.info("Finalization cancelled.");
 			return;
 		}
 
@@ -210,14 +222,12 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Order failed (Database Error):\n" + e.getMessage(), "Database Error",
 					JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			JOptionPane.showMessageDialog(this, "Order failed (Input Error): " + e.getMessage(), "Input Error",
 					JOptionPane.WARNING_MESSAGE);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "An unexpected error occurred during finalization:\n" + e.getMessage(),
 					"Error", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
 		}
 	}
 
@@ -241,7 +251,7 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 			}
 			return amount.setScale(2, RoundingMode.HALF_UP);
 		} catch (java.text.ParseException e) {
-			System.err.println("Invalid cash amount format during get: " + cashInput);
+			LOGGER.severe("Invalid cash amount format during get: " + cashInput);
 			return null;
 		}
 	}
@@ -252,6 +262,30 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 
 	public int getLastFinalizedOrderId() {
 		return this.lastFinalizedOrderId;
+	}
+
+	private void handleCashEnterButtonAction(ActionEvent e) {
+		// 1. Refresh the total from the table
+		recalculateTotalFromTable(); // This updates currentTotalAmount and totalLabelValue
+
+		// 2. Process cash tendered against the refreshed total
+		boolean formatErrorShown = processCashTenderedAndShowErrors(); // New method name for clarity
+
+		// 3. If no format error, explicitly check for insufficient payment
+		if (!formatErrorShown) {
+			BigDecimal cashParsed = getCashTenderedAmountFromField(); // Re-parse for this check
+			// Check if cashParsed is not null (valid format) and >= 0 before comparing to
+			// total
+			if (cashParsed != null && cashParsed.compareTo(BigDecimal.ZERO) >= 0
+					&& cashParsed.compareTo(currentTotalAmount) < 0) {
+				JOptionPane.showMessageDialog(CheckoutPanel.this, "Cash tendered is less than the total amount.",
+						"Insufficient Payment", JOptionPane.WARNING_MESSAGE);
+			}
+			// If cashParsed is null (bad format) but field is not empty,
+			// processCashTenderedAndShowErrors already showed the error.
+			// If cashParsed is ZERO (empty field), no insufficient payment error for just
+			// pressing Enter on empty.
+		}
 	}
 
 	private void initializeCheckoutUI() {
@@ -335,43 +369,17 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 		JPanel finalizeButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		finalizeButton = new JButton("Finalize Order");
 		finalizeButton.setFont(new Font("Montserrat Bold", Font.BOLD, 14));
-		finalizeButton.addActionListener(this::finalizeOrder);
 		finalizeButtonPanel.add(finalizeButton);
 		rightSidePanel.add(finalizeButtonPanel, BorderLayout.SOUTH);
 		add(rightSidePanel, BorderLayout.EAST);
 
-		cashEnterButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// 1. Refresh the total from the table
-				recalculateTotalFromTable(); // This updates currentTotalAmount and totalLabelValue
-
-				// 2. Process cash tendered against the refreshed total
-				boolean formatErrorShown = processCashTenderedAndShowErrors(); // New method name for clarity
-
-				// 3. If no format error, explicitly check for insufficient payment
-				if (!formatErrorShown) {
-					BigDecimal cashParsed = getCashTenderedAmountFromField(); // Re-parse for this check
-					// Check if cashParsed is not null (valid format) and >= 0 before comparing to
-					// total
-					if (cashParsed != null && cashParsed.compareTo(BigDecimal.ZERO) >= 0
-							&& cashParsed.compareTo(currentTotalAmount) < 0) {
-						JOptionPane.showMessageDialog(CheckoutPanel.this,
-								"Cash tendered is less than the total amount.", "Insufficient Payment",
-								JOptionPane.WARNING_MESSAGE);
-					}
-					// If cashParsed is null (bad format) but field is not empty,
-					// processCashTenderedAndShowErrors already showed the error.
-					// If cashParsed is ZERO (empty field), no insufficient payment error for just
-					// pressing Enter on empty.
-				}
-			}
-		});
+		finalizeButton.addActionListener(this::finalizeOrder);
+		cashEnterButton.addActionListener(this::handleCashEnterButtonAction);
 	}
 
 	@Override
 	public void itemRemovalRequested(int modelRowIndex, int itemStockId) {
-		System.out.println("Removal: Row=" + modelRowIndex + ", ItemStockID=" + itemStockId);
+		LOGGER.info("Removal: Row=" + modelRowIndex + ", ItemStockID=" + itemStockId);
 		currentStockCache.remove(itemStockId);
 		tableComponent.removeRowByIndex(modelRowIndex);
 		updateCheckoutTotalAndRefreshPaymentDetails();
@@ -380,7 +388,7 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 	@Override
 	public void itemSelected(ItemData selectedItem) {
 		// ... (existing itemSelected logic) ...
-		System.out.println("Selected: " + selectedItem.itemName() + " (StockID: " + selectedItem.itemStockId() + ")");
+		LOGGER.info("Selected: " + selectedItem.itemName() + " (StockID: " + selectedItem.itemStockId() + ")");
 		DefaultTableModel model = tableComponent.getTableModel();
 		int existingRow = -1;
 		for (int i = 0; i < model.getRowCount(); i++) {
@@ -465,8 +473,7 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 
 	@Override
 	public void quantityChanged(int modelRowIndex, int newQuantity, int itemStockId) {
-		System.out.println(
-				"Qty Changed: Row=" + modelRowIndex + ", ItemStockID=" + itemStockId + ", NewQty=" + newQuantity);
+		LOGGER.info("Qty Changed: Row=" + modelRowIndex + ", ItemStockID=" + itemStockId + ", NewQty=" + newQuantity);
 		updateCheckoutTotalAndRefreshPaymentDetails();
 	}
 
@@ -476,7 +483,7 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 	 */
 	private void recalculateTotalFromTable() {
 		if (totalLabelValue == null || tableComponent == null || tableComponent.getTableModel() == null) {
-			System.err.println("Cannot update total: Required components/model are null.");
+			LOGGER.severe("Cannot update total: Required components/model are null.");
 			return;
 		}
 		DefaultTableModel model = tableComponent.getTableModel();
@@ -493,11 +500,11 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 					}
 				}
 			} catch (Exception e) {
-				System.err.println("Error calculating total row " + i + ": " + e);
+				LOGGER.severe("Error calculating total row " + i + ": " + e);
 			}
 		}
 		totalLabelValue.setText(CURRENCY_FORMAT.format(currentTotalAmount));
-		System.out.println("Checkout total recalculated: " + CURRENCY_FORMAT.format(currentTotalAmount));
+		LOGGER.info("Checkout total recalculated: " + CURRENCY_FORMAT.format(currentTotalAmount));
 	}
 
 	/**
@@ -521,7 +528,7 @@ public class CheckoutPanel extends JPanel implements ItemSelectedListener, Quant
 		// If an item changes, the total changes. The change should reflect this against
 		// the
 		// *last entered cash*.
-		BigDecimal cashForThisUpdate = currentCashTenderedForPreview; // Use last "good" cash
+		BigDecimal cashForThisUpdate = currentCashTenderedForPreview;
 		BigDecimal change = cashForThisUpdate.subtract(currentTotalAmount);
 		if (change.compareTo(BigDecimal.ZERO) < 0) {
 			change = BigDecimal.ZERO;

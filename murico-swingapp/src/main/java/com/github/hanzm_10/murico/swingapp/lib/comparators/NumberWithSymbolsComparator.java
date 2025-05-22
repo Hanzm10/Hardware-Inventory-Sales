@@ -8,6 +8,7 @@ import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRend
 public class NumberWithSymbolsComparator implements Comparator<Object> {
 	@Override
 	public int compare(Object o1, Object o2) {
+
 		BigDecimal num1 = toBigDecimal(o1);
 		BigDecimal num2 = toBigDecimal(o2);
 
@@ -54,4 +55,5 @@ public class NumberWithSymbolsComparator implements Comparator<Object> {
 
 		return BigDecimal.ZERO;
 	}
+
 }

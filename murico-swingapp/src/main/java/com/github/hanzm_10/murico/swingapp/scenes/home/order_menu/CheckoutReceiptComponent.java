@@ -148,6 +148,10 @@ public class CheckoutReceiptComponent extends JPanel {
 		return " ".repeat(Math.max(0, padding)) + text;
 	}
 
+	public void destroy() {
+		printReceiptButton.removeActionListener(this::printReceiptButtonAction);
+	}
+
 	private void drawLabelValueLine(PDPageContentStream stream, PDFont font, float fontSize, float y, String label,
 			String value) throws IOException {
 		drawTextLeft(stream, font, fontSize, SIDE_PADDING, y, label);
@@ -303,9 +307,10 @@ public class CheckoutReceiptComponent extends JPanel {
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
 		printReceiptButton = new JButton("Print Receipt (PDF)");
 		printReceiptButton.setFont(new Font("Montserrat Bold", Font.BOLD, 12));
-		printReceiptButton.addActionListener(this::printReceiptButtonAction);
 		buttonPanel.add(printReceiptButton);
 		add(buttonPanel, BorderLayout.SOUTH);
+
+		printReceiptButton.addActionListener(this::printReceiptButtonAction);
 	}
 
 	public void printReceipt(DefaultTableModel tableModel, int orderId, BigDecimal cashTendered) {

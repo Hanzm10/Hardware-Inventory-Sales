@@ -16,17 +16,16 @@ import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.OrderHistoryPa
 import com.github.hanzm_10.murico.swingapp.scenes.home.order_menu.TransactionHistoryPanel;
 
 public class OrderMenuScene implements Scene {
-	// Constants
+
 	private static final String CARD_ORDER_HISTORY = "OrderHistory";
 	private static final String CARD_TRANSACTION_HISTORY = "TransactionHistory";
 	private static final String CARD_CHECKOUT = "Checkout";
+
 	private JPanel view;
 
-	// UI Components
 	private JPanel viewSwitchPanel;
 	private CardLayout cardLayout;
 
-	// Panel instances
 	private CheckoutPanel checkoutPanel;
 	private OrderHistoryPanel orderHistoryPanel;
 	private TransactionHistoryPanel transactionHistoryPanel;
@@ -43,11 +42,11 @@ public class OrderMenuScene implements Scene {
 		viewSwitchPanel.add(orderHistoryPanel, CARD_ORDER_HISTORY);
 		viewSwitchPanel.add(transactionHistoryPanel, CARD_TRANSACTION_HISTORY);
 
-		checkoutButton.addActionListener(this::showCheckout); // Use helper
+		checkoutButton.addActionListener(this::showCheckout);
 
-		orderHistoryButton.addActionListener(this::showOrderHistory); // Use helper
+		orderHistoryButton.addActionListener(this::showOrderHistory);
 
-		transactionHistoryButton.addActionListener(this::showTransactionHistory); // Use helper
+		transactionHistoryButton.addActionListener(this::showTransactionHistory);
 
 		navigationPanel.add(orderHistoryButton);
 		navigationPanel.add(transactionHistoryButton);
@@ -65,7 +64,6 @@ public class OrderMenuScene implements Scene {
 
 		topSectionPanel = new JPanel(new BorderLayout(0, 5));
 
-		// --- Navigation Button Bar ---
 		navigationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		navigationPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
 
@@ -96,10 +94,23 @@ public class OrderMenuScene implements Scene {
 		attachComponents();
 	}
 
+	@Override
+	public boolean onDestroy() {
+		if (checkoutPanel != null) {
+			checkoutPanel.destroy();
+		}
+		if (orderHistoryPanel != null) {
+			orderHistoryPanel.destroy();
+		}
+		if (transactionHistoryPanel != null) {
+			transactionHistoryPanel.destroy();
+		}
+		return true;
+	}
+
 	private void showCard(String cardName) {
 		cardLayout.show(viewSwitchPanel, cardName);
 
-		// Trigger data loading for the specific panel when shown
 		switch (cardName) {
 		case CARD_ORDER_HISTORY:
 			if (orderHistoryPanel != null) {
@@ -112,8 +123,9 @@ public class OrderMenuScene implements Scene {
 			}
 			break;
 		case CARD_CHECKOUT:
-			// Checkout panel usually loads interactively, maybe clear state?
-			// if (checkoutPanel != null) checkoutPanel.clearCheckoutState();
+			if (checkoutPanel != null) {
+				checkoutPanel.clearCheckoutState();
+			}
 			break;
 		}
 	}

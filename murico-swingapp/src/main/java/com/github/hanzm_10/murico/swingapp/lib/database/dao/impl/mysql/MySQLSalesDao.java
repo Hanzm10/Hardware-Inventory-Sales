@@ -11,6 +11,7 @@ import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.MonthlyGros
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.MonthlyGross.Month;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalItemCategorySoldInYear;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.TotalOfSales;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.Transaction;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.WeeklyGross;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.WeeklyGross.WeekDays;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.sales.YearlyGross;
@@ -90,6 +91,26 @@ public class MySQLSalesDao implements SalesDao {
 		}
 
 		return totalOfSales;
+	}
+
+	@Override
+	public Transaction[] getTransactionHistory() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_transactions", "sales", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			var result = new ArrayList<Transaction>();
+			var resultSet = stmt.executeQuery(query);
+
+			while (resultSet.next()) {
+				result.add(new Transaction(resultSet.getTimestamp("transaction_date"),
+						resultSet.getString("transaction_type"), resultSet.getInt("ref_id"),
+						resultSet.getString("order_number"), resultSet.getBigDecimal("amount"),
+						resultSet.getString("employee_handler"), resultSet.getString("party"),
+						resultSet.getString("status")));
+			}
+
+			return result.toArray(new Transaction[result.size()]);
+		}
 	}
 
 	@Override

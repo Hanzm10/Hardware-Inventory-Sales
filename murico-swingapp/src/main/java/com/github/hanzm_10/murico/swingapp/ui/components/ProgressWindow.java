@@ -34,6 +34,8 @@ public class ProgressWindow extends JWindow {
 		label = LabelFactory.createLabel(text, 20);
 		progressBar = new JProgressBar();
 
+		progressBar.setIndeterminate(true);
+
 		setLayout(new MigLayout("wrap", "[grow, center]", "[grow, center]"));
 
 		label.setHorizontalAlignment(SwingConstants.CENTER);
