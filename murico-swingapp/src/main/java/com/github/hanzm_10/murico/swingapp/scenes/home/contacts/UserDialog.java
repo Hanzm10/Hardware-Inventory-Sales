@@ -1,4 +1,4 @@
-package com.github.hanzm_10.murico.swingapp.scenes.home.contactScene;
+package com.github.hanzm_10.murico.swingapp.scenes.home.contacts;
 
 import java.awt.FlowLayout;
 import java.awt.Window;
@@ -25,9 +25,8 @@ public class UserDialog extends JDialog {
 	private JTextField displayNameField;
 	private JTextField emailField;
 	private JPasswordField passwordField;
-	private JPasswordField confirmPasswordField;
 	private JComboBox<String> roleComboBox;
-	private JLabel passwordLabel, confirmPasswordLabel;
+	private JLabel passwordLabel;
 
 	private UserMetadata currentUser; // For editing
 	private boolean saved = false;
@@ -115,11 +114,6 @@ public class UserDialog extends JDialog {
 		passwordField = new JPasswordField(20);
 		add(passwordField, "growx");
 
-		confirmPasswordLabel = new JLabel("Confirm Password:");
-		add(confirmPasswordLabel);
-		confirmPasswordField = new JPasswordField(20);
-		add(confirmPasswordField, "growx");
-
 		if (SessionManager.getInstance().isAdmin()) {
 			add(new JLabel("Role:"));
 			roleComboBox = new JComboBox<>(UserManagement.getAllRoleNames());
@@ -131,16 +125,9 @@ public class UserDialog extends JDialog {
 			add(roleDisplayField, "growx");
 		}
 
-		// Hide password fields if editing (unless it's a specific "change password"
-		// dialog)
 		if (currentUser != null) {
 			passwordLabel.setVisible(false);
 			passwordField.setVisible(false);
-			confirmPasswordLabel.setVisible(false);
-			confirmPasswordField.setVisible(false);
-			// Adjust layout constraints if fields are hidden to prevent large gaps
-			// This might require more complex MigLayout or removing/adding components
-			// dynamically
 		}
 
 		JButton saveButton = new JButton("Save");

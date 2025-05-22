@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright 2025 Aaron Ragudos, Hanz Mapua, Peter Dela Cruz, Jerick Remo, Kurt Raneses, and the contributors of the project.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”),
@@ -14,12 +14,13 @@
 package com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter;
 
 import com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.impl.SqlCommunicationErrorInterpreter;
+import com.github.hanzm_10.murico.swingapp.lib.exceptions.interpreter.impl.SvgIconNotFound;
 
 public class ErrorInterpreterRegistry {
 	private final ErrorInterpreter[] interpreters;
 
 	public ErrorInterpreterRegistry() {
-		interpreters = new ErrorInterpreter[]{new SqlCommunicationErrorInterpreter(),};
+		interpreters = new ErrorInterpreter[] { new SqlCommunicationErrorInterpreter(), new SvgIconNotFound() };
 	}
 
 	public String interpret(Throwable e) {

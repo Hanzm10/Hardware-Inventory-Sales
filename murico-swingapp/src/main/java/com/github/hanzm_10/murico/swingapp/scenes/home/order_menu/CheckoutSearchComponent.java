@@ -10,12 +10,12 @@ import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -46,12 +47,14 @@ import javax.swing.event.DocumentListener;
 
 // --- Imports --- // Adjust if needed
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 /**
  * A component responsible for searching inventory items (including packaging)
  * with live suggestions, based on the item_stocks table.
  */
-public class CheckoutSearchComponent extends JPanel {
+public class CheckoutSearchComponent extends JPanel
+		implements DocumentListener, FocusListener, MouseListener, KeyListener {
 
 	// --- Updated Data Record ---
 	// Includes item_stock_id and packaging name
@@ -87,7 +90,7 @@ public class CheckoutSearchComponent extends JPanel {
 
 		@Override
 		protected List<ItemData> doInBackground() throws Exception {
-			System.out.println("SearchWorker: Searching DB for '" + searchTerm + "'...");
+			LOGGER.info("SearchWorker: Searching DB for '" + searchTerm + "'...");
 			List<ItemData> results = new ArrayList<>();
 
 			// --- UPDATED SQL QUERY ---
@@ -125,7 +128,7 @@ public class CheckoutSearchComponent extends JPanel {
 				System.err.println("SearchWorker DB Error: " + e.getMessage());
 				throw e; // Propagate exception
 			}
-			System.out.println("SearchWorker: Found " + results.size() + " stock entries for '" + searchTerm + "'.");
+			LOGGER.info("SearchWorker: Found " + results.size() + " stock entries for '" + searchTerm + "'.");
 			return results;
 		}
 
@@ -135,7 +138,7 @@ public class CheckoutSearchComponent extends JPanel {
 			// It updates the suggestionsListModel with ItemData objects
 			// and calculates/sets the popup height.
 			if (isCancelled()) {
-				System.out.println("SearchWorker cancelled: " + searchTerm);
+				LOGGER.info("SearchWorker cancelled: " + searchTerm);
 				return;
 			}
 			try {
@@ -176,7 +179,7 @@ public class CheckoutSearchComponent extends JPanel {
 						suggestionsPopup.pack();
 						if (!suggestionsPopup.isVisible()) {
 							suggestionsPopup.show(itemSearchField, 0, itemSearchField.getHeight());
-							System.out.println("Showing suggestions: " + searchTerm);
+							LOGGER.info("Showing suggestions: " + searchTerm);
 						}
 					} else {
 						if (suggestionsPopup.isVisible()) {
@@ -212,6 +215,8 @@ public class CheckoutSearchComponent extends JPanel {
 			}
 		}
 	} // --- End SearchWorker ---
+
+	private static final Logger LOGGER = MuricoLogger.getLogger(CheckoutSearchComponent.class);
 
 	private static final int SEARCH_TRIGGER_LENGTH = 2;
 	// --- UI Components ---
@@ -275,99 +280,15 @@ public class CheckoutSearchComponent extends JPanel {
 	 * Attaches necessary listeners to components.
 	 */
 	private void addListeners() {
-		itemSearchField.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				triggerSearchUpdate();
-			}
+		itemSearchField.getDocument().addDocumentListener(this);
+		itemSearchField.addFocusListener(this);
+		suggestionsList.addMouseListener(this);
+		itemSearchField.addKeyListener(this);
+	}
 
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				triggerSearchUpdate();
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				triggerSearchUpdate();
-			}
-		});
-
-		itemSearchField.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				Timer timer = new Timer(200, _ -> {
-					boolean popupHasFocus = false;
-					if (suggestionsPopup.isVisible()) {
-						Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-						if (focusOwner != null && SwingUtilities.isDescendingFrom(focusOwner, suggestionsPopup)) {
-							popupHasFocus = true;
-						}
-					}
-					if (!popupHasFocus && !itemSearchField.isFocusOwner()) {
-						suggestionsPopup.setVisible(false);
-					}
-				});
-				timer.setRepeats(false);
-				timer.start();
-			}
-		});
-
-		suggestionsList.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 1 && SwingUtilities.isLeftMouseButton(e)) {
-					int index = suggestionsList.locationToIndex(e.getPoint());
-					if (index >= 0 && index < suggestionsListModel.getSize()) {
-						ItemData selected = suggestionsListModel.getElementAt(index);
-						System.out.println(
-								"Suggestion clicked: " + selected.itemName() + " (" + selected.packagingName() + ")");
-						itemSelectedListener.itemSelected(selected); // Notify listener
-						itemSearchField.setText("");
-						suggestionsPopup.setVisible(false);
-						// itemSearchField.requestFocusInWindow(); // Maybe not needed
-					}
-				}
-			}
-		});
-
-		itemSearchField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (suggestionsPopup.isVisible()) {
-					int currentSelection = suggestionsList.getSelectedIndex();
-					int listSize = suggestionsListModel.getSize();
-					switch (e.getKeyCode()) {
-					case KeyEvent.VK_DOWN:
-						if (listSize > 0) {
-							suggestionsList.setSelectedIndex(Math.min(currentSelection + 1, listSize - 1));
-							suggestionsList.ensureIndexIsVisible(suggestionsList.getSelectedIndex());
-							e.consume();
-						}
-						break;
-					case KeyEvent.VK_UP:
-						if (listSize > 0) {
-							suggestionsList.setSelectedIndex(Math.max(currentSelection - 1, 0));
-							suggestionsList.ensureIndexIsVisible(suggestionsList.getSelectedIndex());
-							e.consume();
-						}
-						break;
-					case KeyEvent.VK_ENTER:
-						if (currentSelection != -1) {
-							ItemData selected = suggestionsListModel.getElementAt(currentSelection);
-							itemSelectedListener.itemSelected(selected);
-							itemSearchField.setText("");
-							suggestionsPopup.setVisible(false);
-							e.consume();
-						}
-						break;
-					case KeyEvent.VK_ESCAPE:
-						suggestionsPopup.setVisible(false);
-						e.consume();
-						break;
-					}
-				}
-			}
-		});
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		triggerSearchUpdate();
 	}
 
 	/**
@@ -382,10 +303,39 @@ public class CheckoutSearchComponent extends JPanel {
 		}
 	}
 
+	public void destroy() {
+		itemSearchField.getDocument().removeDocumentListener(this);
+		itemSearchField.removeFocusListener(this);
+		suggestionsList.removeMouseListener(this);
+		itemSearchField.removeKeyListener(this);
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		Timer timer = new Timer(200, _ -> {
+			boolean popupHasFocus = false;
+			if (suggestionsPopup.isVisible()) {
+				Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+				if (focusOwner != null && SwingUtilities.isDescendingFrom(focusOwner, suggestionsPopup)) {
+					popupHasFocus = true;
+				}
+			}
+			if (!popupHasFocus && !itemSearchField.isFocusOwner()) {
+				suggestionsPopup.setVisible(false);
+			}
+		});
+		timer.setRepeats(false);
+		timer.start();
+	}
+
 	private void handleSearch(ActionEvent ev) {
 		final String searchText = itemSearchField.getText().trim();
 		if (searchText.length() >= SEARCH_TRIGGER_LENGTH && searchText.equals(itemSearchField.getText().trim())) {
-			System.out.println("Starting search worker for: " + searchText);
+			LOGGER.info("Starting search worker for: " + searchText);
 			currentSearchWorker = new SearchWorker(searchText);
 			currentSearchWorker.execute();
 		} else {
@@ -396,7 +346,92 @@ public class CheckoutSearchComponent extends JPanel {
 
 	}
 
-	// --- Helper: Style Icon Button / Label ---
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		triggerSearchUpdate();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (suggestionsPopup.isVisible()) {
+			int currentSelection = suggestionsList.getSelectedIndex();
+			int listSize = suggestionsListModel.getSize();
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_DOWN:
+				if (listSize > 0) {
+					suggestionsList.setSelectedIndex(Math.min(currentSelection + 1, listSize - 1));
+					suggestionsList.ensureIndexIsVisible(suggestionsList.getSelectedIndex());
+					e.consume();
+				}
+				break;
+			case KeyEvent.VK_UP:
+				if (listSize > 0) {
+					suggestionsList.setSelectedIndex(Math.max(currentSelection - 1, 0));
+					suggestionsList.ensureIndexIsVisible(suggestionsList.getSelectedIndex());
+					e.consume();
+				}
+				break;
+			case KeyEvent.VK_ENTER:
+				if (currentSelection != -1) {
+					ItemData selected = suggestionsListModel.getElementAt(currentSelection);
+					itemSelectedListener.itemSelected(selected);
+					itemSearchField.setText("");
+					suggestionsPopup.setVisible(false);
+					e.consume();
+				}
+				break;
+			case KeyEvent.VK_ESCAPE:
+				suggestionsPopup.setVisible(false);
+				e.consume();
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if (e.getClickCount() == 1 && SwingUtilities.isLeftMouseButton(e)) {
+			int index = suggestionsList.locationToIndex(e.getPoint());
+			if (index >= 0 && index < suggestionsListModel.getSize()) {
+				ItemData selected = suggestionsListModel.getElementAt(index);
+				LOGGER.info("Suggestion clicked: " + selected.itemName() + " (" + selected.packagingName() + ")");
+				itemSelectedListener.itemSelected(selected); // Notify listener
+				itemSearchField.setText("");
+				suggestionsPopup.setVisible(false);
+				// itemSearchField.requestFocusInWindow(); // Maybe not needed
+			}
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		triggerSearchUpdate();
+	}
+
 	private void styleIconButtonLabel(JLabel label) {
 		label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		label.setToolTipText("Search");

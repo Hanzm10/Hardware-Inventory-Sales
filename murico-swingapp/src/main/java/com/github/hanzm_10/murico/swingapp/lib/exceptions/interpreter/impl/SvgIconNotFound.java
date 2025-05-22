@@ -7,7 +7,7 @@ public class SvgIconNotFound implements ErrorInterpreter {
 	@Override
 	public boolean canInterpret(Throwable e) {
 		return e.getMessage() != null
-				&& (e.getMessage().contains("Icon not found") || e.getMessage().contains("xmlBase is null"));
+				&& (e.getMessage().contains("Icon not found") || e.getMessage().contains("\"xmlBase\" is null"));
 	}
 
 	@Override

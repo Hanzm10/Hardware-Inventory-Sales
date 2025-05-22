@@ -8,9 +8,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.DecimalFormat; // For formatting total
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -22,32 +22,39 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.github.hanzm_10.murico.swingapp.constants.Styles;
+import com.github.hanzm_10.murico.swingapp.lib.comparators.NumberWithSymbolsComparator;
 // Use your actual factory DAO class
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
+import com.github.hanzm_10.murico.swingapp.lib.table_renderers.CurrencyRenderer;
+import com.github.hanzm_10.murico.swingapp.lib.table_renderers.DateRenderer;
+import com.github.hanzm_10.murico.swingapp.lib.table_renderers.IdRenderer;
 
 public class OrderHistoryPanel extends JPanel {
 
-	private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("₱ #,##0.00");
-	// Column indices constants (optional, but can help maintainability)
+	private static final Logger LOGGER = MuricoLogger.getLogger(OrderHistoryPanel.class);
+
 	private static final int HISTORY_COL_DATE = 0;
-
 	private static final int HISTORY_COL_ORDER_ID = 1;
-
-//	private static final int HISTORY_COL_CUSTOMER = 2;
-	// srivate static final int HISTORY_COL_EMPLOYEE = 3;
 	private static final int HISTORY_COL_TOTAL = 4;
-	// Removed Branch column index
+
 	private JTable orderHistoryTable;
 	private DefaultTableModel orderHistoryTableModel;
-	// Removed currentBranchId
+
+	private JButton refreshButton;
 
 	public OrderHistoryPanel() {
 		// Removed branchId parameter
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		initializeUI();
+	}
+
+	public void destroy() {
+		refreshButton.removeActionListener(this::loadData); // Remove listener
 	}
 
 	private void initializeUI() {
@@ -57,28 +64,7 @@ public class OrderHistoryPanel extends JPanel {
 
 		// Updated Column Names (Removed "Branch")
 		String[] cols = { "Date", "Order ID", "Customer", "Employee", "Total" };
-		orderHistoryTableModel = new DefaultTableModel(cols, 0) {
-			@Override
-			public Class<?> getColumnClass(int columnIndex) {
-				switch (columnIndex) {
-				case HISTORY_COL_DATE:
-					return Timestamp.class;
-				case HISTORY_COL_ORDER_ID:
-					return Integer.class;
-				case HISTORY_COL_TOTAL:
-					return String.class; // Display formatted currency
-				// case HISTORY_COL_TOTAL: return BigDecimal.class; // If sorting by raw value
-				// needed
-				default:
-					return String.class;
-				}
-			}
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		orderHistoryTableModel = new DefaultTableModel(cols, 0);
 		orderHistoryTable = new JTable(orderHistoryTableModel);
 
 		orderHistoryTable.getTableHeader().setBackground(Styles.SECONDARY_COLOR);
@@ -92,19 +78,38 @@ public class OrderHistoryPanel extends JPanel {
 		orderHistoryTable.getColumnModel().getColumn(HISTORY_COL_ORDER_ID).setPreferredWidth(80);
 		orderHistoryTable.getColumnModel().getColumn(HISTORY_COL_TOTAL).setPreferredWidth(100);
 
+		var currencyRenderer = new CurrencyRenderer();
+		var idRenderer = new IdRenderer();
+		var dateRenderer = new DateRenderer();
+
+		idRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+		currencyRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+		dateRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+
+		orderHistoryTable.getColumnModel().getColumn(HISTORY_COL_DATE).setCellRenderer(dateRenderer);
+		orderHistoryTable.getColumnModel().getColumn(HISTORY_COL_ORDER_ID).setCellRenderer(idRenderer);
+		orderHistoryTable.getColumnModel().getColumn(HISTORY_COL_TOTAL).setCellRenderer(currencyRenderer);
+
+		var comparator = new NumberWithSymbolsComparator();
+		var sorter = new TableRowSorter<>(orderHistoryTableModel);
+
+		sorter.setComparator(HISTORY_COL_ORDER_ID, comparator);
+		sorter.setComparator(HISTORY_COL_TOTAL, comparator);
+		sorter.setComparator(HISTORY_COL_TOTAL, comparator);
+
+		orderHistoryTable.setRowSorter(sorter);
 		add(new JScrollPane(orderHistoryTable), BorderLayout.CENTER);
 
-		// Optional Refresh Button
-		JButton refreshButton = new JButton("Refresh History");
-		refreshButton.addActionListener(this::loadData); // Call loadData on click
+		refreshButton = new JButton("Refresh History");
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		bottomPanel.add(refreshButton);
 		add(bottomPanel, BorderLayout.SOUTH);
+
+		refreshButton.addActionListener(this::loadData); // Call loadData on click
 	}
 
 	/** Called by OrderMenuScene when this panel is shown */
 	public void loadData() {
-		System.out.println("OrderHistoryPanel: Loading data...");
 		loadOrderHistoryData();
 	}
 
@@ -119,7 +124,7 @@ public class OrderHistoryPanel extends JPanel {
 		if (orderHistoryTableModel == null) {
 			return; // Check if UI is ready
 		}
-		System.out.println("Querying customer order history...");
+
 		orderHistoryTableModel.setRowCount(0); // Clear existing data
 
 		// --- UPDATED SQL QUERY ---
@@ -155,17 +160,17 @@ public class OrderHistoryPanel extends JPanel {
 					row.add(rs.getInt("_customer_order_id"));
 					row.add(rs.getString("customer_display"));
 					row.add(rs.getString("employee_name"));
-					// Get total from the sales table's column
 					BigDecimal total = rs.getBigDecimal("total_due");
-					row.add(total != null ? CURRENCY_FORMAT.format(total) : "N/A"); // Format the total
-					// Removed branch column
+
+					row.add(total != null ? total : 0);
+
 					orderHistoryTableModel.addRow(row);
 				}
-				System.out.println("Loaded " + orderHistoryTableModel.getRowCount() + " customer orders.");
+				LOGGER.info("Loaded " + orderHistoryTableModel.getRowCount() + " customer orders.");
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Error loading order history", e);
 			JOptionPane.showMessageDialog(this, "Error loading order history: " + e.getMessage(), "Database Error",
 					JOptionPane.ERROR_MESSAGE);
 		}

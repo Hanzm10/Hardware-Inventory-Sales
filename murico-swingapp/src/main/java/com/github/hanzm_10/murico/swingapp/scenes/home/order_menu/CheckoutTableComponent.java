@@ -12,6 +12,7 @@ import java.sql.ResultSet; // Needed for stock lookup
 import java.sql.SQLException; // Needed for stock lookup
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
@@ -35,6 +36,7 @@ import javax.swing.table.TableColumnModel;
 
 // --- Necessary Imports ---
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao; // Use this for DB
+import com.github.hanzm_10.murico.swingapp.lib.logger.MuricoLogger;
 
 public class CheckoutTableComponent extends JPanel {
 
@@ -69,8 +71,6 @@ public class CheckoutTableComponent extends JPanel {
 		@Override
 		public Object getCellEditorValue() {
 			if (isPushed && removeListener != null && editingModelRow != -1 && editingItemStockId != -1) {
-				System.out.println("Remove button action triggered for model row: " + editingModelRow
-						+ ", ItemStockID: " + editingItemStockId);
 				// Notify listener with itemStockId
 				final int row = editingModelRow; // Need final vars for lambda
 				final int stockId = editingItemStockId;
@@ -91,12 +91,11 @@ public class CheckoutTableComponent extends JPanel {
 				if (idObj instanceof Integer) {
 					editingItemStockId = (Integer) idObj;
 				} else {
-					System.err.println("ButtonEditor Error: Invalid ItemStockID type at modelRow " + editingModelRow);
+					LOGGER.severe("ButtonEditor Error: Invalid ItemStockID type at modelRow " + editingModelRow);
 				}
 			} catch (Exception e) {
-				System.err
-						.println("ButtonEditor Error: Could not get itemStockId for row " + editingModelRow + ": " + e);
-				e.printStackTrace();
+				LOGGER.severe("ButtonEditor Error: Could not get itemStockId for row " + editingModelRow + ": " + e);
+
 			}
 			button.setText(label);
 			isPushed = true;
@@ -192,26 +191,26 @@ public class CheckoutTableComponent extends JPanel {
 					maxStock = stockCache.getOrDefault(itemStockId, 0);
 
 					if (!stockCache.containsKey(itemStockId)) {
-						System.err.println("Spinner Warning: Stock for ItemStockID " + itemStockId
+						LOGGER.severe("Spinner Warning: Stock for ItemStockID " + itemStockId
 								+ " not cached! Querying DB...");
 						// --- Optional: Query DB if not in cache (can be slow) ---
 						maxStock = queryStockForItemStockId(itemStockId);
 						stockCache.put(itemStockId, maxStock); // Cache the result
 						// --------------------------------------------------------
 						if (!stockCache.containsKey(itemStockId)) { // Still not found after query?
-							System.err.println("Spinner Error: Could not determine stock for ItemStockID " + itemStockId
+							LOGGER.severe("Spinner Error: Could not determine stock for ItemStockID " + itemStockId
 									+ ". Using default max.");
 							maxStock = 999; // Fallback max if query fails too
 						}
 					}
-					System.out.println("SpinnerCellEditor: ItemStockID=" + itemStockId + ", Max Stock=" + maxStock);
+					LOGGER.info("SpinnerCellEditor: ItemStockID=" + itemStockId + ", Max Stock=" + maxStock);
 
 				} else {
-					System.err.println("Spinner Error: Invalid ItemStockID type at modelRow " + modelRow);
+					LOGGER.severe("Spinner Error: Invalid ItemStockID type at modelRow " + modelRow);
 				}
 
 			} catch (Exception e) {
-				System.err.println("Error getting ItemStockID/stock for spinner: " + e);
+				LOGGER.severe("Error getting ItemStockID/stock for spinner: " + e);
 				e.printStackTrace();
 			}
 
@@ -240,7 +239,7 @@ public class CheckoutTableComponent extends JPanel {
 		private int queryStockForItemStockId(int stockId) {
 			String sql = "SELECT quantity FROM item_stocks WHERE _item_stock_id = ?";
 			int stock = 0; // Default to 0 if not found or error
-			System.out.println("Querying stock for item_stock_id: " + stockId);
+			LOGGER.info("Querying stock for item_stock_id: " + stockId);
 			try (Connection conn = MySqlFactoryDao.createConnection(); // Use correct factory
 					PreparedStatement pstmt = conn.prepareStatement(sql)) {
 				pstmt.setInt(1, stockId);
@@ -248,12 +247,11 @@ public class CheckoutTableComponent extends JPanel {
 					if (rs.next()) {
 						stock = rs.getInt("quantity");
 					} else {
-						System.err.println("No stock record found for item_stock_id: " + stockId);
+						LOGGER.severe("No stock record found for item_stock_id: " + stockId);
 					}
 				}
 			} catch (SQLException e) {
-				System.err
-						.println("Database error querying stock for item_stock_id " + stockId + ": " + e.getMessage());
+				LOGGER.severe("Database error querying stock for item_stock_id " + stockId + ": " + e.getMessage());
 				e.printStackTrace();
 			}
 			return stock;
@@ -266,8 +264,8 @@ public class CheckoutTableComponent extends JPanel {
 				int newValue = (Integer) getCellEditorValue(); // Get final capped value
 
 				if (newValue != originalValue) {
-					System.out.println("Spinner value changed from " + originalValue + " to " + newValue
-							+ " for itemStockId " + itemStockId);
+					LOGGER.info("Spinner value changed from " + originalValue + " to " + newValue + " for itemStockId "
+							+ itemStockId);
 					if (qtyListener != null && itemStockId != -1) { // Check listener and valid ID
 						// Find the corresponding model row index again if needed (might have changed if
 						// table updates during edit)
@@ -281,7 +279,7 @@ public class CheckoutTableComponent extends JPanel {
 						if (modelRow != -1) {
 							qtyListener.quantityChanged(modelRow, newValue, itemStockId); // Notify listener
 						} else {
-							System.err.println("Spinner Error: Could not find model row for itemStockId " + itemStockId
+							LOGGER.severe("Spinner Error: Could not find model row for itemStockId " + itemStockId
 									+ " after editing.");
 						}
 					}
@@ -295,6 +293,8 @@ public class CheckoutTableComponent extends JPanel {
 
 	} // --- End SpinnerCellEditor ---
 		// Column indices constants for VISIBLE columns
+
+	private static final Logger LOGGER = MuricoLogger.getLogger(CheckoutTableComponent.class);
 
 	public static final int COL_PRODUCT_NAME = 0;
 	public static final int COL_ITEM_ID_DISPLAY = 1; // Item ID (for display if needed, might remove)
@@ -352,14 +352,14 @@ public class CheckoutTableComponent extends JPanel {
 			// Ensure the hidden ID is present before adding
 			if (rowData.get(HIDDEN_COL_ITEM_STOCK_ID) == null
 					|| !(rowData.get(HIDDEN_COL_ITEM_STOCK_ID) instanceof Integer)) {
-				System.err.println("CheckoutTableComponent Error: Attempted to add row without valid ItemStockID!");
+				LOGGER.severe("CheckoutTableComponent Error: Attempted to add row without valid ItemStockID!");
 				JOptionPane.showMessageDialog(this, "Internal error adding item.", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			checkoutTableModel.addRow(rowData);
-			System.out.println("Row added to checkout table. StockID: " + rowData.get(HIDDEN_COL_ITEM_STOCK_ID));
+			LOGGER.info("Row added to checkout table. StockID: " + rowData.get(HIDDEN_COL_ITEM_STOCK_ID));
 		} else {
-			System.err.println("CheckoutTableComponent Error: Cannot add row - model null or rowData invalid.");
+			LOGGER.severe("CheckoutTableComponent Error: Cannot add row - model null or rowData invalid.");
 		}
 	}
 
@@ -369,7 +369,7 @@ public class CheckoutTableComponent extends JPanel {
 	public void clearTable() {
 		if (checkoutTableModel != null) {
 			checkoutTableModel.setRowCount(0);
-			System.out.println("Checkout table cleared.");
+			LOGGER.info("Checkout table cleared.");
 			// Note: Doesn't clear the external stock cache, parent panel should do that
 		}
 	}
@@ -475,7 +475,7 @@ public class CheckoutTableComponent extends JPanel {
 		if (checkoutTableModel != null && modelRowIndex >= 0 && modelRowIndex < checkoutTableModel.getRowCount()) {
 			checkoutTableModel.removeRow(modelRowIndex);
 		} else if (checkoutTableModel != null) {
-			System.err.println("CheckoutTableComponent: Attempted to remove invalid row index: " + modelRowIndex
+			LOGGER.severe("CheckoutTableComponent: Attempted to remove invalid row index: " + modelRowIndex
 					+ " (row count: " + checkoutTableModel.getRowCount() + ")");
 		}
 	}

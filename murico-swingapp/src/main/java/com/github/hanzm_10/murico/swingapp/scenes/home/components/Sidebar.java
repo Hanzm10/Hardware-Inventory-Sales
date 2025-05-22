@@ -55,7 +55,7 @@ public class Sidebar {
 
 		SceneNavigator.getInstance().subscribe(this::handleNavigation);
 		sceneButtonMap = Map.of("profile", profileBtn, "dashboard", dashboardBtn, "reports", reportsBtn, "inventory",
-				inventoryBtn, "order menu", orderMenuBtn, "contacts", contactsBtn, "settings", settingsBtn);
+				inventoryBtn, "order menu", orderMenuBtn, "Users Management", contactsBtn, "settings", settingsBtn);
 	}
 
 	private void attachBtns() {

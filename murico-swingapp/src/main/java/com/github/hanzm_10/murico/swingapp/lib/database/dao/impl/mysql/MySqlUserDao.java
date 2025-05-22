@@ -24,6 +24,7 @@ import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.S
 import com.github.hanzm_10.murico.swingapp.lib.database.NamedPrepareStatement;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserContact;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserGender;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
@@ -120,6 +121,24 @@ public class MySqlUserDao implements UserDao {
 
 		}
 		return user;
+	}
+
+	@Override
+	public UserContact[] getUserContacts() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_user_contacts", "users", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			var contacts = new ArrayList<UserContact>();
+			var resultSet = stmt.executeQuery(query);
+
+			while (resultSet.next()) {
+				contacts.add(new UserContact(resultSet.getInt("_user_id"), resultSet.getString("display_name"),
+						resultSet.getString("first_name"), resultSet.getString("last_name"),
+						resultSet.getString("roles")));
+			}
+
+			return contacts.toArray(new UserContact[contacts.size()]);
+		}
 	}
 
 	@Override

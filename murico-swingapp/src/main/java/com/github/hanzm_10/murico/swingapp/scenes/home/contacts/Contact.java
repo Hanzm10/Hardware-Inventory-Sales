@@ -1,4 +1,4 @@
-package com.github.hanzm_10.murico.swingapp.scenes.home.contactScene;
+package com.github.hanzm_10.murico.swingapp.scenes.home.contacts;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -13,7 +13,10 @@
  */
 package com.github.hanzm_10.murico.swingapp;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -34,6 +37,10 @@ import com.github.hanzm_10.murico.swingapp.ui.MainFrame;
 import com.github.hanzm_10.murico.swingapp.ui.components.ProgressWindow;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.Resource;
+import io.github.classgraph.ScanResult;
+
 public class MuricoSwingApp {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MuricoSwingApp.class);
 
@@ -47,7 +54,28 @@ public class MuricoSwingApp {
 		});
 	}
 
+	private static void loadFonts() {
+		try (ScanResult scanResult = new ClassGraph().acceptPaths("fonts") // resource path relative to classpath root
+				.scan()) {
+
+			for (Resource resource : scanResult.getAllResources()) {
+				if (resource.getPath().endsWith(".ttf") || resource.getPath().endsWith(".otf")) {
+					try (InputStream is = resource.open()) {
+						Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+						GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+						System.out.println("Registered font: " + resource.getPath());
+					} catch (Exception e) {
+						System.err.println("Failed to register font: " + resource.getPath());
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
 	public static void main(String[] args) {
+		loadFonts();
+
 		var isSuccessful = MuricoLightFlatLaf.setup();
 
 		if (!isSuccessful) {

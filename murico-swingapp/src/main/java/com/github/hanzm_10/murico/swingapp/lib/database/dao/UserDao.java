@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserContact;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserGender;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 
@@ -31,6 +32,8 @@ public interface UserDao {
 	public User getUserByEmail(@NotNull String _userEmail) throws IOException, SQLException;
 
 	public User getUserById(@Range(from = 0, to = Integer.MAX_VALUE) int _userID) throws IOException, SQLException;
+
+	public UserContact[] getUserContacts() throws IOException, SQLException;
 
 	public UserMetadata getUserMetadataByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException;
 

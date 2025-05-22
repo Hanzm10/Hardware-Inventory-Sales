@@ -1,4 +1,4 @@
-package com.github.hanzm_10.murico.swingapp.scenes.home.contactScene; // Renamed package
+package com.github.hanzm_10.murico.swingapp.scenes.home.contacts; // Renamed package
 
 import java.io.IOException;
 import java.sql.Connection;

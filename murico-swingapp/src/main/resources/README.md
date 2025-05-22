@@ -27,6 +27,12 @@ If you are seeing this, that means something went wrong at app startup. Please c
 3. The registered database credentials for this application do not match with the database:
  - Please set up your database server's credentials to match with what the app is using. Refer to the **Database Credentials** section
 
+Or, if you already have *MySQL* installed, then follow these steps to change the password for your *root* user.
+
+**NOTE**: Please be aware that if you're using your device as a real server, changing the password, especially to a very simple one as `12345`, is very dangerous.
+
+Please refer to **Changing Database Password** to get started.
+
 ## Database Credentials
 
 As of `v1.0.0`, the application is using these configurations for local databases:
@@ -40,6 +46,40 @@ db.name      = murico
 
 Please create a database server in your downloaded `MySQL` with the aforementioned credentials to use the application.
 We thank you for your understanding!
+
+### Changing Database Password
+
+1. Open the download *MySQL Shell*
+2. First, type
+
+```bash
+\sql
+```
+
+Then you should see:
+
+<img src="https://res.cloudinary.com/dazgf1omh/image/upload/v1747912379/murico/khr87m8xtwaul6ypvcrq.jpg" width=500>
+
+3. Then, type
+
+```bash
+\connect root@localhost
+```
+
+It should them prompt you for the password for that specific user `root` at `localhost`. You snould see:
+
+<img src="https://res.cloudinary.com/dazgf1omh/image/upload/v1747912515/murico/roz6bmwr6prquqtqcjuz.jpg" width=500>
+
+4. All that's left is to enter this query as you are now connected to the server.
+
+```sql
+ALTER USER 'root' IDENTIFIED BY '<new password>' REPLACE '<old password>';
+```
+
+And now all you need to do is re-log in to your workbench!
+For more information:
+
+Visit the [documentation of Oracle](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/ALTER-USER.html) about altering *USER* information in MySQL.
 
 ## Walkthrough
 
