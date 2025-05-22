@@ -109,7 +109,10 @@ public class SceneNavigator implements Observer<String> {
 		}
 
 		SwingUtilities.invokeLater(() -> {
-			sceneManager.navigateTo(sceneName);
+			if (!sceneManager.navigateTo(sceneName)) {
+				LOGGER.warning("Cannot navigate to scene: " + sceneName);
+				return;
+			}
 
 			LOGGER.info("Navigated to scene: " + sceneName);
 

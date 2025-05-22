@@ -67,6 +67,16 @@ public class NamedPrepareStatement implements AutoCloseable {
 		}
 	}
 
+	public void setString(final String name, final String value) throws SQLException {
+		List<Integer> positions = fields.get(name);
+		if (positions == null) {
+			throw new IllegalArgumentException("Parameter not found: " + name);
+		}
+		for (int pos : positions) {
+			prepStmt.setString(pos, value);
+		}
+	}
+
 	public void setTimestamp(final String name, final Timestamp value) throws SQLException {
 		List<Integer> positions = fields.get(name);
 		if (positions == null) {

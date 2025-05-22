@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.AbstractSqlQueryLoader.SqlQueryType;
+import com.github.hanzm_10.murico.swingapp.lib.database.NamedPrepareStatement;
 import com.github.hanzm_10.murico.swingapp.lib.database.dao.UserDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserGender;
@@ -29,6 +30,30 @@ import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlQueryLoader;
 
 public class MySqlUserDao implements UserDao {
+
+	@Override
+	public UserMetadata[] getAllUsers() throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("get_all_user_metadata", "users", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
+			var users = new ArrayList<UserMetadata>();
+			var resultSet = stmt.executeQuery(query);
+
+			while (resultSet.next()) {
+				users.add(new UserMetadata(resultSet.getInt("_user_id"), resultSet.getTimestamp("_created_at"),
+						resultSet.getTimestamp("updated_at"), resultSet.getString("display_name"),
+						resultSet.getString("display_image"), UserGender.fromString(resultSet.getString("gender")), // assuming
+																													// enum
+						resultSet.getString("first_name"), resultSet.getString("last_name"),
+						resultSet.getString("biography"), resultSet.getString("roles"), resultSet.getString("email"),
+						resultSet.getString("verification_status").equals("verified"),
+						resultSet.getTimestamp("verified_at")));
+			}
+
+			return users.toArray(new UserMetadata[users.size()]);
+		}
+
+	}
 
 	@Override
 	public User getUserByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException {
@@ -96,8 +121,6 @@ public class MySqlUserDao implements UserDao {
 		}
 		return user;
 	}
-	
-	
 
 	@Override
 	public UserMetadata getUserMetadataByDisplayName(@NotNull String _userDisplayName)
@@ -173,26 +196,44 @@ public class MySqlUserDao implements UserDao {
 	}
 
 	@Override
-	public UserMetadata[] getAllUsers() throws IOException, SQLException {
-		var query = MySqlQueryLoader.getInstance().get("get_all_user_metadata", "users", SqlQueryType.SELECT);
-	
-		try (var conn = MySqlFactoryDao.createConnection(); var stmt = conn.createStatement();) {
-			var users = new ArrayList<UserMetadata>();
-			var resultSet = stmt.executeQuery(query);
-			
-			while (resultSet.next()) {
-				users.add(new UserMetadata(resultSet.getInt("_user_id"), resultSet.getTimestamp("_created_at"),
-						resultSet.getTimestamp("updated_at"), resultSet.getString("display_name"),
-						resultSet.getString("display_image"), UserGender.fromString(resultSet.getString("gender")), // assuming
-																													// enum
-						resultSet.getString("first_name"), resultSet.getString("last_name"),
-						resultSet.getString("biography"), resultSet.getString("roles"), resultSet.getString("email"),
-						resultSet.getString("verification_status").equals("verified"),
-						resultSet.getTimestamp("verified_at")));
+	public UserMetadata updateUser(@Range(from = 0, to = 2147483647) int _userId, @NotNull String displayName,
+			@NotNull String firstName, @NotNull String lastName, @NotNull UserGender gender, @NotNull String biography)
+			throws IOException, SQLException {
+		var query = MySqlQueryLoader.getInstance().get("update_user", "users", SqlQueryType.UPDATE);
+		var getUserQuery = MySqlQueryLoader.getInstance().get("get_user_metadata_by_id", "users", SqlQueryType.SELECT);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var namedStmt = new NamedPrepareStatement(conn, query);) {
+			conn.setAutoCommit(false);
+
+			namedStmt.setString("display_name", displayName);
+			namedStmt.setString("first_name", firstName);
+			namedStmt.setString("last_name", lastName);
+			namedStmt.setString("gender", gender == UserGender.UNKNOWN ? null : gender.toString());
+			namedStmt.setString("biography", biography);
+			namedStmt.setInt("user_id", _userId);
+
+			namedStmt.getPreparedStatement().executeUpdate();
+
+			try (var stmt = conn.prepareStatement(getUserQuery);) {
+				stmt.setInt(1, _userId);
+
+				var resultSet = stmt.executeQuery();
+
+				if (resultSet.next()) {
+					conn.commit();
+
+					return new UserMetadata(resultSet.getInt("_user_id"), resultSet.getTimestamp("_created_at"),
+							resultSet.getTimestamp("updated_at"), resultSet.getString("display_name"),
+							resultSet.getString("display_image"), UserGender.fromString(resultSet.getString("gender")), // assuming
+																														// enum
+							resultSet.getString("first_name"), resultSet.getString("last_name"),
+							resultSet.getString("biography"), resultSet.getString("roles"),
+							resultSet.getString("email"), resultSet.getString("verification_status").equals("verified"),
+							resultSet.getTimestamp("verified_at"));
+				}
 			}
-			
-			return users.toArray(new UserMetadata[users.size()]);
+
+			return null;
 		}
-		
 	}
 }

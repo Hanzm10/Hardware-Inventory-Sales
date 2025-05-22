@@ -31,7 +31,7 @@ import com.github.hanzm_10.murico.swingapp.lib.table_renderers.CurrencyRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.IdRenderer;
 import com.github.hanzm_10.murico.swingapp.lib.table_renderers.ProgressLevelRenderer;
 import com.github.hanzm_10.murico.swingapp.listeners.TableSearchListener;
-import com.github.hanzm_10.murico.swingapp.ui.ErrorDialog;
+import com.github.hanzm_10.murico.swingapp.ui.components.dialogs.ErrorDialogFactory;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -180,7 +180,7 @@ public class InventoryTable implements SceneComponent {
 		} catch (SQLException | IOException e) {
 			LOGGER.log(Level.SEVERE, "Error while fetching item stocks", e);
 
-			ErrorDialog.showErrorDialog(SwingUtilities.getWindowAncestor(view), "Something went wrong",
+			ErrorDialogFactory.showErrorDialog(SwingUtilities.getWindowAncestor(view), "Something went wrong",
 					"An error occurred while fetching item stocks. Please try again later.");
 		}
 	}

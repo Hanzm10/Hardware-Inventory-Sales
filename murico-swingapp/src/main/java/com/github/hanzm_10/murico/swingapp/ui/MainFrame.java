@@ -40,16 +40,19 @@ public class MainFrame extends JFrame {
 			// before closing the application
 			AbandonedConnectionCleanupThread.checkedShutdown();
 			SceneNavigator.getInstance().destroy();
+
+			removeWindowListener(this);
+
 			dispose();
 		}
 	}
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = MuricoLogger.getLogger(MainFrame.class);
+	private final MainFrameWindowListener mainFrameWindowListener = new MainFrameWindowListener();
 
 	public MainFrame() {
-
-		addWindowListener(new MainFrameWindowListener());
+		addWindowListener(mainFrameWindowListener);
 
 		setTitle(Metadata.APP_TITLE + " " + Metadata.APP_VERSION);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -58,7 +61,6 @@ public class MainFrame extends JFrame {
 
 		pack();
 		setLocationRelativeTo(null);
-		setVisible(true);
 	}
 
 	private void initSceneManager() {

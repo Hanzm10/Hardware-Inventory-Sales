@@ -129,7 +129,7 @@ public interface SceneManager {
 	 *
 	 * @param sceneName
 	 */
-	void navigateTo(@NotNull final String sceneName);
+	boolean navigateTo(@NotNull final String sceneName);
 
 	void registerScene(@NotNull final String sceneName, @NotNull final SceneFactory sceneFactory);
 

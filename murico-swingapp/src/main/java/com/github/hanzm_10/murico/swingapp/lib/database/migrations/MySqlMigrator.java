@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.github.hanzm_10.murico.swingapp.MuricoSwingApp;
 import com.github.hanzm_10.murico.swingapp.lib.database.SqlScriptParser;
 import com.github.hanzm_10.murico.swingapp.lib.database.migrations.SqlMigration.ParsedSqlMigration;
 import com.github.hanzm_10.murico.swingapp.lib.database.mysql.MySqlFactoryDao;
@@ -19,12 +20,6 @@ public class MySqlMigrator implements Migrator {
 	private static final Logger LOGGER = MuricoLogger.getLogger(MySqlMigrator.class);
 
 	protected void createMigrationTableIfNotExists() throws SQLException {
-		// TEMPORARY !! REMOVE AFTER EVERYONE CLEANSES THEIR DATABASES!
-		// Adding the DROP DATABASE defeats the purpose of migrations, but
-		// since i did not add a name for the UNIQUE composite key constraints I
-		// accidentally made,
-		// which should've been individual unique key constraints, we just remove the
-		// whol database
 		var query = """
 				CREATE TABLE IF NOT EXISTS migrations (
 					_migration_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -52,7 +47,10 @@ public class MySqlMigrator implements Migrator {
 
 		createMigrationTableIfNotExists();
 		LOGGER.info("Performing migrations...");
-		System.out.println("\n=============================================\n");
+
+		if (MuricoSwingApp.IS_DEVELOPMENT) {
+			System.out.println("\n=============================================\n");
+		}
 
 		try (var conn = MySqlFactoryDao.createConnection()) {
 			conn.setAutoCommit(false);
@@ -65,7 +63,9 @@ public class MySqlMigrator implements Migrator {
 			LOGGER.log(Level.SEVERE, "Failed to migrate", e);
 		}
 
-		System.out.println("\n=============================================\n");
+		if (MuricoSwingApp.IS_DEVELOPMENT) {
+			System.out.println("\n=============================================\n");
+		}
 	}
 
 	protected boolean migrationExists(@NotNull final int migrationVersionNumber, @NotNull final String migrationName) {
@@ -96,10 +96,15 @@ public class MySqlMigrator implements Migrator {
 	}
 
 	private void processMigration(Connection conn, ParsedSqlMigration sqlQuery) throws SQLException {
-		System.out.print("> Migrating " + sqlQuery.migrationName() + "... ");
+		if (MuricoSwingApp.IS_DEVELOPMENT) {
+			System.out.print("> Migrating " + sqlQuery.migrationName() + "... ");
+		}
 
 		if (migrationExists(sqlQuery.versionNumber(), sqlQuery.migrationName())) {
-			System.out.println("already exists, skipping...");
+			if (MuricoSwingApp.IS_DEVELOPMENT) {
+				System.out.println("already exists, skipping...");
+			}
+
 			return;
 		}
 
@@ -121,10 +126,18 @@ public class MySqlMigrator implements Migrator {
 			insertMigrationStmnt.executeUpdate();
 
 			conn.commit();
-			System.out.println("\n> Migration " + sqlQuery.migrationName() + " successful\n");
+
+			if (MuricoSwingApp.IS_DEVELOPMENT) {
+				System.out.println("\n> Migration " + sqlQuery.migrationName() + " successful\n");
+			}
+
 		} catch (SQLException e) {
 			conn.rollback();
-			System.out.println("\n> Migration " + sqlQuery.migrationName() + " failed\n");
+
+			if (MuricoSwingApp.IS_DEVELOPMENT) {
+				System.out.println("\n> Migration " + sqlQuery.migrationName() + " failed\n");
+			}
+
 			throw e;
 		}
 	}
@@ -133,7 +146,9 @@ public class MySqlMigrator implements Migrator {
 		try (var stmt = conn.prepareStatement(sqlQuery)) {
 			var parsed = SqlScriptParser.parseSqlStatement(sqlQuery);
 
-			System.out.printf("\n\tType: %-8s | Name: %s", parsed.type(), parsed.name());
+			if (MuricoSwingApp.IS_DEVELOPMENT) {
+				System.out.printf("\n\tType: %-8s | Name: %s", parsed.type(), parsed.name());
+			}
 
 			stmt.executeUpdate();
 		}

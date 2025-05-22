@@ -7,7 +7,7 @@ import com.github.hanzm_10.murico.swingapp.lib.navigation.manager.SceneManager;
 public interface SubSceneSupport {
 	SceneManager getSceneManager();
 
-	void navigateTo(@NotNull String subSceneName);
+	boolean navigateTo(@NotNull String subSceneName);
 
 	void navigateToDefault();
 }

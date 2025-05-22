@@ -20,9 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.User;
+import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserGender;
 import com.github.hanzm_10.murico.swingapp.lib.database.entity.user.UserMetadata;
 
 public interface UserDao {
+	public UserMetadata[] getAllUsers() throws IOException, SQLException;
+
 	public User getUserByDisplayName(@NotNull String _userDisplayName) throws IOException, SQLException;
 
 	public User getUserByEmail(@NotNull String _userEmail) throws IOException, SQLException;
@@ -34,7 +37,9 @@ public interface UserDao {
 	public UserMetadata getUserMetadataById(@Range(from = 0, to = Integer.MAX_VALUE) int _userID)
 			throws IOException, SQLException;
 
-	public UserMetadata[] getAllUsers() throws IOException, SQLException;
-	
 	public boolean isUsernameTaken(@NotNull final String name) throws IOException, SQLException;
+
+	public UserMetadata updateUser(@Range(from = 0, to = Integer.MAX_VALUE) int _userId, @NotNull String displayName,
+			@NotNull String firstName, @NotNull String lastName, @NotNull UserGender gender, @NotNull String biography)
+			throws IOException, SQLException;
 }

@@ -70,8 +70,8 @@ public class AuthScene implements Scene, SubSceneSupport {
 	}
 
 	@Override
-	public void navigateTo(@NotNull String subSceneName) {
-		sceneManager.navigateTo(subSceneName);
+	public boolean navigateTo(@NotNull String subSceneName) {
+		return sceneManager.navigateTo(subSceneName);
 	}
 
 	@Override

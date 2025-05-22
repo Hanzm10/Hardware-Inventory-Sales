@@ -6,13 +6,13 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<name>Murico - Hardware Inventory and Sales System</name>
 	<artifactId>murico-swingapp</artifactId>
+
 	<dependencies>
 		<dependency>
-		  <groupId>org.commonmark</groupId>
-		  <artifactId>commonmark</artifactId>
-		  <version>0.21.0</version>
+			<groupId>org.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>0.21.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.lgooddatepicker</groupId>
@@ -30,16 +30,6 @@
 			<version>4.8.179</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>jakarta.mail</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.activation</groupId>
-			<artifactId>jakarta.activation</artifactId>
-			<version>2.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>com.github.hanzm_10.murico</groupId>
 			<artifactId>murico-lookandfeel</artifactId>
 			<version>${project.version}</version>
@@ -49,13 +39,6 @@
 			<artifactId>commons-text</artifactId>
 			<version>1.13.1</version>
 		</dependency>
-		<!--
-		<dependency>
-		    <groupId>guru.nidi.com.kitfox</groupId>
-		    <artifactId>svgSalamander</artifactId>
-		    <version>1.1.3</version>
-		</dependency>
-      -->
 		<dependency>
 			<groupId>com.github.weisj</groupId>
 			<artifactId>jsvg</artifactId>
@@ -70,7 +53,6 @@
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
 			<version>2.0.34</version>
-			<!-- Use the latest 2.x version -->
 		</dependency>
 		<dependency>
 			<groupId>com.miglayout</groupId>
