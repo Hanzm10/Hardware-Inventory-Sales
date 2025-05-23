@@ -38,7 +38,7 @@ public class Header {
 
 		SceneNavigator.getInstance().subscribe(this::handleNavigation);
 
-		sceneNames = new String[] { "profile", "dashboard", "order menu", "reports", "inventory", "contacts",
+		sceneNames = new String[] { "profile", "dashboard", "order menu", "reports", "inventory", "Users Management",
 				"settings" };
 	}
 
