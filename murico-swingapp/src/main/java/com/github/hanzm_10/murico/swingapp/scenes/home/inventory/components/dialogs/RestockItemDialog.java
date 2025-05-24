@@ -370,6 +370,12 @@ public class RestockItemDialog extends JDialog {
 		var selectedItem = (RestockSupplierComboBoxItem) supplier.getSelectedItem();
 
 		if (selectedItem != null) {
+			if (selectedItem.wspPhp() == null) {
+				wspLabel.setText("WSP: N/A");
+				totalLabel.setText("Total: N/A");
+				return;
+			}
+
 			totalLabel.setText(
 					"Total: ₱" + selectedItem.wspPhp().multiply(new BigDecimal(quantity.getValue().toString())));
 		}
