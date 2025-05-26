@@ -55,7 +55,8 @@ public class MuricoSwingApp {
 	}
 
 	private static void loadFonts() {
-		try (ScanResult scanResult = new ClassGraph().acceptPaths("fonts") // resource path relative to classpath root
+		try (ScanResult scanResult = new ClassGraph().acceptPaths("assets/fonts") // resource path relative to classpath
+																					// root
 				.scan()) {
 
 			for (Resource resource : scanResult.getAllResources()) {

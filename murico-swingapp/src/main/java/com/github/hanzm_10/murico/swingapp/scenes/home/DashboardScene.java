@@ -68,7 +68,7 @@ public class DashboardScene implements Scene {
 
 		weeklyDataset = new DefaultCategoryDataset();
 
-		var chart = ChartFactory.createLineChart("Sales per Month", "Month", "Amount", weeklyDataset,
+		var chart = ChartFactory.createLineChart("Sales per Week", "Week", "Amount", weeklyDataset,
 				PlotOrientation.VERTICAL, true, true, false);
 
 		chart.setAntiAlias(true);
@@ -82,7 +82,7 @@ public class DashboardScene implements Scene {
 	private void createYearlyChart() {
 		yearlyDataset = new DefaultCategoryDataset();
 
-		var chart = ChartFactory.createLineChart("Sales per Month", "Month", "Amount", yearlyDataset,
+		var chart = ChartFactory.createLineChart("Sales per Year", "Year", "Amount", yearlyDataset,
 				PlotOrientation.VERTICAL, true, true, false);
 
 		chart.setAntiAlias(true);
