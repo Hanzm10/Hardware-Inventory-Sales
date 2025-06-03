@@ -39,6 +39,8 @@ public interface SessionDao {
 
 	public void printSessionTableOfUser(@NotNull final User user) throws IOException, SQLException;
 
+	public void removeSessionByToken(@NotNull final String _sessionToken) throws IOException, SQLException;
+
 	public boolean sessionExists(@NotNull final String _sessionToken) throws IOException, SQLException;
 
 	public void updateSessionStatusByToken(@NotNull final String _sessionToken, @NotNull final SessionStatus status)

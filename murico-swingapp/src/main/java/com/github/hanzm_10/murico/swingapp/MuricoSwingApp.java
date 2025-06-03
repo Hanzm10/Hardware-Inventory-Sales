@@ -55,19 +55,16 @@ public class MuricoSwingApp {
 	}
 
 	private static void loadFonts() {
-		try (ScanResult scanResult = new ClassGraph().acceptPaths("assets/fonts") // resource path relative to classpath
-																					// root
+		try (ScanResult scanResult = new ClassGraph().acceptPaths("assets/fonts")
 				.scan()) {
-
 			for (Resource resource : scanResult.getAllResources()) {
 				if (resource.getPath().endsWith(".ttf") || resource.getPath().endsWith(".otf")) {
 					try (InputStream is = resource.open()) {
 						Font font = Font.createFont(Font.TRUETYPE_FONT, is);
 						GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
-						System.out.println("Registered font: " + resource.getPath());
+						LOGGER.info("Registered font: " + resource.getPath());
 					} catch (Exception e) {
-						System.err.println("Failed to register font: " + resource.getPath());
-						e.printStackTrace();
+						LOGGER.log(Level.SEVERE, "Failed to load font: " + resource.getPath(), e);
 					}
 				}
 			}
