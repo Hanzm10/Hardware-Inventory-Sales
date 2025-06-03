@@ -49,6 +49,7 @@ public class SessionService {
 
 		if (session == null || SessionUtils.isSessionExpired(session)) {
 			removeStoredSessionUid();
+			sessionDao.removeSessionByToken(sessionToken);
 			return false;
 		}
 
@@ -101,7 +102,7 @@ public class SessionService {
 				}
 			} finally {
 				hashedUserPassword.clearHashedStringBytes();
-				hashedUserPassword.clearHashedStringBytes();
+				hashedPasswordWithSalt.clearHashedStringBytes();
 			}
 
 			var sessionDao = factory.getSessionDao();

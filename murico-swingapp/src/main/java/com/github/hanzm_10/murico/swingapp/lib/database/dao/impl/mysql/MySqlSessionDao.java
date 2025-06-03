@@ -145,6 +145,18 @@ public class MySqlSessionDao implements SessionDao {
 	}
 
 	@Override
+	public void removeSessionByToken(@NotNull String _sessionToken) throws IOException, SQLException {
+		String query = MySqlQueryLoader.getInstance().get("remove_session_by_token", "sessions", SqlQueryType.DELETE);
+
+		try (var conn = MySqlFactoryDao.createConnection(); var statement = conn.prepareStatement(query);) {
+			statement.setString(1, _sessionToken);
+			statement.executeUpdate();
+		} catch (SQLFeatureNotSupportedException e) {
+			LOGGER.log(Level.SEVERE, "SQL feature not supported", e);
+		}
+	}
+
+	@Override
 	public boolean sessionExists(@NotNull String _sessionToken) throws IOException, SQLException {
 		var sessionExists = false;
 		String query = MySqlQueryLoader.getInstance().get("select_exists_by_token", "sessions", SqlQueryType.SELECT);
