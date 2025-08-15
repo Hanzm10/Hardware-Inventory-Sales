@@ -39,7 +39,7 @@ public class SessionService {
 	public static boolean checkPreviousSessionAndStoreInSessionManager() throws IOException, SQLException {
 		var sessionToken = ApplicationConfig.getInstance().getConfig().getProperty(PropertyKey.Session.UID);
 
-		if (sessionToken == null) {
+		if (sessionToken == null || sessionToken.isEmpty()) {
 			return false;
 		}
 
@@ -146,8 +146,7 @@ public class SessionService {
 	}
 
 	/**
-	 * This does not set the user session, since our flow requires account
-	 * verification from admins.
+	 * This does not set the user session
 	 *
 	 * @param displayName
 	 * @param email
