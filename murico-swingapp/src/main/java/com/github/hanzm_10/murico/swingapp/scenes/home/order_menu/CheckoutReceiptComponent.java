@@ -251,7 +251,7 @@ public class CheckoutReceiptComponent extends JPanel {
 		sb.append("-".repeat(itemHeader.length())).append("\n");
 
 		sb.append(String.format("%28s %s\n", "TOTAL:", CURRENCY_FORMAT.format(itemsTotal))); // Assuming subtotal is
-																								// total
+		// total
 		// for preview
 
 		BigDecimal change = cashTendered.subtract(itemsTotal);
@@ -387,9 +387,9 @@ public class CheckoutReceiptComponent extends JPanel {
 
 			try (PDDocument document = new PDDocument()) {
 				// --- Load Custom Fonts ---
-				try (InputStream fontStream = AssetManager.class.getResourceAsStream("fonts/DejaVuSansMono.ttf");
+				try (InputStream fontStream = AssetManager.class.getResourceAsStream("fonts/DejaVu Sans/DejaVuSans.ttf");
 						InputStream fontBoldStream = AssetManager.class
-								.getResourceAsStream("fonts/DejaVuSansMono-Bold.ttf")) {
+								.getResourceAsStream("fonts/DejaVu Sans/DejaVuSans-Bold.ttf")) {
 
 					if (fontStream == null) {
 						throw new IOException(
@@ -406,7 +406,7 @@ public class CheckoutReceiptComponent extends JPanel {
 							"Error loading required fonts for PDF: " + e.getMessage() + "\n"
 									+ "Please ensure DejaVuSansMono.ttf and DejaVuSansMono-Bold.ttf are in"
 									+ " resources/fonts.",
-							"Font Error", JOptionPane.ERROR_MESSAGE);
+									"Font Error", JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 					return;
 				}

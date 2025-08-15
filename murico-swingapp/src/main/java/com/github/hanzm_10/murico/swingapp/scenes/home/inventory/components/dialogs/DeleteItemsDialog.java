@@ -233,8 +233,6 @@ public class DeleteItemsDialog extends JDialog {
 	}
 
 	private void handleDelete(ActionEvent ev) {
-		terminateThread();
-
 		SwingUtilities.invokeLater(this::disableButtons);
 
 		executor.submit(() -> {
@@ -268,6 +266,7 @@ public class DeleteItemsDialog extends JDialog {
 	private void terminateThread() {
 		if (executor != null && !executor.isShutdown()) {
 			executor.shutdownNow();
+			executor = null;
 		}
 	}
 
