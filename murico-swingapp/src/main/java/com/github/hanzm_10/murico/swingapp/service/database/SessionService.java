@@ -115,6 +115,15 @@ public class SessionService {
 					throw new MuricoError(MuricoErrorCodes.DATABASE_FAILED_INSERT);
 				}
 			} else {
+				if (SessionUtils.isSessionExpired(session)) {
+					sessionDao.removeSessionByToken(session._sessionToken());
+					session = sessionDao.createSession(user._userId());
+				} else if (session.status() == SessionStatus.INACTIVE) {
+					session = session.newStatus(SessionStatus.ACTIVE);
+				} else if (session.status() == SessionStatus.ACTIVE) {
+					LOGGER.log(Level.INFO, "User {0} already has an active session.", _userDisplayName);
+				}
+
 				sessionDao.updateSessionStatusByToken(session._sessionToken(), SessionStatus.ACTIVE);
 			}
 
